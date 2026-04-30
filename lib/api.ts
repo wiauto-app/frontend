@@ -1,6 +1,6 @@
 
-import { authService } from '../(auth)/services/authService';
-import { API_URL } from '../constants';
+import { authService } from '@/services/authService';
+import { API_URL } from '@/constants';
 import { toast } from 'sonner';
 
 interface FetchOptions extends RequestInit {
