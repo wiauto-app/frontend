@@ -1,4 +1,4 @@
-import LoginForm from "@/components/auth/LoginForm";
+import OlvideContrasenaForm from "@/components/auth/OlvideContrasenaForm";
 
 export default function Page() {
   return (
@@ -7,7 +7,7 @@ export default function Page() {
       <div className="absolute top-1/4 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
       <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
       
-      <LoginForm />
+      <OlvideContrasenaForm />
     </div>
   )
 }

@@ -1,40 +1,56 @@
 
-import z from "zod";
-
-
-
-export const LoginSchema = z.object({
-  email: z.string().email("Email inválido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-});
-
-export type LoginDto = z.infer<typeof LoginSchema>;
-
-//registerSchema
-
-export const RegisterSchema = z.object({
-  email: z.string().email("Email inválido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  last_name: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
-});
-
-export type RegisterDto = z.infer<typeof RegisterSchema>;
-
-
-
-
 export interface AuthResponseDto {
   type: string;
   token: string;
-  token_type: string;
-  expires_at: string;
-  user: {
+  challenge_token?: string;
+}
+
+
+export interface RegisterResponseDto {
+  message: string;
+  data: {
     id: string;
     email: string;
-    first_name: string;
+    provider_id: string;
     last_sign_in: string;
+    two_factor_secret: string;
+    two_factor_backup_codes: string;
+    provider: string;
+    is_email_verified: boolean;
+    two_factor_enabled: boolean;
+    created_at: string;
   };
+  error?: string;
+  statusCode?: number;
+}
+
+
+export interface myredentianlresponse {
+  id: string;
+  email: string;
+  provider: string;
+  name: string;
+  last_name: string;
+  avatar_url: string;
+  last_sign_in: string;
+  created_at: string;
+}
+
+
+export interface mobilelogintoken{
+  token: string;
+}
+
+
+export interface start2fa{
+  otpauth_url: string;
+  qr_code_data_url: string;
+}
+
+
+export interface ResetPasswordDto {
+  token: string;
+  password: string;
 }
 
 
@@ -52,3 +68,31 @@ export interface ValidateBackupCodeDto {
   code: string;
 }
 
+
+export interface Usersesiondto {
+  id: string;
+  email: string;
+  provider: string;
+  name: string;
+  last_name: string;
+  avatar_url: string;
+  last_sign_in: string;
+  created_at: string;
+}
+
+
+export interface Enable2faResponseDto {
+  verified: boolean;
+  message: string;
+  backup_codes: string[];
+}
+
+export interface VerificationCoseResponseDto{
+  
+  message: string;
+  token: string;
+}
+
+export interface ResendEmailVerificationResponseDto{
+  message: string;
+}
