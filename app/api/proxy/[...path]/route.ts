@@ -1,5 +1,6 @@
 import { API_URL } from '@/constants'
 import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
 
 type ProxyParams = Promise<{ path: string[] }> | { path: string[] }
 
@@ -89,6 +90,10 @@ const toClientResponse = async (backendRes: Response) => {
 }
 
 export async function GET(req: Request, ctx: { params: ProxyParams }) {
+  const token = (await cookies()).get('access_token')?.value
+  if(!token) {
+    return NextResponse.json({ message: 'No estás logueado' }, { status: 200 })
+  }
   const res = await proxyFetch(req, ctx.params, 'GET', false)
   return toClientResponse(res)
 }
@@ -120,3 +125,4 @@ export async function HEAD(req: Request, ctx: { params: ProxyParams }) {
     headers: res.headers,
   })
 }
+

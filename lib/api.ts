@@ -42,23 +42,12 @@ export const fetchWithAuth = async (url: string, options: FetchOptions = {}) => 
     credentials: 'include',
   });
 
-  if (response.status === 401) {
-    authStorage.clearToken();
-    if (typeof window !== 'undefined') {
-      window.location.href = AUTH_ROUTES.LOGIN;
-    }
-  }
+ 
 
-  if (response.status === 403) {
-    const error = await response.json();
-    console.log('error', error);
-    throw new Error(error.message || 'No tienes permisos para acceder a este recurso');
-  }
 
   if (!response.ok) {
     const error = await response.json();
     console.log('error', error);
-    throw new Error(error.message || 'Error en la petición');
   }
 
   return response;
