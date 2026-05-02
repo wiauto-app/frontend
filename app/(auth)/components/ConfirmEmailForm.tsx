@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmEmailVerificationSchema, ConfirmEmailVerificationDto } from "@/validations/Schemas";
 import { authService } from "@/services/authService";
-import { confirmEmailVerification } from "@/services/auth";
 
 import {
   Card,
@@ -31,16 +30,10 @@ export default function ConfirmEmailForm({token}: {token: string}) {
     },
   })
 
-  useEffect(() => {
-    if (authService.isLoggedIn()) {
-      router.push("/");
-    }
-  }, [router]);
-
   async function onSubmit(data: ConfirmEmailVerificationDto) {
     setIsLoading(true);
     try {
-      const response = await confirmEmailVerification(data.token);
+      const response = await authService.confirmEmailVerification(data.token);
       toast.success(response.message || "Correo confirmado exitosamente");
       router.push("/iniciar-sesion");
     } catch (error: any) {

@@ -1,16 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { login } from "@/services/auth";
-import { LoginSchema } from "@/validations/Schemas";
-import { authService } from "@/services/authService";
+import { LoginDto, LoginSchema } from "@/validations/Schemas";
 
 import {
   Card,
@@ -29,12 +25,13 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginAction } from "../authActions/authActions";
 
 export default function LoginForm() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   
-  const form = useForm<z.infer<typeof LoginSchema>>({
+  const form = useForm<LoginDto>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
@@ -42,26 +39,18 @@ export default function LoginForm() {
     },
   })
 
-  useEffect(() => {
-    if (authService.isLoggedIn()) {
-      router.push("/");
-    }
-  }, [router]);
-
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     setIsLoading(true);
     try {
-      const response = await login(data);
-      authService.saveToken(response.token);
+      await loginAction(data);
       toast.success("Sesión iniciada correctamente");
-      router.push("/");
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error("Login error:", error);
       const genericMessage = "Email o contraseña incorrectos. Por favor, intenta de nuevo.";
-      if (error.message?.includes("No se encontró") || error.message?.includes("incorrectos")) {
+      if ((error as Error).message?.includes("No se encontró") || (error as Error).message?.includes("incorrectos")) {
         toast.error(genericMessage);
       } else {
-        toast.error(error.message || genericMessage);
+        toast.error((error as Error).message || genericMessage);
       }
     } finally {
       setIsLoading(false);

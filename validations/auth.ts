@@ -1,8 +1,7 @@
 
 export interface AuthResponseDto {
-  type: string;
+  type: "session" | "2fa_challenge";
   token: string;
-  challenge_token?: string;
 }
 
 

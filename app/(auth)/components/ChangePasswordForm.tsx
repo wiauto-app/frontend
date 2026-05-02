@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ResetPasswordSchema, ResetPasswordDto } from "@/validations/Schemas";
 import { authService } from "@/services/authService";
-import { changePassword } from "@/services/auth";
 
 import {
   Card,
@@ -29,7 +28,6 @@ import {
 import { Input } from "@/components/ui/input"
 
 export default function ChangePasswordForm({token}: {token: string}) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<ResetPasswordDto>({
@@ -40,16 +38,12 @@ export default function ChangePasswordForm({token}: {token: string}) {
     },
   })
 
-  useEffect(() => {
-    if (authService.isLoggedIn()) {
-      router.push("/");
-    }
-  }, [router]);
+
 
   async function onSubmit(data: ResetPasswordDto) {
     setIsLoading(true);
     try {
-      const response = await changePassword(data);
+      const response = await authService.changePassword(data);
       toast.success(response.message);
       form.reset();
     } catch (error: any) {

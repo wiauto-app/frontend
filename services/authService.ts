@@ -1,32 +1,70 @@
-
+import { User } from "@/interfaces/user.interface";
+import { apiGet, apiPost } from "@/lib/api";
+import {
+  AuthResponseDto,
+  GoogleLoginDto,
+  Validate2faDto,
+  ValidateBackupCodeDto,
+  ResendEmailVerificationResponseDto,
+} from "@/validations/auth";
+import { LoginDto, RegisterDto, ResetPasswordDto } from "@/validations/Schemas";
 
 export const authService = {
 
-    saveToken: (token: string) => {
-        if (typeof window !== 'undefined') {
-            sessionStorage.setItem('token', token);
-        }
-    },
+  login: (data: LoginDto): Promise<AuthResponseDto> =>
+    apiPost<AuthResponseDto>(`/auth/login`, data),
 
-    getToken: () => {
-        if (typeof window !== 'undefined') {
-            return sessionStorage.getItem('token');
-        }
-        return null;
-    },
+  register: (data: RegisterDto): Promise<AuthResponseDto> =>
+    apiPost<AuthResponseDto>(`/auth/register`, data),
 
-    logout: () => {
-        authService.clearToken();
-        window.location.href = '/login';
-    },
+  googleLogin: (data: GoogleLoginDto): Promise<AuthResponseDto> =>
+    apiPost<AuthResponseDto>(`/auth/google/mobile`, data),
 
-    clearToken: () => {
-        if (typeof window !== 'undefined') {
-            sessionStorage.removeItem('token');
-        }
-    },
+  activate2fa: (data: Validate2faDto): Promise<AuthResponseDto> =>
+    apiPost<AuthResponseDto>(`/2fa/activate`, data),
 
-    isLoggedIn: () => {
-        return !!authService.getToken();
-    },
-}
+  disable2fa: (data: Validate2faDto): Promise<AuthResponseDto> =>
+    apiPost<AuthResponseDto>(`/2fa/disable`, data),
+
+  enable2fa: (data: Validate2faDto): Promise<AuthResponseDto> =>
+    apiPost<AuthResponseDto>(`/2fa/enable`, data),
+
+  getMe: (): Promise<User> => apiGet<User>(`/auth/me`),
+
+  validateBackupCode: (
+    data: ValidateBackupCodeDto,
+  ): Promise<AuthResponseDto> =>
+    apiPost<AuthResponseDto>(`/2fa/validate-backup-code`, data),
+
+  resendEmailVerification: (
+    email: string,
+  ): Promise<ResendEmailVerificationResponseDto> =>
+    apiPost<ResendEmailVerificationResponseDto>(
+      `/auth/email-verification/resend`,
+      { email },
+    ),
+
+  forgotPassword: (
+    email: string,
+  ): Promise<ResendEmailVerificationResponseDto> =>
+    apiPost<ResendEmailVerificationResponseDto>(
+      `/auth/password-recovery/request`,
+      { email },
+    ),
+
+  changePassword: (
+    data: ResetPasswordDto,
+  ): Promise<ResendEmailVerificationResponseDto> =>
+    apiPost<ResendEmailVerificationResponseDto>(
+      `/auth/password-recovery/change`,
+      data,
+    ),
+
+  confirmEmailVerification: (
+    token: string,
+  ): Promise<ResendEmailVerificationResponseDto> =>
+    apiPost<ResendEmailVerificationResponseDto>(
+      `/auth/email-verification/confirm`,
+      { token },
+    ),
+};

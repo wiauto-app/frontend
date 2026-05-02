@@ -1,8 +1,8 @@
-import z from "zod";
+import { z } from "zod/v4";
 
 
 export const LoginSchema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z.email("Email inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
@@ -10,7 +10,7 @@ export type LoginDto = z.infer<typeof LoginSchema>;
 
 
 export const RegisterSchema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z.email("Email inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   last_name: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
@@ -23,7 +23,7 @@ export const ForgotPasswordSchema = z.object({
   email: z.string().email("Email inválido"),
 });
 
-export type ForgotPasswordDto = z.infer<typeof ForgotPasswordSchema>; 
+export type ForgotPasswordDto = z.infer<typeof ForgotPasswordSchema>;
 
 export const ChangePasswordSchema = z.object({
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
@@ -34,7 +34,7 @@ export const ChangePasswordSchema = z.object({
   path: ["confirmPassword"],
 });
 
-export type ChangePasswordDto = z.infer<typeof ChangePasswordSchema>; 
+export type ChangePasswordDto = z.infer<typeof ChangePasswordSchema>;
 
 //only password and token
 export const ResetPasswordSchema = z.object({

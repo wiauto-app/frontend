@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ForgotPasswordSchema } from "@/validations/Schemas";
 import { authService } from "@/services/authService";
-import { forgotPassword } from "@/services/auth";
 
 import {
   Card,
@@ -40,16 +39,11 @@ export default function ForgotPasswordForm() {
     },
   })
 
-  useEffect(() => {
-    if (authService.isLoggedIn()) {
-      router.push("/");
-    }
-  }, [router]);
 
   async function onSubmit(data: z.infer<typeof ForgotPasswordSchema>) {
     setIsLoading(true);
     try {
-      const response = await forgotPassword(data.email);
+      const response = await authService.forgotPassword(data.email);
       toast.success(response.message);
       form.reset();
     } catch (error: any) {

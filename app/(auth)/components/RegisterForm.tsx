@@ -1,16 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { register } from "@/services/auth";
-import { RegisterSchema } from "@/validations/Schemas";
-import { authService } from "@/services/authService";
+import { RegisterDto, RegisterSchema } from "@/validations/Schemas";
 
 import {
   Card,
@@ -29,12 +25,12 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function RegisterForm() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   
-  const form = useForm<z.infer<typeof RegisterSchema>>({
+  const form = useForm<RegisterDto>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: "",  
@@ -44,22 +40,15 @@ export default function RegisterForm() {
     },
   })
 
-  useEffect(() => {
-    if (authService.isLoggedIn()) {
-      router.push("/");
-    }
-  }, [router]);
+
 
   async function onSubmit(data: z.infer<typeof RegisterSchema>) {
     setIsLoading(true);
     try {
-      const response = await register(data);
-      authService.saveToken(response.token);
       toast.success("Cuenta creada correctamente. ¡Bienvenido!");
-      router.push("/");
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error("Register error:", error);
-      toast.error(error.message || "Hubo un error al crear tu cuenta. Por favor, intenta de nuevo.");
+      toast.error((error as Error).message || "Hubo un error al crear tu cuenta. Por favor, intenta de nuevo.");
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +57,7 @@ export default function RegisterForm() {
   return (
     <Card className="w-full sm:max-w-md shadow-2xl border-primary/10 bg-background/80 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Regístrate en Wiautos</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">Regístrate en Wiauto</CardTitle>
         <CardDescription className="text-center">
           Por favor, ingresa tus datos para crear tu cuenta
         </CardDescription>
