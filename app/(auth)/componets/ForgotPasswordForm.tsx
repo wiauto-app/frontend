@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
-export default function OlvideContrasenaForm() {
+export default function ForgotPasswordForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   

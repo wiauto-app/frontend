@@ -1,4 +1,4 @@
-import ConfirmEmailForm from "@/components/auth/ConfirmEmailForm";
+import ConfirmEmailForm from "@/app/(auth)/componets/ConfirmEmailForm";
 
 export default function Page({
   params,
