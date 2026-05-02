@@ -50,3 +50,12 @@ export const ConfirmEmailVerificationSchema = z.object({
 });
 
 export type ConfirmEmailVerificationDto = z.infer<typeof ConfirmEmailVerificationSchema>;
+
+export const UpdateProfileSchema = z.object({
+  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  last_name: z.string().optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+});
+
+export type UpdateProfileDto = z.infer<typeof UpdateProfileSchema>;

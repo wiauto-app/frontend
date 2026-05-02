@@ -11,4 +11,7 @@ export interface User {
   two_factor_secret: string | null;
   two_factor_backup_codes: string[] | null;
   created_at: string;
+  name?: string;
+  last_name?: string;
+  avatar_url?: string;
 }
