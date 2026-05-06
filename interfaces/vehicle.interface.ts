@@ -98,6 +98,10 @@ export interface VehicleListItem {
   dgt_label: DgtLabelRef | null;
   warranty_type: WarrantyTypeRef | null;
   cuota: CuotaRef | null;
+  transmission_type?: TransmissionType;
+  publisher_type?: PublisherType;
+  power?: number;
+  is_featured?: boolean;
 }
 
 export interface Vehicle {
@@ -136,6 +140,7 @@ export interface Vehicle {
   warranty_type_id: string | null;
   cuota_id: string | null;
   suggestions: string[];
+  images: VehicleImage[];
 }
 
 export interface CreateVehicleDto {
@@ -202,6 +207,10 @@ export interface UpdateVehicleDto {
 export interface FindAllVehiclesParams {
   page?: number;
   limit?: number;
+  query?: string;
+  order_by?: string;
+  order_direction?: "asc" | "desc";
+  condition?: string;
   type_slug?: string;
   make_slug?: string;
   model_slug?: string;
