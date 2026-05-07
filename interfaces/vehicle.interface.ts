@@ -140,6 +140,7 @@ export interface Vehicle {
   warranty_type_id: string | null;
   cuota_id: string | null;
   suggestions: string[];
+  profile_id?: string;
   images: VehicleImage[];
 }
 

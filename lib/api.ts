@@ -62,9 +62,11 @@ export const apiPost = async <T>(
   endpoint: string,
   data?: unknown,
 ): Promise<T> => {
+  const isFormData = data instanceof FormData;
   const response = await fetchWithAuth(toProxyUrl(endpoint), {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: isFormData ? data : JSON.stringify(data),
+    ...(isFormData ? { isFormData: true as const } : {}),
   });
   return response.json() as Promise<T>;
 };
