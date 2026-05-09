@@ -122,9 +122,9 @@ export default function CrearVehiculoForm() {
     const fetchCatalogs = async () => {
       try {
         const [
-          makesData, modelsData, versionsData, vehicleTypesData,
-          tractionsData, featuresData, servicesData, colorsData,
-          dgtLabelsData, warrantyTypesData, cuotasData,
+          makesRes, modelsRes, versionsRes, vehicleTypesRes,
+          tractionsRes, featuresRes, servicesRes, colorsRes,
+          dgtLabelsRes, warrantyTypesRes, cuotasRes,
         ] = await Promise.all([
           vehicleService.makes.findAll(),
           vehicleService.models.findAll(),
@@ -138,17 +138,17 @@ export default function CrearVehiculoForm() {
           vehicleService.warrantyTypes.findAll(),
           vehicleService.cuotas.findAll(),
         ]);
-        setMakes(makesData);
-        setModels(modelsData);
-        setVersions(versionsData);
-        setVehicleTypes(vehicleTypesData);
-        setTractions(tractionsData);
-        setFeatures(featuresData);
-        setServices(servicesData);
-        setColors(colorsData);
-        setDgtLabels(dgtLabelsData);
-        setWarrantyTypes(warrantyTypesData);
-        setCuotas(cuotasData);
+        setMakes(makesRes.data ?? []);
+        setModels(modelsRes.data ?? []);
+        setVersions(versionsRes.data ?? []);
+        setVehicleTypes(vehicleTypesRes.data ?? []);
+        setTractions(tractionsRes.data ?? []);
+        setFeatures(featuresRes.data ?? []);
+        setServices(servicesRes.data ?? []);
+        setColors(colorsRes.data ?? []);
+        setDgtLabels(dgtLabelsRes.data ?? []);
+        setWarrantyTypes(warrantyTypesRes.data ?? []);
+        setCuotas(cuotasRes.data ?? []);
       } catch {
         toast.error("Error al cargar datos del catálogo");
       }

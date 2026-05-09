@@ -19,7 +19,7 @@ import {
   Heart,
 } from "lucide-react";
 import { vehicleService } from "@/services/vehicleService";
-import { VehicleListItem, FindAllVehiclesParams, PaginatedResponse } from "@/interfaces/vehicle.interface";
+import { VehicleListItem, FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 
 const CONDITION_OPTIONS = [
   { value: "new", label: "Nuevo" },
@@ -245,9 +245,14 @@ function VehicleContent() {
     setLoading(true);
     vehicleService.vehicles
       .findAll(params)
-      .then((res: PaginatedResponse<VehicleListItem>) => {
-        setVehicles(res.data || []);
-        setTotal(res.total || 0);
+      .then((response) => {
+        if (!response.ok) {
+          setVehicles([]);
+          setTotal(0);
+          return;
+        }
+        setVehicles(response.data?.data || []);
+        setTotal(response.data?.total || 0);
       })
       .catch(() => {
         setVehicles([]);

@@ -1,30 +1,16 @@
-import { AUTH_ROUTES } from '@/constants/auth.constants';
-import { authStorage } from '@/services/authStorage';
-
-/** Base del Route Handler que reenvía al backend y adjunta el Bearer desde la cookie `access_token`. */
-const PROXY_API_BASE = '/api/proxy';
-
-/** En el navegador basta la ruta relativa; en Server Actions hace falta origen absoluto. */
-const getOriginForProxy = (): string => {
-  if (typeof window !== 'undefined') return '';
-  const fromEnv = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
-  if (fromEnv) return fromEnv;
-  return 'http://localhost:3000';
-};
-
-const toProxyUrl = (endpoint: string): string => {
-  const normalized = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-  const path = `${PROXY_API_BASE}/${normalized}`;
-  const origin = getOriginForProxy();
-  return origin ? `${origin}${path}` : path;
-};
+import { API_URL } from "@/constants";
 
 interface FetchOptions extends RequestInit {
   isFileUpload?: boolean;
   isFormData?: boolean;
 }
 
-// Peticiones al origen de Next; el proxy en el servidor lee `access_token` y llama al API real.
+export interface ApiResponse<T> {
+  ok: boolean;
+  status: number;
+  data: T;
+}
+
 export const fetchWithAuth = async (url: string, options: FetchOptions = {}) => {
   const isFormDataBody =
     options.body instanceof FormData ||
@@ -36,71 +22,87 @@ export const fetchWithAuth = async (url: string, options: FetchOptions = {}) => 
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(url, {
+  return fetch(`${API_URL}${url}`, {
     ...options,
     headers,
     credentials: 'include',
   });
-
- 
-
-
-  if (!response.ok) {
-    const error = await response.json();
-    console.log('error', error);
-  }
-
-  return response;
 };
 
-export const apiGet = async <T>(endpoint: string): Promise<T> => {
-  const response = await fetchWithAuth(toProxyUrl(endpoint));
-  return response.json() as Promise<T>;
+const parseJson = async <T>(response: Response): Promise<T> => {
+  if (response.status === 204) return null as T;
+  const text = await response.text();
+  if (!text) return null as T;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return text as unknown as T;
+  }
+};
+
+const toApiResponse = async <T>(response: Response): Promise<ApiResponse<T>> => {
+  const data = await parseJson<T>(response);
+  return { ok: response.ok, status: response.status, data };
+};
+
+export const apiGet = async <T>(endpoint: string): Promise<ApiResponse<T>> => {
+  const response = await fetchWithAuth(endpoint);
+  return toApiResponse<T>(response);
 };
 
 export const apiPost = async <T>(
   endpoint: string,
   data?: unknown,
-): Promise<T> => {
+): Promise<ApiResponse<T>> => {
   const isFormData = data instanceof FormData;
-  const response = await fetchWithAuth(toProxyUrl(endpoint), {
+  const response = await fetchWithAuth(endpoint, {
     method: 'POST',
-    body: isFormData ? data : JSON.stringify(data),
+    body: isFormData ? data : data !== undefined ? JSON.stringify(data) : undefined,
     ...(isFormData ? { isFormData: true as const } : {}),
   });
-  return response.json() as Promise<T>;
+  return toApiResponse<T>(response);
 };
 
 /** POST que devuelve un Blob (p. ej. PDF). */
 export const apiPostBlob = async (
   endpoint: string,
   data?: unknown,
-): Promise<Blob> => {
-  const response = await fetchWithAuth(toProxyUrl(endpoint), {
+): Promise<ApiResponse<Blob>> => {
+  const response = await fetchWithAuth(endpoint, {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data !== undefined ? JSON.stringify(data) : undefined,
   });
-  return response.blob();
+  const blob = await response.blob();
+  return { ok: response.ok, status: response.status, data: blob };
 };
 
-export const apiPut = async <T>(endpoint: string, data: unknown): Promise<T> => {
-  const response = await fetchWithAuth(toProxyUrl(endpoint), {
+export const apiPut = async <T>(
+  endpoint: string,
+  data: unknown,
+): Promise<ApiResponse<T>> => {
+  const response = await fetchWithAuth(endpoint, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
-  return response.json() as Promise<T>;
+  return toApiResponse<T>(response);
 };
 
-export const apiPatch = async <T>(endpoint: string, data: unknown): Promise<T> => {
-  const response = await fetchWithAuth(toProxyUrl(endpoint), {
+export const apiPatch = async <T>(
+  endpoint: string,
+  data: unknown,
+): Promise<ApiResponse<T>> => {
+  const response = await fetchWithAuth(endpoint, {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
-  return response.json() as Promise<T>;
+  return toApiResponse<T>(response);
 };
 
-export const apiDelete = async (endpoint: string): Promise<void> => {
-  await fetchWithAuth(toProxyUrl(endpoint), {
+export const apiDelete = async <T = null>(
+  endpoint: string,
+): Promise<ApiResponse<T>> => {
+  const response = await fetchWithAuth(endpoint, {
     method: 'DELETE',
   });
+  return toApiResponse<T>(response);
 };

@@ -1,5 +1,6 @@
+import { API_URL } from "@/constants";
 import { User } from "@/interfaces/user.interface";
-import { apiGet, apiPost } from "@/lib/api";
+import { ApiResponse, apiGet, apiPost } from "@/lib/api";
 import {
   AuthResponseDto,
   GoogleLoginDto,
@@ -11,34 +12,49 @@ import { LoginDto, RegisterDto, ResetPasswordDto } from "@/validations/Schemas";
 
 export const authService = {
 
-  login: (data: LoginDto): Promise<AuthResponseDto> =>
+  login: (data: LoginDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/auth/login`, data),
 
-  register: (data: RegisterDto): Promise<AuthResponseDto> =>
+  register: (data: RegisterDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/auth/register`, data),
 
-  googleLogin: (data: GoogleLoginDto): Promise<AuthResponseDto> =>
+  googleLogin: (data: GoogleLoginDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/auth/google/mobile`, data),
 
-  activate2fa: (data: Validate2faDto): Promise<AuthResponseDto> =>
+  logout: (): Promise<ApiResponse<void>> =>
+    apiGet<void>(`/auth/logout`),
+
+  activate2fa: (data: Validate2faDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/2fa/activate`, data),
 
-  disable2fa: (data: Validate2faDto): Promise<AuthResponseDto> =>
+  disable2fa: (data: Validate2faDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/2fa/disable`, data),
 
-  enable2fa: (data: Validate2faDto): Promise<AuthResponseDto> =>
+  enable2fa: (data: Validate2faDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/2fa/enable`, data),
 
-  getMe: (): Promise<User> => apiGet<User>(`/auth/me`),
+  getMe: async (accessToken?: string): Promise<ApiResponse<User>> => {
+    const response = await fetch(`${API_URL}/auth/me`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    });
+    const data = await response.json();
+    return {
+      ok: response.ok,
+      status: response.status,
+      data,
+    };
+  },
 
   validateBackupCode: (
     data: ValidateBackupCodeDto,
-  ): Promise<AuthResponseDto> =>
+  ): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/2fa/validate-backup-code`, data),
 
   resendEmailVerification: (
     email: string,
-  ): Promise<ResendEmailVerificationResponseDto> =>
+  ): Promise<ApiResponse<ResendEmailVerificationResponseDto>> =>
     apiPost<ResendEmailVerificationResponseDto>(
       `/auth/email-verification/resend`,
       { email },
@@ -46,7 +62,7 @@ export const authService = {
 
   forgotPassword: (
     email: string,
-  ): Promise<ResendEmailVerificationResponseDto> =>
+  ): Promise<ApiResponse<ResendEmailVerificationResponseDto>> =>
     apiPost<ResendEmailVerificationResponseDto>(
       `/auth/password-recovery/request`,
       { email },
@@ -54,7 +70,7 @@ export const authService = {
 
   changePassword: (
     data: ResetPasswordDto,
-  ): Promise<ResendEmailVerificationResponseDto> =>
+  ): Promise<ApiResponse<ResendEmailVerificationResponseDto>> =>
     apiPost<ResendEmailVerificationResponseDto>(
       `/auth/password-recovery/change`,
       data,
@@ -62,9 +78,12 @@ export const authService = {
 
   confirmEmailVerification: (
     token: string,
-  ): Promise<ResendEmailVerificationResponseDto> =>
+  ): Promise<ApiResponse<ResendEmailVerificationResponseDto>> =>
     apiPost<ResendEmailVerificationResponseDto>(
       `/auth/email-verification/confirm`,
       { token },
     ),
+
+  refreshToken: (): Promise<ApiResponse<AuthResponseDto>> =>
+    apiPost<AuthResponseDto>(`/auth/refresh-token`, {}),
 };

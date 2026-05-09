@@ -4,92 +4,41 @@ import { authService } from "@/services/authService";
 import { User } from "@/interfaces/user.interface";
 import { logoutAction } from "@/app/(auth)/authActions/authActions";
 import { AuthContext } from "./authContext";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { data: user, isLoading } = useQuery<User | undefined>({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const response = await authService.getMe();
+      return response.data;
+    },
+  });
 
-  useEffect(() => {
-    let cancelled = false;
 
-    const loadInitialSession = async () => {
-      setIsLoading(true);
-      try {
-        const nextUser = await authService.getMe();
-        if (!cancelled) {
-          setUser(nextUser);
-        }
-      } catch {
-        if (!cancelled) {
-          setUser(null);
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadInitialSession();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const refreshUser = useCallback(async () => {
-    setIsRefreshing(true);
-    setError(null);
-    try {
-      const nextUser = await authService.getMe();
-      setUser(nextUser);
-    } catch (e) {
-      setUser(null);
-      const message =
-        e instanceof Error ? e.message : "No se pudo actualizar el usuario";
-      setError(message);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, []);
-
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+    queryClient.invalidateQueries({ queryKey: ["user"] });
+  }, [queryClient]);
 
   const logout = useCallback(async () => {
-    setUser(null);
-    setError(null);
-    await logoutAction();
-  }, []);
+    await authService.logout();
+    // await logoutAction();
+    window.location.href = "/iniciar-sesion";
+  }, [queryClient]);
 
   const value = useMemo(
     () => ({
-      user,
+      user: user?.id ? user : undefined,
       isLoading,
-      isRefreshing,
-      error,
-      isAuthenticated: user !== null,
+      isAuthenticated: !!user,
       refreshUser,
-      setUser,
-      clearError,
       logout,
     }),
-    [
-      user,
-      isLoading,
-      isRefreshing,
-      error,
-      refreshUser,
-      clearError,
-      logout,
-    ],
+    [user, isLoading, refreshUser, logout],
   );
 
-  return (
-    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

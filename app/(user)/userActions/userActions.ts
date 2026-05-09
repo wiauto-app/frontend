@@ -7,8 +7,11 @@ import { revalidatePath } from "next/cache";
 export async function updateProfileAction(data: UpdateProfileDto) {
   try {
     const response = await userService.updateProfile(data);
-    revalidatePath("/perfil"); // Refresh the page data
-    return { success: true, data: response };
+    if (!response.ok) {
+      throw new Error("Error al actualizar el perfil");
+    }
+    revalidatePath("/perfil");
+    return { success: true, data: response.data };
   } catch (error) {
     console.error("Error updating profile:", error);
     throw error;

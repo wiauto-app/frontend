@@ -118,9 +118,9 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
     const load = async () => {
       try {
         const [
-          makesData, modelsData, versionsData, vehicleTypesData,
-          tractionsData, featuresData, servicesData, colorsData,
-          dgtLabelsData, warrantyTypesData, cuotasData, vehicleData,
+          makesRes, modelsRes, versionsRes, vehicleTypesRes,
+          tractionsRes, featuresRes, servicesRes, colorsRes,
+          dgtLabelsRes, warrantyTypesRes, cuotasRes, vehicleRes,
         ] = await Promise.all([
           vehicleService.makes.findAll(),
           vehicleService.models.findAll(),
@@ -136,23 +136,33 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
           vehicleService.vehicles.findById(vehicleId),
         ]);
 
+        if (!vehicleRes.ok || !vehicleRes.data) {
+          setNotFound(true);
+          setLoading(false);
+          return;
+        }
+
+        const vehicleData = vehicleRes.data;
+        const modelsData = modelsRes.data ?? [];
+        const versionsData = versionsRes.data ?? [];
+
         if (vehicleData.profile_id && vehicleData.profile_id !== userId) {
           setNotOwner(true);
           setLoading(false);
           return;
         }
 
-        setMakes(makesData);
+        setMakes(makesRes.data ?? []);
         setModels(modelsData);
         setVersions(versionsData);
-        setVehicleTypes(vehicleTypesData);
-        setTractions(tractionsData);
-        setFeatures(featuresData);
-        setServices(servicesData);
-        setColors(colorsData);
-        setDgtLabels(dgtLabelsData);
-        setWarrantyTypes(warrantyTypesData);
-        setCuotas(cuotasData);
+        setVehicleTypes(vehicleTypesRes.data ?? []);
+        setTractions(tractionsRes.data ?? []);
+        setFeatures(featuresRes.data ?? []);
+        setServices(servicesRes.data ?? []);
+        setColors(colorsRes.data ?? []);
+        setDgtLabels(dgtLabelsRes.data ?? []);
+        setWarrantyTypes(warrantyTypesRes.data ?? []);
+        setCuotas(cuotasRes.data ?? []);
         setVehicle(vehicleData);
 
         const version = versionsData.find((v) => v.id === vehicleData.version_id);

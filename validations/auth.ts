@@ -2,6 +2,7 @@
 export interface AuthResponseDto {
   type: "session" | "2fa_challenge";
   token: string;
+  refreshToken_hash: string;
 }
 
 

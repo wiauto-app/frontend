@@ -44,7 +44,10 @@ export default function ChangePasswordForm({token}: {token: string}) {
     setIsLoading(true);
     try {
       const response = await authService.changePassword(data);
-      toast.success(response.message);
+      if (!response.ok) {
+        throw new Error(response.data?.message || "Error al cambiar la contraseña");
+      }
+      toast.success(response.data.message);
       form.reset();
     } catch (error: any) {
       console.error("Olvide contraseña error:", error);

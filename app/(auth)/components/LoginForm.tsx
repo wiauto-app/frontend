@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
@@ -27,10 +28,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginAction } from "../authActions/authActions";
+import { useUser } from "@/app/contexts/auth/useUser";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  
+  const { refreshUser } = useUser();
   const form = useForm<LoginDto>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -42,8 +45,12 @@ export default function LoginForm() {
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     setIsLoading(true);
     try {
+      
       await loginAction(data);
+      await refreshUser();
       toast.success("Sesión iniciada correctamente");
+      router.push("/");
+      router.refresh();
     } catch (error: Error | unknown) {
       console.error("Login error:", error);
       const genericMessage = "Email o contraseña incorrectos. Por favor, intenta de nuevo.";

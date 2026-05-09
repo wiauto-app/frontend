@@ -44,7 +44,10 @@ export default function ForgotPasswordForm() {
     setIsLoading(true);
     try {
       const response = await authService.forgotPassword(data.email);
-      toast.success(response.message);
+      if (!response.ok) {
+        throw new Error(response.data?.message || "Error al solicitar recuperación");
+      }
+      toast.success(response.data.message);
       form.reset();
     } catch (error: any) {
       console.error("Olvide contraseña error:", error);

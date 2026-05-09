@@ -34,7 +34,10 @@ export default function ConfirmEmailForm({token}: {token: string}) {
     setIsLoading(true);
     try {
       const response = await authService.confirmEmailVerification(data.token);
-      toast.success(response.message || "Correo confirmado exitosamente");
+      if (!response.ok) {
+        throw new Error(response.data?.message || "Error al confirmar el correo");
+      }
+      toast.success(response.data.message || "Correo confirmado exitosamente");
       router.push("/iniciar-sesion");
     } catch (error: any) {
       console.error("Confirmar correo error:", error);

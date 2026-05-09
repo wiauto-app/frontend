@@ -92,8 +92,12 @@ export default function VehicleDetailPage() {
     setLoading(true);
     vehicleService.vehicles
       .findById(id)
-      .then((data) => {
-        setVehicle(data);
+      .then((response) => {
+        if (!response.ok) {
+          setError("No se pudo cargar el vehículo");
+          return;
+        }
+        setVehicle(response.data);
         setError(null);
       })
       .catch(() => {
