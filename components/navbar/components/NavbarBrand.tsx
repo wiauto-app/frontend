@@ -1,17 +1,24 @@
 import Link from "next/link";
-import { Car } from "lucide-react";
+
+const BRAND_BLUE = "#0061F2";
 
 export const NavbarBrand = () => {
   return (
     <Link
       href="/"
       aria-label="Ir al inicio"
-      className="inline-flex items-center gap-2 font-semibold text-foreground transition-opacity hover:opacity-80"
+      className="inline-flex items-center gap-2.5 transition-opacity hover:opacity-90"
     >
-      <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-        <Car className="size-4" aria-hidden="true" />
+      <span
+        className="inline-flex size-9 items-center justify-center rounded-lg text-lg font-bold text-white"
+        style={{ backgroundColor: BRAND_BLUE }}
+      >
+        W
       </span>
-      <span className="text-base tracking-tight">Wiautos</span>
+      <span className="text-xl font-bold tracking-tight">
+        <span className="text-slate-900">Wi</span>
+        <span style={{ color: BRAND_BLUE }}>Auto</span>
+      </span>
     </Link>
   );
 };
