@@ -1,8 +1,21 @@
 import Image from "next/image";
+import type { HomeFeaturesData } from "./types/home-page.types";
 import { SectionContainer } from "./SectionContainer";
-import { BRAND_BLUE, VALUE_PROPOSITION_FEATURES } from "./data/home-data";
+import { BRAND_BLUE } from "./data/home-data";
 
-function FeatureIcon() {
+type ValuePropositionSectionProps = {
+  data: HomeFeaturesData;
+};
+
+function FeatureIcon({ icon_url, icon_alt }: { icon_url: string | null; icon_alt: string }) {
+  if (icon_url) {
+    return (
+      <span className="inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
+        <Image src={icon_url} alt={icon_alt} width={40} height={40} className="size-10 object-contain" />
+      </span>
+    );
+  }
+
   return (
     <span
       className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-white"
@@ -16,29 +29,26 @@ function FeatureIcon() {
   );
 }
 
-export function ValuePropositionSection() {
+export function ValuePropositionSection({ data }: ValuePropositionSectionProps) {
   return (
     <SectionContainer className="py-12 lg:py-16">
       <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
         <div>
           <h2 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl lg:text-[2rem] lg:leading-snug">
-            <span style={{ color: BRAND_BLUE }}>WiAuto</span> llega para revolucionar la
-            compra y venta de coches
+            {data.title}
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-slate-500">
-            Nuestra plataforma conecta a compradores y vendedores en un solo lugar,
-            facilitando cada paso con tecnología, transparencia y herramientas diseñadas
-            para encontrar el auto ideal o concretar una venta de forma eficiente.
-          </p>
+          <p className="mt-5 text-base leading-relaxed text-slate-500">{data.description}</p>
 
-          <ul className="mt-8 space-y-5">
-            {VALUE_PROPOSITION_FEATURES.map((feature) => (
-              <li key={feature.id} className="flex items-center gap-4">
-                <FeatureIcon />
-                <span className="text-base text-slate-500">{feature.label}</span>
-              </li>
-            ))}
-          </ul>
+          {data.features.length > 0 ? (
+            <ul className="mt-8 space-y-5">
+              {data.features.map((feature) => (
+                <li key={feature.id} className="flex items-center gap-4">
+                  <FeatureIcon icon_url={feature.icon_url} icon_alt={feature.icon_alt ?? feature.label} />
+                  <span className="text-base text-slate-500">{feature.label}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         <div className="relative flex min-h-[320px] items-end justify-center lg:min-h-[400px]">

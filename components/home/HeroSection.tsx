@@ -1,16 +1,24 @@
 import Link from "next/link";
+import type { HomeHeroData } from "./types/home-page.types";
 import { HeroSearchForm } from "./HeroSearchForm";
 
 const BRAND_BLUE = "#0061F2";
+const FALLBACK_BACKGROUND =
+  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1920&q=80";
 
-export function HeroSection() {
+type HeroSectionProps = {
+  data: HomeHeroData;
+};
+
+export function HeroSection({ data }: HeroSectionProps) {
+  const primary_action = data.action_links[0];
+  const background_image = data.background_image_url ?? FALLBACK_BACKGROUND;
+
   return (
     <section className="relative min-h-[560px] overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1920&q=80')`,
-        }}
+        style={{ backgroundImage: `url('${background_image}')` }}
         aria-hidden
       />
       <div
@@ -36,14 +44,19 @@ export function HeroSection() {
           />
           <div className="text-white">
             <h1 className="text-3xl font-bold leading-[1.15] tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.12]">
-              En WiAuto encuentra el auto ideal para tu próximo destino
+              {data.title}
             </h1>
-            <Link
-              href="/crear-vehiculo"
-              className="mt-8 inline-flex h-12 items-center justify-center rounded-lg border-2 border-white px-8 text-sm font-bold text-white transition-colors hover:bg-white/10"
-            >
-              Publicar Vehículo
-            </Link>
+            {data.subtitle ? (
+              <p className="mt-4 text-base text-white/90 sm:text-lg">{data.subtitle}</p>
+            ) : null}
+            {primary_action ? (
+              <Link
+                href={primary_action.url}
+                className="mt-8 inline-flex h-12 items-center justify-center rounded-lg border-2 border-white px-8 text-sm font-bold text-white transition-colors hover:bg-white/10"
+              >
+                {primary_action.label}
+              </Link>
+            ) : null}
           </div>
         </div>
 
