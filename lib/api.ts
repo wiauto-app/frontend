@@ -45,9 +45,9 @@ const toApiResponse = async <T>(response: Response): Promise<ApiResponse<T>> => 
   return { ok: response.ok, status: response.status, data };
 };
 
-export const apiGet = async <T>(endpoint: string): Promise<ApiResponse<T>> => {
+export const apiGet = async <T>(endpoint: string): Promise<T> => {
   const response = await fetchWithAuth(endpoint);
-  return toApiResponse<T>(response);
+  return response.json();
 };
 
 export const apiPost = async <T>(
