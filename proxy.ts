@@ -7,7 +7,14 @@ import {
   clearSessionCookiesOnResponse,
 } from "@/lib/ensure-session.server";
 
+const PUBLIC_PATHS = ['/', '/iniciar-sesion', '/registro', '/cambiar-contrasena', '/confirmar-correo', '/olvide-contrasena', '/api'];
+
 export async function proxy(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+    return NextResponse.next();
+  }
+
   const access_token = req.cookies.get(cookiesConfig.name)?.value ?? null;
   const cookie_header = req.headers.get("cookie") ?? "";
 
@@ -30,14 +37,13 @@ export async function proxy(req: NextRequest) {
       new URL("/iniciar-sesion", req.url),
     );
     return clearSessionCookiesOnResponse(redirect_res);
-  } else {
-    NextResponse.next();
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-
+    '/((?!_next/static|_next/image|favicon.ico|iniciar-sesion|registro|cambiar-contrasena|confirmar-correo|olvide-contrasena|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
