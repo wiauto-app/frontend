@@ -9,7 +9,8 @@ export const MakeSelector = () => {
     queryFn: () => makeService.findAll(),
   });
   
-  const options = makes?.data?.map((make) => make.name) ?? [];
+  const items = Array.isArray(makes) ? makes : makes?.data ?? [];
+  const options = items.map((make) => make.name);
   return (
     <BaseSelect label="Marca" options={options} isLoading={isLoading} />
   )

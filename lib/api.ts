@@ -41,7 +41,8 @@ const parseJson = async <T>(response: Response): Promise<T> => {
 };
 
 const toApiResponse = async <T>(response: Response): Promise<ApiResponse<T>> => {
-  const data = await parseJson<T>(response);
+  const body = await parseJson<{ ok?: boolean; status?: number; data: T }>(response);
+  const data = body.data;
   return { ok: response.ok, status: response.status, data };
 };
 
