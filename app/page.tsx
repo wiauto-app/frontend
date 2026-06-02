@@ -49,8 +49,7 @@ export default async function Home() {
       <BlogArticlesSection />
       <RelatedNewsSection />
       <ProcessSection />
-      <NewsletterSection data={home_data.newsletter} />
-      <Footer />
+  
     </>
   );
 }

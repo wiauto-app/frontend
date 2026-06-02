@@ -2,10 +2,7 @@
 
 import { Car } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 import {
-  BRAND_BLUE,
-  BRAND_BLUE_LIGHT,
   BRAND_OPTIONS,
   BODY_TYPE_OPTIONS,
   DEFAULT_PRICE_RANGE,
@@ -17,32 +14,10 @@ import {
   TRUNK_OPTIONS,
   VERSION_OPTIONS,
 } from "../constants";
+import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
+import { MakeSelector } from "@/components/selectors/makeSelector";
 
 type VehiclesSidebarProps = {
-  filters: FindAllVehiclesParams;
-  priceMin: string;
-  priceMax: string;
-  selectedBrand: string;
-  selectedGenerations: string[];
-  selectedVersions: string[];
-  selectedEngines: string[];
-  selectedBodyTypes: string[];
-  selectedDoors: number[];
-  selectedTrunks: string[];
-  onConditionChange: (condition: "new" | "used" | undefined) => void;
-  onBrandChange: (slug: string) => void;
-  onPriceMinChange: (value: string) => void;
-  onPriceMaxChange: (value: string) => void;
-  onPriceBlur: () => void;
-  onGenerationToggle: (label: string, since: number, until: number) => void;
-  onVersionToggle: (version: string) => void;
-  onEngineToggle: (engine: string) => void;
-  onFuelToggle: (slug: string) => void;
-  onBodyTypeToggle: (slug: string) => void;
-  onDoorToggle: (door: number) => void;
-  onTrunkToggle: (trunk: string) => void;
-  onTractionToggle: (slug: string) => void;
-  onReset: () => void;
   className?: string;
 };
 
@@ -89,51 +64,57 @@ function CheckboxRow({
   );
 }
 
-export function VehiclesSidebar({
-  filters,
-  priceMin,
-  priceMax,
-  selectedBrand,
-  selectedGenerations,
-  selectedVersions,
-  selectedEngines,
-  selectedBodyTypes,
-  selectedDoors,
-  selectedTrunks,
-  onConditionChange,
-  onBrandChange,
-  onPriceMinChange,
-  onPriceMaxChange,
-  onPriceBlur,
-  onGenerationToggle,
-  onVersionToggle,
-  onEngineToggle,
-  onFuelToggle,
-  onBodyTypeToggle,
-  onDoorToggle,
-  onTrunkToggle,
-  onTractionToggle,
-  onReset,
-  className,
-}: VehiclesSidebarProps) {
-  const sliderMin = Number(priceMin) || DEFAULT_PRICE_RANGE.min;
+export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
+  const {
+    filters,
+    priceMin,
+    priceMax,
+    selectedGenerations,
+    selectedVersions,
+    selectedEngines,
+    selectedBodyTypes,
+    selectedDoors,
+    selectedTrunks,
+    handleConditionChange,
+    handleBrandToggle,
+    handlePriceMinChange,
+    handlePriceMaxChange,
+    handlePriceBlur,
+    handleGenerationToggle,
+    handleVersionToggle,
+    handleEngineToggle,
+    handleFuelToggle,
+    handleBodyTypeToggle,
+    handleDoorToggle,
+    handleTrunkToggle,
+    handleTractionToggle,
+    handleMakeModelChange,
+    resetFilters,
+  } = useVehiclesListingFilters();
+
+  const selectedBrands = filters.makes_slugs ?? [];
   const sliderMax = Number(priceMax) || DEFAULT_PRICE_RANGE.max;
 
   return (
-    <aside className={cn("w-full shrink-0 lg:w-72 xl:w-80", className)}>
+    <aside
+      className={cn(
+        "sticky top-20 w-full shrink-0 self-start lg:w-72 xl:w-80",
+        className,
+      )}
+    >
       <div className="rounded-xl border border-slate-100 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
           <h2 className="text-base font-bold text-slate-900">Filtros</h2>
           <button
             type="button"
-            onClick={onReset}
+            onClick={resetFilters}
             className="text-sm font-semibold text-[#0061F2] hover:underline"
           >
             Limpiar filtros
           </button>
         </div>
 
-        <div className="max-h-[calc(100vh-12rem)] space-y-6 overflow-y-auto px-5 py-5">
+        <div className="max-h-[calc(100vh-7rem)] space-y-6 overflow-y-auto px-5 py-5">
           <section>
             <FilterTitle>Tip De Carro</FilterTitle>
             <div className="mt-3 grid grid-cols-2 gap-2">
@@ -144,7 +125,9 @@ export function VehiclesSidebar({
                   <button
                     key={value}
                     type="button"
-                    onClick={() => onConditionChange(active ? undefined : value)}
+                    onClick={() =>
+                      handleConditionChange(active ? undefined : value)
+                    }
                     className={cn(
                       "rounded-lg border px-3 py-2.5 text-sm font-semibold transition-colors",
                       active
@@ -160,18 +143,13 @@ export function VehiclesSidebar({
           </section>
 
           <section>
-            <FilterTitle>Marca</FilterTitle>
-            <div className="mt-3 space-y-0.5">
-              {BRAND_OPTIONS.map(({ slug, label }) => (
-                <CheckboxRow
-                  key={slug || "all"}
-                  label={label}
-                  checked={selectedBrand === slug}
-                  onChange={() => onBrandChange(slug)}
-                  align="right"
-                />
-              ))}
-            </div>
+            <MakeSelector
+              value={{
+                make_slug: filters.makes_slugs?.[0],
+                model_slug: filters.models_slugs?.[0],
+              }}
+              onValueChange={handleMakeModelChange}
+            />
           </section>
 
           <section>
@@ -182,28 +160,31 @@ export function VehiclesSidebar({
                 min={DEFAULT_PRICE_RANGE.min}
                 max={DEFAULT_PRICE_RANGE.max}
                 value={Math.min(sliderMax, DEFAULT_PRICE_RANGE.max)}
-                onChange={(e) => onPriceMaxChange(e.target.value)}
-                onMouseUp={onPriceBlur}
-                onTouchEnd={onPriceBlur}
+                onChange={(e) => handlePriceMaxChange(e.target.value)}
+                onMouseUp={handlePriceBlur}
+                onTouchEnd={handlePriceBlur}
                 className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-[#0061F2]"
+                aria-label="Precio máximo"
               />
               <div className="flex items-center gap-2">
                 <input
                   type="number"
                   value={priceMin}
-                  onChange={(e) => onPriceMinChange(e.target.value)}
-                  onBlur={onPriceBlur}
+                  onChange={(e) => handlePriceMinChange(e.target.value)}
+                  onBlur={handlePriceBlur}
                   placeholder="Mín"
                   className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#0061F2]"
+                  aria-label="Precio mínimo"
                 />
                 <span className="text-slate-400">–</span>
                 <input
                   type="number"
                   value={priceMax}
-                  onChange={(e) => onPriceMaxChange(e.target.value)}
-                  onBlur={onPriceBlur}
+                  onChange={(e) => handlePriceMaxChange(e.target.value)}
+                  onBlur={handlePriceBlur}
                   placeholder="Máx"
                   className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#0061F2]"
+                  aria-label="Precio máximo"
                 />
               </div>
             </div>
@@ -217,7 +198,7 @@ export function VehiclesSidebar({
                   key={label}
                   label={label}
                   checked={selectedGenerations.includes(label)}
-                  onChange={() => onGenerationToggle(label, since, until)}
+                  onChange={() => handleGenerationToggle(label, since, until)}
                   align="right"
                 />
               ))}
@@ -232,7 +213,7 @@ export function VehiclesSidebar({
                   key={version}
                   label={version}
                   checked={selectedVersions.includes(version)}
-                  onChange={() => onVersionToggle(version)}
+                  onChange={() => handleVersionToggle(version)}
                   align="right"
                 />
               ))}
@@ -247,7 +228,7 @@ export function VehiclesSidebar({
                   key={engine}
                   label={engine}
                   checked={selectedEngines.includes(engine)}
-                  onChange={() => onEngineToggle(engine)}
+                  onChange={() => handleEngineToggle(engine)}
                   align="right"
                 />
               ))}
@@ -262,7 +243,7 @@ export function VehiclesSidebar({
                   key={slug}
                   label={label}
                   checked={(filters.fuel_type_slugs ?? []).includes(slug)}
-                  onChange={() => onFuelToggle(slug)}
+                  onChange={() => handleFuelToggle(slug)}
                   align="right"
                 />
               ))}
@@ -278,7 +259,7 @@ export function VehiclesSidebar({
                   <button
                     key={slug}
                     type="button"
-                    onClick={() => onBodyTypeToggle(slug)}
+                    onClick={() => handleBodyTypeToggle(slug)}
                     className={cn(
                       "flex flex-col items-center gap-2 rounded-lg border px-2 py-3 text-xs font-semibold transition-colors",
                       active
@@ -303,7 +284,7 @@ export function VehiclesSidebar({
                   <button
                     key={door}
                     type="button"
-                    onClick={() => onDoorToggle(door)}
+                    onClick={() => handleDoorToggle(door)}
                     className={cn(
                       "flex size-10 items-center justify-center rounded-lg border text-sm font-semibold transition-colors",
                       active
@@ -326,7 +307,7 @@ export function VehiclesSidebar({
                   key={trunk}
                   label={trunk}
                   checked={selectedTrunks.includes(trunk)}
-                  onChange={() => onTrunkToggle(trunk)}
+                  onChange={() => handleTrunkToggle(trunk)}
                   align="right"
                 />
               ))}
@@ -341,7 +322,7 @@ export function VehiclesSidebar({
                   key={slug}
                   label={label}
                   checked={(filters.traction_slugs ?? []).includes(slug)}
-                  onChange={() => onTractionToggle(slug)}
+                  onChange={() => handleTractionToggle(slug)}
                   align="right"
                 />
               ))}
@@ -352,5 +333,3 @@ export function VehiclesSidebar({
     </aside>
   );
 }
-
-export { BRAND_BLUE, BRAND_BLUE_LIGHT };

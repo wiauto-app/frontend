@@ -1,0 +1,45 @@
+---
+description: Convenciones de rutas en servicios HTTP del frontend (lib/api)
+globs: services/**/*.ts,lib/api.ts,app/**/services/**/*.ts
+alwaysApply: false
+---
+
+# Servicios HTTP — sin prefijo `/api`
+
+## Cómo funciona `lib/api.ts`
+
+- `API_URL` viene de `NEXT_PUBLIC_API_URL` (`constants/external.constant.ts`).
+- `fetchWithAuth(url)` hace `fetch(\`${API_URL}${url}\`)`.
+- `apiGet`, `apiPost`, `apiPatch`, `apiPut`, `apiDelete` reciben solo el **path relativo al backend**, no la URL completa.
+
+El prefijo de API (si existe) debe vivir en la variable de entorno, **no** repetirse en cada servicio.
+
+## Reglas
+
+1. **Nunca** anteponer `/api` en servicios que usan `@/lib/api`.
+2. Paths con barra inicial: `/auth/login`, `/v1/vehicles`, `/v1/catalog/makes/search`.
+3. Catálogo de vehículos: usar constantes de `services/vehicles/route.constants.ts` (`V1_CATALOG_MAKES`, etc.).
+4. Respuesta tipada: `ApiResponse<T>` → leer `response.data` (cuerpo ya desenvuelto por el interceptor del backend).
+5. Query strings: `qs.stringify(..., { addQueryPrefix: true })` y concatenar al path.
+
+## Ejemplos
+
+```typescript
+// ❌ MAL — duplica /api si API_URL ya apunta al backend correcto
+apiGet(`/api/v1/catalog/makes/search${query}`);
+
+// ✅ BIEN — como authService y makeService
+import { V1_CATALOG_MAKES } from "./route.constants";
+apiGet<SearchMakesResponse>(`${V1_CATALOG_MAKES}/search${query}`);
+apiPost<AuthResponseDto>(`/auth/login`, data);
+```
+
+## Excepciones (no usar `lib/api`)
+
+- **Strapi**: `lib/strapi-api.ts` arma `STRAPI_API_URL + '/api' + path` (CMS distinto al backend Nest).
+- **Proxy Next**: `app/api/proxy/[...path]/route.ts` reenvía a `API_URL`; no es un servicio de dominio.
+- **Server Actions** que llaman `fetch(\`${API_URL}/v1/...\`)` directamente: mismo criterio, sin `/api` en el path salvo que `API_URL` lo requiera.
+
+## Referencia
+
+Patrón correcto: `services/authService.ts`, `services/vehicles/makeService.ts`, `services/vehicles/modelService.ts`.

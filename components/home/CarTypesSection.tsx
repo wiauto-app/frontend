@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buildVehicleListingHref } from "@/lib/vehicles/listing-url";
 import { CarTypeIcon } from "./CarTypeIcon";
 import { SectionContainer } from "./SectionContainer";
 import { SectionHeading } from "./SectionHeading";
@@ -17,7 +18,7 @@ export function CarTypesSection() {
           {CAR_TYPES.map((type) => (
             <Link
               key={type.id}
-              href={`/vehiculos?tipo=${type.id}`}
+              href={buildVehicleListingHref({ type_slug: type.id })}
               className="flex min-w-[140px] shrink-0 flex-col items-center rounded-2xl bg-white px-4 py-6 text-center shadow-sm transition-shadow hover:shadow-md sm:min-w-[155px] lg:min-w-0"
             >
               <CarTypeIcon type={type.id} className="mb-4 h-10 w-[72px] text-slate-800" />

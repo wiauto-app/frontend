@@ -210,11 +210,11 @@ export interface FindAllVehiclesParams {
   limit?: number;
   query?: string;
   order_by?: string;
-  order_direction?: "asc" | "desc";
+  order_direction?: "ASC" | "DESC";
   condition?: string;
   type_slug?: string;
-  make_slug?: string;
-  model_slug?: string;
+  makes_slugs?: string[];
+  models_slugs?: string[];
   since_price?: number;
   until_price?: number;
   price_offer?: boolean;
@@ -342,6 +342,15 @@ export interface FuelType {
   updated_at: string;
 }
 
+export interface CatalogFuelType {
+  id?: number;
+  fuel_id: number;
+  name: string;
+  slug: string;
+  can_charge: boolean;
+  created_at?: string;
+}
+
 export interface CreateFuelTypeDto {
   name: string;
 }
@@ -401,10 +410,13 @@ export interface UpdateTractionDto {
 export interface ServiceItem {
   id: string;
   name: string;
+  description: string;
   slug: string;
   created_at: string;
   updated_at: string;
 }
+
+export type Service = ServiceItem;
 
 export interface CreateServiceDto {
   name: string;
@@ -417,10 +429,13 @@ export interface UpdateServiceDto {
 export interface WarrantyTypeItem {
   id: string;
   name: string;
+  description: string;
   slug: string;
   created_at: string;
   updated_at: string;
 }
+
+export type WarrantyType = WarrantyTypeItem;
 
 export interface CreateWarrantyTypeDto {
   name: string;
@@ -434,6 +449,7 @@ export interface DgtLabel {
   id: string;
   name: string;
   code: string;
+  description: string;
   slug: string;
   created_at: string;
   updated_at: string;

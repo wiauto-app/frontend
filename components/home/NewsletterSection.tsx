@@ -1,15 +1,13 @@
-"use client";
 
 import { Send } from "lucide-react";
-import type { HomeNewsletterData } from "./types/home-page.types";
 import { SectionContainer } from "./SectionContainer";
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "./data/home-data";
+import { getHomeData } from "./services/homeService";
 
-type NewsletterSectionProps = {
-  data: HomeNewsletterData;
-};
+export async function NewsletterSection() {
+  const home_data = await getHomeData();
+  const data = home_data.newsletter;
 
-export function NewsletterSection({ data }: NewsletterSectionProps) {
   return (
     <SectionContainer className="py-14 lg:py-20" style={{ backgroundColor: BRAND_BLUE_LIGHT }}>
       <div className="mx-auto max-w-2xl text-center">
@@ -25,7 +23,6 @@ export function NewsletterSection({ data }: NewsletterSectionProps) {
 
         <form
           className="mx-auto mt-8 flex max-w-md overflow-hidden rounded-lg bg-white shadow-sm"
-          onSubmit={(e) => e.preventDefault()}
         >
           <input
             type="email"

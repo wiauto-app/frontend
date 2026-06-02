@@ -2,11 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, Wallet } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Wallet } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { BaseSelect } from "../ui/baseSelect";
+import {
+  buildVehicleListingHref,
+  heroFiltersToListingParams,
+} from "@/lib/vehicles/listing-url";
 import { MakeSelector } from "../selectors/makeSelector";
+import { ProvinceSelector } from "../selectors/provinceSelector";
+import { PriceUntilSelector } from "../selectors/priceUntilSelector";
+import {
+  HeroSearchFiltersProvider,
+  useHeroSearchFilters,
+} from "./HeroSearchFiltersContext";
 
 const BRAND_BLUE = "#0061F2";
 
@@ -19,16 +29,16 @@ type TabId = (typeof TABS)[number]["id"];
 
 type SellOption = "particular" | "profesional";
 
-const COMPRAR_FIELDS = [
-  { id: "marca", label: "Marca" },
-  { id: "modelo", label: "Modelo" },
-  { id: "provincia", label: "Provincia" },
-  { id: "precio", label: "Precio" },
-] as const;
-
-export function HeroSearchForm() {
+const HeroSearchFormContent = () => {
+  const router = useRouter();
+  const { filters, facetQueryParams, setMakeSlug, setModelSlug } =
+    useHeroSearchFilters();
   const [activeTab, setActiveTab] = useState<TabId>("comprar");
   const [sellOption, setSellOption] = useState<SellOption>("particular");
+
+  const handleSearch = () => {
+    router.push(buildVehicleListingHref(heroFiltersToListingParams(filters)));
+  };
 
   return (
     <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl sm:p-7">
@@ -56,11 +66,27 @@ export function HeroSearchForm() {
       </div>
 
       {activeTab === "comprar" ? (
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-          <MakeSelector />
-          {/* {COMPRAR_FIELDS.map((field) => (
-            <BaseSelect key={field.id} label={field.label} />
-          ))} */}
+        <form
+          className="space-y-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleSearch();
+          }}
+        >
+          <MakeSelector
+            value={{
+              make_slug: filters.make_slug,
+              model_slug: filters.model_slug,
+            }}
+            onValueChange={({ make_slug, model_slug }) => {
+              setMakeSlug(make_slug);
+              setModelSlug(model_slug);
+            }}
+            facetQueryParams={facetQueryParams}
+          />
+          <ProvinceSelector />
+          <PriceUntilSelector />
+
           <button
             type="submit"
             className="h-12 w-full rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90"
@@ -95,8 +121,15 @@ export function HeroSearchForm() {
       )}
     </div>
   );
-}
+};
 
+export function HeroSearchForm() {
+  return (
+    <HeroSearchFiltersProvider>
+      <HeroSearchFormContent />
+    </HeroSearchFiltersProvider>
+  );
+}
 
 function SellOptionCard({
   selected,

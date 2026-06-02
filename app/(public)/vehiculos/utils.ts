@@ -1,3 +1,4 @@
+import { MEDIA_URL } from "@/constants";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 
 export function formatPrice(price: number): string {
@@ -21,7 +22,7 @@ export function formatMonthlyPrice(price: number): string {
 
 export function getImageUrl(images: VehicleListItem["images"]): string {
   if (!images || images.length === 0) return "/placeholder-car.jpg";
-  return images[0]?.url || "/placeholder-car.jpg";
+  return `${MEDIA_URL}${images[0].url}`;
 }
 
 export function getConditionLabel(condition: string): string {
