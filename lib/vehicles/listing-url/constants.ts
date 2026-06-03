@@ -6,8 +6,8 @@ export const PROVINCE_PATH_PREFIX = "provincia-";
 export const COMMUNITY_PATH_PREFIX = "comunidad-";
 export const MUNICIPALITY_PATH_PREFIX = "municipio-";
 
-/** Máximo: marca + modelo + comunidad + provincia + municipio */
-export const MAX_PATH_SEGMENTS = 5;
+/** Máximo: comunidad + provincia + municipio (marca/modelo solo en query). */
+export const MAX_PATH_SEGMENTS = 3;
 
 /** Query params de catálogo degradados (no indexables directamente). */
 export const CATALOG_DEGRADED_QUERY_KEYS = [

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Car, X } from "lucide-react";
+import { Car } from "lucide-react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { VehicleGridCard } from "./VehicleGridCard";
 import { VehicleListCard } from "./VehicleListCard";
@@ -14,12 +14,7 @@ type VehiclesListingViewProps = {
 };
 
 function VehiclesListingView({ vehicles, total }: VehiclesListingViewProps) {
-  const {
-    filters,
-    activeFilterChips,
-    resetFilters,
-    goToPage,
-  } = useVehiclesListingFilters();
+  const { filters, resetFilters, goToPage } = useVehiclesListingFilters();
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
@@ -31,29 +26,10 @@ function VehiclesListingView({ vehicles, total }: VehiclesListingViewProps) {
       <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6">
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="min-w-0 flex-1">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="mb-4">
               <p className="text-sm font-medium text-slate-600">
                 {total} resultados
               </p>
-              {activeFilterChips.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {activeFilterChips.map((chip) => (
-                    <span
-                      key={chip.key}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF2FF] px-3 py-1 text-xs font-semibold text-[#0061F2]"
-                    >
-                      {chip.label}
-                      <button
-                        type="button"
-                        onClick={chip.onRemove}
-                        aria-label={`Quitar ${chip.label}`}
-                      >
-                        <X className="size-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
 
             {vehicles.length === 0 ? (

@@ -67,11 +67,13 @@ export const parsePathSegments = (
   | "provinces_slugs"
   | "municipalities_slugs"
 > => {
-  const segments = (slug ?? []).slice(0, MAX_PATH_SEGMENTS);
-  const legacy = parseLegacyPathSegments(segments);
+  const full_segments = slug ?? [];
+  const legacy = parseLegacyPathSegments(full_segments);
   if (legacy) {
     return legacy;
   }
+
+  const segments = full_segments.slice(0, MAX_PATH_SEGMENTS);
 
   const result: Pick<
     FindAllVehiclesParams,

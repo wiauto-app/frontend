@@ -25,7 +25,7 @@ export const SellersSelector = ({ value, onChange }: SellersSelectorProps) => {
         key: option.key,
         label: option.label,
       }))}
-      value={value}
+      value={value ?? []}
       onChange={(next) => onChange(next as PublisherTypesValue)}
       showAll={false}
     />

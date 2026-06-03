@@ -1,17 +1,16 @@
-import qs from "qs";
 
 import type {
   HeroCatalogFacetItem,
+  HeroFacetCascadeFilters,
   HeroFacetKind,
   HeroFacetsResponse,
   HeroPriceRangeFacetItem,
-  HeroSearchFilters,
 } from "@/interfaces/hero-facet.interface";
 import { apiGet } from "@/lib/api";
 
 export const V1_SEARCH_HERO_FACETS = "/v1/search/hero-facets";
 
-export type HeroFacetQueryParams = HeroSearchFilters & {
+export type HeroFacetQueryParams = HeroFacetCascadeFilters & {
   facet: HeroFacetKind;
   search?: string;
 };
@@ -19,19 +18,17 @@ export type HeroFacetQueryParams = HeroSearchFilters & {
 const fetchFacets = async <T extends HeroCatalogFacetItem | HeroPriceRangeFacetItem>(
   params: HeroFacetQueryParams,
 ): Promise<T[]> => {
-  const query = qs.stringify(params, {
-    skipNulls: true,
-    addQueryPrefix: true,
-  });
+
   const response = await apiGet<HeroFacetsResponse>(
-    `${V1_SEARCH_HERO_FACETS}${query}`,
+    `${V1_SEARCH_HERO_FACETS}`,
+    params,
   );
   return (response.data?.items ?? []) as T[];
 };
 
 export const heroFacetService = {
   getMakes: (
-    filters: HeroSearchFilters,
+    filters?: HeroFacetCascadeFilters,
     search?: string,
   ): Promise<HeroCatalogFacetItem[]> =>
     fetchFacets<HeroCatalogFacetItem>({
@@ -41,19 +38,19 @@ export const heroFacetService = {
     }),
 
   getModels: (
-    make_slug: string,
-    filters: HeroSearchFilters,
+    make_slugs: string[],
+    filters?: HeroFacetCascadeFilters,
     search?: string,
   ): Promise<HeroCatalogFacetItem[]> =>
     fetchFacets<HeroCatalogFacetItem>({
       facet: "models",
       ...filters,
-      make_slug,
+      make_slugs,
       search,
     }),
 
   getProvinces: (
-    filters: HeroSearchFilters,
+    filters: HeroFacetCascadeFilters,
     search?: string,
   ): Promise<HeroCatalogFacetItem[]> =>
     fetchFacets<HeroCatalogFacetItem>({
@@ -64,7 +61,7 @@ export const heroFacetService = {
 
   getMunicipalities: (
     province_slug: string,
-    filters: HeroSearchFilters,
+    filters: HeroFacetCascadeFilters,
     search?: string,
   ): Promise<HeroCatalogFacetItem[]> =>
     fetchFacets<HeroCatalogFacetItem>({
@@ -75,7 +72,7 @@ export const heroFacetService = {
     }),
 
   getPriceRanges: (
-    filters: HeroSearchFilters,
+    filters: HeroFacetCascadeFilters,
   ): Promise<HeroPriceRangeFacetItem[]> =>
     fetchFacets<HeroPriceRangeFacetItem>({
       facet: "price_ranges",

@@ -9,18 +9,23 @@ import {
   type ReactNode,
 } from "react";
 
-import type { HeroSearchFilters } from "@/interfaces/hero-facet.interface";
+import type {
+  HeroFacetCascadeFilters,
+  HeroSearchFilters,
+} from "@/interfaces/hero-facet.interface";
+import { toHeroFacetCascadeFilters } from "@/interfaces/hero-facet.interface";
+import type { HierarchyMultiValue } from "@/components/selectors/types";
 
 type HeroSearchFiltersContextValue = {
   filters: HeroSearchFilters;
-  setMakeSlug: (make_slug?: string) => void;
-  setModelSlug: (model_slug?: string) => void;
-  setProvinceSlug: (province_slug?: string) => void;
-  setMunicipalitySlug: (municipality_slug?: string) => void;
+  setMakeModelValue: (value: HierarchyMultiValue) => void;
+  setLocationValue: (value: HierarchyMultiValue) => void;
   setUntilPrice: (until_price?: number) => void;
   clearMakeModel: () => void;
   clearProvinceMunicipality: () => void;
-  facetQueryParams: HeroSearchFilters;
+  facetQueryParams: HeroFacetCascadeFilters;
+  makeModelValue: HierarchyMultiValue;
+  locationValue: HierarchyMultiValue;
 };
 
 const HeroSearchFiltersContext =
@@ -33,28 +38,24 @@ export const HeroSearchFiltersProvider = ({
 }) => {
   const [filters, setFilters] = useState<HeroSearchFilters>({});
 
-  const setMakeSlug = useCallback((make_slug?: string) => {
+  const setMakeModelValue = useCallback((value: HierarchyMultiValue) => {
     setFilters((prev) => ({
       ...prev,
-      make_slug,
-      model_slug: undefined,
+      makes_slugs:
+        value.parent_slugs.length > 0 ? value.parent_slugs : undefined,
+      models_slugs:
+        value.child_slugs.length > 0 ? value.child_slugs : undefined,
     }));
   }, []);
 
-  const setModelSlug = useCallback((model_slug?: string) => {
-    setFilters((prev) => ({ ...prev, model_slug }));
-  }, []);
-
-  const setProvinceSlug = useCallback((province_slug?: string) => {
+  const setLocationValue = useCallback((value: HierarchyMultiValue) => {
     setFilters((prev) => ({
       ...prev,
-      province_slug,
-      municipality_slug: undefined,
+      provinces_slugs:
+        value.parent_slugs.length > 0 ? value.parent_slugs : undefined,
+      municipalities_slugs:
+        value.child_slugs.length > 0 ? value.child_slugs : undefined,
     }));
-  }, []);
-
-  const setMunicipalitySlug = useCallback((municipality_slug?: string) => {
-    setFilters((prev) => ({ ...prev, municipality_slug }));
   }, []);
 
   const setUntilPrice = useCallback((until_price?: number) => {
@@ -64,52 +65,62 @@ export const HeroSearchFiltersProvider = ({
   const clearMakeModel = useCallback(() => {
     setFilters((prev) => ({
       ...prev,
-      make_slug: undefined,
-      model_slug: undefined,
+      makes_slugs: undefined,
+      models_slugs: undefined,
     }));
   }, []);
 
   const clearProvinceMunicipality = useCallback(() => {
     setFilters((prev) => ({
       ...prev,
-      province_slug: undefined,
-      municipality_slug: undefined,
+      provinces_slugs: undefined,
+      municipalities_slugs: undefined,
     }));
   }, []);
 
   const facetQueryParams = useMemo(
-    (): HeroSearchFilters => ({
-      make_slug: filters.make_slug,
-      model_slug: filters.model_slug,
-      province_slug: filters.province_slug,
-      municipality_slug: filters.municipality_slug,
-      until_price: filters.until_price,
-    }),
+    () => toHeroFacetCascadeFilters(filters),
     [filters],
+  );
+
+  const makeModelValue = useMemo(
+    (): HierarchyMultiValue => ({
+      parent_slugs: filters.makes_slugs ?? [],
+      child_slugs: filters.models_slugs ?? [],
+    }),
+    [filters.makes_slugs, filters.models_slugs],
+  );
+
+  const locationValue = useMemo(
+    (): HierarchyMultiValue => ({
+      parent_slugs: filters.provinces_slugs ?? [],
+      child_slugs: filters.municipalities_slugs ?? [],
+    }),
+    [filters.municipalities_slugs, filters.provinces_slugs],
   );
 
   const value = useMemo(
     (): HeroSearchFiltersContextValue => ({
       filters,
-      setMakeSlug,
-      setModelSlug,
-      setProvinceSlug,
-      setMunicipalitySlug,
+      setMakeModelValue,
+      setLocationValue,
       setUntilPrice,
       clearMakeModel,
       clearProvinceMunicipality,
       facetQueryParams,
+      makeModelValue,
+      locationValue,
     }),
     [
       filters,
-      setMakeSlug,
-      setModelSlug,
-      setProvinceSlug,
-      setMunicipalitySlug,
+      setMakeModelValue,
+      setLocationValue,
       setUntilPrice,
       clearMakeModel,
       clearProvinceMunicipality,
       facetQueryParams,
+      makeModelValue,
+      locationValue,
     ],
   );
 

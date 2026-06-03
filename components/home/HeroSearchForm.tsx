@@ -31,8 +31,14 @@ type SellOption = "particular" | "profesional";
 
 const HeroSearchFormContent = () => {
   const router = useRouter();
-  const { filters, facetQueryParams, setMakeSlug, setModelSlug } =
-    useHeroSearchFilters();
+  const {
+    filters,
+    facetQueryParams,
+    makeModelValue,
+    locationValue,
+    setMakeModelValue,
+    setLocationValue,
+  } = useHeroSearchFilters();
   const [activeTab, setActiveTab] = useState<TabId>("comprar");
   const [sellOption, setSellOption] = useState<SellOption>("particular");
 
@@ -74,17 +80,15 @@ const HeroSearchFormContent = () => {
           }}
         >
           <MakeSelector
-            value={{
-              make_slug: filters.make_slug,
-              model_slug: filters.model_slug,
-            }}
-            onValueChange={({ make_slug, model_slug }) => {
-              setMakeSlug(make_slug);
-              setModelSlug(model_slug);
-            }}
+            value={makeModelValue}
+            onValueChange={setMakeModelValue}
             facetQueryParams={facetQueryParams}
           />
-          <ProvinceSelector />
+          <ProvinceSelector
+            value={locationValue}
+            onValueChange={setLocationValue}
+            facetQueryParams={facetQueryParams}
+          />
           <PriceUntilSelector />
 
           <button

@@ -19,16 +19,24 @@ describe("parseVehicleListingUrl — Opción C", () => {
     });
   });
 
-  it("parsea 1 marca en path", () => {
+  it("parsea 1 marca en path (legacy, migrable a query)", () => {
     expect(parseVehicleListingUrl(["toyota"], new URLSearchParams())).toMatchObject({
       makes_slugs: ["toyota"],
     });
   });
 
-  it("parsea marca y modelo en path", () => {
+  it("parsea marca y modelo en path (legacy, migrable a query)", () => {
     expect(
       parseVehicleListingUrl(["toyota", "corolla"], new URLSearchParams()),
     ).toMatchObject({
+      makes_slugs: ["toyota"],
+      models_slugs: ["corolla"],
+    });
+  });
+
+  it("parsea marca y modelo solo desde query", () => {
+    const params = new URLSearchParams("marcas=toyota&modelos=corolla");
+    expect(parseVehicleListingUrl(undefined, params)).toMatchObject({
       makes_slugs: ["toyota"],
       models_slugs: ["corolla"],
     });
@@ -71,9 +79,19 @@ describe("parseVehicleListingUrl — Opción C", () => {
     });
   });
 
-  it("parsea varios modelos desde query con marca en path", () => {
+  it("parsea varios modelos desde query con marca en path legacy", () => {
     const params = new URLSearchParams("modelos=corolla,rav4");
     expect(parseVehicleListingUrl(["toyota"], params)).toMatchObject({
+      makes_slugs: ["toyota"],
+      models_slugs: ["corolla", "rav4"],
+    });
+  });
+
+  it("parsea varios modelos desde query sin path", () => {
+    const params = new URLSearchParams(
+      "marcas=toyota&modelos=corolla&modelos=rav4",
+    );
+    expect(parseVehicleListingUrl(undefined, params)).toMatchObject({
       makes_slugs: ["toyota"],
       models_slugs: ["corolla", "rav4"],
     });
@@ -119,26 +137,26 @@ describe("buildVehicleListingUrl — Opción C", () => {
     });
   });
 
-  it("construye 1 marca en path", () => {
+  it("construye 1 marca solo en query", () => {
     expect(buildVehicleListingUrl({ makes_slugs: ["toyota"] })).toEqual({
-      pathname: "/vehiculos/toyota",
-      search: "",
+      pathname: "/vehiculos",
+      search: "marcas=toyota",
     });
   });
 
-  it("construye marca y modelo en path", () => {
+  it("construye marca y modelo solo en query", () => {
     expect(
       buildVehicleListingUrl({
         makes_slugs: ["toyota"],
         models_slugs: ["corolla"],
       }),
     ).toEqual({
-      pathname: "/vehiculos/toyota/corolla",
-      search: "",
+      pathname: "/vehiculos",
+      search: "marcas=toyota&modelos=corolla",
     });
   });
 
-  it("construye marca, modelo y provincia en path", () => {
+  it("construye marca, modelo en query y provincia en path", () => {
     expect(
       buildVehicleListingUrl({
         makes_slugs: ["toyota"],
@@ -146,8 +164,8 @@ describe("buildVehicleListingUrl — Opción C", () => {
         provinces_slugs: ["madrid"],
       }),
     ).toEqual({
-      pathname: "/vehiculos/toyota/corolla/provincia-madrid",
-      search: "",
+      pathname: "/vehiculos/provincia-madrid",
+      search: "marcas=toyota&modelos=corolla",
     });
   });
 
@@ -167,15 +185,15 @@ describe("buildVehicleListingUrl — Opción C", () => {
     });
   });
 
-  it("degrada N modelos a query con marca en path", () => {
+  it("construye N modelos en query", () => {
     expect(
       buildVehicleListingUrl({
         makes_slugs: ["toyota"],
         models_slugs: ["corolla", "rav4"],
       }),
     ).toEqual({
-      pathname: "/vehiculos/toyota",
-      search: "modelos=corolla%2Crav4",
+      pathname: "/vehiculos",
+      search: "marcas=toyota&modelos=corolla%2Crav4",
     });
   });
 
@@ -191,27 +209,43 @@ describe("buildVehicleListingUrl — Opción C", () => {
     });
   });
 
-  it("emite filtros secundarios solo en query", () => {
+  it("conserva publisher_types en query (clave legacy sin alias amigable)", () => {
+    expect(
+      buildVehicleListingUrl({
+        makes_slugs: ["toyota"],
+        type_slug: "ocasion",
+        since_price: 1000,
+        until_price: 14000,
+        publisher_types: ["professional"],
+      }),
+    ).toEqual({
+      pathname: "/vehiculos",
+      search:
+        "marcas=toyota&tipo=ocasion&precio_desde=1000&precio_hasta=14000&publisher_types=professional",
+    });
+  });
+
+  it("emite filtros secundarios en query junto a marca", () => {
     expect(
       buildVehicleListingUrl({
         makes_slugs: ["toyota"],
         until_price: 20000,
       }),
     ).toEqual({
-      pathname: "/vehiculos/toyota",
-      search: "precio_hasta=20000",
+      pathname: "/vehiculos",
+      search: "marcas=toyota&precio_hasta=20000",
     });
   });
 });
 
 describe("canonical", () => {
-  it("canonical sin query degradada para N modelos", () => {
+  it("canonical base con marca/modelo (solo geo en path)", () => {
     expect(
       buildCanonicalListingPath({
         makes_slugs: ["toyota"],
         models_slugs: ["corolla", "rav4"],
       }),
-    ).toBe("/vehiculos/toyota");
+    ).toBe("/vehiculos");
   });
 
   it("canonical base para N marcas", () => {
@@ -237,6 +271,30 @@ describe("normalizeVehicleListingHref", () => {
       new URLSearchParams(),
     );
     expect(target).toBe("/vehiculos?marcas=toyota%2Chonda");
+  });
+
+  it("normaliza marca en path legacy a query", () => {
+    const target = normalizeVehicleListingHref(
+      ["toyota"],
+      new URLSearchParams(),
+    );
+    expect(target).toBe("/vehiculos?marcas=toyota");
+  });
+
+  it("normaliza marca y modelo en path legacy a query", () => {
+    const target = normalizeVehicleListingHref(
+      ["toyota", "corolla"],
+      new URLSearchParams(),
+    );
+    expect(target).toBe("/vehiculos?marcas=toyota&modelos=corolla");
+  });
+
+  it("no elimina publisher_types al normalizar", () => {
+    const params = new URLSearchParams(
+      "marcas=toyota,abarth&tipo=ocasion&precio_desde=1000&precio_hasta=14000&publisher_types=professional",
+    );
+    const target = normalizeVehicleListingHref(undefined, params);
+    expect(target).toBeNull();
   });
 
   it("normaliza provincia duplicada legacy", () => {
@@ -284,6 +342,9 @@ describe("round-trip", () => {
     const parsed = parseVehicleListingUrl(slug, url.searchParams);
     const rebuilt = buildVehicleListingHref(parsed);
 
+    expect(parsed.makes_slugs).toEqual(["toyota"]);
+    expect(parsed.models_slugs).toEqual(["corolla"]);
+    expect(parsed.provinces_slugs).toEqual(["madrid"]);
     expect(normalize(rebuilt)).toBe(normalize(href));
   });
 
@@ -299,6 +360,36 @@ describe("round-trip", () => {
     const rebuilt = buildVehicleListingHref(parsed);
 
     expect(parsed.makes_slugs).toEqual(["toyota", "honda"]);
+    expect(normalize(rebuilt)).toBe(normalize(href));
+  });
+
+  it("round-trip multi marcas y modelos en query", () => {
+    const href = buildVehicleListingHref({
+      makes_slugs: ["toyota", "bmw"],
+      models_slugs: ["corolla", "rav4"],
+    });
+
+    const url = new URL(href, "http://localhost");
+    const slug = extractSlugFromPathname(url.pathname);
+    const parsed = parseVehicleListingUrl(slug, url.searchParams);
+    const rebuilt = buildVehicleListingHref(parsed);
+
+    expect(parsed.makes_slugs).toEqual(["toyota", "bmw"]);
+    expect(parsed.models_slugs).toEqual(["corolla", "rav4"]);
+    expect(normalize(rebuilt)).toBe(normalize(href));
+  });
+
+  it("round-trip varias provincias solo en query", () => {
+    const href = buildVehicleListingHref({
+      provinces_slugs: ["madrid", "barcelona"],
+    });
+
+    const url = new URL(href, "http://localhost");
+    const slug = extractSlugFromPathname(url.pathname);
+    const parsed = parseVehicleListingUrl(slug, url.searchParams);
+    const rebuilt = buildVehicleListingHref(parsed);
+
+    expect(parsed.provinces_slugs).toEqual(["madrid", "barcelona"]);
     expect(normalize(rebuilt)).toBe(normalize(href));
   });
 });

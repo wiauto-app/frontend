@@ -17,26 +17,14 @@ export const toCanonicalCatalogParams = (
   params: FindAllVehiclesParams,
 ): Pick<
   FindAllVehiclesParams,
-  | "makes_slugs"
-  | "models_slugs"
   | "comunities_slugs"
   | "provinces_slugs"
   | "municipalities_slugs"
-> => {
-  const makes_slugs = toSingleSlugList(params.makes_slugs);
-  const models_slugs =
-    makes_slugs?.length === 1
-      ? toSingleSlugList(params.models_slugs)
-      : undefined;
-
-  return {
-    makes_slugs,
-    models_slugs,
-    comunities_slugs: toSingleSlugList(params.comunities_slugs),
-    provinces_slugs: toSingleSlugList(params.provinces_slugs),
-    municipalities_slugs: toSingleSlugList(params.municipalities_slugs),
-  };
-};
+> => ({
+  comunities_slugs: toSingleSlugList(params.comunities_slugs),
+  provinces_slugs: toSingleSlugList(params.provinces_slugs),
+  municipalities_slugs: toSingleSlugList(params.municipalities_slugs),
+});
 
 export const buildCanonicalListingPath = (
   params: FindAllVehiclesParams,

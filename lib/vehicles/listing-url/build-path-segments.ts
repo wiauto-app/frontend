@@ -21,12 +21,6 @@ export const buildPathSegments = (
   const in_path = resolveCatalogForPath(params);
   const segments: string[] = [];
 
-  if (in_path.makes_slugs?.[0]) {
-    segments.push(in_path.makes_slugs[0]);
-  }
-  if (in_path.models_slugs?.[0]) {
-    segments.push(in_path.models_slugs[0]);
-  }
   if (in_path.comunities_slugs?.[0]) {
     segments.push(`${COMMUNITY_PATH_PREFIX}${in_path.comunities_slugs[0]}`);
   }

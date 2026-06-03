@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { ActiveFilters } from "../components/activeFilters";
 import { VehiclesPageContent } from "../components/VehiclesPageContent";
 import { VehiclesToolbar } from "../components/VehiclesToolbar";
 import { VehiclesFilters } from "../components/VehiclesFilters";
@@ -11,6 +12,8 @@ import {
   buildCanonicalListingHref,
   parseVehicleListingUrl,
 } from "@/lib/vehicles/listing-url";
+import { activeFiltersService } from "../services/activeFiltersService";
+import { LoadingComponent } from "@/components/ui/loadingComponent";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -46,17 +49,16 @@ export default async function VehiclesListingPage(props: {
     toUrlSearchParams(search_params),
   );
 
-  const listing = await findAllVehicles(filters);
+
+  const [listing, activeFilters] = await Promise.all([
+    findAllVehicles(filters),
+    activeFiltersService.getActiveFilters(filters),
+  ]);
 
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#F4F7FB]">
-          <div className="text-center">
-            <div className="inline-block size-8 animate-spin rounded-full border-4 border-solid border-[#0061F2] border-r-transparent" />
-            <p className="mt-4 text-slate-500">Cargando vehículos...</p>
-          </div>
-        </div>
+        <LoadingComponent />
       }
     >
       <VehiclesListingShell>
@@ -64,9 +66,18 @@ export default async function VehiclesListingPage(props: {
           <VehiclesToolbar />
           <div className="container mx-auto flex min-h-screen gap-5">
             <div className="w-72 shrink-0">
-              <VehiclesFilters />
+              <Suspense
+                fallback={
+                  <div className="h-96 animate-pulse rounded-none bg-slate-100" />
+                }
+              >
+                <VehiclesFilters   />
+              </Suspense>
             </div>
             <div className="min-w-0 flex-1">
+              <div className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-6">
+                <ActiveFilters activeFilters={activeFilters} />
+              </div>
               <VehiclesPageContent
                 vehicles={listing.vehicles}
                 total={listing.total}

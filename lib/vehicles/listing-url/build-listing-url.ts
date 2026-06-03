@@ -8,6 +8,7 @@ import {
 import {
   DEFAULT_LISTING_PARAMS,
   DTO_TO_FRIENDLY_QUERY,
+  LEGACY_API_QUERY_KEYS,
   VEHICLES_LISTING_BASE_PATH,
 } from "./constants";
 import { orderDirectionToUrlSegment } from "./order-direction";
@@ -80,6 +81,13 @@ const buildFriendlySearch = (params: FindAllVehiclesParams): string => {
       }
       if (key === "until_price") {
         friendly_key = params.cuota_slugs?.length ? "cuota_hasta" : "precio_hasta";
+      }
+      if (
+        !friendly_key &&
+        LEGACY_API_QUERY_KEYS.has(key) &&
+        !CATALOG_DTO_KEYS.has(key)
+      ) {
+        friendly_key = key;
       }
       if (!friendly_key) {
         return;

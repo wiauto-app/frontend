@@ -1,5 +1,6 @@
 import type { FindAllVehiclesParams, PublisherType, TransmissionType } from "@/interfaces/vehicle.interface";
 
+import { normalizeFilterQueryValue, parseFiltersQueryString } from "./filters-query";
 import { mergeCatalogSlugLists } from "./merge-catalog-slugs";
 import { parsePathSegments } from "./parse-path-segments";
 import {
@@ -21,19 +22,31 @@ const splitCommaList = (value: string): string[] =>
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
 
-const parseOptionalNumber = (value: string | null): number | undefined => {
-  if (value === null || value.trim() === "") {
+const to_scalar_query_string = (value: unknown): string => {
+  if (value === undefined || value === null) {
+    return "";
+  }
+  if (Array.isArray(value)) {
+    return value.map(String).join(",");
+  }
+  return String(value);
+};
+
+const parseOptionalNumber = (value: unknown): number | undefined => {
+  const scalar = to_scalar_query_string(value).trim();
+  if (scalar === "") {
     return undefined;
   }
-  const parsed = Number(value);
+  const parsed = Number(scalar);
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
-const parseOptionalBoolean = (value: string | null): boolean | undefined => {
-  if (value === null || value.trim() === "") {
+const parseOptionalBoolean = (value: unknown): boolean | undefined => {
+  const scalar = to_scalar_query_string(value).trim();
+  if (scalar === "") {
     return undefined;
   }
-  const normalized = value.trim().toLowerCase();
+  const normalized = scalar.toLowerCase();
   if (normalized === "true" || normalized === "1") {
     return true;
   }
@@ -57,10 +70,15 @@ const applyOrdenQuery = (target: FindAllVehiclesParams, raw_value: string): void
 const applyQueryValue = (
   target: FindAllVehiclesParams,
   dto_key: keyof FindAllVehiclesParams,
-  raw_value: string,
+  raw_value: unknown,
 ): void => {
   if (ARRAY_DTO_KEYS.has(dto_key)) {
-    const items = splitCommaList(raw_value);
+    const normalized = normalizeFilterQueryValue(raw_value);
+    const items = Array.isArray(normalized)
+      ? normalized
+      : normalized
+        ? [normalized]
+        : [];
     if (items.length > 0) {
       (target as Record<string, unknown>)[dto_key] = items;
     }
@@ -84,7 +102,7 @@ const applyQueryValue = (
   }
 
   if (dto_key === "order_direction") {
-    const normalized = normalizeOrderDirection(raw_value);
+    const normalized = normalizeOrderDirection(to_scalar_query_string(raw_value));
     if (normalized) {
       target.order_direction = normalized;
     }
@@ -92,7 +110,10 @@ const applyQueryValue = (
   }
 
   if (dto_key === "transmission_types") {
-    const items = splitCommaList(raw_value) as TransmissionType[];
+    const normalized = normalizeFilterQueryValue(raw_value);
+    const items = (
+      Array.isArray(normalized) ? normalized : normalized ? [normalized] : []
+    ) as TransmissionType[];
     if (items.length > 0) {
       target.transmission_types = items;
     }
@@ -100,14 +121,23 @@ const applyQueryValue = (
   }
 
   if (dto_key === "publisher_types") {
-    const items = splitCommaList(raw_value) as PublisherType[];
+    const normalized = normalizeFilterQueryValue(raw_value);
+    const items = (
+      Array.isArray(normalized) ? normalized : normalized ? [normalized] : []
+    ) as PublisherType[];
     if (items.length > 0) {
       target.publisher_types = items;
     }
     return;
   }
 
-  const trimmed = raw_value.trim();
+  const scalar =
+    typeof raw_value === "string"
+      ? raw_value
+      : Array.isArray(raw_value)
+        ? raw_value.map(String).join(",")
+        : String(raw_value ?? "");
+  const trimmed = scalar.trim();
   if (trimmed.length > 0) {
     (target as Record<string, unknown>)[dto_key] = trimmed;
   }
@@ -117,14 +147,16 @@ const parseQueryParams = (
   search_params: URLSearchParams,
 ): Partial<FindAllVehiclesParams> => {
   const query_filters: Partial<FindAllVehiclesParams> = {};
+  const parsed_query = parseFiltersQueryString(search_params.toString());
 
-  search_params.forEach((raw_value, key) => {
+  Object.entries(parsed_query).forEach(([key, raw_value]) => {
     if (key === "orden") {
-      applyOrdenQuery(query_filters, raw_value);
+      applyOrdenQuery(query_filters, String(raw_value));
       return;
     }
 
-    const friendly_dto = FRIENDLY_QUERY_TO_DTO[key as keyof typeof FRIENDLY_QUERY_TO_DTO];
+    const friendly_dto =
+      FRIENDLY_QUERY_TO_DTO[key as keyof typeof FRIENDLY_QUERY_TO_DTO];
     if (friendly_dto) {
       applyQueryValue(
         query_filters,

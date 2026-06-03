@@ -88,7 +88,7 @@ export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
     handleDoorToggle,
     handleTrunkToggle,
     handleTractionToggle,
-    handleMakeModelChange,
+    handleMakeModelMultiChange,
     resetFilters,
   } = useVehiclesListingFilters();
 
@@ -145,10 +145,10 @@ export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
           <section>
             <MakeSelector
               value={{
-                make_slug: filters.makes_slugs?.[0],
-                model_slug: filters.models_slugs?.[0],
+                parent_slugs: filters.makes_slugs ?? [],
+                child_slugs: filters.models_slugs ?? [],
               }}
-              onValueChange={handleMakeModelChange}
+              onValueChange={handleMakeModelMultiChange}
             />
           </section>
 

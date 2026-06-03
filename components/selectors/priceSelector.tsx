@@ -29,7 +29,7 @@ export const PriceSelector = ({ cuotas, value, onChange }: PriceSelectorProps) =
   return (
     <div>
       <Tabs>
-        <TabsList>
+        <TabsList className="w-full">
           <TabsTrigger value="cash">Contado</TabsTrigger>
           <TabsTrigger value="cuota">Cuota</TabsTrigger>
         </TabsList>

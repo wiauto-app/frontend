@@ -1,26 +1,29 @@
 import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
+import type { HeroSearchFilters } from "@/interfaces/hero-facet.interface";
 
 import { DEFAULT_LISTING_PARAMS } from "./constants";
 
-export type HeroListingFilters = {
-  make_slug?: string;
-  model_slug?: string;
-  province_slug?: string;
-  municipality_slug?: string;
-  until_price?: number;
-};
+export type HeroListingFilters = HeroSearchFilters;
 
 export const heroFiltersToListingParams = (
-  filters: HeroListingFilters,
+  filters: HeroSearchFilters,
 ): FindAllVehiclesParams => ({
   ...DEFAULT_LISTING_PARAMS,
-  makes_slugs: filters.make_slug ? [filters.make_slug] : undefined,
-  models_slugs: filters.model_slug ? [filters.model_slug] : undefined,
-  provinces_slugs: filters.province_slug
-    ? [filters.province_slug]
-    : undefined,
-  municipalities_slugs: filters.municipality_slug
-    ? [filters.municipality_slug]
-    : undefined,
+  makes_slugs:
+    filters.makes_slugs && filters.makes_slugs.length > 0
+      ? filters.makes_slugs
+      : undefined,
+  models_slugs:
+    filters.models_slugs && filters.models_slugs.length > 0
+      ? filters.models_slugs
+      : undefined,
+  provinces_slugs:
+    filters.provinces_slugs && filters.provinces_slugs.length > 0
+      ? filters.provinces_slugs
+      : undefined,
+  municipalities_slugs:
+    filters.municipalities_slugs && filters.municipalities_slugs.length > 0
+      ? filters.municipalities_slugs
+      : undefined,
   until_price: filters.until_price,
 });

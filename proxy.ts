@@ -6,87 +6,12 @@ import {
   withSessionCookies,
   clearSessionCookiesOnResponse,
 } from "@/lib/ensure-session.server";
-import {
-  buildVehicleListingHref,
-  hasLegacyApiQueryParams,
-  normalizeVehicleListingHref,
-  parseVehicleListingUrl,
-  VEHICLES_LISTING_BASE_PATH,
-} from "@/lib/vehicles/listing-url";
+
 
 const PUBLIC_PATHS = ['/', '/iniciar-sesion', '/registro', '/cambiar-contrasena', '/confirmar-correo', '/olvide-contrasena', '/api'];
 
-const extractSlug = (pathname: string): string[] | undefined => {
-  if (pathname === VEHICLES_LISTING_BASE_PATH || pathname === `${VEHICLES_LISTING_BASE_PATH}/`) {
-    return undefined;
-  }
-
-  const prefix = `${VEHICLES_LISTING_BASE_PATH}/`;
-  if (!pathname.startsWith(prefix)) {
-    return undefined;
-  }
-
-  const segments = pathname.slice(prefix.length).split("/").filter(Boolean);
-  return segments.length > 0 ? segments : undefined;
-};
-
-const resolveLegacyVehicleListingRedirect = (req: NextRequest): NextResponse | null => {
-  const { pathname, searchParams } = req.nextUrl;
-
-  if (!pathname.startsWith(VEHICLES_LISTING_BASE_PATH)) {
-    return null;
-  }
-
-  if (!hasLegacyApiQueryParams(searchParams)) {
-    return null;
-  }
-
-  const slug = extractSlug(pathname);
-  const params = parseVehicleListingUrl(slug, searchParams);
-  const target = buildVehicleListingHref(params);
-  const current = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-
-  if (target === current) {
-    return null;
-  }
-
-  return NextResponse.redirect(new URL(target, req.url), 308);
-};
-
-const resolveOptionCVehicleListingRedirect = (
-  req: NextRequest,
-): NextResponse | null => {
-  const { pathname, searchParams } = req.nextUrl;
-
-  if (!pathname.startsWith(VEHICLES_LISTING_BASE_PATH)) {
-    return null;
-  }
-
-  const slug = extractSlug(pathname);
-  const target = normalizeVehicleListingHref(slug, searchParams);
-
-  if (!target) {
-    return null;
-  }
-
-  const current = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-  if (target === current) {
-    return null;
-  }
-
-  return NextResponse.redirect(new URL(target, req.url), 308);
-};
-
 export async function proxy(req: NextRequest) {
-  const legacy_redirect = resolveLegacyVehicleListingRedirect(req);
-  if (legacy_redirect) {
-    return legacy_redirect;
-  }
 
-  const option_c_redirect = resolveOptionCVehicleListingRedirect(req);
-  if (option_c_redirect) {
-    return option_c_redirect;
-  }
 
   const { pathname } = req.nextUrl;
   if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))) {

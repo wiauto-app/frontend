@@ -11,21 +11,11 @@ export type CatalogFilterParams = Pick<
   | "municipalities_slugs"
 >;
 
-/** Slugs de catálogo que van al PATH (Opción C: exactamente 1 por dimensión). */
+/** Slugs de catálogo geo que van al PATH (exactamente 1 por dimensión). Marca/modelo solo en query. */
 export const resolveCatalogForPath = (
   params: CatalogFilterParams,
 ): CatalogFilterParams => {
-  const makes = params.makes_slugs ?? [];
-  const models = params.models_slugs ?? [];
   const path: CatalogFilterParams = {};
-
-  if (makes.length === 1) {
-    path.makes_slugs = makes;
-  }
-
-  if (makes.length === 1 && models.length === 1) {
-    path.models_slugs = models;
-  }
 
   if ((params.comunities_slugs?.length ?? 0) === 1) {
     path.comunities_slugs = params.comunities_slugs;

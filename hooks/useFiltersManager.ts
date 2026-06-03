@@ -1,203 +1,349 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { format } from "date-fns";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
 import {
-  ORDER_KEYS,
-  PAGE_KEY,
-} from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
-import { orderDirectionToUrlSegment } from "@/lib/vehicles/listing-url/order-direction";
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+
+import { ORDER_KEYS } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
 
 export type FiltersDateRangeValue = {
-  from: Date | undefined;
-  to: Date | undefined;
+  from?: Date;
+  to?: Date;
 };
 
-export type FiltersNumericRangeValue = {
-  since?: string;
-  until?: string;
-};
+type FilterValue = string | string[] | undefined;
 
-type UseFiltersManagerProps = {
-  /** Claves de query que se leen y escriben en la URL. */
+interface UseFiltersManagerProps {
   keys: string[];
-  pageKey?: string;
-  /** Al cambiar un filtro, resetea la paginación (p. ej. `pagina=1`). */
-  resetPageOnFilterChange?: boolean;
-  historyMode?: "replace" | "push";
-};
+}
 
-type UseFiltersManagerReturn = {
-  values: Record<string, string | undefined>;
+interface UseFiltersManagerReturn {
+  values: Record<string, FilterValue>;
+
   handleChange: (key: string, value?: string) => void;
+
+  handleMultiChange: (
+    key: string,
+    values: string[],
+  ) => void;
+
+  handleMultiKeysChange: (
+    updates: Record<string, string[] | undefined>,
+  ) => void;
+
+  applyUrlUpdates: (
+    updates: Record<string, string | string[] | undefined>,
+  ) => void;
+
+  handleAddValue: (
+    key: string,
+    value: string,
+  ) => void;
+
+  handleRemoveValue: (
+    key: string,
+    value: string,
+  ) => void;
+
+  handleToggleValue: (
+    key: string,
+    value: string,
+  ) => void;
+
   handleRemove: (key: string) => void;
-  /** Varias claves en una sola navegación (evita estados intermedios en la URL). */
-  handleBatchChange: (updates: Record<string, string | undefined>) => void;
-  /** Aplica orden con query amigable `orden=columna-asc|desc`. */
-  handleSort: (column: string, direction: "ASC" | "DESC") => void;
-  /**
-   * Actualiza dos query params de fechas en un solo paso (`yyyy-MM-dd` en zona local).
-   * Si `from` o `to` vienen vacíos, borra la clave correspondiente.
-   */
+
+  handleClearAll: () => void;
+
+  handleSort: (
+    column: string,
+    direction: "ASC" | "DESC",
+  ) => void;
+
   handleDateRangeChange: (
     fromKey: string,
     toKey: string,
     range: FiltersDateRangeValue,
   ) => void;
-  /** Rango numérico en query (año, km, precio, etc.) sin usar Date. */
-  handleNumericRangeChange: (
-    sinceKey: string,
-    untilKey: string,
-    range: FiltersNumericRangeValue,
-  ) => void;
-};
-
-const setOrDeleteParam = (
-  params: URLSearchParams,
-  key: string,
-  value?: string,
-) => {
-  if (value === undefined || value === "") {
-    params.delete(key);
-    return;
-  }
-  params.set(key, value);
-};
+}
 
 export const useFiltersManager = ({
   keys,
-  pageKey = PAGE_KEY,
-  resetPageOnFilterChange = true,
-  historyMode = "replace",
 }: UseFiltersManagerProps): UseFiltersManagerReturn => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const trackedKeys = useMemo(
-    () => [...keys, ORDER_KEYS.ORDEN],
-    [keys],
-  );
+  const sortKeys = [
+    ORDER_KEYS.ORDER_BY,
+    ORDER_KEYS.ORDER_DIRECTION,
+  ];
 
-  const values = useMemo(
-    () =>
-      Object.fromEntries(
-        trackedKeys.map((key) => [key, searchParams.get(key) ?? undefined]),
-      ),
-    [searchParams, trackedKeys],
-  );
+  const updateParams = (params: URLSearchParams) => {
+    const query = params.toString();
 
-  const navigateWithParams = useCallback(
-    (mutate: (params: URLSearchParams) => void) => {
-      const params = new URLSearchParams(searchParams.toString());
-      mutate(params);
-      const query = params.toString();
-      const href = query ? `${pathname}?${query}` : pathname;
+    router.replace(
+      query ? `${pathname}?${query}` : pathname,
+      { scroll: false },
+    );
+  };
 
-      if (historyMode === "push") {
-        router.push(href, { scroll: false });
+  const values = useMemo(() => {
+    const result: Record<string, FilterValue> = {};
+
+    [...keys, ...sortKeys].forEach((key) => {
+      const allValues = searchParams.getAll(key);
+
+      if (allValues.length === 0) {
+        result[key] = undefined;
         return;
       }
-      router.replace(href, { scroll: false });
-    },
-    [historyMode, pathname, router, searchParams],
-  );
 
-  const applyPageReset = useCallback(
-    (params: URLSearchParams) => {
-      if (!resetPageOnFilterChange) {
+      if (allValues.length === 1) {
+        result[key] = allValues[0];
         return;
       }
-      setOrDeleteParam(params, pageKey, "1");
-    },
-    [pageKey, resetPageOnFilterChange],
-  );
 
-  const handleChange = useCallback(
-    (key: string, value?: string) => {
-      navigateWithParams((params) => {
-        setOrDeleteParam(params, key, value);
-        applyPageReset(params);
-      });
-    },
-    [applyPageReset, navigateWithParams],
-  );
+      result[key] = allValues;
+    });
 
-  const handleRemove = useCallback(
-    (key: string) => {
-      navigateWithParams((params) => {
-        params.delete(key);
-        applyPageReset(params);
-      });
-    },
-    [applyPageReset, navigateWithParams],
-  );
+    return result;
+  }, [keys, searchParams]);
 
-  const handleBatchChange = useCallback(
-    (updates: Record<string, string | undefined>) => {
-      navigateWithParams((params) => {
-        Object.entries(updates).forEach(([key, value]) => {
-          setOrDeleteParam(params, key, value);
+  const handleChange = (
+    key: string,
+    value?: string,
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    if (!value) {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+
+    updateParams(params);
+  };
+
+  const handleMultiChange = (
+    key: string,
+    values: string[],
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    params.delete(key);
+
+    values.forEach((value) => {
+      params.append(key, value);
+    });
+
+    updateParams(params);
+  };
+
+  const handleMultiKeysChange = (
+    updates: Record<string, string[] | undefined>,
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    Object.entries(updates).forEach(([key, values]) => {
+      params.delete(key);
+
+      if (values?.length) {
+        values.forEach((value) => {
+          params.append(key, value);
         });
-        applyPageReset(params);
-      });
-    },
-    [applyPageReset, navigateWithParams],
-  );
+      }
+    });
 
-  const handleSort = useCallback(
-    (column: string, direction: "ASC" | "DESC") => {
-      navigateWithParams((params) => {
-        params.delete(ORDER_KEYS.ORDER_BY);
-        params.delete(ORDER_KEYS.ORDER_DIRECTION);
-        setOrDeleteParam(
-          params,
-          ORDER_KEYS.ORDEN,
-          `${column}-${orderDirectionToUrlSegment(direction)}`,
-        );
-      });
-    },
-    [navigateWithParams],
-  );
+    updateParams(params);
+  };
 
-  const handleDateRangeChange = useCallback(
-    (fromKey: string, toKey: string, range: FiltersDateRangeValue) => {
-      navigateWithParams((params) => {
-        if (range.from) {
-          params.set(fromKey, format(range.from, "yyyy-MM-dd"));
-        } else {
-          params.delete(fromKey);
-        }
-        if (range.to) {
-          params.set(toKey, format(range.to, "yyyy-MM-dd"));
-        } else {
-          params.delete(toKey);
-        }
-        applyPageReset(params);
-      });
-    },
-    [applyPageReset, navigateWithParams],
-  );
+  const applyUrlUpdates = (
+    updates: Record<string, string | string[] | undefined>,
+  ) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-  const handleNumericRangeChange = useCallback(
-    (sinceKey: string, untilKey: string, range: FiltersNumericRangeValue) => {
-      handleBatchChange({
-        [sinceKey]: range.since,
-        [untilKey]: range.until,
+    Object.entries(updates).forEach(([key, value]) => {
+      params.delete(key);
+
+      if (value === undefined) {
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        value.forEach((item) => {
+          params.append(key, item);
+        });
+        return;
+      }
+
+      params.set(key, value);
+    });
+
+    updateParams(params);
+  };
+
+  const handleAddValue = (
+    key: string,
+    value: string,
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    const currentValues = params.getAll(key);
+
+    if (!currentValues.includes(value)) {
+      params.append(key, value);
+    }
+
+    updateParams(params);
+  };
+
+  const handleRemoveValue = (
+    key: string,
+    value: string,
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    const remainingValues = params
+      .getAll(key)
+      .filter((item) => item !== value);
+
+    params.delete(key);
+
+    remainingValues.forEach((item) => {
+      params.append(key, item);
+    });
+
+    updateParams(params);
+  };
+
+  const handleToggleValue = (
+    key: string,
+    value: string,
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    const currentValues = params.getAll(key);
+
+    const exists = currentValues.includes(value);
+
+    params.delete(key);
+
+    if (exists) {
+      currentValues
+        .filter((item) => item !== value)
+        .forEach((item) => {
+          params.append(key, item);
+        });
+    } else {
+      [...currentValues, value].forEach((item) => {
+        params.append(key, item);
       });
-    },
-    [handleBatchChange],
-  );
+    }
+
+    updateParams(params);
+  };
+
+  const handleRemove = (key: string) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    params.delete(key);
+
+    updateParams(params);
+  };
+
+  const handleClearAll = () => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    keys.forEach((key) => {
+      params.delete(key);
+    });
+
+    updateParams(params);
+  };
+
+  const handleSort = (
+    column: string,
+    direction: "ASC" | "DESC",
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    params.set(
+      ORDER_KEYS.ORDER_BY,
+      column,
+    );
+
+    params.set(
+      ORDER_KEYS.ORDER_DIRECTION,
+      direction,
+    );
+
+    updateParams(params);
+  };
+
+  const handleDateRangeChange = (
+    fromKey: string,
+    toKey: string,
+    range: FiltersDateRangeValue,
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    if (range.from) {
+      params.set(
+        fromKey,
+        format(range.from, "yyyy-MM-dd"),
+      );
+    } else {
+      params.delete(fromKey);
+    }
+
+    if (range.to) {
+      params.set(
+        toKey,
+        format(range.to, "yyyy-MM-dd"),
+      );
+    } else {
+      params.delete(toKey);
+    }
+
+    updateParams(params);
+  };
 
   return {
     values,
     handleChange,
+    handleMultiChange,
+    handleMultiKeysChange,
+    applyUrlUpdates,
+    handleAddValue,
+    handleRemoveValue,
+    handleToggleValue,
     handleRemove,
-    handleBatchChange,
+    handleClearAll,
     handleSort,
     handleDateRangeChange,
-    handleNumericRangeChange,
   };
 };

@@ -1,4 +1,5 @@
 import { API_URL } from "@/constants";
+import qs from "qs";
 
 interface FetchOptions extends RequestInit {
   isFileUpload?: boolean;
@@ -22,11 +23,13 @@ export const fetchWithAuth = async (url: string, options: FetchOptions = {}) => 
     headers.set('Content-Type', 'application/json');
   }
 
-  return fetch(`${API_URL}${url}`, {
+  const res = await fetch(`${API_URL}${url}`, {
     ...options,
     headers,
     credentials: 'include',
   });
+
+  return res;
 };
 
 const parseJson = async <T>(response: Response): Promise<T> => {
@@ -43,11 +46,18 @@ const parseJson = async <T>(response: Response): Promise<T> => {
 const toApiResponse = async <T>(response: Response): Promise<ApiResponse<T>> => {
   const body = await parseJson<{ ok?: boolean; status?: number; data: T }>(response);
   const data = body.data;
+  if(!response.ok) {
+    console.error(body);
+  }
   return { ok: response.ok, status: response.status, data };
 };
 
-export const apiGet = async <T>(endpoint: string): Promise<ApiResponse<T>> => {
-  const response = await fetchWithAuth(endpoint);
+export const apiGet = async <T>(endpoint: string,queryParams?: Record<string, unknown>): Promise<ApiResponse<T>> => {
+  let query = "";
+  if (queryParams) {
+    query = qs.stringify(queryParams, { skipNulls: true, addQueryPrefix: true });
+  }
+  const response = await fetchWithAuth(`${endpoint}${query}`);
   return toApiResponse<T>(response);
 };
 

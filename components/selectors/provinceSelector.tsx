@@ -2,16 +2,18 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  HierarchySelectItem,
-  SearchableHierarchySelect,
-} from "../ui/searchableHierarchySelect";
+import { SearchableHierarchySelect } from "../ui/searchableHierarchySelect";
 import { heroFacetService } from "@/services/search/heroFacetService";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import type { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
-import { useHeroSearchFilters } from "../home/HeroSearchFiltersContext";
+import type {
+  HeroCatalogFacetItem,
+  HeroFacetCascadeFilters,
+} from "@/interfaces/hero-facet.interface";
+import type { HierarchySelectItem } from "@/interfaces/makeSelector.interface";
+import type { HierarchyMultiValue } from "./types";
+import { formatHierarchyMultiDisplay } from "./hierarchyMultiUtils";
 
-type HeroHierarchyItem = HierarchySelectItem & { slug: string };
+type HeroHierarchyItem = HierarchySelectItem;
 
 const catalogToItem = (item: HeroCatalogFacetItem): HeroHierarchyItem => ({
   id: item.id,
@@ -20,14 +22,25 @@ const catalogToItem = (item: HeroCatalogFacetItem): HeroHierarchyItem => ({
   count: item.vehicle_count,
 });
 
-export const ProvinceSelector = () => {
-  const {
-    filters,
-    facetQueryParams,
-    setProvinceSlug,
-    setMunicipalitySlug,
-  } = useHeroSearchFilters();
+export type ProvinceSelectorProps = {
+  value: HierarchyMultiValue;
+  onValueChange: (value: HierarchyMultiValue) => void;
+  facetQueryParams?: HeroFacetCascadeFilters;
+  label?: string;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  listTitle?: string;
+};
 
+export const ProvinceSelector = ({
+  value,
+  onValueChange,
+  facetQueryParams = {},
+  label = "Provincia",
+  placeholder = "Selecciona provincia o municipio",
+  searchPlaceholder = "Buscar provincia…",
+  listTitle = "Provincias más populares",
+}: ProvinceSelectorProps) => {
   const [search, setSearch] = useState("");
   const debounced_search = useDebouncedValue(search, 300);
   const [expanded_province_slugs, setExpandedProvinceSlugs] = useState<
@@ -51,35 +64,33 @@ export const ProvinceSelector = () => {
 
   const items = useMemo(() => provinces.map(catalogToItem), [provinces]);
 
-  const displayValue = useMemo(() => {
-    if (filters.province_slug && filters.municipality_slug) {
-      const province = provinces.find(
-        (item) => item.slug === filters.province_slug,
-      );
-      const municipalities =
-        children_by_province_slug[filters.province_slug] ?? [];
-      const municipality = municipalities.find(
-        (item) => item.slug === filters.municipality_slug,
-      );
-      if (province && municipality) {
-        return `${province.name} · ${municipality.label}`;
+  const parent_label_lookup = useCallback(
+    (slug: string) => provinces.find((item) => item.slug === slug)?.name,
+    [provinces],
+  );
+
+  const child_label_lookup = useCallback(
+    (slug: string) => {
+      for (const municipalities of Object.values(children_by_province_slug)) {
+        const match = municipalities.find((item) => item.slug === slug);
+        if (match) {
+          return match.label;
+        }
       }
-    }
-    if (filters.province_slug) {
-      const province = provinces.find(
-        (item) => item.slug === filters.province_slug,
-      );
-      if (province) {
-        return province.name;
-      }
-    }
-    return null;
-  }, [
-    filters.province_slug,
-    filters.municipality_slug,
-    provinces,
-    children_by_province_slug,
-  ]);
+      return undefined;
+    },
+    [children_by_province_slug],
+  );
+
+  const displayValue = useMemo(
+    () =>
+      formatHierarchyMultiDisplay(
+        value,
+        provinces.map(catalogToItem),
+        Object.values(children_by_province_slug).flatMap((municipalities) => municipalities),
+      ),
+    [value, provinces, children_by_province_slug],
+  );
 
   const handleExpandItem = useCallback(
     async (item: HeroHierarchyItem) => {
@@ -104,11 +115,9 @@ export const ProvinceSelector = () => {
       setLoadingProvinceSlugs((prev) => new Set(prev).add(province_slug));
 
       try {
-        const { province_slug: _selected_province, ...municipality_facet_filters } =
-          facetQueryParams;
         const municipalities = await heroFacetService.getMunicipalities(
           province_slug,
-          municipality_facet_filters,
+          facetQueryParams,
         );
         setChildrenByProvinceSlug((prev) => ({
           ...prev,
@@ -125,47 +134,26 @@ export const ProvinceSelector = () => {
     [children_by_province_slug, expanded_province_slugs, facetQueryParams],
   );
 
-  const handleSelectProvince = useCallback(
-    (item: HeroHierarchyItem) => {
-      setProvinceSlug(item.slug);
-      setMunicipalitySlug(undefined);
-    },
-    [setProvinceSlug, setMunicipalitySlug],
-  );
-
-  const handleSelectMunicipality = useCallback(
-    (parent: HeroHierarchyItem, child: HeroHierarchyItem) => {
-      setProvinceSlug(parent.slug);
-      setMunicipalitySlug(child.slug);
-    },
-    [setProvinceSlug, setMunicipalitySlug],
-  );
-
   return (
     <SearchableHierarchySelect
-      label="Provincia"
-      placeholder="Selecciona provincia o municipio"
-      searchPlaceholder="Buscar provincia…"
-      listTitle="Provincias más populares"
+      label={label}
+      placeholder={placeholder}
+      searchPlaceholder={searchPlaceholder}
+      listTitle={listTitle}
       items={items}
       isLoading={isLoading}
       searchValue={search}
       onSearchChange={setSearch}
       displayValue={displayValue}
       emptyMessage="No se encontraron provincias"
+      selection_mode="multiple"
+      value={value}
+      onValueChange={onValueChange}
       isItemExpandable={() => true}
-      isItemExpanded={(item) =>
-        expanded_province_slugs.has((item as HeroHierarchyItem).slug)
-      }
-      isLoadingChildren={(item) =>
-        loading_province_slugs.has((item as HeroHierarchyItem).slug)
-      }
-      getChildren={(item) =>
-        children_by_province_slug[(item as HeroHierarchyItem).slug]
-      }
+      isItemExpanded={(item) => expanded_province_slugs.has(item.slug)}
+      isLoadingChildren={(item) => loading_province_slugs.has(item.slug)}
+      getChildren={(item) => children_by_province_slug[item.slug]}
       onExpandItem={handleExpandItem}
-      onSelectItem={handleSelectProvince}
-      onSelectChild={handleSelectMunicipality}
     />
   );
 };

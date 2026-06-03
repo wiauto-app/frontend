@@ -1,7 +1,7 @@
+import { LoadingComponent } from "@/components/ui/loadingComponent";
+
 export default function Loading() {
   return (
-    <div>
-      Loading...
-    </div>
+    <LoadingComponent />
   );
 }

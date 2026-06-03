@@ -12,7 +12,7 @@ import {
 } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 
-import type { MakeModelValue } from "@/components/selectors/types";
+import type { HierarchyMultiValue } from "@/components/selectors/types";
 import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 import {
   buildVehicleListingHref,
@@ -46,7 +46,8 @@ type VehiclesListingFiltersContextValue = {
   handleSortChange: (value: string) => void;
   handleConditionChange: (condition: "new" | "used" | undefined) => void;
   handleBrandToggle: (slug: string) => void;
-  handleMakeModelChange: (value: MakeModelValue) => void;
+  handleMakeModelMultiChange: (value: HierarchyMultiValue) => void;
+  handleLocationMultiChange: (value: HierarchyMultiValue) => void;
   handlePriceMinChange: (value: string) => void;
   handlePriceMaxChange: (value: string) => void;
   handlePriceBlur: () => void;
@@ -269,12 +270,28 @@ export const VehiclesListingFiltersProvider = ({
     [commitFilters, filters],
   );
 
-  const handleMakeModelChange = useCallback(
-    (value: MakeModelValue) => {
+  const handleMakeModelMultiChange = useCallback(
+    (value: HierarchyMultiValue) => {
       commitFilters({
         ...filters,
-        makes_slugs: value.make_slug ? [value.make_slug] : undefined,
-        models_slugs: value.model_slug ? [value.model_slug] : undefined,
+        makes_slugs:
+          value.parent_slugs.length > 0 ? value.parent_slugs : undefined,
+        models_slugs:
+          value.child_slugs.length > 0 ? value.child_slugs : undefined,
+        page: 1,
+      });
+    },
+    [commitFilters, filters],
+  );
+
+  const handleLocationMultiChange = useCallback(
+    (value: HierarchyMultiValue) => {
+      commitFilters({
+        ...filters,
+        provinces_slugs:
+          value.parent_slugs.length > 0 ? value.parent_slugs : undefined,
+        municipalities_slugs:
+          value.child_slugs.length > 0 ? value.child_slugs : undefined,
         page: 1,
       });
     },
@@ -363,10 +380,48 @@ export const VehiclesListingFiltersProvider = ({
         key: `model-${slug}`,
         label: slug,
         onRemove: () => {
-          const nextModels = filters.models_slugs?.filter((item) => item !== slug);
+          const next_models = filters.models_slugs?.filter(
+            (item) => item !== slug,
+          );
           commitFilters({
             ...filters,
-            models_slugs: nextModels?.length ? nextModels : undefined,
+            models_slugs: next_models?.length ? next_models : undefined,
+            page: 1,
+          });
+        },
+      });
+    });
+    filters.provinces_slugs?.forEach((slug) => {
+      chips.push({
+        key: `province-${slug}`,
+        label: slug,
+        onRemove: () => {
+          const next_provinces = filters.provinces_slugs?.filter(
+            (item) => item !== slug,
+          );
+          commitFilters({
+            ...filters,
+            provinces_slugs: next_provinces?.length
+              ? next_provinces
+              : undefined,
+            page: 1,
+          });
+        },
+      });
+    });
+    filters.municipalities_slugs?.forEach((slug) => {
+      chips.push({
+        key: `municipality-${slug}`,
+        label: slug,
+        onRemove: () => {
+          const next_municipalities = filters.municipalities_slugs?.filter(
+            (item) => item !== slug,
+          );
+          commitFilters({
+            ...filters,
+            municipalities_slugs: next_municipalities?.length
+              ? next_municipalities
+              : undefined,
             page: 1,
           });
         },
@@ -409,7 +464,8 @@ export const VehiclesListingFiltersProvider = ({
       handleSortChange,
       handleConditionChange,
       handleBrandToggle,
-      handleMakeModelChange,
+      handleMakeModelMultiChange,
+      handleLocationMultiChange,
       handlePriceMinChange: setPriceMin,
       handlePriceMaxChange: setPriceMax,
       handlePriceBlur,
@@ -433,7 +489,8 @@ export const VehiclesListingFiltersProvider = ({
       goToPage,
       handleBodyTypeToggle,
       handleBrandToggle,
-      handleMakeModelChange,
+      handleMakeModelMultiChange,
+      handleLocationMultiChange,
       handleConditionChange,
       handleDoorToggle,
       handleEngineToggle,

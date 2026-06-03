@@ -1,3 +1,22 @@
+export const MAKE_KEY = "marcas"
+export const MODEL_KEY = "modelos"
+
+export const PROVINCE_KEY = "provincias"
+export const MUNICIPALITY_KEY = "municipios"
+
+/** Query amigable: `radio` → radius (metros) en API */
+export const GEO_LOCATION_KEYS = {
+  LAT: "lat",
+  LNG: "lng",
+  RADIUS: "radio",
+} as const;
+
+export const DEFAULT_GEO_RADIUS_METERS = 25_000;
+export const MIN_GEO_RADIUS_METERS = 5_000;
+export const MAX_GEO_RADIUS_METERS = 200_000;
+export const GEO_RADIUS_STEP_METERS = 5_000;
+
+export const PUBLISHER_TYPE_KEY = "publisher_types"
 
 
 export const YEAR_KEYS = {
