@@ -432,10 +432,10 @@ export default function VehicleDetailPage() {
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
               <h3 className="font-medium text-gray-900 mb-3">Información de referencia</h3>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-gray-500">ID Vehículo</span>
                   <span className="font-mono text-gray-900">{vehicle.id.slice(0, 8)}</span>
-                </div>
+                </div> */}
                 {vehicle.license_plate && (
                   <div className="flex justify-between">
                     <span className="text-gray-500">Matrícula</span>

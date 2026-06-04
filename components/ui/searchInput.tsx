@@ -2,17 +2,20 @@
 
 import { Search, X } from "lucide-react";
 import { Input } from "./input";
+import { cn } from "@/lib/utils";
 
 interface SearchInputProps {
-  value: string;
+  value?: string;
   placeholder?: string;
   onChange?: (value: string) => void;
   onClear?: () => void;
+  className?: string;
 }
 
 export const SearchInput = ({
   placeholder,
   onChange,
+  className,
   onClear,
   ...props
 }: SearchInputProps) => {
@@ -26,7 +29,7 @@ export const SearchInput = ({
     <div className="relative">
       <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
       <Input
-        className="pl-10"
+        className={cn("pl-10", className)}
         placeholder={placeholder}
         onChange={(e) => onChange?.(e.target.value)}
         {...props}
