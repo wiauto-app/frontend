@@ -1,12 +1,22 @@
-
-
 export const cookiesConfig = {
-  name: "access_token",
-  options: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-    path: "/",
+  accessToken: {
+    name: "access_token",
+    options: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none" as const,
+      maxAge: 60 * 15, // 15 minutos
+      path: "/",
+    },
   },
-  refreshTokenName: "refresh_token",
-}
+  refreshToken: {
+    name: "refresh_token",
+    options: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none" as const,
+      maxAge: 60 * 60 * 24 * 30, // 30 días
+      path: "/",
+    },
+  },
+};

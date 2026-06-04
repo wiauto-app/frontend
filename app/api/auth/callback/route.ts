@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
   }
 
   const cookieStore = await cookies();
-  cookieStore.set(cookiesConfig.name, token, cookiesConfig.options);
-  cookieStore.set(cookiesConfig.refreshTokenName, refreshToken, cookiesConfig.options);
+  cookieStore.set(cookiesConfig.accessToken.name, token, cookiesConfig.accessToken.options);
+  cookieStore.set(cookiesConfig.refreshToken.name, refreshToken, cookiesConfig.refreshToken.options);
 
   if (type === "2fa_challenge") {
     return NextResponse.redirect(new URL("/2fa-challenge", FRONTEND_URL));
