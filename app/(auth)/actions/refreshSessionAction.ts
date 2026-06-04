@@ -17,7 +17,7 @@ export type RefreshSessionActionResult =
 export const refreshSessionAction =
   async (): Promise<RefreshSessionActionResult> => {
     const store = await cookies();
-    const access_token = store.get(cookiesConfig.name)?.value ?? null;
+    const access_token = store.get(cookiesConfig.accessToken.name)?.value ?? null;
     const cookie_header = requestCookiesToHeader(store.getAll());
 
     const result = await ensureValidSession({ cookie_header, access_token });
