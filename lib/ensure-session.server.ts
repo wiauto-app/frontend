@@ -92,7 +92,7 @@ export type MutableCookieStore = {
   set: (
     name: string,
     value: string,
-    options?: (typeof cookiesConfig)["options"],
+    options?: (typeof cookiesConfig)["accessToken"]["options"] | (typeof cookiesConfig)["refreshToken"]["options"],
   ) => void;
   delete: (name: string) => void;
 };
@@ -103,19 +103,19 @@ export const withSessionCookies = (
   access_token: string,
   refresh_token_hash: string,
 ): NextResponse => {
-  response.cookies.set(cookiesConfig.name, access_token, cookiesConfig.options);
+  response.cookies.set(cookiesConfig.accessToken.name, access_token, cookiesConfig.accessToken.options);
   response.cookies.set(
-    cookiesConfig.refreshTokenName,
+    cookiesConfig.refreshToken.name,
     refresh_token_hash,
-    cookiesConfig.options,
+    cookiesConfig.refreshToken.options,
   );
   return response;
 };
 
 /** Middleware: elimina cookies de sesión en la NextResponse (p. ej. redirect a login). */
 export const clearSessionCookiesOnResponse = (response: NextResponse): NextResponse => {
-  response.cookies.delete(cookiesConfig.name);
-  response.cookies.delete(cookiesConfig.refreshTokenName);
+  response.cookies.delete(cookiesConfig.accessToken.name);
+  response.cookies.delete(cookiesConfig.refreshToken.name);
   return response;
 };
 
@@ -125,15 +125,15 @@ export const writeSessionTokensToCookieStore = (
   access_token: string,
   refresh_token_hash: string,
 ): void => {
-  store.set(cookiesConfig.name, access_token, cookiesConfig.options);
+  store.set(cookiesConfig.accessToken.name, access_token, cookiesConfig.accessToken.options);
   store.set(
-    cookiesConfig.refreshTokenName,
+    cookiesConfig.refreshToken.name,
     refresh_token_hash,
-    cookiesConfig.options,
+    cookiesConfig.refreshToken.options,
   );
 };
 
 export const clearSessionFromCookieStore = (store: MutableCookieStore): void => {
-  store.delete(cookiesConfig.name);
-  store.delete(cookiesConfig.refreshTokenName);
+  store.delete(cookiesConfig.accessToken.name);
+  store.delete(cookiesConfig.refreshToken.name);
 };

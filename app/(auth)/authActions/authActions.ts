@@ -12,13 +12,13 @@ export async function loginAction(data: LoginDto) {
       throw new Error("Email o contraseña incorrectos");
     }
     const cookiesStore = await cookies();
-    cookiesStore.set(cookiesConfig.name, response.data.token, cookiesConfig.options);
+    cookiesStore.set(cookiesConfig.accessToken.name, response.data.token, cookiesConfig.accessToken.options);
     const refresh_token =
       response.data.refresh_token ?? response.data.refreshToken_hash;
     if (!refresh_token) {
       throw new Error("No se recibió el token de actualización");
     }
-    cookiesStore.set(cookiesConfig.refreshTokenName, refresh_token, cookiesConfig.options);
+    cookiesStore.set(cookiesConfig.refreshToken.name, refresh_token, cookiesConfig.refreshToken.options);
   } catch (error) {
     throw error;
   }
@@ -27,7 +27,7 @@ export async function loginAction(data: LoginDto) {
 export async function logoutAction() {
 
   const cookiesStore = await cookies();
-  cookiesStore.delete(cookiesConfig.name);
-  cookiesStore.delete(cookiesConfig.refreshTokenName);
+  cookiesStore.delete(cookiesConfig.accessToken.name);
+  cookiesStore.delete(cookiesConfig.refreshToken.name);
  
 }

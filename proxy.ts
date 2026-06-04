@@ -18,7 +18,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const access_token = req.cookies.get(cookiesConfig.name)?.value ?? null;
+  const access_token = req.cookies.get(cookiesConfig.accessToken.name)?.value ?? null;
   const cookie_header = req.headers.get("cookie") ?? "";
 
   if (access_token) {
