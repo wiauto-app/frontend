@@ -1,11 +1,15 @@
+const isProd = process.env.NODE_ENV === "production";
+
 export const cookiesConfig = {
   accessToken: {
     name: "access_token",
     options: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none" as const,
-      maxAge: 60 * 15, // 15 minutos
+      secure: isProd,
+      sameSite: (isProd ? "none" : "lax") as "none" | "lax",
+      // ¡ESTA LÍNEA ES CRUCIAL PARA PRODUCCIÓN!
+      domain: isProd ? ".wiauto.es" : undefined, 
+      maxAge: 60 * 15,
       path: "/",
     },
   },
@@ -13,9 +17,11 @@ export const cookiesConfig = {
     name: "refresh_token",
     options: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none" as const,
-      maxAge: 60 * 60 * 24 * 30, // 30 días
+      secure: isProd,
+      sameSite: (isProd ? "none" : "lax") as "none" | "lax",
+      // ¡ESTA LÍNEA ES CRUCIAL PARA PRODUCCIÓN!
+      domain: isProd ? ".wiauto.es" : undefined, 
+      maxAge: 60 * 60 * 24 * 30,
       path: "/",
     },
   },
