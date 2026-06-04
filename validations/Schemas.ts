@@ -45,12 +45,6 @@ export const ResetPasswordSchema = z.object({
 export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
 
 
-export const ConfirmEmailVerificationSchema = z.object({
-  token: z.string(),
-});
-
-export type ConfirmEmailVerificationDto = z.infer<typeof ConfirmEmailVerificationSchema>;
-
 export const UpdateProfileSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   last_name: z.string().optional(),

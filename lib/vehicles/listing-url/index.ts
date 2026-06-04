@@ -34,6 +34,10 @@ export { isIndexableListingPathname } from "./indexable-listing-url";
 export { parseVehicleListingUrl } from "./parse-listing-url";
 export { heroFiltersToListingParams } from "./hero-to-listing-params";
 export type { HeroListingFilters } from "./hero-to-listing-params";
+export {
+  buildHeroListingHref,
+  type HeroListingSearchState,
+} from "./build-hero-listing-href";
 export { hasLegacyApiQueryParams } from "./has-legacy-api-query";
 export {
   normalizeOrderDirection,

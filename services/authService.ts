@@ -73,14 +73,6 @@ export const authService = {
       data,
     ),
 
-  confirmEmailVerification: (
-    token: string,
-  ): Promise<ApiResponse<ResendEmailVerificationResponseDto>> =>
-    apiPost<ResendEmailVerificationResponseDto>(
-      `/auth/email-verification/confirm`,
-      { token },
-    ),
-
   refreshToken: (): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/auth/refresh`, {}),
 

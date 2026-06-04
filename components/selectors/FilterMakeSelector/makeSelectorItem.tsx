@@ -30,8 +30,13 @@ export const MakeSelectorItem = ({
   item,
   selectedMakes,
   setSelectedMakes,
+  selectedItems: controlledSelectedItems,
+  setSelectedItems: controlledSetSelectedItems,
+  onApplyMakeModelPayload,
 }: MakeSelectorItemProps) => {
-  const { selectedItems, setSelectedItems } = useSelectedItemsStore();
+  const store = useSelectedItemsStore();
+  const selectedItems = controlledSelectedItems ?? store.selectedItems;
+  const setSelectedItems = controlledSetSelectedItems ?? store.setSelectedItems;
   const { handleMultiKeysChange } = useFiltersManager({
     keys: [MAKE_KEY, MODEL_KEY],
   });
@@ -60,6 +65,11 @@ export const MakeSelectorItem = ({
     setSelectedItems(normalized);
 
     const payload = buildMakeModelUrlPayload(normalized);
+
+    if (onApplyMakeModelPayload) {
+      onApplyMakeModelPayload(payload);
+      return;
+    }
 
     handleMultiKeysChange({
       [MAKE_KEY]: payload[MAKE_KEY],

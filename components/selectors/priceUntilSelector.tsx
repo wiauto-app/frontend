@@ -14,7 +14,7 @@ const formatCount = (count: number) =>
   count.toLocaleString("es-ES", { maximumFractionDigits: 0 });
 
 export const PriceUntilSelector = () => {
-  const { filters, facetQueryParams, setUntilPrice } = useHeroSearchFilters();
+  const { untilPrice, facetQueryParams, setUntilPrice } = useHeroSearchFilters();
   const [is_open, setIsOpen] = useState(false);
 
   const { data: price_ranges = [], isLoading } = useQuery({
@@ -23,14 +23,14 @@ export const PriceUntilSelector = () => {
   });
 
   const displayValue = useMemo(() => {
-    if (filters.until_price === undefined) {
+    if (untilPrice === undefined) {
       return null;
     }
     const selected = price_ranges.find(
-      (item) => item.until_price === filters.until_price,
+      (item) => item.until_price === untilPrice,
     );
-    return selected?.label ?? `Hasta ${formatCount(filters.until_price)} €`;
-  }, [filters.until_price, price_ranges]);
+    return selected?.label ?? `Hasta ${formatCount(untilPrice)} €`;
+  }, [untilPrice, price_ranges]);
 
   const handleSelect = (item: HeroPriceRangeFacetItem) => {
     setUntilPrice(item.until_price);
@@ -75,11 +75,10 @@ export const PriceUntilSelector = () => {
               key={item.until_price}
               type="button"
               role="option"
-              aria-selected={filters.until_price === item.until_price}
+              aria-selected={untilPrice === item.until_price}
               className={cn(
                 "flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-2 text-sm outline-none hover:bg-muted focus-visible:bg-muted",
-                filters.until_price === item.until_price &&
-                  "bg-muted font-medium",
+                untilPrice === item.until_price && "bg-muted font-medium",
               )}
               onClick={() => handleSelect(item)}
             >

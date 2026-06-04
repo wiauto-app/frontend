@@ -9,6 +9,7 @@ import { AppleLogin } from "./appleLogin";
 import { GoogleLogin } from "./googleLogin";
 import { RegisterDto, RegisterSchema } from "@/validations/Schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { authService } from "@/services/authService";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -35,8 +36,9 @@ export default function RegisterForm() {
 
     setIsLoading(true);
     try {
-      console.log("Registro con tipo:", accountType, data);
-      toast.success("Cuenta creada correctamente. ¡Bienvenido!");
+      await authService.register(data);
+      toast.success("Revisa tu correo para verificar la cuenta e iniciar sesión.");
+      router.push("/confirmar-correo");
     } catch (error: Error | unknown) {
       console.error("Register error:", error);
       toast.error((error as Error).message || "Hubo un error al crear tu cuenta. Por favor, intenta de nuevo.");
