@@ -11,7 +11,7 @@ import {
 
 import type { MakeModelUrlPayload } from "@/components/selectors/FilterMakeSelector/utils/make-model-selection";
 import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
-import { PRICE_KEYS } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
+
 import type { HeroFacetCascadeFilters } from "@/interfaces/hero-facet.interface";
 import {
   buildHeroListingHref,
@@ -37,10 +37,10 @@ const toFacetQueryParams = (
   locationPayload: LocationUrlPayload,
   until_price?: number,
 ): HeroFacetCascadeFilters => ({
-  makes_slugs: makeModelPayload.marcas,
-  models_slugs: makeModelPayload.modelos,
-  provinces_slugs: locationPayload.provincias,
-  municipalities_slugs: locationPayload.municipios,
+  make_slugs: makeModelPayload.marcas,
+  model_slugs: makeModelPayload.modelos,
+  province_slug: locationPayload.provincias?.[0],
+  municipality_slug: locationPayload.municipios?.[0],
   until_price,
 });
 
@@ -65,7 +65,7 @@ export const HeroSearchFiltersProvider = ({
       ...makeModelPayload,
       ...locationPayload,
       ...(untilPrice !== undefined
-        ? { [PRICE_KEYS.UNTIL]: untilPrice }
+        ? { precio_hasta: untilPrice }
         : {}),
     };
     return buildHeroListingHref(state);

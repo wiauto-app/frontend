@@ -1,9 +1,6 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   createCommentAction,
   type CreateCommentActionState,
@@ -26,57 +23,57 @@ export const CommentForm = ({ news_document_id, news_slug }: CommentFormProps) =
   );
 
   return (
-    <form action={formAction} className="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
+    <form action={formAction} className="space-y-4">
       <input type="hidden" name="news_document_id" value={news_document_id} />
       <input type="hidden" name="news_slug" value={news_slug} />
 
-      <div>
-        <h3 className="text-lg font-semibold text-slate-900">Leave a comment</h3>
-        <p className="mt-1 text-sm text-slate-500">
-          Your comment will be saved in Strapi and linked to this article.
-        </p>
-      </div>
+      <h2 className="text-xl font-bold text-slate-900 mb-4">Dejar un comentario</h2>
 
+      {/* Name + Email row */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
+        <div className="flex flex-col gap-1">
           <label htmlFor="comment-name" className="text-sm font-medium text-slate-700">
-            Name
+            Nombre <span className="text-red-500">*</span>
           </label>
-          <Input
+          <input
             id="comment-name"
             name="name"
             type="text"
             required
-            placeholder="Your name"
+            placeholder="Nombre"
             disabled={is_pending}
+            className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
           />
         </div>
-        <div className="space-y-1.5">
+        <div className="flex flex-col gap-1">
           <label htmlFor="comment-email" className="text-sm font-medium text-slate-700">
-            Email
+            Correo <span className="text-red-500">*</span>
           </label>
-          <Input
+          <input
             id="comment-email"
             name="email"
             type="email"
             required
-            placeholder="you@example.com"
+            placeholder="Correo"
             disabled={is_pending}
+            className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
           />
         </div>
       </div>
 
-      <div className="space-y-1.5">
+      {/* Message */}
+      <div className="flex flex-col gap-1">
         <label htmlFor="comment-text" className="text-sm font-medium text-slate-700">
-          Comment
+          Mensaje <span className="text-red-500">*</span>
         </label>
-        <Textarea
+        <textarea
           id="comment-text"
           name="text"
           required
-          rows={4}
-          placeholder="Write your comment..."
+          rows={5}
+          placeholder="Escribe tu comentario..."
           disabled={is_pending}
+          className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60 resize-none"
         />
       </div>
 
@@ -89,9 +86,13 @@ export const CommentForm = ({ news_document_id, news_slug }: CommentFormProps) =
         </p>
       ) : null}
 
-      <Button type="submit" disabled={is_pending}>
-        {is_pending ? "Sending..." : "Post comment"}
-      </Button>
+      <button
+        type="submit"
+        disabled={is_pending}
+        className="rounded-md bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-60"
+      >
+        {is_pending ? "Enviando..." : "Enviar comentario"}
+      </button>
     </form>
   );
 };
