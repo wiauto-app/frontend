@@ -1,6 +1,6 @@
 import { API_URL } from "@/constants";
 import { User } from "@/interfaces/user.interface";
-import { ApiResponse, apiGet, apiPost } from "@/lib/api";
+import { ApiResponse, apiGet, apiPost, fetchWithAuth } from "@/lib/api";
 import {
   AuthResponseDto,
   GoogleLoginDto,
@@ -18,8 +18,8 @@ export const authService = {
   register: (data: RegisterDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/auth/register`, data),
 
-  googleLogin: (data: GoogleLoginDto): Promise<ApiResponse<AuthResponseDto>> =>
-    apiPost<AuthResponseDto>(`/auth/google/mobile`, data),
+  googleLogin: (): string =>
+    `${API_URL}/auth/google`,
 
   logout: (): Promise<ApiResponse<void>> =>
     apiGet<void>(`/auth/logout`),
@@ -34,17 +34,13 @@ export const authService = {
     apiPost<AuthResponseDto>(`/2fa/enable`, data),
 
   getMe: async (accessToken?: string): Promise<ApiResponse<User>> => {
-    const response = await fetch(`${API_URL}/auth/me`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    return fetchWithAuth<User>("/auth/me", {
+      method: "GET",
+      skipAuthRefresh: true,
+      headers: accessToken
+        ? { Authorization: `Bearer ${accessToken}` }
+        : undefined,
     });
-    const data = await response.json();
-    return {
-      ok: response.ok,
-      status: response.status,
-      data,
-    };
   },
 
   validateBackupCode: (
@@ -85,5 +81,9 @@ export const authService = {
     ),
 
   refreshToken: (): Promise<ApiResponse<AuthResponseDto>> =>
-    apiPost<AuthResponseDto>(`/auth/refresh-token`, {}),
+    apiPost<AuthResponseDto>(`/auth/refresh`, {}),
+
+
+  appleLogin: (): string =>
+    `${API_URL}/auth/apple`,
 };

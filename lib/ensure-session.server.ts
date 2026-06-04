@@ -15,14 +15,33 @@ export type EnsureSessionResult =
   | { outcome: "unauthorized" }
   | { outcome: "me_not_ok"; status: number };
 
+const get_refresh_cookie_value = (
+  data: Pick<AuthResponseDto, "token"> & {
+    refresh_token?: string;
+    refreshToken_hash?: string;
+  },
+): string | null => {
+  if (typeof data.refresh_token === "string") {
+    return data.refresh_token;
+  }
+  if (typeof data.refreshToken_hash === "string") {
+    return data.refreshToken_hash;
+  }
+  return null;
+};
+
 const is_session_payload = (
   data: unknown,
-): data is Pick<AuthResponseDto, "token" | "refreshToken_hash"> => {
+): data is Pick<AuthResponseDto, "token"> & {
+  refresh_token?: string;
+  refreshToken_hash?: string;
+} => {
   if (typeof data !== "object" || data === null) return false;
   const record = data as Record<string, unknown>;
   return (
     typeof record.token === "string" &&
-    typeof record.refreshToken_hash === "string"
+    (typeof record.refresh_token === "string" ||
+      typeof record.refreshToken_hash === "string")
   );
 };
 
@@ -50,10 +69,15 @@ export const ensureValidSession = async (params: {
     return { outcome: "unauthorized" };
   }
 
+  const refresh_cookie_value = get_refresh_cookie_value(refreshed.data);
+  if (!refresh_cookie_value) {
+    return { outcome: "unauthorized" };
+  }
+
   return {
     outcome: "session_refreshed",
     access_token: refreshed.data.token,
-    refresh_token_hash: refreshed.data.refreshToken_hash,
+    refresh_token_hash: refresh_cookie_value,
   };
 };
 

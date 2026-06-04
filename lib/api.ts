@@ -1,41 +1,74 @@
 import { API_URL } from "@/constants";
+import { AUTH_ROUTES } from "@/constants/auth.constants";
+import { isPublicAuthRoute } from "@/lib/publicAuthRoutes";
 import qs from "qs";
-
-interface FetchOptions extends RequestInit {
-  isFileUpload?: boolean;
-  isFormData?: boolean;
-}
 
 export interface ApiResponse<T> {
   ok: boolean;
-  status: number;
+  message: string;
   data: T;
+  status: number;
 }
 
-export const fetchWithAuth = async (url: string, options: FetchOptions = {}) => {
-  const isFormDataBody =
-    options.body instanceof FormData ||
-    options.isFormData ||
-    options.isFileUpload;
-
-  const headers = new Headers(options.headers as HeadersInit);
-  if (!isFormDataBody && options.body) {
-    headers.set('Content-Type', 'application/json');
-  }
-
-  const res = await fetch(`${API_URL}${url}`, {
-    ...options,
-    headers,
-    credentials: 'include',
-  });
-
-  return res;
+type FetchWithAuthOptions = RequestInit & {
+  noResponse?: boolean;
+  _auth_retry_count?: number;
+  /** Evita refresh/logout automático (p. ej. `/auth/me` dentro de `ensureValidSession`). */
+  skipAuthRefresh?: boolean;
+  isFileUpload?: boolean;
+  isFormData?: boolean;
 };
 
-const parseJson = async <T>(response: Response): Promise<T> => {
-  if (response.status === 204) return null as T;
+type BackendJsonBody<T> = {
+  ok?: boolean;
+  status?: number;
+  message?: string;
+  data?: T;
+};
+
+const buildApiUrl = (path: string): string => {
+  const base = (API_URL ?? "").replace(/\/$/, "");
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  if (!base) {
+    return normalizedPath;
+  }
+
+  return `${base}${normalizedPath}`;
+};
+
+const isAuthRefreshRequest = (requestUrl: string): boolean =>
+  requestUrl.includes("/auth/refresh");
+
+const isAuthLogoutRequest = (requestUrl: string): boolean =>
+  requestUrl.includes("/auth/logout");
+
+const isOptionalAuthRequest = (requestUrl: string): boolean =>
+  requestUrl.includes("/auth/admin/two-factor/challenge");
+
+const buildJsonHeaders = (
+  requestHeaders: HeadersInit | undefined,
+  hasJsonBody: boolean,
+): HeadersInit => {
+  const headers = new Headers(requestHeaders);
+
+  if (hasJsonBody && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  return headers;
+};
+
+const parseJsonBody = async <T>(response: Response): Promise<T | null> => {
+  if (response.status === 204 || response.status === 205) {
+    return null;
+  }
+
   const text = await response.text();
-  if (!text) return null as T;
+  if (!text) {
+    return null;
+  }
+
   try {
     return JSON.parse(text) as T;
   } catch {
@@ -43,77 +76,301 @@ const parseJson = async <T>(response: Response): Promise<T> => {
   }
 };
 
-const toApiResponse = async <T>(response: Response): Promise<ApiResponse<T>> => {
-  const body = await parseJson<{ ok?: boolean; status?: number; data: T }>(response);
-  const data = body.data;
-  if(!response.ok) {
-    console.error(body);
-  }
-  return { ok: response.ok, status: response.status, data };
+const toApiResponse = <T>(
+  response: Response,
+  body: BackendJsonBody<T> | null,
+): ApiResponse<T> => {
+  const message =
+    (typeof body === "object" && body !== null && "message" in body
+      ? body.message
+      : undefined) ?? response.statusText;
+
+  const data =
+    typeof body === "object" && body !== null && "data" in body
+      ? (body.data as T)
+      : (body as T);
+
+  const ok =
+    typeof body === "object" && body !== null && typeof body.ok === "boolean"
+      ? body.ok
+      : response.ok;
+
+  return {
+    ok,
+    message,
+    status: response.status,
+    data,
+  };
 };
 
-export const apiGet = async <T>(endpoint: string,queryParams?: Record<string, unknown>): Promise<ApiResponse<T>> => {
+const bestEffortLogout = async (): Promise<void> => {
+  try {
+    await fetch(buildApiUrl("/auth/logout"), {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch {
+    // Best-effort: lo importante es limpiar sesión en el cliente.
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const { logoutAction } = await import(
+        "@/app/(auth)/authActions/authActions"
+      );
+      await logoutAction();
+    } catch {
+      // ignore
+    }
+  }
+};
+
+const redirectToLogin = (): void => {
+  if (typeof window !== "undefined") {
+    window.location.href = AUTH_ROUTES.LOGIN;
+  }
+};
+
+const tryRefreshSession = async (): Promise<boolean> => {
+  if (typeof window !== "undefined") {
+    try {
+      const { refreshSessionAction } = await import(
+        "@/app/(auth)/actions/refreshSessionAction"
+      );
+      const result = await refreshSessionAction();
+      return result.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  const refreshResponse = await fetch(buildApiUrl("/auth/refresh"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+
+  return refreshResponse.ok;
+};
+
+export const fetchWithAuth = async <T>(
+  path: string,
+  options: FetchWithAuthOptions = {},
+): Promise<ApiResponse<T>> => {
+  const requestUrl = buildApiUrl(path);
+
+  const {
+    noResponse,
+    _auth_retry_count = 0,
+    skipAuthRefresh = false,
+    headers: requestHeaders,
+    isFileUpload,
+    isFormData,
+    ...fetchOptions
+  } = options;
+
+  const isFormDataBody =
+    fetchOptions.body instanceof FormData || isFormData || isFileUpload;
+
+  const hasJsonBody =
+    !isFormDataBody &&
+    fetchOptions.body !== undefined &&
+    fetchOptions.body !== null;
+
+  const res = await fetch(requestUrl, {
+    ...fetchOptions,
+    credentials: "include",
+    headers: buildJsonHeaders(requestHeaders, hasJsonBody),
+  });
+
+  if (
+    res.status === 401 &&
+    !skipAuthRefresh &&
+    typeof window !== "undefined" &&
+    !isPublicAuthRoute() &&
+    !isOptionalAuthRequest(requestUrl) &&
+    !isAuthRefreshRequest(requestUrl) &&
+    !isAuthLogoutRequest(requestUrl)
+  ) {
+    if (_auth_retry_count >= 1) {
+      await bestEffortLogout();
+      redirectToLogin();
+      return {
+        ok: false,
+        message: "Sesión expirada",
+        status: res.status,
+        data: null as T,
+      };
+    }
+
+    const refreshed = await tryRefreshSession();
+
+    if (refreshed) {
+      return fetchWithAuth<T>(path, {
+        ...options,
+        _auth_retry_count: _auth_retry_count + 1,
+      });
+    }
+
+    await bestEffortLogout();
+    redirectToLogin();
+    return {
+      ok: false,
+      message: "Sesión expirada",
+      status: res.status,
+      data: null as T,
+    };
+  }
+
+  if (noResponse) {
+    return {
+      ok: res.ok,
+      message: res.statusText,
+      status: res.status,
+      data: null as T,
+    };
+  }
+
+  const body = await parseJsonBody<BackendJsonBody<T>>(res);
+  const apiResponse = toApiResponse<T>(res, body);
+
+  if (!res.ok && !apiResponse.message) {
+    apiResponse.message = res.statusText;
+  }
+
+  if (!res.ok) {
+    console.error(body);
+  }
+
+  return apiResponse;
+};
+
+export const fetchOptionalAuth = async <T>(
+  path: string,
+  options: RequestInit & { noResponse?: boolean } = {},
+): Promise<ApiResponse<T>> => {
+  const requestUrl = buildApiUrl(path);
+  const { noResponse, headers: requestHeaders, ...fetchOptions } = options;
+
+  const hasJsonBody =
+    fetchOptions.body !== undefined && fetchOptions.body !== null;
+
+  const res = await fetch(requestUrl, {
+    ...fetchOptions,
+    credentials: "include",
+    headers: buildJsonHeaders(requestHeaders, hasJsonBody),
+  });
+
+  if (noResponse) {
+    return {
+      ok: res.ok,
+      message: res.statusText,
+      status: res.status,
+      data: null as T,
+    };
+  }
+
+  const body = await parseJsonBody<BackendJsonBody<T>>(res);
+
+  if (!res.ok) {
+    if (body !== null) {
+      return toApiResponse<T>(res, body);
+    }
+
+    return {
+      ok: false,
+      message: res.statusText,
+      status: res.status,
+      data: null as T,
+    };
+  }
+
+  return toApiResponse<T>(res, body);
+};
+
+export const apiGet = async <T>(
+  path: string,
+  queryParams?: Record<string, unknown>,
+): Promise<ApiResponse<T>> => {
   let query = "";
   if (queryParams) {
     query = qs.stringify(queryParams, { skipNulls: true, addQueryPrefix: true });
   }
-  const response = await fetchWithAuth(`${endpoint}${query}`);
-  return toApiResponse<T>(response);
+
+  return fetchWithAuth<T>(`${path}${query}`, { method: "GET" });
 };
 
 export const apiPost = async <T>(
-  endpoint: string,
+  path: string,
   data?: unknown,
 ): Promise<ApiResponse<T>> => {
   const isFormData = data instanceof FormData;
-  const response = await fetchWithAuth(endpoint, {
-    method: 'POST',
-    body: isFormData ? data : data !== undefined ? JSON.stringify(data) : undefined,
-    ...(isFormData ? { isFormData: true as const } : {}),
+
+  return fetchWithAuth<T>(path, {
+    method: "POST",
+    body: isFormData
+      ? data
+      : data !== undefined
+        ? JSON.stringify(data)
+        : undefined,
+    ...(isFormData ? { isFormData: true } : {}),
   });
-  return toApiResponse<T>(response);
 };
 
-/** POST que devuelve un Blob (p. ej. PDF). */
 export const apiPostBlob = async (
-  endpoint: string,
+  path: string,
   data?: unknown,
 ): Promise<ApiResponse<Blob>> => {
-  const response = await fetchWithAuth(endpoint, {
-    method: 'POST',
+  const response = await fetch(buildApiUrl(path), {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
     body: data !== undefined ? JSON.stringify(data) : undefined,
   });
+
   const blob = await response.blob();
-  return { ok: response.ok, status: response.status, data: blob };
+
+  return {
+    ok: response.ok,
+    message: response.statusText,
+    status: response.status,
+    data: blob,
+  };
 };
 
 export const apiPut = async <T>(
-  endpoint: string,
+  path: string,
   data: unknown,
 ): Promise<ApiResponse<T>> => {
-  const response = await fetchWithAuth(endpoint, {
-    method: 'PUT',
+  return fetchWithAuth<T>(path, {
+    method: "PUT",
     body: JSON.stringify(data),
   });
-  return toApiResponse<T>(response);
 };
 
 export const apiPatch = async <T>(
-  endpoint: string,
+  path: string,
   data: unknown,
 ): Promise<ApiResponse<T>> => {
-  const response = await fetchWithAuth(endpoint, {
-    method: 'PATCH',
+  return fetchWithAuth<T>(path, {
+    method: "PATCH",
     body: JSON.stringify(data),
   });
-  return toApiResponse<T>(response);
 };
 
 export const apiDelete = async <T = null>(
-  endpoint: string,
+  path: string,
+  body?: unknown,
 ): Promise<ApiResponse<T>> => {
-  const response = await fetchWithAuth(endpoint, {
-    method: 'DELETE',
-  });
-  return toApiResponse<T>(response);
+  const options: FetchWithAuthOptions = {
+    method: "DELETE",
+    noResponse: true,
+  };
+
+  if (body !== undefined) {
+    options.body = JSON.stringify(body);
+  }
+
+  return fetchWithAuth<T>(path, options);
 };

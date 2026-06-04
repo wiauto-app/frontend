@@ -2,7 +2,9 @@
 export interface AuthResponseDto {
   type: "session" | "2fa_challenge";
   token: string;
-  refreshToken_hash: string;
+  /** Token crudo para cookie `refresh_token` (respuesta del API). */
+  refresh_token?: string;
+  refreshToken_hash?: string;
 }
 
 

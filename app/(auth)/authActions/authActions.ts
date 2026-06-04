@@ -13,7 +13,12 @@ export async function loginAction(data: LoginDto) {
     }
     const cookiesStore = await cookies();
     cookiesStore.set(cookiesConfig.name, response.data.token, cookiesConfig.options);
-    cookiesStore.set(cookiesConfig.refreshTokenName, response.data.refreshToken_hash, cookiesConfig.options);
+    const refresh_token =
+      response.data.refresh_token ?? response.data.refreshToken_hash;
+    if (!refresh_token) {
+      throw new Error("No se recibió el token de actualización");
+    }
+    cookiesStore.set(cookiesConfig.refreshTokenName, refresh_token, cookiesConfig.options);
   } catch (error) {
     throw error;
   }

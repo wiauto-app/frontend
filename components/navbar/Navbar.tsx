@@ -3,6 +3,7 @@ import { NavbarBrand } from "./components/NavbarBrand";
 import { NavbarLinks } from "./components/NavbarLinks";
 
 export const Navbar = () => {
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white">
       <nav
