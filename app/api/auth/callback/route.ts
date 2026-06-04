@@ -1,8 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { cookiesConfig } from "@/config/cookies.config";
+import { FRONTEND_URL } from "@/constants";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  
   const { searchParams } = new URL(request.url);
   const token = searchParams.get("token");
   const refreshToken = searchParams.get("refresh_token");
@@ -24,8 +26,8 @@ export async function GET(request: Request) {
   cookieStore.set(cookiesConfig.refreshTokenName, refreshToken, cookiesConfig.options);
 
   if (type === "2fa_challenge") {
-    return NextResponse.redirect(new URL("/2fa-challenge", request.url));
+    return NextResponse.redirect(new URL("/2fa-challenge", FRONTEND_URL));
   }
 
-  return NextResponse.redirect(new URL("/", request.url));
+  return NextResponse.redirect(new URL("/", FRONTEND_URL));
 }
