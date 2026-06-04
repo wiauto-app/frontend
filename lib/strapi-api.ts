@@ -18,7 +18,6 @@ const parseStrapiError = async (response: Response): Promise<string> => {
 };
 
 export const getStrapiData = async <T>(endpoint: string): Promise<T> => {
-  
   const response = await fetch(buildStrapiUrl(endpoint), {
     headers: {
       Authorization: `Bearer ${STRAPI_TOKEN}`,

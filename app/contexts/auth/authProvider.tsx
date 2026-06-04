@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     queryKey: ["user"],
     queryFn: async () => {
       const response = await authService.getMe();
-      console.log(response);
       return response.data;
     },
   });

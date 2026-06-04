@@ -1,33 +1,25 @@
+import { FaqQuestionsList } from "@/components/preguntas-frecuentes/FaqQuestionsList";
 import { getFaqData } from "@/components/preguntas-frecuentes/services/faqService";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { BlocksRenderer, type BlocksContent } from "@strapi/blocks-react-renderer";
 import type { FaqItem } from "@/components/preguntas-frecuentes/types/faq.types";
 
-const QuestionsList = ({ items }: { items: FaqItem[] }) => (
-  <div className="w-full max-w-xl mx-auto">
-    <Accordion>
-      {items.map((item) => (
-        <AccordionItem key={item.id} value={item.id}>
-          <AccordionTrigger className="text-base font-medium text-gray-900">
-            {item.pregunta}
-          </AccordionTrigger>
-          <AccordionContent className="text-gray-600 leading-relaxed">
-            <BlocksRenderer content={item.respuesta as unknown as BlocksContent} />
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
-  </div>
-);
-
 export default async function PreguntasFrecuentes() {
-  const { items } = await getFaqData();
+  let items: FaqItem[] = [];
+  let error_message: string | null = null;
+
+  try {
+    items = await getFaqData();
+  } catch (error) {
+    error_message =
+      error instanceof Error
+        ? error.message
+        : "No se pudieron cargar las preguntas frecuentes.";
+  }
 
   return (
     <>
       <div className="w-full bg-[#DBE6F8] from-blue-700 to-blue-600 py-20 px-4">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-5xl font-bold text-start mb-4">
+          <h1 className="text-5xl font-bold text-start mb-4 flex items-center gap-3">
             <span className="text-black">Preguntas</span>
             <span className="text-blue-700">frecuentes</span>
           </h1>
@@ -37,11 +29,27 @@ export default async function PreguntasFrecuentes() {
       <div className="flex min-h-[60vh] items-center justify-center p-4 w-full">
         <div className="flex w-full max-w-8xl overflow-hidden rounded-2xl shadow-xl">
           <div className="w-full lg:w-[50%] flex items-start justify-center p-8 bg-white overflow-y-auto">
-            <QuestionsList items={items} />
+            {error_message ? (
+              <div className="w-full max-w-xl rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                {error_message}
+              </div>
+            ) : null}
+
+            {!error_message && items.length === 0 ? (
+              <div className="w-full max-w-xl rounded-lg border border-dashed border-slate-300 bg-slate-50 p-10 text-center text-slate-500">
+                No hay preguntas publicadas todavía.
+              </div>
+            ) : null}
+
+            {!error_message && items.length > 0 ? (
+              <FaqQuestionsList items={items} />
+            ) : null}
           </div>
           <div className="hidden lg:flex lg:flex-1 relative overflow-hidden">
             <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-              <span className="text-white text-7xl font-bold tracking-tighter">W</span>
+              <span className="text-white text-7xl font-bold tracking-tighter">
+                W
+              </span>
             </div>
           </div>
         </div>

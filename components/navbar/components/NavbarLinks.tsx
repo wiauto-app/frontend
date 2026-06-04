@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { href: "/vehiculos", label: "Vehículos", exact: false },
   { href: "/blog", label: "Blog", exact: false },
   { href: "/prensa", label: "Prensa", exact: false },
-  { href: "/faq", label: "FAQ", exact: false },
+  { href: "/preguntas-frecuentes", label: "Preguntas Frecuentes", exact: false },
 ] as const;
 
 export function NavbarLinks() {

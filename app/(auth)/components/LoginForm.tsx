@@ -54,7 +54,7 @@ export default function LoginForm() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 w-full">
-      <div className="flex w-full max-w-8xl overflow-hidden rounded-2xl shadow-xl">
+      <div className="flex w-full max-w-5xl overflow-hidden rounded-2xl shadow-xl">
         <div className="hidden lg:flex lg:w-[37.4%] bg-blue-700 flex-col items-center justify-center relative overflow-hidden">
           {/* Patrón de fondo decorativo */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800" />
