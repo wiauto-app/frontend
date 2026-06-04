@@ -58,7 +58,7 @@ export const ListingLocationSelector = ({
 
   const parent_label_lookup = useCallback(
     (slug: string) => provinces.find((item) => item.slug === slug)?.name,
-    [provinces],
+    [provinces] ,
   );
 
   const child_label_lookup = useCallback(
@@ -74,15 +74,15 @@ export const ListingLocationSelector = ({
     [children_by_province_slug],
   );
 
-  const displayValue = useMemo(
-    () =>
-      formatHierarchyMultiDisplay(
-        value,
-        parent_label_lookup,
-        child_label_lookup,
-      ),
-    [value, parent_label_lookup, child_label_lookup],
-  );
+  // const displayValue = useMemo(
+  //   () =>
+  //     formatHierarchyMultiDisplay(
+  //       value,
+  //       parent_label_lookup,
+  //       child_label_lookup,
+  //     ),
+  //   [value, parent_label_lookup, child_label_lookup],
+  // );
 
   const handleExpandItem = useCallback(
     async (item: HeroHierarchyItem) => {
@@ -136,7 +136,7 @@ export const ListingLocationSelector = ({
       isLoading={isLoading}
       searchValue={search}
       onSearchChange={setSearch}
-      displayValue={displayValue}
+      // displayValue={displayValue}
       emptyMessage="No se encontraron provincias"
       selection_mode="multiple"
       value={value}

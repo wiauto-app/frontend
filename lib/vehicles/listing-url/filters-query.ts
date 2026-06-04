@@ -58,7 +58,7 @@ export const normalizeFilterQueryValue = (
     return String(value);
   }
 
-  const trimmed = value.trim();
+  const trimmed = String(value).trim();
   if (!trimmed) {
     return undefined;
   }

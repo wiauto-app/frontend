@@ -97,7 +97,7 @@ export const MakeSelector = ({
 
       try {
         const models = await heroFacetService.getModels(
-          make_slug,
+          [make_slug],
           facetQueryParams,
         );
         setChildrenByMakeSlug((prev) => ({
