@@ -37,6 +37,7 @@ export const authService = {
     return fetchWithAuth<User>("/auth/me", {
       method: "GET",
       skipAuthRefresh: true,
+      credentials: "include",
       headers: accessToken
         ? { Authorization: `Bearer ${accessToken}` }
         : undefined,
