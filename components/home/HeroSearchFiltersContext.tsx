@@ -9,118 +9,85 @@ import {
   type ReactNode,
 } from "react";
 
-import type {
-  HeroFacetCascadeFilters,
-  HeroSearchFilters,
-} from "@/interfaces/hero-facet.interface";
-import { toHeroFacetCascadeFilters } from "@/interfaces/hero-facet.interface";
-import type { HierarchyMultiValue } from "@/components/selectors/types";
+import type { MakeModelUrlPayload } from "@/components/selectors/FilterMakeSelector/utils/make-model-selection";
+import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
+import { PRICE_KEYS } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
+import type { HeroFacetCascadeFilters } from "@/interfaces/hero-facet.interface";
+import {
+  buildHeroListingHref,
+  type HeroListingSearchState,
+} from "@/lib/vehicles/listing-url";
 
 type HeroSearchFiltersContextValue = {
-  filters: HeroSearchFilters;
-  setMakeModelValue: (value: HierarchyMultiValue) => void;
-  setLocationValue: (value: HierarchyMultiValue) => void;
+  makeModelPayload: MakeModelUrlPayload;
+  locationPayload: LocationUrlPayload;
+  untilPrice?: number;
+  setMakeModelPayload: (payload: MakeModelUrlPayload) => void;
+  setLocationPayload: (payload: LocationUrlPayload) => void;
   setUntilPrice: (until_price?: number) => void;
-  clearMakeModel: () => void;
-  clearProvinceMunicipality: () => void;
   facetQueryParams: HeroFacetCascadeFilters;
-  makeModelValue: HierarchyMultiValue;
-  locationValue: HierarchyMultiValue;
+  buildListingHref: () => string;
 };
 
 const HeroSearchFiltersContext =
   createContext<HeroSearchFiltersContextValue | null>(null);
+
+const toFacetQueryParams = (
+  makeModelPayload: MakeModelUrlPayload,
+  locationPayload: LocationUrlPayload,
+  until_price?: number,
+): HeroFacetCascadeFilters => ({
+  makes_slugs: makeModelPayload.marcas,
+  models_slugs: makeModelPayload.modelos,
+  provinces_slugs: locationPayload.provincias,
+  municipalities_slugs: locationPayload.municipios,
+  until_price,
+});
 
 export const HeroSearchFiltersProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
-  const [filters, setFilters] = useState<HeroSearchFilters>({});
-
-  const setMakeModelValue = useCallback((value: HierarchyMultiValue) => {
-    setFilters((prev) => ({
-      ...prev,
-      makes_slugs:
-        value.parent_slugs.length > 0 ? value.parent_slugs : undefined,
-      models_slugs:
-        value.child_slugs.length > 0 ? value.child_slugs : undefined,
-    }));
-  }, []);
-
-  const setLocationValue = useCallback((value: HierarchyMultiValue) => {
-    setFilters((prev) => ({
-      ...prev,
-      provinces_slugs:
-        value.parent_slugs.length > 0 ? value.parent_slugs : undefined,
-      municipalities_slugs:
-        value.child_slugs.length > 0 ? value.child_slugs : undefined,
-    }));
-  }, []);
-
-  const setUntilPrice = useCallback((until_price?: number) => {
-    setFilters((prev) => ({ ...prev, until_price }));
-  }, []);
-
-  const clearMakeModel = useCallback(() => {
-    setFilters((prev) => ({
-      ...prev,
-      makes_slugs: undefined,
-      models_slugs: undefined,
-    }));
-  }, []);
-
-  const clearProvinceMunicipality = useCallback(() => {
-    setFilters((prev) => ({
-      ...prev,
-      provinces_slugs: undefined,
-      municipalities_slugs: undefined,
-    }));
-  }, []);
+  const [makeModelPayload, setMakeModelPayload] = useState<MakeModelUrlPayload>(
+    {},
+  );
+  const [locationPayload, setLocationPayload] = useState<LocationUrlPayload>({});
+  const [untilPrice, setUntilPrice] = useState<number | undefined>();
 
   const facetQueryParams = useMemo(
-    () => toHeroFacetCascadeFilters(filters),
-    [filters],
+    () => toFacetQueryParams(makeModelPayload, locationPayload, untilPrice),
+    [locationPayload, makeModelPayload, untilPrice],
   );
 
-  const makeModelValue = useMemo(
-    (): HierarchyMultiValue => ({
-      parent_slugs: filters.makes_slugs ?? [],
-      child_slugs: filters.models_slugs ?? [],
-    }),
-    [filters.makes_slugs, filters.models_slugs],
-  );
-
-  const locationValue = useMemo(
-    (): HierarchyMultiValue => ({
-      parent_slugs: filters.provinces_slugs ?? [],
-      child_slugs: filters.municipalities_slugs ?? [],
-    }),
-    [filters.municipalities_slugs, filters.provinces_slugs],
-  );
+  const buildListingHref = useCallback(() => {
+    const state: HeroListingSearchState = {
+      ...makeModelPayload,
+      ...locationPayload,
+      ...(untilPrice !== undefined
+        ? { [PRICE_KEYS.UNTIL]: untilPrice }
+        : {}),
+    };
+    return buildHeroListingHref(state);
+  }, [locationPayload, makeModelPayload, untilPrice]);
 
   const value = useMemo(
     (): HeroSearchFiltersContextValue => ({
-      filters,
-      setMakeModelValue,
-      setLocationValue,
+      makeModelPayload,
+      locationPayload,
+      untilPrice,
+      setMakeModelPayload,
+      setLocationPayload,
       setUntilPrice,
-      clearMakeModel,
-      clearProvinceMunicipality,
       facetQueryParams,
-      makeModelValue,
-      locationValue,
+      buildListingHref,
     }),
     [
-      filters,
-      setMakeModelValue,
-      setLocationValue,
-      setUntilPrice,
-      clearMakeModel,
-      clearProvinceMunicipality,
+      makeModelPayload,
+      locationPayload,
+      untilPrice,
       facetQueryParams,
-      makeModelValue,
-      locationValue,
+      buildListingHref,
     ],
   );
 

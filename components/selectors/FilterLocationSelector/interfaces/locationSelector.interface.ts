@@ -1,4 +1,5 @@
 import { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
+import type { LocationUrlPayload } from "../utils/location-selection";
 
 export type LocationSelectType = "province" | "municipality";
 
@@ -15,4 +16,7 @@ export interface LocationSelectorItemProps {
   isLoading: boolean;
   municipalities: HeroCatalogFacetItem[];
   item: HeroCatalogFacetItem;
+  selectedItems?: LocationSelectedItem[];
+  setSelectedItems?: (items: LocationSelectedItem[]) => void;
+  onApplyLocationPayload?: (payload: LocationUrlPayload) => void;
 }

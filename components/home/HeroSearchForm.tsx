@@ -6,17 +6,13 @@ import { useRouter } from "next/navigation";
 import { Wallet } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  buildVehicleListingHref,
-  heroFiltersToListingParams,
-} from "@/lib/vehicles/listing-url";
-import { MakeSelector } from "../selectors/makeSelector";
-import { ProvinceSelector } from "../selectors/provinceSelector";
 import { PriceUntilSelector } from "../selectors/priceUntilSelector";
 import {
   HeroSearchFiltersProvider,
   useHeroSearchFilters,
 } from "./HeroSearchFiltersContext";
+import { HeroFiltersMakeSelector } from "./HeroFiltersMakeSelector";
+import { HeroFiltersLocationSelector } from "./HeroFiltersLocationSelector";
 
 const BRAND_BLUE = "#0061F2";
 
@@ -31,19 +27,12 @@ type SellOption = "particular" | "profesional";
 
 const HeroSearchFormContent = () => {
   const router = useRouter();
-  const {
-    filters,
-    facetQueryParams,
-    makeModelValue,
-    locationValue,
-    setMakeModelValue,
-    setLocationValue,
-  } = useHeroSearchFilters();
+  const { buildListingHref } = useHeroSearchFilters();
   const [activeTab, setActiveTab] = useState<TabId>("comprar");
   const [sellOption, setSellOption] = useState<SellOption>("particular");
 
   const handleSearch = () => {
-    router.push(buildVehicleListingHref(heroFiltersToListingParams(filters)));
+    router.push(buildListingHref());
   };
 
   return (
@@ -79,16 +68,8 @@ const HeroSearchFormContent = () => {
             handleSearch();
           }}
         >
-          <MakeSelector
-            value={makeModelValue}
-            onValueChange={setMakeModelValue}
-            facetQueryParams={facetQueryParams}
-          />
-          <ProvinceSelector
-            value={locationValue}
-            onValueChange={setLocationValue}
-            facetQueryParams={facetQueryParams}
-          />
+          <HeroFiltersMakeSelector />
+          <HeroFiltersLocationSelector />
           <PriceUntilSelector />
 
           <button

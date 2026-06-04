@@ -4,11 +4,12 @@ import { cookiesConfig } from "@/config/cookies.config";
 import { FRONTEND_URL } from "@/constants";
 
 export async function GET(request: NextRequest) {
-  
   const { searchParams } = new URL(request.url);
   const token = searchParams.get("token");
   const refreshToken = searchParams.get("refresh_token");
   const type = searchParams.get("type");
+  const message = searchParams.get("message");
+
   if (!token) {
     return NextResponse.json({ error: "Token not found" }, { status: 400 });
   }
@@ -27,6 +28,10 @@ export async function GET(request: NextRequest) {
 
   if (type === "2fa_challenge") {
     return NextResponse.redirect(new URL("/2fa-challenge", FRONTEND_URL));
+  }
+
+  if (message) {
+    return NextResponse.redirect(new URL("/?verified=1", FRONTEND_URL));
   }
 
   return NextResponse.redirect(new URL("/", FRONTEND_URL));

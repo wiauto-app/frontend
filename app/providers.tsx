@@ -1,4 +1,5 @@
 "use client";
+import { Toaster } from "sonner";
 import { AuthProvider } from "./contexts/auth/authProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -10,6 +11,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         {children}
       </AuthProvider>
+      <Toaster richColors position="top-right" />
     </QueryClientProvider>
   )
 }

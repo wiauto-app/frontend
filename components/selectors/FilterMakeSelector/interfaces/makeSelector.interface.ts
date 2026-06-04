@@ -1,4 +1,5 @@
-import { HeroCatalogFacetItem } from "@/interfaces/hero-search.interface";
+import { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
+import type { MakeModelUrlPayload } from "../utils/make-model-selection";
 
 export type SelectAllType = "make" | "model";
 
@@ -16,4 +17,7 @@ export interface MakeSelectorItemProps {
   isLoading: boolean;
   models: HeroCatalogFacetItem[];
   item: HeroCatalogFacetItem;
+  selectedItems?: SelectedItem[];
+  setSelectedItems?: (items: SelectedItem[]) => void;
+  onApplyMakeModelPayload?: (payload: MakeModelUrlPayload) => void;
 }

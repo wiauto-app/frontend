@@ -31,8 +31,13 @@ export const LocationSelectorItem = ({
   item,
   selectedProvinces,
   setSelectedProvinces,
+  selectedItems: controlledSelectedItems,
+  setSelectedItems: controlledSetSelectedItems,
+  onApplyLocationPayload,
 }: LocationSelectorItemProps) => {
-  const { selectedItems, setSelectedItems } = useSelectedLocationItemsStore();
+  const store = useSelectedLocationItemsStore();
+  const selectedItems = controlledSelectedItems ?? store.selectedItems;
+  const setSelectedItems = controlledSetSelectedItems ?? store.setSelectedItems;
   const { applyUrlUpdates } = useFiltersManager({
     keys: [PROVINCE_KEY, MUNICIPALITY_KEY],
   });
@@ -69,6 +74,11 @@ export const LocationSelectorItem = ({
     setSelectedItems(normalized);
 
     const payload = buildLocationUrlPayload(normalized);
+
+    if (onApplyLocationPayload) {
+      onApplyLocationPayload(payload);
+      return;
+    }
 
     applyUrlUpdates({
       [PROVINCE_KEY]: payload[PROVINCE_KEY],
