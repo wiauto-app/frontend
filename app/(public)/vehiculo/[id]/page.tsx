@@ -1,462 +1,407 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   MapPin,
-  Gauge,
   Calendar,
-  Fuel,
-  Settings,
-  Battery,
-  Zap,
   Phone,
   Mail,
   ArrowLeft,
-  Car,
-  Tag,
   Heart,
   Share2,
   Shield,
-  BadgeCheck,
-  Building2,
   User,
   ChevronLeft,
   ChevronRight,
+  CheckCircle,
+  AlertTriangle,
+  Clock,
+  Star,
+  MessageCircle,
+  // CheckBadge,
 } from "lucide-react";
-import { vehicleService } from "@/services/vehicleService";
-import { Vehicle } from "@/interfaces/vehicle.interface";
 import Link from "next/link";
 
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
-
-function formatMileage(km: number): string {
-  return new Intl.NumberFormat("es-ES").format(km) + " km";
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("es-ES", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-function formatPower(kw: number): string {
-  const cv = Math.round(kw * 1.36);
-  return `${cv} CV (${kw} kW)`;
-}
-
-function formatDisplacement(cc: number): string | null {
-  return cc > 0 ? `${cc} cc` : null;
-}
-
-function getConditionLabel(condition: string): string {
-  return condition === "new" ? "Nuevo" : "Usado";
-}
-
-function getTransmissionLabel(transmission: string): string {
-  return transmission === "automatic" ? "Automático" : "Manual";
-}
-
-function getPublisherLabel(type: string): string {
-  return type === "professional" ? "Vendedor profesional" : "Particular";
-}
-
-function getImageUrl(images: Vehicle["images"] | undefined, index: number): string {
-  if (!images || images.length === 0) return "/placeholder-car.jpg";
-  const img = images[index % images.length];
-  return img?.url || "/placeholder-car.jpg";
-}
-
 export default function VehicleDetailPage() {
-  const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
-
-  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
-
-    setLoading(true);
-    vehicleService.vehicles
-      .findById(id)
-      .then((response) => {
-        if (!response.ok) {
-          setError("No se pudo cargar el vehículo");
-          return;
-        }
-        setVehicle(response.data);
-        setError(null);
-      })
-      .catch(() => {
-        setError("No se pudo cargar el vehículo");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [id]);
+  const images = [
+    "/placeholder-car.jpg",
+    "/placeholder-car.jpg",
+    "/placeholder-car.jpg"
+  ];
 
   const nextImage = () => {
-    if (!vehicle?.images) return;
-    setCurrentImage((prev) => (prev + 1) % vehicle.images.length);
+    setCurrentImage((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
-    if (!vehicle?.images) return;
-    setCurrentImage((prev) => (prev - 1 + vehicle.images.length) % vehicle.images.length);
+    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent" />
-          <p className="mt-4 text-gray-500">Cargando vehículo...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !vehicle) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md px-6">
-          <Car className="mx-auto h-16 w-16 text-gray-300" />
-          <h2 className="mt-4 text-xl font-semibold text-gray-900">Vehículo no encontrado</h2>
-          <p className="mt-2 text-gray-500">{error || "El vehículo que buscas no existe o ha sido eliminado."}</p>
-          <Link
-            href="/"
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver al inicio
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const displacement = formatDisplacement(vehicle.displacement);
-  const isEv = vehicle.battery_capacity > 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Back button */}
-      <div className="bg-white border-b border-gray-200">
+      {/* Header con botón volver */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Volver
+            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setSaved(!saved)} className="p-2">
+                <Heart className={`h-5 w-5 ${saved ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
+              </button>
+              <button className="p-2">
+                <Share2 className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main content */}
+          {/* COLUMNA IZQUIERDA - Contenido principal */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Image gallery */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              <div className="relative aspect-video bg-gray-100">
+            {/* Galería de imágenes */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="relative aspect-[4/3] bg-gray-100">
                 <img
-                  src={getImageUrl(vehicle.images, currentImage)}
-                  alt={vehicle.title}
+                  src={images[currentImage]}
+                  alt="Toyota Corolla"
                   className="w-full h-full object-cover"
                 />
-                {vehicle.images && vehicle.images.length > 1 && (
+                {images.length > 1 && (
                   <>
-                    <button
-                      onClick={prevImage}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-md transition-colors"
-                    >
+                    <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 shadow-md">
                       <ChevronLeft className="h-5 w-5" />
                     </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-md transition-colors"
-                    >
+                    <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 shadow-md">
                       <ChevronRight className="h-5 w-5" />
                     </button>
-                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                      {vehicle.images.map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setCurrentImage(i)}
-                          className={`h-2 rounded-full transition-all ${
-                            i === currentImage ? "w-6 bg-white" : "w-2 bg-white/60"
-                          }`}
-                        />
-                      ))}
-                    </div>
                   </>
                 )}
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex gap-2">
-                  <span className="bg-blue-600 text-white text-xs font-semibold px-2.5 py-1 rounded-md">
-                    {getConditionLabel(vehicle.condition)}
-                  </span>
-                  {vehicle.is_featured && (
-                    <span className="bg-amber-500 text-white text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1">
-                      <BadgeCheck className="h-3 w-3" />
-                      Destacado
-                    </span>
-                  )}
+                <div className="absolute top-3 left-3">
+                  <span className="bg-blue-600 text-white text-xs font-semibold px-2.5 py-1 rounded-md">Nuevo</span>
                 </div>
               </div>
-              {/* Thumbnails */}
-              {vehicle.images && vehicle.images.length > 1 && (
-                <div className="flex gap-2 p-3 overflow-x-auto">
-                  {vehicle.images.slice(0, 6).map((img, i) => (
-                    <button
-                      key={img.id}
-                      onClick={() => setCurrentImage(i)}
-                      className={`flex-shrink-0 w-16 h-12 rounded-md overflow-hidden border-2 transition-colors ${
-                        i === currentImage ? "border-blue-600" : "border-transparent"
-                      }`}
-                    >
-                      <img src={img.url} alt="" className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
-            {/* Title & price */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h1 className="text-2xl font-bold text-gray-900">{vehicle.title}</h1>
-                  <div className="flex items-center gap-3 mt-2 text-sm text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {formatDate(vehicle.created_at)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Gauge className="h-4 w-4" />
-                      {vehicle.views} visitas
-                    </span>
+            {/* Título y fecha */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h1 className="text-2xl font-bold text-gray-900">Toyota Corolla 2020 Full 1.8</h1>
+              <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  Publicado: 26/02 13:28
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  modificado: 26/02 18:00
+                </span>
+              </div>
+            </div>
+
+            {/* Precio y financiamiento */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="text-3xl font-bold text-gray-900">$28,900</span>
+                <span className="text-gray-400 line-through text-lg">32,000 €</span>
+                <span className="text-red-600 text-sm font-semibold">+ Requisito</span>
+              </div>
+              <p className="text-green-600 font-medium mt-2">
+                Financiamiento desde $482/mes - 60 meses
+              </p>
+              <p className="text-sm text-gray-500 mt-1">IVA incluido</p>
+            </div>
+
+            {/* Servicios incluidos */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Servicios incluidos en la cuota</h2>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Shield className="h-5 w-5 text-green-600" />
+                  <span className="text-gray-700">Seguro A Todo Riesgo Sin Fronteras</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="text-gray-700">Aventura Y Reparaciones</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="text-gray-700">Sin Entrada</span>
+                </div>
+              </div>
+              <button className="mt-4 text-blue-600 text-sm font-medium">
+                Más sobre los servicios →
+              </button>
+            </div>
+
+            {/* Contacta con el anunciante */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Contacta con el anunciante</h2>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <User className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Nombre</p>
+                    <p className="font-medium text-gray-900">gabriel@hotmail.com</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setSaved(!saved)}
-                    className={`p-2 rounded-full border transition-colors ${
-                      saved
-                        ? "bg-red-50 border-red-200 text-red-500"
-                        : "border-gray-200 text-gray-400 hover:text-red-500"
-                    }`}
-                  >
-                    <Heart className={`h-5 w-5 ${saved ? "fill-current" : ""}`} />
-                  </button>
-                  <button className="p-2 rounded-full border border-gray-200 text-gray-400 hover:text-gray-600 transition-colors">
-                    <Share2 className="h-5 w-5" />
-                  </button>
+                <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                  <p className="text-sm text-yellow-700">Correo Electrónico No Se Validó</p>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Phone className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Número</p>
+                    <p className="font-medium text-gray-900">+52 9878765663</p>
+                  </div>
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <span className="text-3xl font-bold text-blue-600">{formatPrice(vehicle.price)}</span>
+                <Link href="#" className="text-blue-600 text-sm">
+                  Acerca de la cuenta / Perfil del vendedor →
+                </Link>
               </div>
             </div>
 
-            {/* Specs grid */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Especificaciones</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Gauge className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-500">Kilometraje</p>
-                    <p className="text-sm font-medium text-gray-900">{formatMileage(vehicle.mileage)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Settings className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-500">Transmisión</p>
-                    <p className="text-sm font-medium text-gray-900">{getTransmissionLabel(vehicle.transmission_type)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Zap className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-500">Potencia</p>
-                    <p className="text-sm font-medium text-gray-900">{formatPower(vehicle.power)}</p>
-                  </div>
-                </div>
-                {displacement && (
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Fuel className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-gray-500">Cilindrada</p>
-                      <p className="text-sm font-medium text-gray-900">{displacement}</p>
-                    </div>
-                  </div>
-                )}
-                {isEv && (
-                  <>
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Battery className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">Batería</p>
-                        <p className="text-sm font-medium text-gray-900">{vehicle.battery_capacity} kWh</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Zap className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">Autonomía</p>
-                        <p className="text-sm font-medium text-gray-900">{vehicle.autonomy} km</p>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
+            {/* Guarda tus búsquedas favoritas */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Guarda tus búsquedas favoritas</h2>
+              <p className="text-gray-600 text-sm">Recibe alertas de anuncios similares por email</p>
+              <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                Crear alerta
+              </button>
             </div>
 
-            {/* Description */}
-            {vehicle.description && (
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">Descripción</h2>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{vehicle.description}</p>
+            {/* Comentarios del anunciante */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">Comentarios del anunciante</h2>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Seolco Motor, Concesionario Oficial Volkswagen en Alcorcón y Móstoles, le ofrece este espectacular VOLKSWAGEN Polo Life 1.0 TSI 95-cc completamente nuevo. La calidad y el prestigio de Volkswagen en Alcorcón y Móstoles. Nuestros comerciantes están encantados de ofrecerle y resaltar todos sus datos.
+              </p>
+              
+              <h3 className="font-semibold text-gray-900 mt-4 mb-2">Equipamiento de detección:</h3>
+              <ul className="list-disc list-inside space-y-1 text-gray-600 mb-4">
+                <li>Fóra Volkswagen Full LED</li>
+                <li>Volvómetro Digital Cadpist</li>
+                <li>Conectividad App Connect</li>
+                <li>Sistema de memoria antigua</li>
+                <li>Sistema de almacenamiento de datos</li>
+                <li>Control de velocidad de crucero</li>
+                <li>Control de velocidad de frenado</li>
+              </ul>
+              
+              <p className="text-gray-600 text-sm italic mt-4">
+                Se escribe un mensaje de búsqueda en Volkswagen Polo Life, en Alcorcón y Móstoles, para que viva junto a nosotros la experiencia S-Estéticas!
+              </p>
+              
+              <div className="mt-4 pt-4 border-t border-gray-100 text-sm text-gray-500">
+                <p>• El precio publicado corresponde a la versión pública. Unidad de entrega inmediata. Consulte otras opciones.</p>
+                <p className="mt-1">• El anuncio puede contener entre 1 y 3 imágenes de los modelos de un futuro contrato.</p>
               </div>
-            )}
+              
+              <p className="mt-3 text-gray-400 text-sm">Ref: PoloMotors-Rent-0000</p>
+            </div>
 
-            {/* Features */}
-            {vehicle.features_ids && vehicle.features_ids.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">Características</h2>
-                <div className="flex flex-wrap gap-2">
-                  {vehicle.features_ids.map((id) => (
-                    <span
-                      key={id}
-                      className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-sm px-3 py-1.5 rounded-full"
-                    >
-                      <Tag className="h-3.5 w-3.5" />
-                      {id}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+            {/* Análisis del precio */}
+            <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Análisis del precio</h2>
+              <p className="text-red-600 font-medium mb-3">El precio es sustancialmente inferior comparado con vehículos similares.</p>
+              <span className="inline-block bg-red-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-full">Si es Superprecio</span>
+              <p className="text-xs text-gray-400 mt-4">
+                La valoración del precio de cada modelo es totalmente neutro y no puede ser inferior.
+              </p>
+            </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Seller card */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 sticky top-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-                  {vehicle.publisher_type === "professional" ? (
-                    <Building2 className="h-6 w-6 text-gray-500" />
-                  ) : (
-                    <User className="h-6 w-6 text-gray-500" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">{getPublisherLabel(vehicle.publisher_type)}</p>
-                  <p className="text-sm text-gray-500">Publicado el {formatDate(vehicle.created_at)}</p>
-                </div>
-              </div>
-
+            {/* Características generales */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Características generales</h3>
               <div className="space-y-3">
-                {vehicle.phone && (
-                  <a
-                    href={`tel:${vehicle.phone_code}${vehicle.phone}`}
-                    className="flex items-center gap-3 w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition-colors justify-center"
-                  >
-                    <Phone className="h-5 w-5" />
-                    Llamar
-                  </a>
-                )}
-                {vehicle.email && (
-                  <a
-                    href={`mailto:${vehicle.email}`}
-                    className="flex items-center gap-3 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors justify-center"
-                  >
-                    <Mail className="h-5 w-5" />
-                    Enviar email
-                  </a>
-                )}
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-500">Kilometraje</span>
+                  <span className="font-medium">0 Km</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-500">Asientos</span>
+                  <span className="font-medium">4</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-gray-500">Puertas</span>
+                  <span className="font-medium">5</span>
+                </div>
               </div>
+              <Link href="#" className="mt-4 inline-block text-blue-600 text-sm">
+                Ver ficha técnica completa →
+              </Link>
+            </div>
 
-              {vehicle.phone && (
-                <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-                  <p className="text-sm text-gray-500">
-                    Tel: <span className="font-medium text-gray-900">{vehicle.phone_code} {vehicle.phone}</span>
+            {/* Reviews */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Reviews</h3>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-gray-900">Luis Rodríguez</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm text-gray-600">42</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                   </p>
                 </div>
-              )}
-
-              <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 justify-center">
-                <Shield className="h-4 w-4" />
-                <span>Compra segura con WiAuto</span>
+                <div className="pt-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-gray-900">Luis Rodríguez</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm text-gray-600">42</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Location */}
-            {vehicle.lat && vehicle.lng && (
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-gray-400" />
-                  Ubicación
-                </h3>
-                <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    frameBorder="0"
-                    scrolling="no"
-                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${vehicle.lng - 0.01},${vehicle.lat - 0.008},${vehicle.lng + 0.01},${vehicle.lat + 0.008}&marker=${vehicle.lat},${vehicle.lng}`}
-                    className="w-full h-full"
-                  />
+            {/* Ubicación */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-red-500" />
+                Ubicación
+              </h3>
+              <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <MapPin className="h-8 w-8 text-gray-400 mx-auto" />
+                  <p className="text-xs text-gray-500 mt-1">Mapa</p>
                 </div>
               </div>
-            )}
-
-            {/* Reference info */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <h3 className="font-medium text-gray-900 mb-3">Información de referencia</h3>
-              <div className="space-y-2 text-sm">
-                {/* <div className="flex justify-between">
-                  <span className="text-gray-500">ID Vehículo</span>
-                  <span className="font-mono text-gray-900">{vehicle.id.slice(0, 8)}</span>
-                </div> */}
-                {vehicle.license_plate && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Matrícula</span>
-                    <span className="text-gray-900">{vehicle.license_plate}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Estado</span>
-                  <span className="text-gray-900">{getConditionLabel(vehicle.condition)}</span>
+              <div className="mt-3 text-sm">
+                <div className="flex items-center justify-between text-gray-500">
+                  <span>MORATALAZ</span>
+                  <span>A-3</span>
                 </div>
-                {vehicle.expires_at && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Expira</span>
-                    <span className="text-gray-900">{formatDate(vehicle.expires_at)}</span>
-                  </div>
-                )}
+                <p className="text-gray-500 text-xs mt-1">Cerro del Tío Pío • Centro Dep Municipal Margot</p>
+                <p className="text-gray-400 text-xs mt-2">Madrid Spain Temple • E-9 VALDEBERNARDO</p>
+              </div>
+            </div>
+
+         
+          </div>
+
+          {/* COLUMNA DERECHA - Vendedor Verificado + Contacta con el anunciante */}
+          <div className="space-y-6">
+            {/* Vendedor Verificado */}
+            <div className="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+              <div className="flex items-center gap-2 mb-4">
+                {/* <CheckBadge className="h-5 w-5 text-blue-600" /> */}
+                <h3 className="font-semibold text-gray-900">Vendedor Verificado</h3>
+              </div>
+              
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+                  <User className="h-6 w-6 text-gray-500" />
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900">Motores Premium</p>
+                  <p className="text-sm text-gray-500">AutoPlaza Lima</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 mb-4 py-3 border-y border-gray-100">
+                <div className="text-center">
+                  <p className="font-bold text-gray-900">4.8</p>
+                  <p className="text-xs text-gray-500">Rating</p>
+                </div>
+                <div className="text-center">
+                  <p className="font-bold text-gray-900">243</p>
+                  <p className="text-xs text-gray-500">Ventas Completadas</p>
+                </div>
+                <div className="text-center">
+                  <p className="font-bold text-gray-900">&gt; 2 Horas</p>
+                  <p className="text-xs text-gray-500">Tiempo De Respuesta</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 p-2 rounded-lg">
+                <MessageCircle className="h-4 w-4" />
+                <span>📧 Vendedor Verificado Por WhatsApp</span>
+              </div>
+            </div>
+
+            {/* Contacta con el anunciante */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Contacta con el anunciante</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Nombre</p>
+                  <p className="font-medium text-gray-900">gabriela@hotmail.com</p>
+                </div>
+                
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                  <p className="text-sm text-yellow-700">El Correo Electrónico No Es Válido</p>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-gray-400" />
+                  <p className="font-medium text-gray-900">📞 +52 9878765663</p>
+                </div>
+
+                <textarea 
+                  placeholder="Mensaje"
+                  rows={3}
+                  className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500"
+                ></textarea>
+
+                <div className="flex items-start gap-2">
+                  <input type="checkbox" className="mt-1" />
+                  <p className="text-xs text-gray-500">
+                    Acepto las condiciones de uso y la información básica de mi datos
+                  </p>
+                </div>
+
+                <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">
+                  Contactar
+                </button>
+
+                <button className="w-full text-blue-600 text-sm font-medium py-2">
+                  Ir al simulador de financiamiento →
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Botones flotantes móvil */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg">
+        <div className="flex gap-3">
+          <a href="tel:+529878765663" className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-lg font-medium">
+            <Phone className="h-5 w-5" />
+            Llamar
+          </a>
+          <button className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-lg font-medium">
+            <Mail className="h-5 w-5" />
+            Contactar
+          </button>
+        </div>
+      </div>
+      <div className="lg:hidden h-20"></div>
     </div>
   );
 }

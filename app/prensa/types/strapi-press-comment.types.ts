@@ -1,1 +1,1 @@
-export type { StrapiCommentResponse } from "../../noticias/types/strapi-comment.types";
+export type { StrapiCommentsListResponse } from "../../noticias/types/strapi-comment.types";
