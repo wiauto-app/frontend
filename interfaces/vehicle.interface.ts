@@ -518,3 +518,13 @@ export interface UpdateColorDto {
   name?: string;
   hex_code?: string;
 }
+
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  image_url: string | null;
+  created_at: Date;
+  updated_at: Date;
+}

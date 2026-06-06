@@ -20,10 +20,16 @@ export function formatMonthlyPrice(price: number): string {
   );
 }
 
-export function getImageUrl(images: VehicleListItem["images"]): string {
-  if (!images || images.length === 0) return "/placeholder-car.jpg";
-  return `${MEDIA_URL}${images[0].url}`;
+export function getImageUrl(image: string): string {
+  if (!image) return "/placeholder-car.jpg";
+  if (image.startsWith("/")) {
+    return `${MEDIA_URL}${image}`;
+  }
+  else {
+    return `${MEDIA_URL}/${image}`;
+  }
 }
+
 
 export function getConditionLabel(condition: string): string {
   return condition === "new" ? "Nuevo" : "Usado";
