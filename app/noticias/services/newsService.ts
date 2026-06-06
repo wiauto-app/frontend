@@ -1,12 +1,18 @@
 import { getStrapiData } from "@/lib/strapi-api";
-import { mapNewsDetail, mapNewsPaginated } from "../mappers/map-news";
+import {
+  mapNewsCategory,
+  mapNewsDetail,
+  mapNewsPaginated,
+} from "../mappers/map-news";
 import type {
   FindAllNewsParams,
   FindOneNewsParams,
+  NewsCategory,
   NewsDetail,
   NewsPaginatedResult,
 } from "../types/news.types";
 import type {
+  StrapiNewsCategory,
   StrapiNewsListResponse,
   StrapiNewsSingleResponse,
 } from "../types/strapi-news.types";
@@ -86,5 +92,12 @@ export const newsService = {
     }
 
     return mapNewsDetail(entry);
+  },
+
+  findAllCategories: async (): Promise<NewsCategory[]> => {
+    const response = await getStrapiData<{ data: StrapiNewsCategory[] }>(
+      "/categoria-noticias?sort=nombre:asc",
+    );
+    return response.data.map(mapNewsCategory);
   },
 };

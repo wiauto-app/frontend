@@ -1,7 +1,12 @@
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
-import type { HomePageData } from "../types/home-page.types";
+import type {
+  HomePageData,
+  HomeProcessSectionData,
+  HomeProcessTab,
+} from "../types/home-page.types";
 import type {
   StrapiHomepageResponse,
+  StrapiMedia,
   StrapiRichTextBlock,
 } from "../types/strapi-home.types";
 
@@ -30,6 +35,114 @@ const DEFAULT_FEATURES = {
   description:
     "Nuestra plataforma conecta a compradores y vendedores en un solo lugar.",
   features: [],
+};
+
+const plainTextToBlocks = (text: string): StrapiRichTextBlock[] => [
+  {
+    type: "paragraph",
+    children: [{ type: "text", text }],
+  },
+];
+
+const DEFAULT_PROCESS_TITLE: StrapiRichTextBlock[] = [
+  {
+    type: "paragraph",
+    children: [
+      { type: "text", text: "Te acompañamos de tu " },
+      { type: "text", text: "experiencia automotriz", bold: true },
+    ],
+  },
+];
+
+const DEFAULT_PROCESS_TABS: HomeProcessTab[] = [
+  {
+    id: "default-comprar",
+    label: "Comprar",
+    heading: "Comprar un coche",
+    description: plainTextToBlocks(
+      "Encuentra el vehículo ideal según tus necesidades, presupuesto y estilo de vida. Explora opciones, compara modelos y toma una decisión con mayor confianza.",
+    ),
+    image_url: null,
+    image_alt: null,
+  },
+  {
+    id: "default-vender",
+    label: "Vender",
+    heading: "Vender tu coche",
+    description: plainTextToBlocks(
+      "Publica tu vehículo en minutos, llega a miles de compradores interesados y gestiona consultas desde un solo lugar con herramientas pensadas para vendedores.",
+    ),
+    image_url: null,
+    image_alt: null,
+  },
+  {
+    id: "default-comparar",
+    label: "Comparar",
+    heading: "Comparar modelos",
+    description: plainTextToBlocks(
+      "Analiza características, precios y valoraciones de distintos vehículos en un solo lugar para elegir la opción que mejor se adapte a ti.",
+    ),
+    image_url: null,
+    image_alt: null,
+  },
+  {
+    id: "default-guias",
+    label: "Guías y consejos",
+    heading: "Guías y consejos",
+    description: plainTextToBlocks(
+      "Accede a artículos, guías y recomendaciones del sector automotriz para tomar decisiones informadas en cada etapa del proceso.",
+    ),
+    image_url: null,
+    image_alt: null,
+  },
+];
+
+const DEFAULT_PROCESS_SECTION: HomeProcessSectionData = {
+  title: DEFAULT_PROCESS_TITLE,
+  tabs: DEFAULT_PROCESS_TABS,
+};
+
+const pickProcessImageUrl = (media?: StrapiMedia | null): string | null => {
+  if (!media) {
+    return null;
+  }
+
+  return (
+    getStrapiMediaUrl(media.formats?.large?.url) ??
+    getStrapiMediaUrl(media.formats?.medium?.url) ??
+    getStrapiMediaUrl(media.url)
+  );
+};
+
+const mapProcessSection = (
+  process_section?: NonNullable<StrapiHomepageResponse["data"]>["processSection"],
+): HomeProcessSectionData => {
+  if (!process_section) {
+    return DEFAULT_PROCESS_SECTION;
+  }
+
+  const title =
+    process_section.titulo?.length ? process_section.titulo : DEFAULT_PROCESS_TITLE;
+
+  const tabs =
+    process_section.tabs
+      ?.filter((tab) => tab.tab?.trim() && tab.titulo?.trim())
+      .map((tab) => ({
+        id: String(tab.id),
+        label: tab.tab!.trim(),
+        heading: tab.titulo!.trim(),
+        description:
+          tab.descripcion?.length ?
+            tab.descripcion
+          : plainTextToBlocks(""),
+        image_url: pickProcessImageUrl(tab.image),
+        image_alt: tab.image?.alternativeText ?? tab.titulo!.trim(),
+      })) ?? [];
+
+  return {
+    title,
+    tabs: tabs.length > 0 ? tabs : DEFAULT_PROCESS_TABS,
+  };
 };
 
 const richTextToStoreLabels = (
@@ -76,6 +189,7 @@ export const mapHomePageData = (
   const app = data?.homeAppAdvertisment;
   const features_block = data?.homeFeatures;
   const seo = data?.homeSeo;
+  const process_section = data?.processSection;
 
   return {
     hero: {
@@ -130,5 +244,6 @@ export const mapHomePageData = (
       no_index: Boolean(seo?.noIndex),
       share_image_url: getStrapiMediaUrl(seo?.shareImage?.url),
     },
+    process_section: mapProcessSection(process_section ?? undefined),
   };
 };

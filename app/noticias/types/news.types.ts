@@ -35,6 +35,7 @@ export type NewsListItem = {
   category: NewsCategory | null;
   published_at: string | null;
   created_at: string | null;
+  comments_count: number;
 };
 
 export type NewsDetail = NewsListItem & {

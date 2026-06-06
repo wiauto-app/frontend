@@ -48,7 +48,7 @@ export default async function Home() {
       <ValuePropositionSection data={home_data.features} />
       <BlogArticlesSection />
       <RelatedNewsSection />
-      <ProcessSection />
+      <ProcessSection data={home_data.process_section} />
   
     </>
   );

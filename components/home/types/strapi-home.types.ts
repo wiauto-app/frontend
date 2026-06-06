@@ -58,5 +58,15 @@ export type StrapiHomepageResponse = {
       title?: string | null;
       description?: string | null;
     } | null;
+    processSection?: {
+      titulo?: StrapiRichTextBlock[] | null;
+      tabs?: {
+        id: number;
+        tab?: string | null;
+        titulo?: string | null;
+        descripcion?: StrapiRichTextBlock[] | null;
+        image?: StrapiMedia | null;
+      }[] | null;
+    } | null;
   } | null;
 };

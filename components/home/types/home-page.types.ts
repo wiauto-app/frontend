@@ -1,3 +1,5 @@
+import type { StrapiRichTextBlock } from "./strapi-home.types";
+
 export type HomeActionLink = {
   label: string;
   url: string;
@@ -52,10 +54,25 @@ export type HomeSeoData = {
   share_image_url: string | null;
 };
 
+export type HomeProcessTab = {
+  id: string;
+  label: string;
+  heading: string;
+  description: StrapiRichTextBlock[];
+  image_url: string | null;
+  image_alt: string | null;
+};
+
+export type HomeProcessSectionData = {
+  title: StrapiRichTextBlock[];
+  tabs: HomeProcessTab[];
+};
+
 export type HomePageData = {
   hero: HomeHeroData;
   newsletter: HomeNewsletterData;
   app_advertisement: HomeAppAdvertisementData;
   features: HomeFeaturesData;
   seo: HomeSeoData;
+  process_section: HomeProcessSectionData;
 };

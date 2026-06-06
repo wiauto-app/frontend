@@ -15,17 +15,25 @@ import type {
   StrapiNewsListResponse,
 } from "../types/strapi-news.types";
 
+export const mapNewsCategory = (
+  categoria_noticia: StrapiNewsCategory,
+): NewsCategory => ({
+  document_id: categoria_noticia.documentId,
+  name: categoria_noticia.nombre,
+  slug: categoria_noticia.slug,
+});
+
+export const mapNewsCategories = (
+  categories: StrapiNewsCategory[],
+): NewsCategory[] => categories.map(mapNewsCategory);
+
 const mapCategory = (
   categoria_noticia?: StrapiNewsCategory | null,
 ): NewsCategory | null => {
   if (!categoria_noticia) {
     return null;
   }
-  return {
-    document_id: categoria_noticia.documentId,
-    name: categoria_noticia.nombre,
-    slug: categoria_noticia.slug,
-  };
+  return mapNewsCategory(categoria_noticia);
 };
 
 const mapComments = (comentarios?: StrapiComment[] | null): NewsComment[] => {
@@ -79,6 +87,7 @@ export const mapNewsListItem = (entry: StrapiNewsEntry): NewsListItem => {
     category: mapCategory(entry.categoria_noticia),
     published_at: entry.publishedAt ?? null,
     created_at: entry.createdAt ?? null,
+    comments_count: entry.comentarios?.length ?? 0,
   };
 };
 

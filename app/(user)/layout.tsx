@@ -1,7 +1,19 @@
+import { authService } from "@/services/authService";
 import Providers from "../providers";
 import { UserSidebar } from "./components/UserSidebar";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const accessToken = (await cookies()).get("access_token")?.value;
+  const user = await authService.getMe(accessToken);
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+  if (!user.ok) {
+    redirect("/iniciar-sesion");
+  }
   return (
     <Providers>
       <div className="min-h-screen bg-gray-50/50">
@@ -10,9 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <aside className="w-full md:w-80 shrink-0">
               <UserSidebar />
             </aside>
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
           </div>
         </div>
       </div>
