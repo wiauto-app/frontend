@@ -1,6 +1,7 @@
 "use client";
 
 import { LayoutGrid, Search, Edit2, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 export default function BusquedasGuardadasPage() {
@@ -31,9 +32,9 @@ export default function BusquedasGuardadasPage() {
           <LayoutGrid className="w-6 h-6 text-gray-700" />
           <h1 className="text-2xl font-bold text-gray-900">Búsquedas guardadas</h1>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg">
           Nueva búsqueda
-        </button>
+        </Button>
       </div>
 
       {/* Lista de Búsquedas Guardadas */}
@@ -58,12 +59,12 @@ export default function BusquedasGuardadasPage() {
               </div>
               
               <div className="flex items-center gap-2">
-                <button className="p-2 text-gray-500 hover:text-gray-700 border border-gray-200 hover:border-gray-300 rounded-md transition-colors">
+                <Button variant="outline" className="p-2 text-gray-500 hover:text-gray-700 border border-gray-200 hover:border-gray-300">
                   <Edit2 className="w-4 h-4" />
-                </button>
-                <button className="p-2 text-red-500 hover:text-red-700 border border-gray-200 hover:border-red-200 hover:bg-red-50 rounded-md transition-colors">
+                </Button>
+                <Button variant="outline" className="p-2 text-red-500 hover:text-red-700 border border-gray-200 hover:border-red-200 hover:bg-red-50">
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -83,9 +84,9 @@ export default function BusquedasGuardadasPage() {
               </div>
               
               {/* Toggle Switch */}
-              <button 
+              <Button 
                 onClick={() => toggleAlerta(alerta.id)}
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                className={`relative h-6 w-11  rounded-full border-2 border-transparent duration-200 ease-in-out ${
                   alerta.active ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
               >
@@ -95,7 +96,7 @@ export default function BusquedasGuardadasPage() {
                     alerta.active ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
-              </button>
+              </Button>
             </div>
           ))}
         </div>

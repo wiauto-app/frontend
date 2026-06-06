@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Camera, ChevronLeft, ChevronRight } from "lucide-react";
 import type { VehicleImage } from "@/interfaces/vehicle.interface";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getImageUrl } from "../utils";
 
@@ -78,22 +79,26 @@ export const VehicleImageCarousel = ({
 
         {hasMultipleImages && (
           <>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={handlePrevious}
-              className="absolute left-2 top-1/2 inline-flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+              className="absolute left-2 top-1/2 size-8 -translate-y-1/2 rounded-full bg-black/45 text-white backdrop-blur-sm hover:bg-black/60"
               aria-label="Imagen anterior"
             >
               <ChevronLeft className="size-4" aria-hidden />
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={handleNext}
-              className="absolute right-2 top-1/2 inline-flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+              className="absolute right-2 top-1/2 size-8 -translate-y-1/2 rounded-full bg-black/45 text-white backdrop-blur-sm hover:bg-black/60"
               aria-label="Imagen siguiente"
             >
               <ChevronRight className="size-4" aria-hidden />
-            </button>
+            </Button>
           </>
         )}
       </Link>
@@ -105,15 +110,16 @@ export const VehicleImageCarousel = ({
           aria-label="Indicadores de imágenes"
         >
           {images.map((image, index) => (
-            <button
+            <Button
               key={image.id}
               type="button"
+              variant="ghost"
               role="tab"
               aria-selected={index === safeIndex}
               aria-label={`Ir a la imagen ${index + 1}`}
               onClick={(event) => handleDotClick(event, index)}
               className={cn(
-                "size-2 rounded-full transition-colors",
+                "size-2 rounded-full p-0 h-auto w-auto min-h-0",
                 index === safeIndex ? "bg-white" : "bg-white/50 hover:bg-white/80",
               )}
             />

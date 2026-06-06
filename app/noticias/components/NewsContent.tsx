@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock, UserCircle2, ArrowLeft, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { NewsListItem } from "../types/news.types";
 
 const FILTERS = [
@@ -88,19 +89,19 @@ export const NewsContent = ({ initialItems }: { initialItems: NewsListItem[] }) 
       {/* ── Filtros ── */}
       <div className="flex overflow-x-auto gap-2 pb-4 mb-10 scrollbar-hide">
         {FILTERS.map((filter) => (
-          <button
+          <Button
             key={filter}
             onClick={() =>
               setActiveFilter(filter === activeFilter ? "" : filter)
             }
-            className={`flex-shrink-0 px-5 py-1.5 rounded border text-sm font-medium transition-all duration-200 ${
+            className={`flex-shrink-0 px-5 py-1.5 rounded border duration-200 ${
               filter === activeFilter
                 ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                 : "bg-white text-slate-600 border-slate-300 hover:border-blue-400 hover:text-blue-600"
             }`}
           >
             {filter}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -171,24 +172,24 @@ export const NewsContent = ({ initialItems }: { initialItems: NewsListItem[] }) 
       {/* ── Paginación ── */}
       {displayItems.length > 0 && (
         <div className="mt-20 flex items-center justify-center gap-2">
-          <button className="flex h-9 w-9 items-center justify-center rounded-full border border-blue-200 text-blue-600 hover:bg-blue-50 transition-colors">
+          <Button className="flex h-9 w-9 rounded-full border border-blue-200 text-blue-600 hover:bg-blue-50">
             <ArrowLeft className="w-4 h-4" />
-          </button>
+          </Button>
           {[1, 2, 3, 4].map((n) => (
-            <button
+            <Button
               key={n}
-              className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
+              className={`flex h-9 w-9 rounded-full font-semibold ${
                 n === 1
                   ? "bg-blue-600 text-white"
                   : "text-slate-500 hover:bg-slate-100"
               }`}
             >
               {String(n).padStart(2, "0")}
-            </button>
+            </Button>
           ))}
-          <button className="flex h-9 w-9 items-center justify-center rounded-full border border-blue-200 text-blue-600 hover:bg-blue-50 transition-colors">
+          <Button className="flex h-9 w-9 rounded-full border border-blue-200 text-blue-600 hover:bg-blue-50">
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       )}
     </>

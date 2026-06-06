@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Share2 } from "lucide-react";
 
 import { VehicleShareDialog } from "./VehicleShareDialog";
@@ -18,9 +19,11 @@ export const VehicleShareButton = ({
 
   return (
     <>
-      <button
+      <Button
         type="button"
-        className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700"
+        size="icon"
+        variant="ghost"
+        className="rounded-full text-slate-400 hover:bg-slate-50 hover:text-slate-700"
         aria-label="Compartir vehículo"
         onClick={(event) => {
           event.stopPropagation();
@@ -28,7 +31,7 @@ export const VehicleShareButton = ({
         }}
       >
         <Share2 className="size-4" aria-hidden />
-      </button>
+      </Button>
 
       <VehicleShareDialog
         open={open}

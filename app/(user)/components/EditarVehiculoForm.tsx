@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -17,6 +17,17 @@ import {
   Color, DgtLabel, WarrantyTypeItem, Cuota,
 } from "@/interfaces/vehicle.interface";
 import { UpdateVehicleSchema, UpdateVehicleFormDto } from "@/validations/vehicleSchemas";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { updateVehicleAction } from "../vehicleActions/vehicleActions";
 
 const CONDITION_OPTIONS = [
@@ -90,6 +101,7 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
     setValue,
     watch,
     reset,
+    control,
     formState: { errors },
   } = useForm<UpdateVehicleFormDto>({
     resolver: zodResolver(UpdateVehicleSchema),
@@ -355,19 +367,17 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Título del anuncio</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Título del anuncio</Label>
+            <Input
               type="text"
               {...register("title")}
-              className={`block w-full px-3 py-2 border rounded-lg text-sm outline-none transition-colors ${
-                errors.title ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={errors.title ? "border-red-500" : "border-gray-300"}
             />
             {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Descripción</label>
+            <Label className="block text-gray-700 mb-1.5">Descripción</Label>
             <textarea
               rows={4}
               {...register("description")}
@@ -379,53 +389,65 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Condición</label>
-            <select
-              {...register("condition")}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              {CONDITION_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Condición</Label>
+            <Controller
+              name="condition"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CONDITION_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.condition && <p className="mt-1 text-xs text-red-500">{errors.condition.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de vendedor</label>
-            <select
-              {...register("publisher_type")}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              {PUBLISHER_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Tipo de vendedor</Label>
+            <Controller
+              name="publisher_type"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PUBLISHER_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.publisher_type && <p className="mt-1 text-xs text-red-500">{errors.publisher_type.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Precio (€)</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Precio (€)</Label>
+            <Input
               type="number"
               min={0}
               {...register("price", { valueAsNumber: true })}
-              className={`block w-full px-3 py-2 border rounded-lg text-sm outline-none transition-colors ${
-                errors.price ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={errors.price ? "border-red-500" : "border-gray-300"}
             />
             {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Kilometraje</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Kilometraje</Label>
+            <Input
               type="number"
               min={0}
               {...register("mileage", { valueAsNumber: true })}
-              className={`block w-full px-3 py-2 border rounded-lg text-sm outline-none transition-colors ${
-                errors.mileage ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={errors.mileage ? "border-red-500" : "border-gray-300"}
             />
             {errors.mileage && <p className="mt-1 text-xs text-red-500">{errors.mileage.message}</p>}
           </div>
@@ -440,118 +462,151 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Marca</label>
-            <select
-              value={selectedMakeId}
-              onChange={handleMakeChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              <option value="">Seleccionar marca</option>
-              {makes.map((m) => (
-                <option key={m.id} value={m.id}>{m.name}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Marca</Label>
+            <Select value={selectedMakeId} onValueChange={(val) => handleMakeChange({ target: { value: val } } as React.ChangeEvent<HTMLSelectElement>)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar marca" />
+              </SelectTrigger>
+              <SelectContent>
+                {makes.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Modelo</label>
-            <select
-              value={selectedModelId ?? ""}
-              onChange={handleModelChange}
+            <Label className="block text-gray-700 mb-1.5">Modelo</Label>
+            <Select
+              value={selectedModelId?.toString() ?? ""}
+              onValueChange={(val) => handleModelChange({ target: { value: val } } as React.ChangeEvent<HTMLSelectElement>)}
               disabled={!selectedMakeId}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
             >
-              <option value="">Seleccionar modelo</option>
-              {filteredModels.map((m) => (
-                <option key={m.id} value={m.id}>{m.name}</option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar modelo" />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredModels.map((m) => (
+                  <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Versión</label>
-            <select
-              {...register("version_id", { valueAsNumber: true })}
-              disabled={selectedModelId === null}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
-            >
-              <option value="">Seleccionar versión</option>
-              {filteredVersions.map((v) => (
-                <option key={v.id} value={v.id}>{v.name} ({v.year})</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Versión</Label>
+            <Controller
+              name="version_id"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value?.toString() ?? ""}
+                  onValueChange={(val) => field.onChange(val ? Number(val) : undefined)}
+                  disabled={selectedModelId === null}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar versión" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredVersions.map((v) => (
+                      <SelectItem key={v.id} value={v.id.toString()}>{v.name} ({v.year})</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.version_id && <p className="mt-1 text-xs text-red-500">{errors.version_id.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de vehículo</label>
-            <select
-              {...register("vehicle_type_id")}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              <option value="">Seleccionar tipo</option>
-              {vehicleTypes.map((vt) => (
-                <option key={vt.id} value={vt.id}>{vt.name}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Tipo de vehículo</Label>
+            <Controller
+              name="vehicle_type_id"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ""} onValueChange={(val) => field.onChange(val || undefined)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicleTypes.map((vt) => (
+                      <SelectItem key={vt.id} value={vt.id}>{vt.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.vehicle_type_id && <p className="mt-1 text-xs text-red-500">{errors.vehicle_type_id.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Transmisión</label>
-            <select
-              {...register("transmission_type")}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              {TRANSMISSION_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Transmisión</Label>
+            <Controller
+              name="transmission_type"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TRANSMISSION_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tracción</label>
-            <select
-              {...register("traction_id")}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              <option value="">Seleccionar tracción</option>
-              {tractions.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Tracción</Label>
+            <Controller
+              name="traction_id"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? ""} onValueChange={(val) => field.onChange(val || undefined)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar tracción" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tractions.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.traction_id && <p className="mt-1 text-xs text-red-500">{errors.traction_id.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Potencia (kW)</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Potencia (kW)</Label>
+            <Input
               type="number"
               min={0}
               {...register("power", { valueAsNumber: true })}
-              className={`block w-full px-3 py-2 border rounded-lg text-sm outline-none transition-colors ${
-                errors.power ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={errors.power ? "border-red-500" : "border-gray-300"}
             />
             {errors.power && <p className="mt-1 text-xs text-red-500">{errors.power.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Cilindrada (cm³)</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Cilindrada (cm³)</Label>
+            <Input
               type="number"
               min={0}
               {...register("displacement", { valueAsNumber: true })}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="border-gray-300"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Matrícula</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Matrícula</Label>
+            <Input
               type="text"
               {...register("license_plate")}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="border-gray-300"
               placeholder="Ej: 1234ABC"
             />
           </div>
@@ -566,89 +621,89 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Autonomía (km)</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Autonomía (km)</Label>
+            <Input
               type="number"
               min={0}
               {...register("autonomy", { valueAsNumber: true })}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="border-gray-300"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Capacidad batería (kWh)</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Capacidad batería (kWh)</Label>
+            <Input
               type="number"
               min={0}
               {...register("battery_capacity", { valueAsNumber: true })}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="border-gray-300"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tiempo de carga (h)</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Tiempo de carga (h)</Label>
+            <Input
               type="number"
               min={0}
               {...register("time_to_charge", { valueAsNumber: true })}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="border-gray-300"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Color</label>
-            <select
-              value={selectedColorId ?? ""}
-              onChange={(e) => setSelectedColorId(e.target.value || null)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              <option value="">Sin especificar</option>
-              {colors.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Color</Label>
+            <Select value={selectedColorId ?? ""} onValueChange={(val) => setSelectedColorId(val || null)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sin especificar" />
+              </SelectTrigger>
+              <SelectContent>
+                {colors.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Etiqueta DGT</label>
-            <select
-              value={selectedDgtLabelId ?? ""}
-              onChange={(e) => setSelectedDgtLabelId(e.target.value || null)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              <option value="">Sin especificar</option>
-              {dgtLabels.map((d) => (
-                <option key={d.id} value={d.id}>{d.name} ({d.code})</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Etiqueta DGT</Label>
+            <Select value={selectedDgtLabelId ?? ""} onValueChange={(val) => setSelectedDgtLabelId(val || null)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sin especificar" />
+              </SelectTrigger>
+              <SelectContent>
+                {dgtLabels.map((d) => (
+                  <SelectItem key={d.id} value={d.id}>{d.name} ({d.code})</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de garantía</label>
-            <select
-              value={selectedWarrantyTypeId ?? ""}
-              onChange={(e) => setSelectedWarrantyTypeId(e.target.value || null)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              <option value="">Sin garantía</option>
-              {warrantyTypes.map((w) => (
-                <option key={w.id} value={w.id}>{w.name}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Tipo de garantía</Label>
+            <Select value={selectedWarrantyTypeId ?? ""} onValueChange={(val) => setSelectedWarrantyTypeId(val || null)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sin garantía" />
+              </SelectTrigger>
+              <SelectContent>
+                {warrantyTypes.map((w) => (
+                  <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Cuota</label>
-            <select
-              value={selectedCuotaId ?? ""}
-              onChange={(e) => setSelectedCuotaId(e.target.value || null)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              <option value="">Sin cuota</option>
-              {cuotas.map((c) => (
-                <option key={c.id} value={c.id}>{c.name} ({c.value}€)</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Cuota</Label>
+            <Select value={selectedCuotaId ?? ""} onValueChange={(val) => setSelectedCuotaId(val || null)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sin cuota" />
+              </SelectTrigger>
+              <SelectContent>
+                {cuotas.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name} ({c.value}€)</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -664,18 +719,16 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
             <h3 className="text-sm font-medium text-gray-700 mb-3">Características</h3>
             <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
               {features.map((f) => (
-                <label
+                <Label
                   key={f.id}
-                  className="flex items-center gap-2 py-1.5 cursor-pointer group"
+                  className="py-1.5 cursor-pointer group"
                 >
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={selectedFeatures.includes(f.id)}
-                    onChange={() => toggleFeature(f.id)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    onCheckedChange={() => toggleFeature(f.id)}
                   />
                   <span className="text-sm text-gray-600 group-hover:text-gray-900">{f.name}</span>
-                </label>
+                </Label>
               ))}
               {features.length === 0 && (
                 <p className="text-sm text-gray-400 col-span-2">No hay características disponibles</p>
@@ -687,18 +740,16 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
             <h3 className="text-sm font-medium text-gray-700 mb-3">Servicios</h3>
             <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
               {services.map((s) => (
-                <label
+                <Label
                   key={s.id}
-                  className="flex items-center gap-2 py-1.5 cursor-pointer group"
+                  className="py-1.5 cursor-pointer group"
                 >
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={selectedServices.includes(s.id)}
-                    onChange={() => toggleService(s.id)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    onCheckedChange={() => toggleService(s.id)}
                   />
                   <span className="text-sm text-gray-600 group-hover:text-gray-900">{s.name}</span>
-                </label>
+                </Label>
               ))}
               {services.length === 0 && (
                 <p className="text-sm text-gray-400 col-span-2">No hay servicios disponibles</p>
@@ -716,39 +767,43 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Código de país</label>
-            <select
-              {...register("phone_code")}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
-            >
-              {PHONE_CODES.map((pc) => (
-                <option key={pc.value} value={pc.value}>{pc.label}</option>
-              ))}
-            </select>
+            <Label className="block text-gray-700 mb-1.5">Código de país</Label>
+            <Controller
+              name="phone_code"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PHONE_CODES.map((pc) => (
+                      <SelectItem key={pc.value} value={pc.value}>{pc.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.phone_code && <p className="mt-1 text-xs text-red-500">{errors.phone_code.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Teléfono</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Teléfono</Label>
+            <Input
               type="text"
               {...register("phone")}
-              className={`block w-full px-3 py-2 border rounded-lg text-sm outline-none transition-colors ${
-                errors.phone ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={errors.phone ? "border-red-500" : "border-gray-300"}
               placeholder="600 000 000"
             />
             {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Email</Label>
+            <Input
               type="email"
               {...register("email")}
-              className={`block w-full px-3 py-2 border rounded-lg text-sm outline-none transition-colors ${
-                errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={errors.email ? "border-red-500" : "border-gray-300"}
             />
             {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
           </div>
@@ -763,28 +818,24 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Latitud</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Latitud</Label>
+            <Input
               type="number"
               step="any"
               {...register("lat", { valueAsNumber: true })}
-              className={`block w-full px-3 py-2 border rounded-lg text-sm outline-none transition-colors ${
-                errors.lat ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={errors.lat ? "border-red-500" : "border-gray-300"}
               placeholder="40.416775"
             />
             {errors.lat && <p className="mt-1 text-xs text-red-500">{errors.lat.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Longitud</label>
-            <input
+            <Label className="block text-gray-700 mb-1.5">Longitud</Label>
+            <Input
               type="number"
               step="any"
               {...register("lng", { valueAsNumber: true })}
-              className={`block w-full px-3 py-2 border rounded-lg text-sm outline-none transition-colors ${
-                errors.lng ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={errors.lng ? "border-red-500" : "border-gray-300"}
               placeholder="-3.703790"
             />
             {errors.lng && <p className="mt-1 text-xs text-red-500">{errors.lng.message}</p>}
@@ -799,13 +850,13 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
         >
           Cancelar
         </Link>
-        <button
+        <Button
           type="submit"
           disabled={isPending}
-          className="px-8 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
+          className="gap-2 shadow-sm"
         >
           {isPending ? "Guardando..." : "Guardar cambios"}
-        </button>
+        </Button>
       </div>
     </form>
   );

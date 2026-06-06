@@ -1,6 +1,7 @@
 "use client";
 
 import { LayoutGrid, TrendingUp, TrendingDown, ChevronRight, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -99,9 +100,9 @@ export default function UserDashboard() {
           </div>
           <h3 className="font-semibold text-gray-900 mb-1">Verifica tu identidad</h3>
           <p className="text-sm text-gray-600 mb-4">Los vendedores verificados venden 40% más rápido.</p>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
             Verificar
-          </button>
+          </Button>
         </div>
       </div>
     </div>

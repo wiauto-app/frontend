@@ -19,6 +19,17 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Stepper } from "@/components/ui/stepper";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function PublicarVehiculoPage() {
   const router = useRouter();
@@ -105,75 +116,87 @@ export default function PublicarVehiculoPage() {
               <h3 className="font-semibold text-gray-900 mb-2">Autocompletar anuncio con IA</h3>
               <p className="text-sm text-gray-600 mb-3">Ingresa la matrícula y completa automáticamente los datos</p>
               <div className="flex gap-3">
-                <input
+                <Input
                   type="text"
                   placeholder="Ingresa el número de matrícula *"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                  className="flex-1 border-gray-300"
                 />
-                <button className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700">
- Buscar
-                </button>
+                <Button className="bg-purple-600 hover:bg-purple-700">
+  Buscar
+                </Button>
               </div>
             </div>
 
             {/* Formulario datos vehículo */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Matrícula *</label>
-                <input type="text" placeholder="Ingresa el número de matrícula *" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Matrícula *</Label>
+                <Input type="text" placeholder="Ingresa el número de matrícula *" className="border-gray-300" />
               </div>
                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">VIN *</label>
-                <input type="text" placeholder="Ingresa el VIN *" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">VIN *</Label>
+                <Input type="text" placeholder="Ingresa el VIN *" className="border-gray-300" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Marca *</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selecciona *</option>
-                  <option>Toyota</option>
-                  <option>Volkswagen</option>
-                  <option>Chevrolet</option>
-                </select>
+                <Label className="mb-1">Marca *</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona *" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="toyota">Toyota</SelectItem>
+                    <SelectItem value="volkswagen">Volkswagen</SelectItem>
+                    <SelectItem value="chevrolet">Chevrolet</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
                  <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Modelo *</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selecciona *</option>
-                  <option>Corolla</option>
-                  <option>Polo</option>
-                  <option>Trailblazer</option>
-                </select>
+                <Label className="mb-1">Modelo *</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona *" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="corolla">Corolla</SelectItem>
+                    <SelectItem value="polo">Polo</SelectItem>
+                    <SelectItem value="trailblazer">Trailblazer</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Generación *</label>
-                <input type="text" placeholder="Ingresa el año *" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Generación *</Label>
+                <Input type="text" placeholder="Ingresa el año *" className="border-gray-300" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Año *</label>
-                <input type="text" placeholder="Ingresa *" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Año *</Label>
+                <Input type="text" placeholder="Ingresa *" className="border-gray-300" />
               </div>
                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vercion*</label>
-                <input type="text" placeholder="Ingresa *" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Vercion*</Label>
+                <Input type="text" placeholder="Ingresa *" className="border-gray-300" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Kilometraje *</label>
-                <input type="text" placeholder="Ingresa el kilometraje *" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Kilometraje *</Label>
+                <Input type="text" placeholder="Ingresa el kilometraje *" className="border-gray-300" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo De Vehículo *</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selecciona *</option>
-                  <option>SUV</option>
-                  <option>Sedán</option>
-                  <option>Hatchback</option>
-                </select>
+                <Label className="mb-1">Tipo De Vehículo *</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona *" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="suv">SUV</SelectItem>
+                    <SelectItem value="sedan">Sedán</SelectItem>
+                    <SelectItem value="hatchback">Hatchback</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de *</label>
-                <input type="text" placeholder="Ingresa *" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Tipo de *</Label>
+                <Input type="text" placeholder="Ingresa *" className="border-gray-300" />
               </div>
              
            
@@ -188,36 +211,44 @@ export default function PublicarVehiculoPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Combustible</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selecciona</option>
-                  <option>Gasolina</option>
-                  <option>Diésel</option>
-                  <option>Eléctrico</option>
-                  <option>Híbrido</option>
-                </select>
+                <Label className="mb-1">Combustible</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gasolina">Gasolina</SelectItem>
+                    <SelectItem value="diesel">Diésel</SelectItem>
+                    <SelectItem value="electrico">Eléctrico</SelectItem>
+                    <SelectItem value="hibrido">Híbrido</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Potencia</label>
-                <input type="text" placeholder="SUV" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Potencia</Label>
+                <Input type="text" placeholder="SUV" className="border-gray-300" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Emisiones</label>
-                <input type="text" placeholder="Ingreso" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Emisiones</Label>
+                <Input type="text" placeholder="Ingreso" className="border-gray-300" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Número De Puertas</label>
-                <input type="text" placeholder="2024" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <Label className="mb-1">Número De Puertas</Label>
+                <Input type="text" placeholder="2024" className="border-gray-300" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Color Exterior</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selecciona</option>
-                  <option>Blanco</option>
-                  <option>Negro</option>
-                  <option>Rojo</option>
-                  <option>Azul</option>
-                </select>
+                <Label className="mb-1">Color Exterior</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="blanco">Blanco</SelectItem>
+                    <SelectItem value="negro">Negro</SelectItem>
+                    <SelectItem value="rojo">Rojo</SelectItem>
+                    <SelectItem value="azul">Azul</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -229,59 +260,83 @@ export default function PublicarVehiculoPage() {
             {/* Equipamiento y estado */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pb-6 border-b border-gray-200">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Estado Del Vehículo</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selección</option>
-                  <option>Nuevo</option>
-                  <option>Usado</option>
-                </select>
+                <Label className="mb-1">Estado Del Vehículo</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selección" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nuevo">Nuevo</SelectItem>
+                    <SelectItem value="usado">Usado</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Número De Dueños</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selección</option>
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
+                <Label className="mb-1">Número De Dueños</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selección" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="5">5</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
                  <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Libro De Mantenimiento</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selección</option>
-                  <option>Sí</option>
-                  <option>No</option>
-                </select>
+                <Label className="mb-1">Libro De Mantenimiento</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selección" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="si">Sí</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ITV / Revisión</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selección</option>
-                  <option>Vigente</option>
-                  <option>No vigente</option>
-                </select>
+                <Label className="mb-1">ITV / Revisión</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selección" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="vigente">Vigente</SelectItem>
+                    <SelectItem value="no-vigente">No vigente</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Accidentes Previos</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selección</option>
-                  <option>Ninguno</option>
-                  <option>Uno</option>
-                  <option>Dos o más</option>
-                </select>
+                <Label className="mb-1">Accidentes Previos</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selección" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ninguno">Ninguno</SelectItem>
+                    <SelectItem value="uno">Uno</SelectItem>
+                    <SelectItem value="dos-mas">Dos o más</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
              
             
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Color Interior</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                  <option>Selección</option>
-                  <option>Negro</option>
-                  <option>Beige</option>
-                  <option>Gris</option>
-                </select>
+                <Label className="mb-1">Color Interior</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selección" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="negro">Negro</SelectItem>
+                    <SelectItem value="beige">Beige</SelectItem>
+                    <SelectItem value="gris">Gris</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -290,15 +345,13 @@ export default function PublicarVehiculoPage() {
               <h3 className="font-semibold text-gray-900 mb-3">Equipamiento:</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-96 overflow-y-auto p-2">
                 {equipamientoOptions.map((item) => (
-                  <label key={item} className="flex items-center gap-2 py-1.5 cursor-pointer">
-                    <input
-                      type="checkbox"
+                  <Label key={item} className="py-1.5 cursor-pointer">
+                    <Checkbox
                       checked={selectedEquipamiento.includes(item)}
-                      onChange={() => toggleEquipamiento(item)}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600"
+                      onCheckedChange={() => toggleEquipamiento(item)}
                     />
                     <span className="text-sm text-gray-600">{item}</span>
-                  </label>
+                  </Label>
                 ))}
               </div>
             </div>
@@ -316,12 +369,12 @@ export default function PublicarVehiculoPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Precio *</label>
-              <input type="number" placeholder="Precio" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+              <Label className="mb-1">Precio *</Label>
+              <Input type="number" placeholder="Precio" className="border-gray-300" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
+              <Label className="mb-1">Descripción *</Label>
               <textarea
                 rows={5}
                 placeholder="Cuenta lo mejor de tu auto"
@@ -341,20 +394,22 @@ export default function PublicarVehiculoPage() {
               {images.map((img, i) => (
                 <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 group">
                   <img src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
-                  <button
+                  <Button
                     onClick={() => removeImage(i)}
-                    className="absolute top-1 right-1 bg-black/60 rounded-full p-1 opacity-0 group-hover:opacity-100"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-1 right-1 bg-black/60 opacity-0 group-hover:opacity-100"
                   >
                     <X className="h-3 w-3 text-white" />
-                  </button>
+                  </Button>
                 </div>
               ))}
               {Array.from({ length: Math.max(0, 16 - images.length) }).map((_, i) => (
-                <label key={`empty-${i}`} className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400">
+                <Label key={`empty-${i}`} className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex-col items-center justify-center cursor-pointer hover:border-blue-400">
                   <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                   <ImagePlus className="h-6 w-6 text-gray-400" />
                   <span className="text-xs text-gray-400 mt-1">Foto {images.length + i + 1}</span>
-                </label>
+                </Label>
               ))}
             </div>
             <p className="text-xs text-gray-400">Sube hasta 16 fotos de tu vehículo</p>
@@ -411,10 +466,10 @@ export default function PublicarVehiculoPage() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-          <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+          <Button onClick={() => router.back()} variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
             <ArrowLeft className="h-4 w-4" />
             Regresar
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -434,24 +489,23 @@ export default function PublicarVehiculoPage() {
 
           {/* Botones de navegación */}
           <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
-            <button
+            <Button
               onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
               disabled={currentStep === 1}
-              className="px-6 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              variant="outline"
             >
               Regresar
-            </button>
+            </Button>
             {currentStep < 6 ? (
-              <button
+              <Button
                 onClick={() => setCurrentStep(Math.min(6, currentStep + 1))}
-                className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
               >
                 Continuar
-              </button>
+              </Button>
             ) : (
-              <button className="px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">
+              <Button className="bg-green-600 hover:bg-green-700">
                 Publicar
-              </button>
+              </Button>
             )}
           </div>
         </div>

@@ -17,7 +17,7 @@ type VehicleGridCardProps = {
 };
 
 export function VehicleGridCard({ vehicle }: VehicleGridCardProps) {
-  const imageUrl = getImageUrl(vehicle.images);
+  const imageUrl = getImageUrl(vehicle.images[0].url);
   const photoCount = vehicle.images?.length ?? 0;
 
   return (

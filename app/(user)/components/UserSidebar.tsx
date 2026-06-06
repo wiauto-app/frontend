@@ -17,6 +17,7 @@ import {
   Edit,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export function UserSidebar() {
   const authContext = useContext(AuthContext);
@@ -89,13 +90,14 @@ export function UserSidebar() {
           })}
 
           <div className="pt-4 mt-2 border-t border-gray-100">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => authContext?.logout()}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+              className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50"
             >
               <LogOut className="w-5 h-5" />
               Cerrar sesión
-            </button>
+            </Button>
           </div>
         </nav>
       </div>

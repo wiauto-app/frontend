@@ -1,6 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   createPressCommentAction,
   type CreatePressCommentActionState,
@@ -31,27 +34,27 @@ export const PressCommentForm = ({ news_document_id, news_slug }: PressCommentFo
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
-          <label htmlFor="comment-name" className="text-sm font-medium text-slate-700">
+          <Label htmlFor="comment-name" className="text-slate-700">
             Nombre <span className="text-red-500">*</span>
-          </label>
-          <input id="comment-name" name="name" type="text" required
+          </Label>
+          <Input id="comment-name" name="name" type="text" required
             placeholder="Nombre" disabled={is_pending}
-            className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60" />
+            className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-60" />
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="comment-email" className="text-sm font-medium text-slate-700">
+          <Label htmlFor="comment-email" className="text-slate-700">
             Correo <span className="text-red-500">*</span>
-          </label>
-          <input id="comment-email" name="email" type="email" required
+          </Label>
+          <Input id="comment-email" name="email" type="email" required
             placeholder="Correo" disabled={is_pending}
-            className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60" />
+            className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-60" />
         </div>
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="comment-text" className="text-sm font-medium text-slate-700">
+        <Label htmlFor="comment-text" className="text-slate-700">
           Mensaje <span className="text-red-500">*</span>
-        </label>
+        </Label>
         <textarea id="comment-text" name="text" required rows={5}
           placeholder="Escribe tu comentario..." disabled={is_pending}
           className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60 resize-none" />
@@ -63,10 +66,10 @@ export const PressCommentForm = ({ news_document_id, news_slug }: PressCommentFo
         </p>
       ) : null}
 
-      <button type="submit" disabled={is_pending}
-        className="rounded-md bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-60">
+      <Button type="submit" disabled={is_pending}
+        className="bg-blue-600 px-6 py-2.5 font-semibold text-white hover:bg-blue-700">
         {is_pending ? "Enviando..." : "Enviar comentario"}
-      </button>
+      </Button>
     </form>
   );
 };

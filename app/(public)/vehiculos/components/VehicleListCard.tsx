@@ -12,9 +12,12 @@ import {
   getVehicleModelName,
   getVehicleTags,
 } from "../utils";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
 import { VehicleImageCarousel } from "./VehicleImageCarousel";
 import { VehicleShareButton } from "./VehicleShareButton";
+import { Button } from "@/components/ui/button";
 
 type VehicleListCardProps = {
   vehicle: VehicleListItem;
@@ -55,13 +58,15 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
                   vehicleId={vehicle.id}
                   vehicleTitle={getVehicleModelName(vehicle)}
                 />
-                <button
+                <Button
                   type="button"
-                  className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700"
+                  size="icon"
+                  variant="ghost"
+                  className="rounded-full text-slate-400 hover:bg-slate-50 hover:text-slate-700"
                   aria-label="Más opciones"
                 >
                   <MoreVertical className="size-4" />
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -102,15 +107,14 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
             className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5"
             style={{ backgroundColor: BRAND_BLUE_LIGHT }}
           >
-            <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
-              <input
-                type="checkbox"
+            <div className="flex items-center gap-2 cursor-pointer text-slate-700">
+              <Checkbox
+                id="compare-checkbox"
                 checked={compare}
-                onChange={(e) => setCompare(e.target.checked)}
-                className="size-4 rounded border-slate-300 text-[#0061F2] focus:ring-[#0061F2]"
+                onCheckedChange={(checked) => setCompare(checked)}
               />
-              Comparar
-            </label>
+              <Label htmlFor="compare-checkbox">Comparar</Label>
+            </div>
             <p className="text-xs text-slate-500 sm:text-sm">
               * Sin entrada - 84 meses - Ver ejemplo TAE 9,61%
             </p>

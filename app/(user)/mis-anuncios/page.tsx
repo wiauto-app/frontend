@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { LayoutGrid, MoreVertical, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -112,31 +113,33 @@ export default function MisAnunciosPage() {
                   {anuncio.status}
                 </span>
                 
-                <button 
+                <Button 
                   onClick={() => toggleDropdown(index)}
-                  className="p-1 text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
+                  variant="ghost"
+                  size="icon"
+                  className="text-blue-500 hover:bg-blue-50"
                 >
                   <MoreVertical className="w-5 h-5" />
-                </button>
+                </Button>
 
                 {/* Menú Desplegable de Acciones */}
                 {openDropdown === index && (
                   <div data-dropdown-menu className="absolute right-0 top-10 mt-1 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 z-10 flex flex-col">
-                    <button className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <Button variant="ghost" className="w-full justify-start rounded-none px-4 py-2 text-sm text-gray-700">
                       Editar
-                    </button>
-                    <button className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start rounded-none px-4 py-2 text-sm text-gray-700">
                       Duplicar
-                    </button>
-                    <button className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start rounded-none px-4 py-2 text-sm text-gray-700">
                       Programar
-                    </button>
-                    <button className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start rounded-none px-4 py-2 text-sm text-gray-700">
                       Eliminar
-                    </button>
-                    <button className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start rounded-none px-4 py-2 text-sm text-gray-700">
                       Inactivar
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>

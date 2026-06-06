@@ -75,10 +75,11 @@ export const FavoritesFolderCard = ({
             : "border-gray-100 bg-white shadow-sm hover:border-gray-200",
         )}
       >
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => onSelect(list.id)}
-          className="flex min-w-0 flex-1 items-start gap-3 text-left"
+          className="min-w-0 flex-1 items-start gap-3 text-left h-auto"
           aria-pressed={isActive}
           aria-label={`Seleccionar carpeta ${list.name}`}
         >
@@ -103,21 +104,26 @@ export const FavoritesFolderCard = ({
               {formatVehicleCountLabel(itemCount)}
             </p>
           </div>
-        </button>
+        </Button>
 
         <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-          <PopoverTrigger
-            type="button"
-            aria-label={`Opciones de ${list.name}`}
-            className="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <MoreHorizontal className="size-5" aria-hidden />
+          <PopoverTrigger >
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={`Opciones de ${list.name}`}
+              className="text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <MoreHorizontal className="size-5" aria-hidden />
+            </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-44 p-2">
-            <button
+            <Button
               type="button"
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              variant="ghost"
+              className="w-full justify-start gap-2 px-3 py-2 text-gray-700 hover:bg-gray-50"
               onClick={() => {
                 setRenameValue(list.name);
                 setRenameOpen(true);
@@ -125,16 +131,17 @@ export const FavoritesFolderCard = ({
             >
               <Pencil className="size-4" aria-hidden />
               Renombrar
-            </button>
+            </Button>
             {!list.is_default && (
-              <button
+              <Button
                 type="button"
-                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                variant="ghost"
+                className="w-full justify-start gap-2 px-3 py-2 text-red-600 hover:bg-red-50"
                 onClick={() => setDeleteOpen(true)}
               >
                 <Trash2 className="size-4" aria-hidden />
                 Eliminar
-              </button>
+              </Button>
             )}
           </PopoverContent>
         </Popover>
