@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import { Copy, MoreVertical, MoveRight, Trash2 } from "lucide-react";
 import { MoveCopyVehicleListDialog } from "./MoveCopyVehicleListDialog";
 
@@ -41,26 +42,32 @@ export const FavoriteVehicleActionsMenu = ({
   return (
     <>
       <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-        <PopoverTrigger
-          type="button"
-          aria-label="Más acciones"
-          disabled={disabled}
-          className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50"
-        >
-          <MoreVertical className="size-4" aria-hidden />
+        <PopoverTrigger>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Más acciones"
+            disabled={disabled}
+            className="rounded-full text-gray-400 hover:bg-gray-50 hover:text-gray-700"
+          >
+            <MoreVertical className="size-4" aria-hidden />
+          </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-52 p-2">
-          <button
+          <Button
             type="button"
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+            variant="ghost"
+            className="w-full justify-start gap-2 px-3 py-2 text-red-600 hover:bg-red-50"
             onClick={handleRemove}
           >
             <Trash2 className="size-4" aria-hidden />
             Quitar de favoritos
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            variant="ghost"
+            className="w-full justify-start gap-2 px-3 py-2 text-gray-700 hover:bg-gray-50"
             onClick={() => {
               setMoveDialogOpen(true);
               setMenuOpen(false);
@@ -68,10 +75,11 @@ export const FavoriteVehicleActionsMenu = ({
           >
             <MoveRight className="size-4" aria-hidden />
             Mover a otra lista
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            variant="ghost"
+            className="w-full justify-start gap-2 px-3 py-2 text-gray-700 hover:bg-gray-50"
             onClick={() => {
               setCopyDialogOpen(true);
               setMenuOpen(false);
@@ -79,7 +87,7 @@ export const FavoriteVehicleActionsMenu = ({
           >
             <Copy className="size-4" aria-hidden />
             Copiar a otra lista
-          </button>
+          </Button>
         </PopoverContent>
       </Popover>
 

@@ -1,6 +1,15 @@
 "use client";
 
-import { AlertCircle, ChevronDown } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function ConfiguracionPage() {
@@ -35,40 +44,49 @@ export default function ConfiguracionPage() {
         <h2 className="text-lg font-bold text-gray-900 mb-6">Idioma y región</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="relative border border-gray-300 rounded-lg px-3 py-2.5 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-            <label className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Idioma</label>
-            <select className="block w-full border-0 p-0 text-gray-900 focus:ring-0 sm:text-sm outline-none appearance-none bg-transparent cursor-pointer">
-              <option>Selecciona</option>
-              <option>Español</option>
-              <option>English</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+          <div>
+            <Label className="mb-1.5 text-gray-500">Idioma</Label>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent className="w-full">
+                <SelectItem value="es">Español</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="relative border border-gray-300 rounded-lg px-3 py-2.5 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-            <label className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Moneda</label>
-            <select className="block w-full border-0 p-0 text-gray-900 focus:ring-0 sm:text-sm outline-none appearance-none bg-transparent cursor-pointer">
-              <option>Selecciona</option>
-              <option>USD ($)</option>
-              <option>EUR (€)</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+          <div>
+            <Label className="mb-1.5 text-gray-500">Moneda</Label>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent className="w-full">
+                <SelectItem value="usd">USD ($)</SelectItem>
+                <SelectItem value="eur">EUR (€)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="relative border border-gray-300 rounded-lg px-3 py-2.5 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-            <label className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Zona Horaria</label>
-            <select className="block w-full border-0 p-0 text-gray-900 focus:ring-0 sm:text-sm outline-none appearance-none bg-transparent cursor-pointer">
-              <option>Selecciona</option>
-              <option>GMT-5 (Lima, Bogotá)</option>
-              <option>GMT+1 (Madrid, París)</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+          <div>
+            <Label className="mb-1.5 text-gray-500">Zona Horaria</Label>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona" className="w-full"/>
+              </SelectTrigger>
+              <SelectContent className="w-full">
+                <SelectItem value="gmt-5">GMT-5 (Lima, Bogotá)</SelectItem>
+                <SelectItem value="gmt+1">GMT+1 (Madrid, París)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors">
+        <Button className="w-full">
           Actualizar
-        </button>
+        </Button>
       </div>
 
       {/* Visibilidad */}
@@ -78,9 +96,10 @@ export default function ConfiguracionPage() {
           {visibilidad.map((item) => (
             <div key={item.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg bg-white">
               <span className="text-sm font-medium text-gray-700">{item.label}</span>
-              <button 
+              <Button 
                 onClick={() => toggleVisibilidad(item.id)}
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                variant="ghost"
+                className={`relative h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent p-0 ${
                   item.active ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
               >
@@ -89,7 +108,7 @@ export default function ConfiguracionPage() {
                     item.active ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -102,9 +121,10 @@ export default function ConfiguracionPage() {
           {privacidad.map((item) => (
             <div key={item.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg bg-white">
               <span className="text-sm font-medium text-gray-700">{item.label}</span>
-              <button 
+              <Button 
                 onClick={() => togglePrivacidad(item.id)}
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                variant="ghost"
+                className={`relative h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent p-0 ${
                   item.active ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
               >
@@ -113,7 +133,7 @@ export default function ConfiguracionPage() {
                     item.active ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -130,9 +150,9 @@ export default function ConfiguracionPage() {
             <p className="text-sm text-gray-600">Pausa o elimina tu cuenta. Esta acción es irreversible.</p>
           </div>
         </div>
-        <button className="bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors mt-2">
+        <Button variant="destructive" className="mt-2">
           Eliminar cuenta
-        </button>
+        </Button>
       </div>
 
     </div>

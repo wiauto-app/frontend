@@ -9,8 +9,7 @@ import {
 } from "@/lib/vehicles/build-active-filter-chips";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { useActiveFiltersStore } from "../stores/activeFiltersStore";
-
-
+import { Button } from "@/components/ui/button";
 
 export const ActiveFiltersChips = () => {
   const { activeFilters } = useActiveFiltersStore();
@@ -54,24 +53,27 @@ export const ActiveFiltersChips = () => {
           className="inline-flex items-center gap-1.5 rounded-full border border-[#C7D9F5] bg-[#EBF2FF] px-3 py-1.5 text-xs font-semibold text-[#0061F2]"
         >
           {chip.label}
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={chip.onRemove}
-            className="rounded-full p-0.5 transition-colors hover:bg-[#0061F2]/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0061F2]"
+            className="rounded-full p-0.5 h-auto w-auto hover:bg-[#0061F2]/10"
             aria-label={`Quitar filtro ${chip.label}`}
           >
             <X className="size-3.5" aria-hidden />
-          </button>
+          </Button>
         </span>
       ))}
       {chips.length > 1 && (
-        <button
+        <Button
           type="button"
+          variant="link"
           onClick={resetFilters}
-          className="text-xs font-semibold text-slate-500 underline-offset-2 hover:text-[#0061F2] hover:underline"
+          className="text-xs font-semibold text-slate-500 underline-offset-2 hover:text-[#0061F2]"
         >
           Limpiar todos
-        </button>
+        </Button>
       )}
     </section>
   );

@@ -6,6 +6,7 @@ import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { VehicleGridCard } from "./VehicleGridCard";
 import { VehicleListCard } from "./VehicleListCard";
 import { VehiclesPagination } from "./VehiclesPagination";
+import { Button } from "@/components/ui/button";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 
 type VehiclesListingViewProps = {
@@ -41,13 +42,13 @@ function VehiclesListingView({ vehicles, total }: VehiclesListingViewProps) {
                 <p className="mt-2 text-slate-500">
                   Intenta ajustar los filtros o realizar una nueva búsqueda
                 </p>
-                <button
+                <Button
                   type="button"
                   onClick={resetFilters}
-                  className="mt-4 inline-flex items-center rounded-lg bg-[#0061F2] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+                  className="mt-4 bg-[#0061F2] text-white hover:opacity-90 rounded-lg px-4 py-2 font-semibold"
                 >
                   Limpiar filtros
-                </button>
+                </Button>
               </div>
             ) : (
               <>

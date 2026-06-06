@@ -8,6 +8,9 @@ import { UpdateProfileSchema, UpdateProfileDto } from "@/validations/Schemas";
 import { updateProfileAction } from "../userActions/userActions";
 import { toast } from "sonner";
 import { ShieldCheck, CheckCircle2, MessageCircle, Mail, BookOpen, AlertCircle } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function PerfilPage() {
   const authContext = useContext(AuthContext);
@@ -89,80 +92,44 @@ export default function PerfilPage() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-            {/* Campos estilo input con label superpuesto (Material-like) */}
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-              <label htmlFor="name" className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Nombres</label>
-              <input
-                type="text"
-                id="name"
-                {...register("name")}
-                className="block w-full border-0 p-0 text-gray-900 placeholder-gray-400 focus:ring-0 sm:text-sm outline-none"
-                placeholder="Andrea"
-              />
+            <div>
+              <Label htmlFor="name" className="block text-gray-700 mb-1">Nombres</Label>
+              <Input type="text" id="name" placeholder="Andrea" {...register("name")} />
             </div>
 
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-              <label htmlFor="last_name" className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Apellidos</label>
-              <input
-                type="text"
-                id="last_name"
-                {...register("last_name")}
-                className="block w-full border-0 p-0 text-gray-900 placeholder-gray-400 focus:ring-0 sm:text-sm outline-none"
-                placeholder="Gutierrez"
-              />
+            <div>
+              <Label htmlFor="last_name" className="block text-gray-700 mb-1">Apellidos</Label>
+              <Input type="text" id="last_name" placeholder="Gutierrez" {...register("last_name")} />
             </div>
 
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 opacity-70">
-              <label htmlFor="email" className="absolute -top-2.5 left-2 bg-gray-50 px-1 text-xs text-gray-500">Email</label>
-              <input
-                type="email"
-                id="email"
-                disabled
-                value={user?.email || "andre@hotmail.com"}
-                className="block w-full border-0 p-0 text-gray-600 bg-transparent focus:ring-0 sm:text-sm outline-none cursor-not-allowed"
-              />
+            <div>
+              <Label htmlFor="email" className="block text-gray-700 mb-1">Email</Label>
+              <Input type="email" id="email" disabled value={user?.email} />
             </div>
 
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-              <label htmlFor="phone" className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Teléfono</label>
-              <input
-                type="text"
-                id="phone"
-                {...register("phone")}
-                className="block w-full border-0 p-0 text-gray-900 placeholder-gray-400 focus:ring-0 sm:text-sm outline-none"
-                placeholder="+51 736433393"
-              />
+            <div>
+              <Label htmlFor="phone" className="block text-gray-700 mb-1">Teléfono</Label>
+              <Input type="text" id="phone" placeholder="+51 736433393" {...register("phone")} />
             </div>
 
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-              <label htmlFor="address" className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Ciudad</label>
-              <input
-                type="text"
-                id="address"
-                {...register("address")}
-                className="block w-full border-0 p-0 text-gray-900 placeholder-gray-400 focus:ring-0 sm:text-sm outline-none"
-                placeholder="Madrid"
-              />
+            <div>
+              <Label htmlFor="address" className="block text-gray-700 mb-1">Ciudad</Label>
+              <Input type="text" id="address" placeholder="Madrid" {...register("address")} />
             </div>
 
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-              <label htmlFor="dni" className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">DNI</label>
-              <input
-                type="text"
-                id="dni"
-                className="block w-full border-0 p-0 text-gray-900 placeholder-gray-400 focus:ring-0 sm:text-sm outline-none"
-                placeholder="3947584994"
-              />
+            <div>
+              <Label htmlFor="dni" className="block text-gray-700 mb-1">DNI</Label>
+              <Input type="text" id="dni" placeholder="3947584994" />
             </div>
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={isPending}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors mt-4"
+            className="w-full mt-4"
           >
             {isPending ? "Guardando..." : "Guardar Cambios"}
-          </button>
+          </Button>
         </form>
       </div>
 
@@ -171,21 +138,21 @@ export default function PerfilPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
           <h2 className="text-lg font-bold text-gray-900 mb-6">Cambiar contraseña</h2>
           <form className="space-y-5">
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-              <label className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Actual</label>
-              <input type="password" placeholder="Ingresar" className="block w-full border-0 p-0 text-gray-900 placeholder-gray-400 focus:ring-0 sm:text-sm outline-none" />
+            <div>
+              <Label htmlFor="current-password" className="block text-gray-700 mb-1">Actual</Label>
+              <Input type="password" id="current-password" placeholder="Ingresar" />
             </div>
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-              <label className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Nueva</label>
-              <input type="password" placeholder="Ingresar" className="block w-full border-0 p-0 text-gray-900 placeholder-gray-400 focus:ring-0 sm:text-sm outline-none" />
+            <div>
+              <Label htmlFor="new-password" className="block text-gray-700 mb-1">Nueva</Label>
+              <Input type="password" id="new-password" placeholder="Ingresar" />
             </div>
-            <div className="relative border border-gray-300 rounded-lg px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
-              <label className="absolute -top-2.5 left-2 bg-white px-1 text-xs text-gray-500">Confirmar</label>
-              <input type="password" placeholder="Ingresar" className="block w-full border-0 p-0 text-gray-900 placeholder-gray-400 focus:ring-0 sm:text-sm outline-none" />
+            <div>
+              <Label htmlFor="confirm-password" className="block text-gray-700 mb-1">Confirmar</Label>
+              <Input type="password" id="confirm-password" placeholder="Ingresar" />
             </div>
-            <button type="button" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors mt-2">
+            <Button type="button" className="w-full mt-2">
               Actualizar
-            </button>
+            </Button>
           </form>
         </div>
 
@@ -199,9 +166,9 @@ export default function PerfilPage() {
                 <AlertCircle className="w-5 h-5 text-gray-400" />
                 <span className="text-sm font-medium text-gray-700">Identidad (DNI)</span>
               </div>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-4 py-1.5 rounded-md transition-colors">
+              <Button size="sm">
                 Verificar
-              </button>
+              </Button>
             </div>
 
             {/* Email Verificado */}

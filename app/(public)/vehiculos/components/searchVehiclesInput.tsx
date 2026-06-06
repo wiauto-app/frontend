@@ -35,7 +35,7 @@ const SearchVehicleResultItem = ({
   vehicle,
   onNavigate,
 }: SearchVehicleResultItemProps) => {
-  const imageUrl = getImageUrl(vehicle.images);
+  const imageUrl = getImageUrl(vehicle.images[0].url);
   const modelName = getVehicleModelName(vehicle);
 
   return (

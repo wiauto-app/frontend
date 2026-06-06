@@ -22,6 +22,9 @@ import {
   // CheckBadge,
 } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export default function VehicleDetailPage() {
   const router = useRouter();
@@ -48,20 +51,21 @@ export default function VehicleDetailPage() {
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between">
-            <button
+            <Button
               onClick={() => router.back()}
-              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+              variant="ghost"
+              className="gap-2 text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="h-4 w-4" />
               Volver
-            </button>
+            </Button>
             <div className="flex items-center gap-2">
-              <button onClick={() => setSaved(!saved)} className="p-2">
+              <Button onClick={() => setSaved(!saved)} variant="ghost" size="icon">
                 <Heart className={`h-5 w-5 ${saved ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
-              </button>
-              <button className="p-2">
+              </Button>
+              <Button variant="ghost" size="icon">
                 <Share2 className="h-5 w-5 text-gray-400" />
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -81,12 +85,12 @@ export default function VehicleDetailPage() {
                 />
                 {images.length > 1 && (
                   <>
-                    <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 shadow-md">
+                    <Button onClick={prevImage} variant="ghost" size="icon" className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 shadow-md">
                       <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 shadow-md">
+                    </Button>
+                    <Button onClick={nextImage} variant="ghost" size="icon" className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 shadow-md">
                       <ChevronRight className="h-5 w-5" />
-                    </button>
+                    </Button>
                   </>
                 )}
                 <div className="absolute top-3 left-3">
@@ -140,9 +144,9 @@ export default function VehicleDetailPage() {
                   <span className="text-gray-700">Sin Entrada</span>
                 </div>
               </div>
-              <button className="mt-4 text-blue-600 text-sm font-medium">
+              <Button variant="link" className="mt-4">
                 Más sobre los servicios →
-              </button>
+              </Button>
             </div>
 
             {/* Contacta con el anunciante */}
@@ -179,9 +183,9 @@ export default function VehicleDetailPage() {
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
               <h2 className="text-lg font-semibold text-gray-900 mb-2">Guarda tus búsquedas favoritas</h2>
               <p className="text-gray-600 text-sm">Recibe alertas de anuncios similares por email</p>
-              <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+              <Button className="mt-4">
                 Crear alerta
-              </button>
+              </Button>
             </div>
 
             {/* Comentarios del anunciante */}
@@ -369,19 +373,19 @@ export default function VehicleDetailPage() {
                 ></textarea>
 
                 <div className="flex items-start gap-2">
-                  <input type="checkbox" className="mt-1" />
-                  <p className="text-xs text-gray-500">
+                  <Checkbox id="accept-terms-detail" />
+                  <Label htmlFor="accept-terms-detail" className="text-xs text-gray-500">
                     Acepto las condiciones de uso y la información básica de mi datos
-                  </p>
+                  </Label>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">
+                <Button className="w-full">
                   Contactar
-                </button>
+                </Button>
 
-                <button className="w-full text-blue-600 text-sm font-medium py-2">
+                <Button variant="link" className="w-full">
                   Ir al simulador de financiamiento →
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -395,10 +399,10 @@ export default function VehicleDetailPage() {
             <Phone className="h-5 w-5" />
             Llamar
           </a>
-          <button className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-lg font-medium">
+          <Button className="flex-1 gap-2">
             <Mail className="h-5 w-5" />
             Contactar
-          </button>
+          </Button>
         </div>
       </div>
       <div className="lg:hidden h-20"></div>

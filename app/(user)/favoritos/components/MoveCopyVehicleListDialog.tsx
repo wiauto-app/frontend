@@ -96,13 +96,14 @@ export const MoveCopyVehicleListDialog = ({
 
               return (
                 <li key={list.id}>
-                  <button
+                  <Button
                     type="button"
                     role="option"
                     aria-selected={isSelected}
                     onClick={() => setSelectedListId(list.id)}
+                    variant="ghost"
                     className={cn(
-                      "flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-colors",
+                      "w-full justify-between rounded-lg border px-4 py-3 text-left",
                       isSelected
                         ? "border-blue-200 bg-blue-50 text-blue-700"
                         : "border-gray-100 bg-white text-gray-700 hover:border-gray-200",
@@ -112,7 +113,7 @@ export const MoveCopyVehicleListDialog = ({
                     {list.is_default && (
                       <span className="text-xs text-gray-500">Predeterminada</span>
                     )}
-                  </button>
+                  </Button>
                 </li>
               );
             })}

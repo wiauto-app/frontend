@@ -15,6 +15,9 @@ import {
   VERSION_OPTIONS,
 } from "../constants";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { MakeSelector } from "@/components/selectors/makeSelector";
 
 type VehiclesSidebarProps = {
@@ -44,20 +47,16 @@ function CheckboxRow({
       )}
     >
       {align === "left" && (
-        <input
-          type="checkbox"
+        <Checkbox
           checked={checked}
-          onChange={onChange}
-          className="size-4 rounded border-slate-300 text-[#0061F2] focus:ring-[#0061F2]"
+          onCheckedChange={onChange}
         />
       )}
       <span>{label}</span>
       {align === "right" && (
-        <input
-          type="checkbox"
+        <Checkbox
           checked={checked}
-          onChange={onChange}
-          className="size-4 rounded border-slate-300 text-[#0061F2] focus:ring-[#0061F2]"
+          onCheckedChange={onChange}
         />
       )}
     </label>
@@ -105,13 +104,14 @@ export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
       <div className="rounded-xl border border-slate-100 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
           <h2 className="text-base font-bold text-slate-900">Filtros</h2>
-          <button
+          <Button
             type="button"
+            variant="link"
             onClick={resetFilters}
-            className="text-sm font-semibold text-[#0061F2] hover:underline"
+            className="text-[#0061F2]"
           >
             Limpiar filtros
-          </button>
+          </Button>
         </div>
 
         <div className="max-h-[calc(100vh-7rem)] space-y-6 overflow-y-auto px-5 py-5">
@@ -122,21 +122,22 @@ export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
                 const label = value === "new" ? "Nuevo" : "Usado";
                 const active = filters.condition === value;
                 return (
-                  <button
+                  <Button
                     key={value}
                     type="button"
+                    variant="outline"
                     onClick={() =>
                       handleConditionChange(active ? undefined : value)
                     }
                     className={cn(
-                      "rounded-lg border px-3 py-2.5 text-sm font-semibold transition-colors",
+                      "rounded-lg border px-3 py-2.5",
                       active
                         ? "border-[#0061F2] text-[#0061F2]"
                         : "border-slate-200 text-slate-500 hover:border-slate-300",
                     )}
                   >
                     {label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -167,23 +168,23 @@ export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
                 aria-label="Precio máximo"
               />
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="number"
                   value={priceMin}
                   onChange={(e) => handlePriceMinChange(e.target.value)}
                   onBlur={handlePriceBlur}
                   placeholder="Mín"
-                  className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#0061F2]"
+                  className="h-10"
                   aria-label="Precio mínimo"
                 />
                 <span className="text-slate-400">–</span>
-                <input
+                <Input
                   type="number"
                   value={priceMax}
                   onChange={(e) => handlePriceMaxChange(e.target.value)}
                   onBlur={handlePriceBlur}
                   placeholder="Máx"
-                  className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#0061F2]"
+                  className="h-10"
                   aria-label="Precio máximo"
                 />
               </div>
@@ -256,12 +257,13 @@ export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
               {BODY_TYPE_OPTIONS.map(({ slug, label }) => {
                 const active = selectedBodyTypes.includes(slug);
                 return (
-                  <button
+                  <Button
                     key={slug}
                     type="button"
+                    variant="outline"
                     onClick={() => handleBodyTypeToggle(slug)}
                     className={cn(
-                      "flex flex-col items-center gap-2 rounded-lg border px-2 py-3 text-xs font-semibold transition-colors",
+                      "flex-col gap-2 rounded-lg border px-2 py-3 text-xs",
                       active
                         ? "border-[#0061F2] text-[#0061F2]"
                         : "border-slate-200 text-slate-500 hover:border-slate-300",
@@ -269,7 +271,7 @@ export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
                   >
                     <Car className="size-8 text-slate-400" strokeWidth={1.25} />
                     {label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -281,19 +283,20 @@ export function VehiclesSidebar({ className }: VehiclesSidebarProps) {
               {DOOR_OPTIONS.map((door) => {
                 const active = selectedDoors.includes(door);
                 return (
-                  <button
+                  <Button
                     key={door}
                     type="button"
+                    variant="outline"
                     onClick={() => handleDoorToggle(door)}
                     className={cn(
-                      "flex size-10 items-center justify-center rounded-lg border text-sm font-semibold transition-colors",
+                      "size-10 rounded-lg border",
                       active
                         ? "border-[#0061F2] text-[#0061F2]"
                         : "border-slate-200 text-slate-500 hover:border-slate-300",
                     )}
                   >
                     {door}
-                  </button>
+                  </Button>
                 );
               })}
             </div>

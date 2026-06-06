@@ -4,6 +4,7 @@ import { useState, type MouseEvent } from "react";
 import { ChevronDown, Loader2, Search } from "lucide-react";
 import { Skeleton } from "./skeleton";
 import { Popover, PopoverContent } from "./popover";
+import { Input } from "./input";
 import { InputButton } from "./inputButton";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
@@ -301,14 +302,14 @@ export function SearchableHierarchySelect<TItem extends HierarchySelectItem>({
               className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground"
               aria-hidden
             />
-            <input
+            <Input
               type="search"
               value={searchValue}
               onChange={(event) => onSearchChange(event.target.value)}
               placeholder={searchPlaceholder}
               aria-label={searchPlaceholder}
               autoFocus
-              className="h-12 w-full rounded-full border border-foreground/20 bg-background pr-4 pl-12 text-base shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40"
+              className="h-12 rounded-full pr-4 pl-12"
             />
           </div>
           {listTitle ? (

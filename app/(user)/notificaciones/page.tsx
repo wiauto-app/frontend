@@ -1,6 +1,7 @@
 "use client";
 
 import { LayoutGrid, Smartphone, Mail, Monitor, Bell, Bookmark, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 
@@ -85,9 +86,9 @@ export default function NotificacionesPage() {
           <LayoutGrid className="w-6 h-6 text-gray-700" />
           <h1 className="text-2xl font-bold text-gray-900">Notificaciones</h1>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <Button>
           Nueva búsqueda
-        </button>
+        </Button>
       </div>
 
       {/* Canales */}
@@ -103,9 +104,10 @@ export default function NotificacionesPage() {
                   <span className="text-sm font-medium">{canal.label}</span>
                 </div>
                 {/* Toggle */}
-                <button 
+                <Button 
                   onClick={() => toggleCanal(canal.id)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  variant="ghost"
+                  className={`relative h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent p-0 ${
                     canal.active ? 'bg-blue-600' : 'bg-gray-200'
                   }`}
                 >
@@ -114,7 +116,7 @@ export default function NotificacionesPage() {
                       canal.active ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
-                </button>
+                </Button>
               </div>
             );
           })}
@@ -156,9 +158,9 @@ export default function NotificacionesPage() {
                 ) : (
                   <div className="flex flex-col items-center">
                     <div className="w-2 h-2 rounded-full bg-gray-300 mt-1 mb-2"></div>
-                    <button className="text-gray-400 hover:text-gray-600">
+                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
                       <X className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -175,9 +177,10 @@ export default function NotificacionesPage() {
             <div key={alerta.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg">
               <span className="text-sm text-gray-700">{alerta.label}</span>
               {/* Toggle */}
-              <button 
+              <Button 
                 onClick={() => toggleAlerta(alerta.id)}
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                variant="ghost"
+                className={`relative h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent p-0 ${
                   alerta.active ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
               >
@@ -186,7 +189,7 @@ export default function NotificacionesPage() {
                     alerta.active ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
-              </button>
+              </Button>
             </div>
           ))}
         </div>

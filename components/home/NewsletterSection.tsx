@@ -1,5 +1,6 @@
 
 import { Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { SectionContainer } from "./SectionContainer";
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "./data/home-data";
 import { getHomeData } from "./services/homeService";
@@ -24,7 +25,7 @@ export async function NewsletterSection() {
         <form
           className="mx-auto mt-8 flex max-w-md overflow-hidden rounded-lg bg-white shadow-sm"
         >
-          <input
+          <Input
             type="email"
             name="email"
             placeholder="Tu correo electrónico"

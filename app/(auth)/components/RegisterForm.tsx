@@ -9,6 +9,10 @@ import { AppleLogin } from "./appleLogin";
 import { GoogleLogin } from "./googleLogin";
 import { RegisterDto, RegisterSchema } from "@/validations/Schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/authService";
 
 export default function RegisterForm() {
@@ -73,28 +77,28 @@ export default function RegisterForm() {
             </div>
 
             <div className="flex border-b border-gray-200">
-              <button
+              <Button
                 type="button"
                 onClick={() => setAccountType("particular")}
-                className={`flex-1 pb-3 text-center font-medium transition-colors ${
+                className={`flex-1 text-center  ${
                   accountType === "particular"
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? " border-b-2 border-blue-600 "
+                    : "text-black hover:text-white bg-white"
                 }`}
               >
                 Particular
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setAccountType("empresa")}
-                className={`flex-1 pb-3 text-center font-medium transition-colors ${
+                className={`flex-1 text-center ${
                   accountType === "empresa"
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "border-b-2 border-blue-600"
+                    : "text-black hover:text-white bg-white"
                 }`}
               >
                 Empresa
-              </button>
+              </Button>
             </div>
 
             <div className="flex gap-3">
@@ -112,12 +116,12 @@ export default function RegisterForm() {
             </div>
 
             <form id="register-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label htmlFor="register-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <Label htmlFor="register-name" className="block text-gray-700 mb-1">
                     Nombre *
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     id="register-name"
                     type="text"
                     placeholder="Nombre"
@@ -131,10 +135,10 @@ export default function RegisterForm() {
                 </div>
 
                 <div>
-                  <label htmlFor="register-last_name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <Label htmlFor="register-last_name" className="block text-gray-700 mb-1">
                     Apellido *
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     id="register-last_name"
                     type="text"
                     placeholder="Apellido"
@@ -149,14 +153,13 @@ export default function RegisterForm() {
               </div>
 
               <div>
-                <label htmlFor="register-email" className="block text-sm font-medium text-gray-700 mb-1">
+                <Label htmlFor="register-email" className="block text-gray-700 mb-1">
                   Email *
-                </label>
-                <input
+                </Label>
+                <Input
                   id="register-email"
                   type="email"
                   placeholder="Email *"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   {...form.register("email")}
                   disabled={isLoading}
                 />
@@ -166,14 +169,13 @@ export default function RegisterForm() {
               </div>
 
               <div>
-                <label htmlFor="register-password" className="block text-sm font-medium text-gray-700 mb-1">
+                <Label htmlFor="register-password" className="block text-gray-700 mb-1">
                   Contraseña *
-                </label>
-                <input
+                </Label>
+                <Input
                   id="register-password"
                   type="password"
                   placeholder="Contraseña *"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   {...form.register("password")}
                   disabled={isLoading}
                 />
@@ -183,42 +185,38 @@ export default function RegisterForm() {
               </div>
 
               <div className="flex items-start gap-2">
-                <input
+                <Checkbox
                   id="accept-terms"
-                  type="checkbox"
                   checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  onCheckedChange={(checked) => setAcceptTerms(checked)}
                   disabled={isLoading}
                 />
-                <label htmlFor="accept-terms" className="text-sm text-gray-600">
+                <Label htmlFor="accept-terms" className="text-gray-600">
                   Acepto las condiciones de uso y la información básica de protección de datos.
-                </label>
+                </Label>
               </div>
-
+              
               <div className="flex items-start gap-2">
-                <input
+                <Checkbox
                   id="accept-newsletter"
-                  type="checkbox"
                   checked={acceptNewsletter}
-                  onChange={(e) => setAcceptNewsletter(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  onCheckedChange={(checked) => setAcceptNewsletter(checked)}
                   disabled={isLoading}
                 />
-                <label htmlFor="accept-newsletter" className="text-sm text-gray-600">
+                <Label htmlFor="accept-newsletter" className="text-gray-600">
                   Suscríbete y recibe todas las novedades de nuestro blog
-                </label>
+                </Label>
               </div>
             </form>
 
-            <button
+            <Button
               type="submit"
               form="register-form"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg"
               disabled={isLoading}
             >
               {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
-            </button>
+            </Button>
 
             <div className="text-center">
               <p className="text-sm text-gray-600">
