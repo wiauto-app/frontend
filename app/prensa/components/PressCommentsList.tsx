@@ -18,7 +18,7 @@ const AVATAR_COLORS = [
   "bg-amber-500",
 ];
 
-export const CommentsList = ({ comments }: CommentsListProps) => {
+export const PressCommentsList = ({ comments }: CommentsListProps) => {
   if (!comments.length) {
     return (
       <p className="text-sm text-slate-500">

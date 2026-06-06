@@ -16,7 +16,7 @@ type VehiclesListingViewProps = {
 function VehiclesListingView({ vehicles, total }: VehiclesListingViewProps) {
   const { filters, resetFilters, goToPage } = useVehiclesListingFilters();
 
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
   const totalPages = Math.ceil(total / (filters.limit || 12));
   const currentPage = filters.page || 1;

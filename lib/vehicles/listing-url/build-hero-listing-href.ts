@@ -16,7 +16,7 @@ import { VEHICLES_LISTING_BASE_PATH } from "./constants";
 
 export type HeroListingSearchState = MakeModelUrlPayload &
   LocationUrlPayload & {
-    [PRICE_KEYS.UNTIL]?: number;
+    precio_hasta?: number;
   };
 
 export const buildHeroListingHref = (state: HeroListingSearchState): string => {
@@ -34,8 +34,8 @@ export const buildHeroListingHref = (state: HeroListingSearchState): string => {
   if (state[MUNICIPALITY_KEY]?.length) {
     record[MUNICIPALITY_KEY] = state[MUNICIPALITY_KEY];
   }
-  if (state[PRICE_KEYS.UNTIL] !== undefined) {
-    record[PRICE_KEYS.UNTIL] = String(state[PRICE_KEYS.UNTIL]);
+  if (state.precio_hasta !== undefined) {
+    record[PRICE_KEYS.UNTIL] = String(state.precio_hasta);
   }
 
   const search = stringifyFiltersQuery(
