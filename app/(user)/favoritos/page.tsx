@@ -1,135 +1,167 @@
 "use client";
 
-import { LayoutGrid, Folder, MoreHorizontal, Camera } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CreateListDialog } from "./components/CreateListDialog";
+import { FavoriteVehicleCard } from "./components/FavoriteVehicleCard";
+import { FavoritesFolderStrip } from "./components/FavoritesFolderStrip";
+import { FavoritesPageHeader } from "./components/FavoritesPageHeader";
+import { useFavoritesPage } from "./hooks/useFavoritesPage";
 
 export default function FavoritosPage() {
-  const folders = Array(4).fill({
-    name: "Para comparar",
-    count: "4 autos"
-  });
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
-  const favorites = Array(4).fill({
-    brand: "NEW LAMBORGHINI",
-    model: "Urus",
-    tag: "Oportunidad",
-    currentPrice: "$28,900",
-    priceHistory: "-$1,400",
-    publishedDate: "15 de Feb, 2025",
-    confidenceScore: "Score confianza 92%",
-  });
+  const {
+    lists,
+    items,
+    selectedListId,
+    selectedList,
+    itemCounts,
+    isLoadingLists,
+    isLoadingItems,
+    isFetchingItems,
+    listsError,
+    itemsError,
+    setSelectedListId,
+    createList,
+    isCreatingList,
+    updateList,
+    isUpdatingList,
+    removeList,
+    isRemovingList,
+    removeItem,
+    moveItem,
+    copyItem,
+    isMovingOrCopying,
+  } = useFavoritesPage();
+
+  const handleCreateList = async (values: { name: string; description?: string }) => {
+    try {
+      await createList(values);
+      toast.success("Carpeta creada correctamente");
+    } catch {
+      toast.error("No se pudo crear la carpeta");
+    }
+  };
+
+  const handleRenameList = async (listId: string, name: string) => {
+    try {
+      await updateList({ listId, name });
+      toast.success("Carpeta renombrada");
+    } catch {
+      toast.error("No se pudo renombrar la carpeta");
+    }
+  };
+
+  const handleDeleteList = async (listId: string) => {
+    try {
+      await removeList(listId);
+      toast.success("Carpeta eliminada");
+    } catch {
+      toast.error("No se pudo eliminar la carpeta");
+    }
+  };
+
+  const handleRemoveItem = async (vehicleId: string) => {
+    if (!selectedListId) {
+      return;
+    }
+    await removeItem({ listId: selectedListId, vehicleId });
+  };
+
+  const handleMoveItem = async (vehicleId: string, targetListId: string) => {
+    if (!selectedListId) {
+      return;
+    }
+    await moveItem(selectedListId, targetListId, vehicleId);
+  };
+
+  const handleCopyItem = async (vehicleId: string, targetListId: string) => {
+    await copyItem(targetListId, vehicleId);
+  };
 
   return (
     <div className="space-y-8 pb-20">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <LayoutGrid className="w-6 h-6 text-gray-700" />
-          <h1 className="text-2xl font-bold text-gray-900">Favoritos</h1>
+      <FavoritesPageHeader onCreateFolder={() => setCreateDialogOpen(true)} />
+
+      {listsError ? (
+        <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+          No se pudieron cargar tus carpetas de favoritos.
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-          Nueva carpeta
-        </button>
-      </div>
+      ) : (
+        <FavoritesFolderStrip
+          lists={lists}
+          selectedListId={selectedListId}
+          itemCounts={itemCounts}
+          isLoading={isLoadingLists}
+          onSelectList={setSelectedListId}
+          onRenameList={handleRenameList}
+          onDeleteList={handleDeleteList}
+          isUpdatingList={isUpdatingList}
+          isDeletingList={isRemovingList}
+        />
+      )}
 
-      {/* Folders */}
-      <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-        {folders.map((folder, index) => (
-          <div 
-            key={index} 
-            className={`flex-shrink-0 w-56 p-4 rounded-xl border flex items-start justify-between cursor-pointer transition-colors ${
-              index === 0 
-                ? "bg-blue-50 border-blue-200" 
-                : "bg-white border-gray-100 hover:border-gray-200 shadow-sm"
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <div className={`p-2 rounded-lg ${index === 0 ? "bg-blue-100 text-blue-600" : "bg-gray-50 text-gray-400"}`}>
-                <Folder className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className={`font-semibold text-sm ${index === 0 ? "text-gray-900" : "text-gray-700"}`}>
-                  {folder.name}
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">{folder.count}</p>
-              </div>
-            </div>
-            <button className="text-gray-400 hover:text-gray-600">
-              <MoreHorizontal className="w-5 h-5" />
-            </button>
+      <section aria-labelledby="favorites-list-heading">
+        <h2 id="favorites-list-heading" className="sr-only">
+          Vehículos en {selectedList?.name ?? "favoritos"}
+        </h2>
+
+        {itemsError ? (
+          <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+            No se pudieron cargar los vehículos de esta carpeta.
           </div>
-        ))}
-      </div>
-
-      {/* Favorites List */}
-      <div className="space-y-4">
-        {favorites.map((car, index) => (
-          <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-6 flex flex-col md:flex-row gap-6">
-            
-            {/* Image Placeholder */}
-            <div className="w-full md:w-64 h-48 bg-gray-200 rounded-lg overflow-hidden relative flex-shrink-0">
-              <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-400">
-                <Camera className="w-8 h-8 opacity-50" />
-              </div>
-              {/* Photo Icon Badge */}
-              <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-sm p-1.5 rounded-md text-white">
-                <Camera className="w-4 h-4" />
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-blue-600 font-bold text-xs tracking-wider uppercase">
-                    {car.brand}
-                  </span>
-                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide">
-                    {car.tag}
-                  </span>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">{car.model}</h2>
-
-                {/* Info Grid */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
-                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-                    <p className="text-[10px] text-gray-500 mb-1">Precio actual</p>
-                    <p className="font-semibold text-green-600 text-sm sm:text-base">{car.currentPrice}</p>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-                    <p className="text-[10px] text-gray-500 mb-1">Historia del precio</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{car.priceHistory}</p>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-                    <p className="text-[10px] text-gray-500 mb-1">Publicado</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{car.publishedDate}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trust Score */}
-              <div>
-                <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
-                  {car.confidenceScore}
-                </span>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-col gap-2 md:w-32 justify-center">
-              <button className="w-full px-4 py-2 text-sm font-medium text-blue-600 border border-blue-200 hover:border-blue-300 hover:bg-blue-50 rounded-lg transition-colors">
-                Alertar precio
-              </button>
-              <button className="w-full px-4 py-2 text-sm font-medium text-blue-600 border border-blue-200 hover:border-blue-300 hover:bg-blue-50 rounded-lg transition-colors">
-                Recordar
-              </button>
-              <button className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
-                Contactar
-              </button>
-            </div>
-
+        ) : isLoadingItems ? (
+          <div className="space-y-4">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <Skeleton key={index} className="h-56 w-full rounded-xl" />
+            ))}
           </div>
-        ))}
-      </div>
+        ) : !items.length ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-white px-6 py-16 text-center">
+            <Heart className="mb-3 size-10 text-gray-300" aria-hidden />
+            <p className="text-base font-medium text-gray-900">
+              {selectedList
+                ? `No hay vehículos en "${selectedList.name}"`
+                : "No hay vehículos guardados"}
+            </p>
+            <p className="mt-1 text-sm text-gray-500">
+              Guarda anuncios desde el listado para verlos aquí.
+            </p>
+          </div>
+        ) : (
+          <div className="relative space-y-4">
+            {isFetchingItems && !isLoadingItems && (
+              <div className="absolute right-0 top-0 flex items-center gap-2 text-xs text-gray-500">
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                Actualizando
+              </div>
+            )}
+
+            {items.map((item) => (
+              <FavoriteVehicleCard
+                key={item.id}
+                item={item}
+                lists={lists}
+                currentListId={selectedListId ?? ""}
+                onRemove={handleRemoveItem}
+                onMove={handleMoveItem}
+                onCopy={handleCopyItem}
+                disabled={isMovingOrCopying}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <CreateListDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSubmit={handleCreateList}
+        isSubmitting={isCreatingList}
+      />
     </div>
   );
 }

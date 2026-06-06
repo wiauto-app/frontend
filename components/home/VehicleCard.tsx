@@ -37,13 +37,13 @@ export function VehicleCard({
       )}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-        <Image
+        {/* <Image
           src={imageSrc}
           alt={title}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-        />
+        /> */}
         <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md bg-black/45 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
           <Camera className="size-3.5" aria-hidden />
           {photoCount}

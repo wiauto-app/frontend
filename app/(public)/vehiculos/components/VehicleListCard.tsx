@@ -1,45 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { Camera, Heart, MoreVertical, Share2 } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import { useState } from "react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "../constants";
 import {
   formatPrice,
   getFinancedPrice,
-  getImageUrl,
   getVehicleBadge,
   getVehicleModelName,
   getVehicleTags,
 } from "../utils";
+import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
+import { VehicleImageCarousel } from "./VehicleImageCarousel";
+import { VehicleShareButton } from "./VehicleShareButton";
 
 type VehicleListCardProps = {
   vehicle: VehicleListItem;
 };
 
 export function VehicleListCard({ vehicle }: VehicleListCardProps) {
-  const [saved, setSaved] = useState(false);
   const [compare, setCompare] = useState(false);
-  const imageUrl = getImageUrl(vehicle.images);
-  const photoCount = vehicle.images?.length ?? 0;
   const financedPrice = getFinancedPrice(vehicle);
+  const vehicleHref = `/vehiculo/${vehicle.id}`;
 
   return (
     <article className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
       <div className="flex flex-col md:flex-row">
-        <Link
-          href={`/vehiculo/${vehicle.id}`}
-          className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-slate-100 md:aspect-auto md:w-72 lg:w-80"
-        >
-          <img src={imageUrl} alt={vehicle.title} className="size-full object-cover" />
-          {photoCount > 0 && (
-            <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md bg-black/45 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-              <Camera className="size-3.5" aria-hidden />
-              {photoCount}
-            </span>
-          )}
-        </Link>
+        <VehicleImageCarousel
+          images={vehicle.images ?? []}
+          alt={vehicle.title}
+          href={vehicleHref}
+        />
 
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
@@ -49,7 +42,7 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
                   {getVehicleBadge(vehicle)}
                 </p>
                 <Link
-                  href={`/vehiculo/${vehicle.id}`}
+                  href={vehicleHref}
                   className="mt-1 block text-xl font-bold text-slate-900 hover:text-[#0061F2]"
                 >
                   {getVehicleModelName(vehicle)}
@@ -57,21 +50,11 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
               </div>
 
               <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setSaved(!saved)}
-                  className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700"
-                  aria-label="Guardar"
-                >
-                  <Heart className={`size-4 ${saved ? "fill-red-500 text-red-500" : ""}`} />
-                </button>
-                <button
-                  type="button"
-                  className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700"
-                  aria-label="Compartir"
-                >
-                  <Share2 className="size-4" />
-                </button>
+                <VehicleFavoriteButton vehicleId={vehicle.id} />
+                <VehicleShareButton
+                  vehicleId={vehicle.id}
+                  vehicleTitle={getVehicleModelName(vehicle)}
+                />
                 <button
                   type="button"
                   className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700"

@@ -121,6 +121,8 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     notFound();
   }
 
+  console.log(news);
+
   const primary_banner = news.banners[0] ?? null;
   const MOCK_BANNER = "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?q=80&w=1200&auto=format&fit=crop";
 

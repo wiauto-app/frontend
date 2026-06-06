@@ -374,3 +374,38 @@ export const apiDelete = async <T = null>(
 
   return fetchWithAuth<T>(path, options);
 };
+
+export const uploadSignedFile = async <T>(
+  url: string,
+  file: File,
+  opts?: { content_type?: string },
+): Promise<ApiResponse<T>> => {
+  const contentType =
+    opts?.content_type?.trim() ||
+    file.type.trim() ||
+    "application/octet-stream";
+
+  const response = await fetch(url, {
+    method: "PUT",
+    body: file,
+    headers: {
+      "Content-Type": contentType,
+    },
+  });
+
+  if (!response.ok) {
+    return {
+      message: response.statusText,
+      status: response.status,
+      ok: false,
+      data: null as T,
+    };
+  }
+
+  return {
+    message: response.statusText,
+    status: response.status,
+    ok: true,
+    data: null as T,
+  };
+};

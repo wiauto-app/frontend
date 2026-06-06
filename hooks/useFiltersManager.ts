@@ -84,11 +84,17 @@ export const useFiltersManager = ({
 
   const updateParams = (params: URLSearchParams) => {
     const query = params.toString();
+    const nextUrl = query ? `${pathname}?${query}` : pathname;
+    const currentQuery = searchParams.toString();
+    const currentUrl = currentQuery
+      ? `${pathname}?${currentQuery}`
+      : pathname;
 
-    router.replace(
-      query ? `${pathname}?${query}` : pathname,
-      { scroll: false },
-    );
+    if (nextUrl === currentUrl) {
+      return;
+    }
+
+    router.replace(nextUrl, { scroll: false });
   };
 
   const values = useMemo(() => {
