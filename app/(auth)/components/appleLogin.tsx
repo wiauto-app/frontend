@@ -1,31 +1,33 @@
+"use client";
+
 import { AppleIcon } from "@/components/icons/AppleIcon";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { authService } from "@/services/authService";
+import { OAuthButton } from "@/components/auth/OAuthButton";
 
 type AppleLoginProps = {
   disabled?: boolean;
   className?: string;
   iconClassName?: string;
+  returnTo?: string;
+  onSuccess?: () => void | Promise<void>;
 };
 
 export const AppleLogin = ({
   disabled = false,
   className,
   iconClassName,
+  returnTo,
+  onSuccess,
 }: AppleLoginProps) => {
   return (
-    <Button
-      variant="outline"
-      size="lg"
-      className={cn("flex-1", className)}
+    <OAuthButton
+      provider="apple"
       disabled={disabled}
-      render={
-        <a href={authService.appleLogin()}>
-          <AppleIcon className={iconClassName} />
-          Continuar con Apple ID
-        </a>
-      }
-    ></Button>
+      className={className}
+      returnTo={returnTo}
+      onSuccess={onSuccess}
+    >
+      <AppleIcon className={iconClassName} />
+      Continuar con Apple ID
+    </OAuthButton>
   );
 };

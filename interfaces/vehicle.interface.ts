@@ -1,3 +1,5 @@
+import { VehiclePriceHistoryItem } from "./vehicle-price.interface";
+
 export const PUBLISHER_TYPE = {
   PROFESSIONAL: "professional",
   PARTICULAR: "particular",
@@ -36,11 +38,6 @@ export interface VehicleImage {
   url: string;
 }
 
-export interface VehicleFeature {
-  id: string;
-  name: string;
-  slug: string;
-}
 
 export interface VehicleService {
   id: string;
@@ -91,7 +88,7 @@ export interface VehicleListItem {
   title: string;
   created_at: string;
   images: VehicleImage[];
-  features: VehicleFeature[];
+  features: Feature[];
   services: VehicleService[];
   vehicle_type: VehicleTypeRef | null;
   color: ColorRef | null;
@@ -104,9 +101,29 @@ export interface VehicleListItem {
   is_featured?: boolean;
 }
 
+export interface Publisher {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+}
+
+export interface VehicleDetailDealership {
+  id: string;
+  name: string;
+  slug: string;
+  avatar_url?: string;
+  banner_url?: string;
+  description: string;
+  website_url?: string;
+  email: string;
+  phone_code: string;
+}
+
 export interface Vehicle {
   id: string;
   price: number;
+  prices?: VehiclePriceHistoryItem[];
+  vehicle_prices?: VehiclePriceHistoryItem[];
   mileage: number;
   lat: number;
   lng: number;
@@ -114,6 +131,8 @@ export interface Vehicle {
   title: string;
   description: string;
   publisher_type: PublisherType;
+  publisher: Publisher;
+  dealership?: VehicleDetailDealership;
   version_id: number;
   status: StatusVehicle;
   is_featured: boolean;
@@ -141,6 +160,13 @@ export interface Vehicle {
   cuota_id: string | null;
   suggestions: string[];
   profile_id?: string;
+  traction: Traction;
+  vehicle_type: VehicleType;
+  category: Category | null;
+  color: Color | null;
+  features: Feature[];
+  cuotas: Cuota[];
+  services: VehicleService[];
   images: VehicleImage[];
 }
 

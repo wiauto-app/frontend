@@ -40,9 +40,10 @@ type CreateListFormValues = z.infer<typeof createListSchema>;
 
 type VehicleFavoriteButtonProps = {
   vehicleId: string;
+  variant?: "ghost" | "outline";
 };
 
-export const VehicleFavoriteButton = ({ vehicleId }: VehicleFavoriteButtonProps) => {
+export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleFavoriteButtonProps) => {
   const router = useRouter();
   const { isAuthenticated, isLoading: isAuthLoading } = useUser();
   const [open, setOpen] = useState(false);
@@ -143,8 +144,9 @@ export const VehicleFavoriteButton = ({ vehicleId }: VehicleFavoriteButtonProps)
         aria-label="Guardar en listas"
         disabled={isAuthLoading}
         className={cn(
-          "rounded-full p-2 transition-colors hover:bg-slate-50",
-          isFavorited ? "text-red-500" : "text-slate-400 hover:text-slate-700",
+          "rounded-full p-2 transition-colors hover:bg-muted",
+          variant === "outline" && "border-2 border-muted-foreground/50 rounded-md",
+          isFavorited ? "text-red-500" : "text-muted-foreground hover:text-foreground",
         )}
         onClick={(event) => {
           event.stopPropagation();

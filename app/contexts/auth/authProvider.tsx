@@ -2,17 +2,19 @@
 
 import { authService } from "@/services/authService";
 import { User } from "@/interfaces/user.interface";
-import { logoutAction } from "@/app/(auth)/authActions/authActions";
 import { AuthContext } from "./authContext";
 import { useCallback, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
-  const { data: user, isLoading } = useQuery<User | undefined>({
+  const { data: user, isLoading } = useQuery<User | null>({
     queryKey: ["user"],
     queryFn: async () => {
       const response = await authService.getMe();
+      if(!response.ok) {
+        return null
+      }
       return response.data;
     },
   });

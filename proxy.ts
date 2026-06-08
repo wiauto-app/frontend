@@ -12,7 +12,6 @@ const PUBLIC_PATHS = ['/', '/iniciar-sesion', '/registro', '/cambiar-contrasena'
 
 export async function proxy(req: NextRequest) {
 
-
   const { pathname } = req.nextUrl;
   if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     return NextResponse.next();

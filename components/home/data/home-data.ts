@@ -42,53 +42,6 @@ export const CAR_TYPES = [
 /** @deprecated Use CAR_TYPES */
 export const POPULAR_CATEGORIES_ICONS = CAR_TYPES;
 
-export const FEATURED_VEHICLES = [
-  {
-    id: "1",
-    badge: "NEW CHEVROLET",
-    title: "Trailblazer",
-    price: "19.000 €",
-    imageSrc:
-      "https://images.unsplash.com/photo-1621007947382-bcb3c78379e0?w=600&q=80&auto=format&fit=crop",
-    photoCount: 3,
-    tags: ["Reservable", "Profesional"],
-    progress: 0.25,
-  },
-  {
-    id: "2",
-    badge: "NEW CHEVROLET",
-    title: "Trailblazer",
-    price: "19.000 €",
-    imageSrc:
-      "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=600&q=80&auto=format&fit=crop",
-    photoCount: 3,
-    tags: ["Reservable", "Profesional"],
-    progress: 0.25,
-  },
-  {
-    id: "3",
-    badge: "NEW CHEVROLET",
-    title: "Trailblazer",
-    price: "19.000 €",
-    imageSrc:
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80&auto=format&fit=crop",
-    photoCount: 3,
-    tags: ["Reservable", "Profesional"],
-    progress: 0.25,
-  },
-  {
-    id: "4",
-    badge: "NEW CHEVROLET",
-    title: "Trailblazer",
-    price: "19.000 €",
-    imageSrc:
-      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80&auto=format&fit=crop",
-    photoCount: 3,
-    tags: ["Reservable", "Profesional"],
-    progress: 0.25,
-  },
-] as const;
-
 export const VALUE_PROPOSITION_FEATURES = [
   { id: "confianza", label: "Confianza total" },
   { id: "inventario", label: "Gran inventario" },

@@ -10,7 +10,7 @@ export interface VehiclePriceHistoryItem {
   id: string;
   price: number;
   status: VehiclePriceStatus;
-  vehicle_id: string;
+  vehicle_id?: string;
   created_at: string;
 }
 

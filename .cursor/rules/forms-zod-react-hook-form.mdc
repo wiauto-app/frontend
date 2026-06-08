@@ -1,0 +1,76 @@
+---
+description: Formularios con Zod, react-hook-form y ubicación de schemas
+globs: **/*.{tsx,ts},components/**/schemas/**/*.ts,app/**/schemas/**/*.ts,validations/**/*.ts
+alwaysApply: false
+---
+
+# Formularios — Zod + useForm
+
+## Regla principal
+
+Preferir siempre **Zod** + **`useForm`** + **`zodResolver`** en formularios. Evitar `useState` por campo salvo estado de UI no relacionado con el formulario (p. ej. diálogo abierto, carga de catálogo).
+
+## Ubicación de schemas
+
+| Alcance | Ruta | Ejemplo |
+|---------|------|---------|
+| Específico del feature | `{carpeta-madre}/schemas/*.schema.ts` | `components/reports/schemas/report.schema.ts` |
+| Reutilizable en el proyecto | `validations/*.ts` | `validations/phoneSchema.ts` |
+
+En el mismo archivo del schema:
+- exportar el schema Zod (`reportFormSchema`)
+- exportar el type inferido (`ReportFormValues`)
+
+## Patrón recomendado
+
+```tsx
+const form = useForm<ReportFormValues>({
+  resolver: zodResolver(reportFormSchema),
+  defaultValues: { category_id: "", title: "", description: "" },
+});
+
+const onSubmit = async (data: ReportFormValues) => {
+  const response = await reportService.create(data);
+  if (!response.ok) {
+    toast.error(response.message);
+    return;
+  }
+  toast.success("Guardado");
+};
+
+return (
+  <form onSubmit={form.handleSubmit(onSubmit)}>
+    <ControlledInput name="title" control={form.control} label="Título" />
+    <ControlledInput
+      name="description"
+      control={form.control}
+      label="Descripción"
+      type="textarea"
+    />
+    <Button type="submit" disabled={form.formState.isSubmitting}>
+      Enviar
+    </Button>
+  </form>
+);
+```
+
+## Controles
+
+- Campos estándar: `ControlledInput` (`type`: `email`, `phone`, `textarea`, etc.).
+- Select u otros custom: `ControlledInput` con `children` o `Controller` + `Field`/`FieldError`.
+- Reset al abrir modal: `form.reset(defaultValues)` en `useEffect` cuando `open === true`.
+
+## ❌ Evitar
+
+```tsx
+const [title, setTitle] = useState("");
+const [description, setDescription] = useState("");
+```
+
+## ✅ Preferir
+
+```tsx
+// components/reports/schemas/report.schema.ts
+export const reportFormSchema = z.object({ title: z.string().min(1) });
+export type ReportFormValues = z.infer<typeof reportFormSchema>;
+```

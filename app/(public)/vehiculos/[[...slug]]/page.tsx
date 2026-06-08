@@ -14,8 +14,8 @@ import {
 } from "@/lib/vehicles/listing-url";
 import { activeFiltersService } from "../services/activeFiltersService";
 import { LoadingComponent } from "@/components/ui/loadingComponent";
+import { FRONTEND_URL } from "@/constants";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
@@ -31,7 +31,7 @@ export async function generateMetadata(props: {
 
   return {
     alternates: {
-      canonical: `${SITE_URL}${canonical_path}`,
+      canonical: `${FRONTEND_URL}${canonical_path}`,
     },
   };
 }

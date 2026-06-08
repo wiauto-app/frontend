@@ -49,11 +49,31 @@ import {
 
 import { buildVehiclesQueryString } from "@/lib/vehicles/build-vehicles-query-params";
 
+export type FindSimilarVehiclesParams = {
+  page?: number;
+  limit?: number;
+};
+
+export type SimilarVehiclesPaginatedResponse = PaginatedResponse<VehicleListItem> & {
+  tier?: 1 | 2;
+  listing_href_slugs?: {
+    make: string;
+    model: string;
+  };
+};
+
 export const vehicleService = {
   vehicles: {
     findAll: (params?: FindAllVehiclesParams): Promise<ApiResponse<PaginatedResponse<VehicleListItem>>> => {
       const query = buildVehiclesQueryString(params);
       return apiGet<PaginatedResponse<VehicleListItem>>(`/v1/vehicles${query}`);
+    },
+    findSimilar: (
+      id: string,
+      params?: FindSimilarVehiclesParams,
+    ): Promise<ApiResponse<SimilarVehiclesPaginatedResponse>> => {
+      const query = buildVehiclesQueryString(params);
+      return apiGet<SimilarVehiclesPaginatedResponse>(`/v1/vehicles/${id}/similar${query}`);
     },
     findById: (id: string): Promise<ApiResponse<Vehicle>> =>
       apiGet<Vehicle>(`/v1/vehicles/${id}`),

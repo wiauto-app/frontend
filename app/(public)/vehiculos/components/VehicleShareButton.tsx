@@ -5,15 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Share2 } from "lucide-react";
 
 import { VehicleShareDialog } from "./VehicleShareDialog";
+import { cn } from "@/lib/utils";
 
 type VehicleShareButtonProps = {
   vehicleId: string;
   vehicleTitle: string;
+  variant?: "ghost" | "outline";
 };
 
 export const VehicleShareButton = ({
   vehicleId,
   vehicleTitle,
+  variant = "ghost",
 }: VehicleShareButtonProps) => {
   const [open, setOpen] = useState(false);
 
@@ -22,8 +25,8 @@ export const VehicleShareButton = ({
       <Button
         type="button"
         size="icon"
-        variant="ghost"
-        className="rounded-full text-slate-400 hover:bg-slate-50 hover:text-slate-700"
+        variant={variant}
+        className={cn("rounded-full text-muted-foreground hover:bg-muted hover:text-foreground", variant === "outline" && "border-2 border-muted-foreground/50 rounded-md")}
         aria-label="Compartir vehículo"
         onClick={(event) => {
           event.stopPropagation();

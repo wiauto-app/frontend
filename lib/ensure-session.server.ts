@@ -1,8 +1,10 @@
 import type { NextResponse } from "next/server";
 
 import { cookiesConfig } from "@/config/cookies.config";
-import { authService } from "@/services/authService";
+import { API_URL } from "@/constants";
 import { refreshTokenService } from "@/app/(auth)/services/refreshTokenService";
+import type { ApiResponse } from "@/lib/api";
+import type { User } from "@/interfaces/user.interface";
 import type { AuthResponseDto } from "@/validations/auth";
 
 export type EnsureSessionResult =
@@ -45,6 +47,48 @@ const is_session_payload = (
   );
 };
 
+const buildApiUrl = (path: string): string => {
+  const base = (API_URL ?? "").replace(/\/$/, "");
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  if (!base) {
+    return normalizedPath;
+  }
+  return `${base}${normalizedPath}`;
+};
+
+const fetchMeFromBackend = async (params: {
+  cookie_header: string;
+  access_token?: string | null;
+}): Promise<ApiResponse<User | null>> => {
+  const { cookie_header, access_token } = params;
+
+  if (!access_token) {
+    return {
+      ok: false,
+      message: "No access token",
+      status: 401,
+      data: null,
+    };
+  }
+
+  const meResponse = await fetch(buildApiUrl("/auth/me"), {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+      ...(cookie_header ? { Cookie: cookie_header } : {}),
+    },
+  });
+
+  const body = (await meResponse.json()) as ApiResponse<User | null>;
+
+  return {
+    ok: body.ok ?? meResponse.ok,
+    message: body.message ?? meResponse.statusText,
+    status: body.status ?? meResponse.status,
+    data: body.data,
+  };
+};
+
 /**
  * Comprueba /auth/me y, solo ante 401, intenta POST /auth/refresh con el header Cookie.
  * Sin efectos secundarios: no escribe cookies; el llamador aplica el resultado en Response o cookies().
@@ -54,8 +98,7 @@ export const ensureValidSession = async (params: {
   access_token?: string | null;
 }): Promise<EnsureSessionResult> => {
   const { cookie_header, access_token } = params;
-  const me = await authService.getMe(access_token ?? undefined);
-
+  const me = await fetchMeFromBackend({ cookie_header, access_token });
   if (me.ok) {
     return { outcome: "session_valid" };
   }
