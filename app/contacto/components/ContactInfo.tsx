@@ -28,7 +28,7 @@ const info:infoProps[] = [
 
 export const ContactInfo = () => {
   return (
-    <div className="my-10 flex gap-2 overflow-x-auto pb-4 scrollbar-hide justify-evenly">
+    <div className="my-10 flex flex-col  gap-2 md:flex-row md:overflow-x-auto md:pb-4 scrollbar-hide justify-evenly">
       {info.map((info:infoProps) => (
         <div key={info.title} className="shrink-0">
           <div className="bg-card/50 backdrop-blur-md  min-w-64 p-4 rounded-xl flex items-center gap-4">

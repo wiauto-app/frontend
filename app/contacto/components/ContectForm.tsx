@@ -77,12 +77,11 @@ export default function ContectForm() {
   }
 
   return (
-    //card no border color shadow none my-20 mx-auto
-    <Card className="w-full max-w-7xl border-0 border-transparent shadow-none my-20 mx-auto">
+    <Card className="w-full max-w-7xl border-0 shadow-none md:my-20 my-6 mx-auto ring-0">
       <CardHeader>
         <h1 className="text-sm text-[#015EEB] font-bold text-center">Estamos listos para ser tu aliado</h1>
         <CardTitle className="text-2xl font-bold text-center">Contactanos</CardTitle>
-        <CardDescription className="text-center text-sm my-10 font-semibold">
+        <CardDescription className="text-center text-sm md:my-10 my-6 font-semibold">
  Déjanos tus datos y un asesor se contactará contigo.
         </CardDescription>
       </CardHeader>
