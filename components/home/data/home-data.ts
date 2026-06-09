@@ -54,7 +54,7 @@ export const FOOTER_USEFUL_LINKS = [
   { label: "Términos y Condiciones", href: "/terminos" },
   { label: "Iniciar sesión", href: "/iniciar-sesion" },
   { label: "Registrarme", href: "/registro" },
-  { label: "FAQ", href: "/faq" },
+  { label: "FAQ", href: "/preguntas-frecuentes" },
 ] as const;
 
 export const FOOTER_QUICK_LINKS = [
