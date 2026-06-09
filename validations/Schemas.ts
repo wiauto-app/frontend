@@ -53,3 +53,17 @@ export const UpdateProfileSchema = z.object({
 });
 
 export type UpdateProfileDto = z.infer<typeof UpdateProfileSchema>;
+
+export const ContactSchema = z.object({
+  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  lastname: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
+  email: z.email("Email inválido"),
+  phone: z.string().optional(),
+  userType: z.string().optional(),
+  interestedIn: z.string().optional(),
+  city: z.string().optional(),
+  address: z.string().optional(),
+  message: z.string().min(2, "El mensaje debe tener al menos 2 caracteres"),
+});
+
+export type ContactDto = z.infer<typeof ContactSchema>;

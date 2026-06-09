@@ -8,7 +8,7 @@ import {
   ValidateBackupCodeDto,
   ResendEmailVerificationResponseDto,
 } from "@/validations/auth";
-import { LoginDto, RegisterDto, ResetPasswordDto } from "@/validations/Schemas";
+import { LoginDto, RegisterDto, ResetPasswordDto, ContactDto } from "@/validations/Schemas";
 
 export const authService = {
 
@@ -109,3 +109,12 @@ export const authService = {
   }
 
 };
+
+export const contactService = {
+  contact: (data: ContactDto): Promise<ApiResponse<ResendEmailVerificationResponseDto>> =>
+    apiPost<ResendEmailVerificationResponseDto>(
+      `/contact`,
+      data,
+    ),
+};
+  
