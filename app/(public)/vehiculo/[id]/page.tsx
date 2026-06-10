@@ -59,7 +59,7 @@ export default async function VehicleDetailPage({
             <VehicleDetailTitleSection vehicle={vehicle} />
 
             <VehicleDetailServicesSection services={vehicle.services} />
-            <VehicleDetailSaveSearchSection />
+            <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
             <VehicleDetailSellerCommentsSection
               description={vehicle.description}
             />
