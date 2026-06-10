@@ -148,26 +148,32 @@ export const VehicleDetailContactForm = ({
         <div className="space-y-4">
           <ControlledInput
             name="name"
+          placeholder="Nombre"
             control={guestForm.control}
             label="Nombre"
+            showLabel={false}
           />
           <ControlledInput
             name="email"
             control={guestForm.control}
             label="Email"
             type="email"
+            showLabel={false}
             placeholder="email@example.com"
           />
           <ControlledInput
             name="phone"
+            placeholder="Teléfono"
             control={guestForm.control}
             label="Teléfono"
             type="phone"
+            showLabel={false}
           />
           <ControlledInput
             name="message"
             control={guestForm.control}
             label="Mensaje"
+            showLabel={false}
             type="textarea"
             placeholder="Mensaje"
             rows={3}

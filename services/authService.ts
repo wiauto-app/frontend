@@ -3,7 +3,6 @@ import { User } from "@/interfaces/user.interface";
 import { ApiResponse, apiGet, apiPost, fetchWithAuth } from "@/lib/api";
 import {
   AuthResponseDto,
-  GoogleLoginDto,
   Validate2faDto,
   ValidateBackupCodeDto,
   ResendEmailVerificationResponseDto,

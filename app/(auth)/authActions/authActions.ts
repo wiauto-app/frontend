@@ -9,7 +9,7 @@ export async function loginAction(data: LoginDto) {
   try {
     const response = await authService.login(data);
     if (!response.ok) {
-      throw new Error("Email o contraseña incorrectos");
+      throw new Error(response.message || "Error al iniciar sesión");
     }
     const cookiesStore = await cookies();
     cookiesStore.set(cookiesConfig.accessToken.name, response.data.token, cookiesConfig.accessToken.options);

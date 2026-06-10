@@ -124,7 +124,7 @@ export const PhoneInput = ({
       <Popover open={dialPopoverOpen} onOpenChange={setDialPopoverOpen}>
         <PopoverTrigger
           disabled={disabled}
-          className="shrink-0 sm:w-[min(20%,11rem)]"
+          className="shrink-0 sm:min-w-20"
         >
           <Button
             id={dialTriggerId}

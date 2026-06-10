@@ -8,7 +8,7 @@ import {
 } from "react-hook-form";
 import { HTMLInputTypeAttribute } from "react";
 
-import { formatFieldLabel } from "@/lib/utils";
+import { cn, formatFieldLabel } from "@/lib/utils";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Field, FieldError, FieldLabel } from "../ui/field";
@@ -42,7 +42,7 @@ type ControllerInputProps<T extends FieldValues> = {
   name: FieldPath<T>;
   control: Control<T>;
   label?: string;
-  /** Muestra «(opcional)» en la etiqueta. Alineado con `CreateVehicleHttpDto`. */
+  showLabel?: boolean;
   optional?: boolean;
   orientation?: "vertical" | "horizontal";
   type?: ControlledInputType;
@@ -58,6 +58,7 @@ export const ControlledInput = <T extends FieldValues>({
   name,
   control,
   label,
+  showLabel = true,
   type,
   placeholder,
   optional = false,
@@ -76,7 +77,7 @@ export const ControlledInput = <T extends FieldValues>({
           orientation={orientation}
         >
           {label ? (
-            <FieldLabel htmlFor={name}>
+            <FieldLabel className={cn(!showLabel && "sr-only")} htmlFor={name}>
               {formatFieldLabel(label, optional)}
             </FieldLabel>
           ) : null}

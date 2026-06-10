@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LoginDto, LoginSchema } from "@/validations/Schemas";
+import { PasswordInput } from "../ui/passwordInput";
 
 export type SignInFormContentProps = {
   onSuccess: () => void | Promise<void>;
@@ -52,16 +53,15 @@ export const SignInFormContent = ({
       await onSuccess();
     } catch (error: Error | unknown) {
       console.error("Login error:", error);
-      const genericMessage =
-        "Email o contraseña incorrectos. Por favor, intenta de nuevo.";
+
 
       if (
         (error as Error).message?.includes("No se encontró") ||
         (error as Error).message?.includes("incorrectos")
       ) {
-        toast.error(genericMessage);
+        toast.error((error as Error).message || "Error al iniciar sesión");
       } else {
-        toast.error((error as Error).message || genericMessage);
+        toast.error((error as Error).message || "Error al iniciar sesión");
       }
     } finally {
       setIsLoading(false);
@@ -136,9 +136,8 @@ export const SignInFormContent = ({
           >
             Contraseña *
           </label>
-          <Input
+          <PasswordInput
             id={`${formId}-password`}
-            type="password"
             placeholder="Contraseña *"
             autoComplete="current-password"
             {...form.register("password")}

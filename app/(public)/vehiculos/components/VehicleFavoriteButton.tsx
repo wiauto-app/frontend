@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Heart, Loader2, Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useUser } from "@/app/contexts/auth/useUser";
+import { SignInDialog } from "@/components/auth/signInDialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -27,7 +28,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { AUTH_ROUTES } from "@/constants/auth.constants";
 import { cn } from "@/lib/utils";
 import { useVehicleListMembership } from "../hooks/useVehicleListMembership";
 
@@ -37,16 +37,17 @@ const createListSchema = z.object({
 });
 
 type CreateListFormValues = z.infer<typeof createListSchema>;
-
+  
 type VehicleFavoriteButtonProps = {
   vehicleId: string;
   variant?: "ghost" | "outline";
 };
 
 export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleFavoriteButtonProps) => {
-  const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, isLoading: isAuthLoading } = useUser();
   const [open, setOpen] = useState(false);
+  const [signInOpen, setSignInOpen] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const autoAddedRef = useRef(false);
 
@@ -75,8 +76,12 @@ export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleF
   });
 
   const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen && isAuthLoading) {
+      return;
+    }
+
     if (nextOpen && !isAuthenticated) {
-      router.push(AUTH_ROUTES.LOGIN);
+      setSignInOpen(true);
       return;
     }
 
@@ -86,6 +91,11 @@ export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleF
       setShowCreateForm(false);
       form.reset();
     }
+  };
+
+  const handleSignInSuccess = () => {
+    setSignInOpen(false);
+    setOpen(true);
   };
 
   useEffect(() => {
@@ -137,6 +147,7 @@ export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleF
   });
 
   return (
+    <>
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         type="button"
@@ -277,5 +288,13 @@ export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleF
         )}
       </PopoverContent>
     </Popover>
+
+    <SignInDialog
+      open={signInOpen}
+      onOpenChange={setSignInOpen}
+      returnTo={pathname}
+      onSuccess={handleSignInSuccess}
+    />
+    </>
   );
 };
