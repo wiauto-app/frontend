@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ServicesDropdown } from "./servicesDropdown";
 
 const BRAND_BLUE = "#0061F2";
 
@@ -39,6 +40,7 @@ export function NavbarLinks() {
           </li>
         );
       })}
+      <ServicesDropdown />
     </ul>
   );
 }

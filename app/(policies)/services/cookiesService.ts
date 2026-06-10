@@ -1,10 +1,10 @@
 import { getStrapiData } from "@/lib/strapi-api";
-import { BlocksContent } from "@strapi/blocks-react-renderer";
+import { PolicyData } from "../interfaces/policies.interface";
 
 
 export const cookiesService = {
   getCookiesPolicy: async () => {
-    const response = await getStrapiData<{ data: { title: string, content: BlocksContent } }>("/cookies-policy");
+    const response = await getStrapiData<{ data: PolicyData }>("/pagina-cookie");
     return response.data;
   }
 }

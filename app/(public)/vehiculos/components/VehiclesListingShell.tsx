@@ -12,7 +12,6 @@ export const VehiclesListingShell = ({
   children,
 }: VehiclesListingShellProps) => (
   <Suspense>
-    {" "}
     <VehiclesListingFiltersProvider>{children}</VehiclesListingFiltersProvider>
   </Suspense>
 );

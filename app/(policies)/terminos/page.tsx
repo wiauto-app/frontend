@@ -4,5 +4,5 @@ import { PolicyPageTemplate } from "../components/policyPageTemplate";
 export default async function TermsOfServicePage() {
   const termsOfService = await termsService.getTermsOfService();
 
-  return <PolicyPageTemplate title={termsOfService.title} content={termsOfService.content} />
+  return <PolicyPageTemplate title={termsOfService.titulo} content={termsOfService.contenido} />
 }

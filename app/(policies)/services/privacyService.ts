@@ -1,10 +1,10 @@
 import { getStrapiData } from "@/lib/strapi-api"
-import { BlocksContent } from "@strapi/blocks-react-renderer";
+import { PolicyData } from "../interfaces/policies.interface";
 
 
 export const privacyService = {
   getPrivacyPolicy: async () => {
-    const response = await getStrapiData<{ data: { title: string, content: BlocksContent } }>("/privacy-policy");
+    const response = await getStrapiData<{ data: PolicyData }>("/pagina-politica");
     return response.data;
   }
 }

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, MessageCircle } from "lucide-react";
-import { newsService } from "@/app/noticias/services/newsService";
-import type { NewsListItem } from "@/app/noticias/types/news.types";
+import { newsService } from "@/app/(landing)/noticias/services/newsService";
+import type { NewsListItem } from "@/app/(landing)/noticias/types/news.types";
 import { STRAPI_API_URL } from "@/constants/strapi.constants";
 import { SectionContainer } from "./SectionContainer";
 import { SectionHeading } from "./SectionHeading";

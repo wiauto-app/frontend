@@ -1,10 +1,10 @@
 import { getStrapiData } from "@/lib/strapi-api";
-import { BlocksContent } from "@strapi/blocks-react-renderer";
+import { PolicyData } from "../interfaces/policies.interface";
 
 
 export const termsService = {
   getTermsOfService: async () => {
-    const response = await getStrapiData<{ data: { title: string, content: BlocksContent } }>("/terms-and-condition");
+    const response = await getStrapiData<{ data: PolicyData }>("/pagina-termino");
     return response.data;
   }
 }

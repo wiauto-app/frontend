@@ -1,5 +1,18 @@
 import { STRAPI_API_URL, STRAPI_TOKEN } from "@/constants/strapi.constants";
 
+
+export interface StrapiResponse<T> {
+  data: T;
+  meta: {
+    pagination: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
 const buildStrapiUrl = (endpoint: string): string => {
   const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   return `${STRAPI_API_URL}/api${path}`;

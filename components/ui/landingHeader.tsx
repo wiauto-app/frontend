@@ -1,4 +1,4 @@
-export const LandingHeader = ({ title }: { title: string }) => {
+export const LandingHeader = ({ title, description }: { title: string, description?: string }) => {
   const parts = title.split(" ");
   const lastPart = parts[parts.length - 1];
   parts.pop();
@@ -8,6 +8,7 @@ export const LandingHeader = ({ title }: { title: string }) => {
         <h1 className="text-5xl font-bold mb-4">
           {parts.join(" ")} <span className="text-blue-700">{lastPart}</span>
         </h1>
+        {description && <p className="text-gray-600">{description}</p>}
         <div className="w-35 h-1 bg-blue-700 rounded-full"></div>
       </div>
     </div>

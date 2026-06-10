@@ -4,8 +4,8 @@ import { cookiesService } from "../services/cookiesService";
 
 export default async function CookiesPolicyPage() {
   const cookiesPolicy = await cookiesService.getCookiesPolicy();
-
+  
   return (
-    <PolicyPageTemplate title={cookiesPolicy.title} content={cookiesPolicy.content} />
+    <PolicyPageTemplate title={cookiesPolicy.titulo} content={cookiesPolicy.contenido} />
   );
 }

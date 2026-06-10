@@ -1,5 +1,5 @@
-import { newsService } from "@/app/noticias/services/newsService";
-import type { NewsListItem } from "@/app/noticias/types/news.types";
+import { newsService } from "@/app/(landing)/noticias/services/newsService";
+import type { NewsListItem } from "@/app/(landing)/noticias/types/news.types";
 import { ArticlePreviewSection } from "./ArticlePreviewSection";
 
 const HOME_BLOG_ARTICLES_LIMIT = 2;
