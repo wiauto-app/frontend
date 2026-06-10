@@ -1,0 +1,15 @@
+export const LandingHeader = ({ title }: { title: string }) => {
+  const parts = title.split(" ");
+  const lastPart = parts[parts.length - 1];
+  parts.pop();
+  return (
+    <div className="w-full bg-[#DBE6F8] py-20 px-4">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-5xl font-bold mb-4">
+          {parts.join(" ")} <span className="text-blue-700">{lastPart}</span>
+        </h1>
+        <div className="w-35 h-1 bg-blue-700 rounded-full"></div>
+      </div>
+    </div>
+  );
+};

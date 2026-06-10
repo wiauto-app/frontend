@@ -49,8 +49,8 @@ export default async function VehicleDetailPage({
         vehicle_title={vehicle.title}
       />
       <div className="mx-auto container py-6">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 relative">
-          <div className="space-y-6 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 relative">
+          <div className="space-y-6 lg:col-span-3">
             <VehicleDetailGallery
               images={vehicle.images}
               title={vehicle.title}
@@ -59,7 +59,7 @@ export default async function VehicleDetailPage({
             <VehicleDetailTitleSection vehicle={vehicle} />
 
             <VehicleDetailServicesSection services={vehicle.services} />
-            <VehicleDetailSaveSearchSection />
+            <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
             <VehicleDetailSellerCommentsSection
               description={vehicle.description}
             />
