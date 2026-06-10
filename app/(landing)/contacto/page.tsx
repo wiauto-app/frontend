@@ -1,5 +1,4 @@
 
-import { Card, CardContent } from "@/components/ui/card";
 import { ContactInfo } from "./components/ContactInfo";
 import ContectForm  from "./components/ContectForm";
 
