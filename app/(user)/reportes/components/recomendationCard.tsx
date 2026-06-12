@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label"
 export const RecomendationCard = () => {
   return (
     <div className="w-full max-w-sm">
-      <Card className='bg-blue-100 border border-[#015EEB5E] text-start rounded-none'>
+      <Card className='bg-[#EBF2FF] border border-[#015EEB5E] text-start rounded-none'>
         <CardHeader>
           <CardTitle className='text-blue-500 font-bold'>RECOMENDACIÓN</CardTitle>
         </CardHeader>
