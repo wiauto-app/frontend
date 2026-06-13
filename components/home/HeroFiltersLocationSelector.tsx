@@ -11,6 +11,7 @@ import { useLocationSelectorData } from "@/components/selectors/FilterLocationSe
 import { LocationSelectorItem } from "@/components/selectors/FilterLocationSelector/locationSelectorItem";
 import type { LocationSelectedItem } from "@/components/selectors/FilterLocationSelector/interfaces/locationSelector.interface";
 import { useHeroSearchFilters } from "./HeroSearchFiltersContext";
+import { ChevronDown } from "lucide-react";
 
 const buildLocationTriggerLabel = (
   selectedItems: LocationSelectedItem[],
@@ -18,7 +19,7 @@ const buildLocationTriggerLabel = (
   municipalities: HeroCatalogFacetItem[],
 ): string => {
   if (!selectedItems.length) {
-    return "Selecciona una ubicación";
+    return "Ubicación";
   }
 
   const provinceBySlug = new Map(
@@ -37,7 +38,7 @@ const buildLocationTriggerLabel = (
     })
     .filter(Boolean);
 
-  return names.length > 0 ? names.join(", ") : "Selecciona una ubicación";
+  return names.length > 0 ? names.join(", ") : "Ubicación";
 };
 
 export const HeroFiltersLocationSelector = () => {
@@ -69,7 +70,10 @@ export const HeroFiltersLocationSelector = () => {
       <PopoverTrigger
         render={
           <Button variant="outline" className="h-11 w-full justify-start text-base">
-            {trigger_label}
+            <div className="flex items-center justify-between w-full">
+              {trigger_label}
+              <ChevronDown className="size-4 shrink-0 opacity-50" />
+            </div>
           </Button>
         }
       />

@@ -121,7 +121,6 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     notFound();
   }
 
-  console.log(news);
 
   const primary_banner = news.banners[0] ?? null;
   const MOCK_BANNER = "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?q=80&w=1200&auto=format&fit=crop";
@@ -252,7 +251,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         {/* Citation / blockquote */}
         {news.citation && (
           <blockquote className="my-8 rounded-r-xl border-l-4 border-blue-600 bg-[#E8F0FE] py-5 pl-8 pr-6">
-            <span className="block text-4xl font-serif text-blue-400 leading-none mb-2">"</span>
+            <span className="block text-4xl font-serif text-blue-400 leading-none mb-2">&ldquo;</span>
             <p className="text-base font-medium leading-relaxed text-slate-800">
               {news.citation}
             </p>

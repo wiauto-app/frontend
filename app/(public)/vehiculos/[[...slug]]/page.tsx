@@ -64,7 +64,7 @@ export default async function VehiclesListingPage(props: {
       <VehiclesListingShell>
         <div>
           <VehiclesToolbar />
-          <div className="container mx-auto flex min-h-screen gap-5">
+          <div className="container-custom mx-auto flex min-h-screen gap-5">
             <div className="w-72 shrink-0">
               <Suspense
                 fallback={

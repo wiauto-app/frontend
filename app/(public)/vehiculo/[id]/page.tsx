@@ -1,13 +1,13 @@
 import { vehicleService } from "@/services/vehicleService";
 import { VehicleDetailContactForm } from "./components/VehicleDetailContactForm";
 import { VehicleDetailGallery } from "./components/VehicleDetailGallery";
-import { VehicleDetailGeneralSpecsSection } from "./components/VehicleDetailGeneralSpecsSection";
+import { VehicleDetailFeatures } from "./components/VehicleDetailFeatures";
 import { VehicleDetailLocationSection } from "./components/VehicleDetailLocationSection";
 import { VehicleDetailMobileActions } from "./components/VehicleDetailMobileActions";
 import { VehicleDetailPriceAnalysisSection } from "./components/VehicleDetailPriceAnalysisSection";
 import { VehicleDetailReviewsSection } from "./components/VehicleDetailReviewsSection";
 import { VehicleDetailSaveSearchSection } from "./components/VehicleDetailSaveSearchSection";
-import { VehicleDetailSellerCommentsSection } from "./components/VehicleDetailSellerCommentsSection";
+import { VehicleDetailDescription } from "./components/VehicleDetailDescription";
 import { VehicleDetailServicesSection } from "./components/VehicleDetailServicesSection";
 import { VehicleDetailTitleSection } from "./components/VehicleDetailTitleSection";
 import { VehicleDetailTopBar } from "./components/VehicleDetailTopBar";
@@ -48,32 +48,32 @@ export default async function VehicleDetailPage({
         vehicle_id={vehicle.id}
         vehicle_title={vehicle.title}
       />
-      <div className="mx-auto container py-6">
+      <div className="mx-auto container-custom py-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 relative">
           <div className="space-y-6 lg:col-span-3">
             <VehicleDetailGallery
               images={vehicle.images}
               title={vehicle.title}
-              condition_label={old.condition_label}
+              condition_label={vehicle.condition}
             />
             <VehicleDetailTitleSection vehicle={vehicle} />
 
             <VehicleDetailServicesSection services={vehicle.services} />
             <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
-            <VehicleDetailSellerCommentsSection
+            <VehicleDetailDescription
               description={vehicle.description}
             />
             <VehicleDetailPriceAnalysisSection
               price_analysis={old.price_analysis}
             />
-            <VehicleDetailGeneralSpecsSection features={vehicle.features} />
+            <VehicleDetailFeatures features={vehicle.features} />
             <VehicleDetailAdvertiserSection vehicle={vehicle} />
             <VehicleDetailReviewForm vehicle_id={vehicle.id} />
             <VehicleDetailReviewsSection reviews={reviews} />
-            <VehicleDetailLocationSection location={old.location} />
+            <VehicleDetailLocationSection vehicle={vehicle} />
           </div>
 
-          <Card className="space-y-6 sticky top-20 right-0 h-fit">
+          <Card className="space-y-6 sticky top-20 right-0 h-fit" size="sm">
             <CardContent className="space-y-6">
               <div className="flex items-center justify-end gap-2">
                 <ReportButton

@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { VehicleList } from "@/interfaces/vehicle-list.interface";
 import { vehicleListService } from "@/services/vehicleListService";
+import { useFavoriteIds } from "./useFavoriteIds";
 
 const VEHICLE_LISTS_QUERY_KEY = ["vehicle-lists"] as const;
 
@@ -49,7 +50,8 @@ export const useVehicleListMembership = ({
 }: UseVehicleListMembershipOptions) => {
   const queryClient = useQueryClient();
   const membershipQueryKey = vehicleListMembershipQueryKey(vehicleId);
-
+  const favoriteIds = useFavoriteIds();
+  const isFavorite = favoriteIds.has(vehicleId);
   const listsQuery = useQuery({
     queryKey: VEHICLE_LISTS_QUERY_KEY,
     queryFn: async () => {
@@ -75,7 +77,7 @@ export const useVehicleListMembership = ({
   });
 
   const membership = membershipQuery.data ?? new Set<string>();
-  const isFavorited = membership.size > 0;
+  const isFavorited = isFavorite || membership.size > 0;
 
   const addToListMutation = useMutation({
     mutationFn: async (listId: string) => {

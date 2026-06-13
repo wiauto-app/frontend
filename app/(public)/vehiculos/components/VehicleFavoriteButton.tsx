@@ -41,9 +41,10 @@ type CreateListFormValues = z.infer<typeof createListSchema>;
 type VehicleFavoriteButtonProps = {
   vehicleId: string;
   variant?: "ghost" | "outline";
+  className?: string;
 };
 
-export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleFavoriteButtonProps) => {
+export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost", className }: VehicleFavoriteButtonProps) => {
   const pathname = usePathname();
   const { isAuthenticated, isLoading: isAuthLoading } = useUser();
   const [open, setOpen] = useState(false);
@@ -51,7 +52,7 @@ export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleF
   const [showCreateForm, setShowCreateForm] = useState(false);
   const autoAddedRef = useRef(false);
 
-  const {
+  const { 
     lists,
     membership,
     isFavorited,
@@ -158,6 +159,7 @@ export const VehicleFavoriteButton = ({ vehicleId, variant = "ghost" }: VehicleF
           "rounded-full p-2 transition-colors hover:bg-muted",
           variant === "outline" && "border-2 border-muted-foreground/50 rounded-md",
           isFavorited ? "text-red-500" : "text-muted-foreground hover:text-foreground",
+          className,
         )}
         onClick={(event) => {
           event.stopPropagation();

@@ -1,8 +1,8 @@
-import { User } from "@/interfaces/user.interface";
+import { MeResponseDto } from "@/services/authService";
 import { createContext } from "react";
 
 export type AuthContextValue = {
-  user?: User;
+  user?: MeResponseDto;
   isLoading: boolean;
   isAuthenticated: boolean;
   refreshUser: () => Promise<void>;

@@ -5,6 +5,7 @@ export interface VehicleList {
   name: string;
   description: string | null;
   created_at: string;
+  items: VehicleListItemRecord[];
 }
 
 export interface VehicleListItemCategory {

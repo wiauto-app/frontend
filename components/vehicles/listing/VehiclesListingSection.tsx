@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { VehiclesCarouselLayout } from "./VehiclesCarouselLayout";
 import { VehiclesGridLayout } from "./VehiclesGridLayout";
 import { VehiclesListingSectionTitle } from "./VehiclesListingSectionTitle";
+import { SectionHeading } from "@/components/home/SectionHeading";
 
 type VehiclesListingSectionProps = {
   title: {
@@ -42,24 +43,20 @@ export const VehiclesListingSection = ({
   const resolvedTotal = total ?? vehicles.length;
 
   return (
-    <SectionContainer className={cn("bg-white py-12 lg:py-16", className)}>
-      <VehiclesListingSectionTitle
+    <SectionContainer className={cn("", className)}>
+      <SectionHeading
         lead={title.lead}
-        highlight={title.highlight}
-        className="mb-8 sm:mb-10"
+        highlight={title.highlight ?? ""}
       />
-
       {variant === "grid" ? (
         <VehiclesGridLayout vehicles={vehicles} />
       ) : (
-        vehicleId && (
-          <VehiclesCarouselLayout
-            initialVehicles={vehicles}
-            vehicleId={vehicleId}
-            total={resolvedTotal}
-            pageSize={pageSize}
-          />
-        )
+        <VehiclesCarouselLayout
+          initialVehicles={vehicles}
+          vehicleId={vehicleId}
+          total={resolvedTotal}
+          pageSize={pageSize}
+        />
       )}
 
       {seeMoreHref ? (

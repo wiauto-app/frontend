@@ -106,10 +106,9 @@ export const PhoneInput = ({
   const handleNationalPhoneChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const digitsOnly = event.target.value.replace(/\D/g, "").slice(
-      0,
-      MAX_SUBSCRIBER_DIGITS_E164,
-    );
+    const digitsOnly = event.target.value
+      .replace(/\D/g, "")
+      .slice(0, MAX_SUBSCRIBER_DIGITS_E164);
     if (digitsOnly === value.phone) return;
     onChange({ ...value, phone: digitsOnly });
   };
@@ -125,32 +124,33 @@ export const PhoneInput = ({
         <PopoverTrigger
           disabled={disabled}
           className="shrink-0 sm:min-w-20"
-        >
-          <Button
-            id={dialTriggerId}
-            type="button"
-            variant="outline"
-            disabled={disabled}
-            aria-invalid={ariaInvalid || undefined}
-            aria-haspopup="listbox"
-            aria-expanded={dialPopoverOpen}
-            aria-label="Prefijo internacional del teléfono"
-            title={triggerHint}
-            className="h-9 w-full justify-between gap-2 bg-transparent font-normal tabular-nums"
-          >
-            <span className="min-w-0 flex-1 truncate text-left">
-              <span
-                className={cn(
-                  "font-medium tabular-nums text-foreground",
-                  dialTrimmed.length === 0 && "text-muted-foreground",
-                )}
-              >
-                {effectiveDialCode}
+          render={
+            <Button
+              id={dialTriggerId}
+              type="button"
+              variant="outline"
+              disabled={disabled}
+              aria-invalid={ariaInvalid || undefined}
+              aria-haspopup="listbox"
+              aria-expanded={dialPopoverOpen}
+              aria-label="Prefijo internacional del teléfono"
+              title={triggerHint}
+              className="h-9  justify-between gap-2 bg-transparent font-normal tabular-nums"
+            >
+              <span className="min-w-0 flex-1 truncate text-left">
+                <span
+                  className={cn(
+                    "font-medium tabular-nums text-foreground",
+                    dialTrimmed.length === 0 && "text-muted-foreground",
+                  )}
+                >
+                  {effectiveDialCode}
+                </span>
               </span>
-            </span>
-            <ChevronDown className="size-4 shrink-0 opacity-50" aria-hidden />
-          </Button>
-        </PopoverTrigger>
+              <ChevronDown className="size-4 shrink-0 opacity-50" aria-hidden />
+            </Button>
+          }
+        ></PopoverTrigger>
 
         <PopoverContent
           className="w-[min(100vw-1.5rem,20rem)] max-w-none p-0 shadow-md sm:min-w-[280px]"

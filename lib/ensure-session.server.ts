@@ -6,6 +6,7 @@ import { refreshTokenService } from "@/app/(auth)/services/refreshTokenService";
 import type { ApiResponse } from "@/lib/api";
 import type { User } from "@/interfaces/user.interface";
 import type { AuthResponseDto } from "@/validations/auth";
+import { MeResponseDto } from "@/services/authService";
 
 export type EnsureSessionResult =
   | { outcome: "session_valid" }
@@ -56,10 +57,10 @@ const buildApiUrl = (path: string): string => {
   return `${base}${normalizedPath}`;
 };
 
-const fetchMeFromBackend = async (params: {
+export const getServerSession = async (params: {
   cookie_header: string;
   access_token?: string | null;
-}): Promise<ApiResponse<User | null>> => {
+}): Promise<ApiResponse<MeResponseDto | null>> => {
   const { cookie_header, access_token } = params;
 
   if (!access_token) {
@@ -79,7 +80,7 @@ const fetchMeFromBackend = async (params: {
     },
   });
 
-  const body = (await meResponse.json()) as ApiResponse<User | null>;
+  const body = (await meResponse.json()) as ApiResponse<MeResponseDto | null>;
 
   return {
     ok: body.ok ?? meResponse.ok,
@@ -98,7 +99,7 @@ export const ensureValidSession = async (params: {
   access_token?: string | null;
 }): Promise<EnsureSessionResult> => {
   const { cookie_header, access_token } = params;
-  const me = await fetchMeFromBackend({ cookie_header, access_token });
+  const me = await getServerSession({ cookie_header, access_token });
   if (me.ok) {
     return { outcome: "session_valid" };
   }

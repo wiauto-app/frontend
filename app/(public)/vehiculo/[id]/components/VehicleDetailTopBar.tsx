@@ -19,7 +19,7 @@ export const VehicleDetailTopBar = ({
 
   return (
     <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
-      <div className="mx-auto container flex items-center justify-between py-3">
+      <div className="mx-auto container-custom flex items-center justify-between py-3">
         <Button
           type="button"
           onClick={() => router.back()}

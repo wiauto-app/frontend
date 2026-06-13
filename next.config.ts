@@ -16,6 +16,7 @@ const strapiRemote = strapiUrl
 const nextConfig: NextConfig = {
   output: 'standalone',
   images: {
+    qualities: [70,80, 90, 100],
     remotePatterns: [
       {
         protocol: "https",
@@ -30,6 +31,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
+      },
+      {
+        protocol: "https",
+        hostname: "media.wiauto.es",
+      
       },
       ...(strapiRemote ? [strapiRemote] : []),
     ],

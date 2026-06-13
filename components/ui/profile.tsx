@@ -32,8 +32,8 @@ export const Profile = ({
         />
       </div>
       <div className="flex flex-col ">
-        <h3 className="font-bold text-foreground text-lg">{name}</h3>
-        <p className="text-muted-foreground text-sm">{description}</p>
+        <h3 className="font-bold text-foreground text-sm">{name}</h3>
+        <p className="text-muted-foreground text-xs">{description}</p>
       </div>
     </div>
   );

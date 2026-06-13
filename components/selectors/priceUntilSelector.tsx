@@ -9,12 +9,14 @@ import { cn } from "@/lib/utils";
 import { heroFacetService } from "@/services/search/heroFacetService";
 import { useHeroSearchFilters } from "../home/HeroSearchFiltersContext";
 import type { HeroPriceRangeFacetItem } from "@/interfaces/hero-facet.interface";
+import { ChevronDown } from "lucide-react";
 
 const formatCount = (count: number) =>
   count.toLocaleString("es-ES", { maximumFractionDigits: 0 });
 
 export const PriceUntilSelector = () => {
-  const { untilPrice, facetQueryParams, setUntilPrice } = useHeroSearchFilters();
+  const { untilPrice, facetQueryParams, setUntilPrice } =
+    useHeroSearchFilters();
   const [is_open, setIsOpen] = useState(false);
 
   const { data: price_ranges = [], isLoading } = useQuery({
@@ -49,7 +51,6 @@ export const PriceUntilSelector = () => {
     <Popover open={is_open} onOpenChange={setIsOpen}>
       <InputButton
         asPopoverTrigger
-        label="Precio"
         className={cn(
           "h-11 text-start text-base",
           displayValue ? "text-foreground" : undefined,
@@ -57,7 +58,10 @@ export const PriceUntilSelector = () => {
         aria-expanded={is_open}
         aria-haspopup="listbox"
       >
-        {displayValue ?? "Selecciona precio hasta"}
+        <div className="flex items-center justify-between w-full">
+          {displayValue ?? "Precio hasta"}
+          <ChevronDown className="size-4 shrink-0 opacity-50" />
+        </div>
       </InputButton>
       <PopoverContent
         align="start"

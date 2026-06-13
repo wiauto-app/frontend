@@ -6,8 +6,8 @@ export const PolicyPageTemplate = ({ title, content }: { title: string, content:
   return (
     <>
       <LandingHeader title={title} />
-      <div className="bg-white py-12 px-4">
-        <div className="max-w-4xl mx-auto prose prose-blue prose-lg text-gray-700">
+      <div className="bg-white px-4 py-12">
+        <div className="mx-auto max-w-3xl">
           <StrapiRenderer content={content} />
         </div>
       </div>

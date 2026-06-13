@@ -135,3 +135,8 @@ export function formatDate(date: string): string {
     year: "numeric",
   });
 }
+
+
+export const getVehicleUrl    = (vehicleId: string): string => {
+  return `/vehiculo/${vehicleId}`;
+}

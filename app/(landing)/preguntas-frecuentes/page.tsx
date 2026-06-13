@@ -28,7 +28,7 @@ export default async function PreguntasFrecuentes() {
         </div>
       </div>
       <div className="flex min-h-[60vh] items-center justify-center p-4 w-full">
-        <Card className="container mx-auto">
+        <Card className="container-custom mx-auto">
           <CardContent className="grid grid-cols-1 lg:grid-cols-2">
             <div className="w-full  flex items-start justify-center p-8 bg-white overflow-y-auto">
               {error_message ? (

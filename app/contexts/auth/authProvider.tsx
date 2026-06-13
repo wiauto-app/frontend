@@ -1,14 +1,13 @@
 "use client";
 
 import { authService } from "@/services/authService";
-import { User } from "@/interfaces/user.interface";
 import { AuthContext } from "./authContext";
 import { useCallback, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
-  const { data: user, isLoading } = useQuery<User | null>({
+  const { data: user, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
       const response = await authService.getMe();

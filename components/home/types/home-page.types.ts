@@ -1,3 +1,4 @@
+import { LucideIcon } from "lucide-react";
 import type { StrapiRichTextBlock } from "./strapi-home.types";
 
 export type HomeActionLink = {
@@ -75,4 +76,12 @@ export type HomePageData = {
   features: HomeFeaturesData;
   seo: HomeSeoData;
   process_section: HomeProcessSectionData;
+};
+
+
+export type VehicleExtraServiceItem = {
+  name: string;
+  description: string;
+  icon: LucideIcon;
+  href: string;
 };

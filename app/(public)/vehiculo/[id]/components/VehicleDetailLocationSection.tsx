@@ -1,38 +1,73 @@
+"use client";
 import { MapPin } from "lucide-react";
-import type { VehicleDetailLocation } from "../types/vehicle-detail.types";
 import { VehicleDetailCard } from "./VehicleDetailCard";
+import { CustomMap } from "@/components/customMap";
+import { Vehicle } from "@/interfaces/vehicle.interface";
+import { AdvancedMarker } from "@vis.gl/react-google-maps";
 
 type VehicleDetailLocationSectionProps = {
-  location: VehicleDetailLocation;
+  vehicle: Vehicle;
+};
+
+const getAddressLines = (vehicle: Vehicle): string[] => {
+  if (vehicle.address_details?.formatted_lines?.length) {
+    return vehicle.address_details.formatted_lines;
+  }
+
+  if (vehicle.address?.trim()) {
+    return vehicle.address.split("\n").filter((line) => line.trim().length > 0);
+  }
+
+  return [];
 };
 
 export const VehicleDetailLocationSection = ({
-  location,
-}: VehicleDetailLocationSectionProps) => (
-  <VehicleDetailCard
-    title={
-      <>
-        <MapPin className="size-5 text-primary" aria-hidden /> Ubicación
-      </>
-    }
-  >
-    <div className="flex aspect-video items-center justify-center rounded-lg bg-gray-200">
-      <div className="text-center">
-        <MapPin className="mx-auto size-8 text-gray-400" aria-hidden />
-        <p className="mt-1 text-xs text-gray-500">Mapa</p>
-      </div>
-    </div>
+  vehicle,
+}: VehicleDetailLocationSectionProps) => {
+  const addressLines = getAddressLines(vehicle);
 
-    <div className="mt-3 text-sm">
-      <div className="flex items-center justify-between text-gray-500">
-        <span>{location.area}</span>
-        <span>{location.road}</span>
+  return (
+    <VehicleDetailCard
+      title={
+        <>
+          <MapPin className="size-5 text-primary" aria-hidden /> Ubicación
+        </>
+      }
+    >
+      <div className="flex aspect-video items-center justify-center rounded-lg bg-gray-200">
+        <CustomMap
+          mapId="map"
+          gestureHandling={"greedy"}
+          defaultCenter={{ lat: vehicle.lat, lng: vehicle.lng }}
+          defaultZoom={15}
+          style={{ width: "100%", height: "100%" }}
+        >
+          <AdvancedMarker position={{ lat: vehicle.lat, lng: vehicle.lng }}>
+            <img
+              src="/icons/locationMarker.svg"
+              alt="Marcador de ubicación"
+              className="size-20"
+            />
+          </AdvancedMarker>
+        </CustomMap>
       </div>
-      {location.address_lines.map((line) => (
-        <p key={line} className="mt-1 text-xs text-gray-500 first:mt-1">
-          {line}
-        </p>
-      ))}
-    </div>
-  </VehicleDetailCard>
-);
+
+      {addressLines.length > 0 ? (
+        <div className="mt-4 space-y-1 text-sm" aria-label="Dirección del vehículo">
+          {addressLines.map((line, index) => (
+            <p
+              key={`${line}-${index}`}
+              className={
+                index === 0
+                  ? "font-semibold uppercase text-slate-800"
+                  : "text-slate-500"
+              }
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+      ) : null}
+    </VehicleDetailCard>
+  );
+};

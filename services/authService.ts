@@ -1,5 +1,6 @@
 import { API_URL, FRONTEND_URL } from "@/constants";
 import { User } from "@/interfaces/user.interface";
+import { VehicleList } from "@/interfaces/vehicle-list.interface";
 import { ApiResponse, apiGet, apiPost, fetchWithAuth } from "@/lib/api";
 import {
   AuthResponseDto,
@@ -8,6 +9,10 @@ import {
   ResendEmailVerificationResponseDto,
 } from "@/validations/auth";
 import { LoginDto, RegisterDto, ResetPasswordDto, ContactDto } from "@/validations/Schemas";
+
+export interface MeResponseDto extends User {
+  vehicle_lists: VehicleList[];
+}
 
 export const authService = {
 
@@ -32,7 +37,7 @@ export const authService = {
   enable2fa: (data: Validate2faDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/2fa/enable`, data),
 
-  getMe: async (accessToken?: string): Promise<ApiResponse<User | null>> => {
+  getMe: async (accessToken?: string): Promise<ApiResponse<MeResponseDto | null>> => {
     if (!accessToken) {
       const isLoggedIn = await authService.isLoggedIn();
       if (!isLoggedIn) {
@@ -45,7 +50,7 @@ export const authService = {
       }
     }
 
-    return fetchWithAuth<User>("/auth/me", {
+    return fetchWithAuth<MeResponseDto>("/auth/me", {
       method: "GET",
       skipAuthRefresh: true,
       credentials: "include",

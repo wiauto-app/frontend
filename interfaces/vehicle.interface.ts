@@ -78,12 +78,26 @@ export interface CuotaRef {
   value: number;
 }
 
+export interface VehicleAddressDetails {
+  street?: string | null;
+  route?: string | null;
+  street_number?: string | null;
+  neighborhood?: string | null;
+  municipality?: string | null;
+  province?: string | null;
+  postal_code?: string | null;
+  country?: string | null;
+  formatted_lines: string[];
+}
+
 export interface VehicleListItem {
   id: string;
   price: number;
   mileage: number;
   lat: number;
   lng: number;
+  address?: string | null;
+  address_details?: VehicleAddressDetails | null;
   condition: string;
   title: string;
   created_at: string;
@@ -146,6 +160,7 @@ export interface Vehicle {
   battery_capacity: number;
   time_to_charge: number;
   license_plate: string;
+  vin_code?: string;
   phone_code: string;
   phone: string;
   email: string;
@@ -168,7 +183,39 @@ export interface Vehicle {
   cuotas: Cuota[];
   services: VehicleService[];
   images: VehicleImage[];
+  version: Version;
+  address?: string | null;
+  address_details?: VehicleAddressDetails | null;
+  dgt_label: DgtLabel | null;
+  warranty_type: WarrantyType | null;
+  cuota: Cuota | null;
 }
+
+export interface Version {
+  id: number;
+  make_id: number;
+  model_id: number;
+  body_type_id: number;
+  fuel_type_id: number;
+  year_id: number;
+  name: string;
+  slug: string;
+  created_at: Date;
+  make: Make;
+  model: Model;
+  body_type: BodyType;
+  fuel_type: FuelType;
+  year: Year;
+}
+
+export interface Year {
+  id: number;
+  year: number;
+  slug: string;
+  created_at: Date;
+}
+
+
 
 export interface CreateVehicleDto {
   price: number;
@@ -273,6 +320,7 @@ export interface FindAllVehiclesParams {
   features_slugs?: string[];
   color_slugs?: string[];
   cuota_slugs?: string[];
+  exclude_vehicle_ids?: string[];
 }
 
 export interface PaginatedResponse<T> {
@@ -286,19 +334,15 @@ export interface Make {
   id: string;
   name: string;
   slug: string;
-  logo_url: string | null;
   created_at: string;
-  updated_at: string;
 }
 
 export interface CreateMakeDto {
   name: string;
-  logo_url?: string;
 }
 
 export interface UpdateMakeDto {
   name?: string;
-  logo_url?: string;
 }
 
 export interface Model {
@@ -307,7 +351,6 @@ export interface Model {
   name: string;
   slug: string;
   created_at: string;
-  updated_at: string;
 }
 
 export interface CreateModelDto {
@@ -318,22 +361,6 @@ export interface CreateModelDto {
 export interface UpdateModelDto {
   make_id?: string;
   name?: string;
-}
-
-export interface Version {
-  id: number;
-  model_id: number;
-  name: string;
-  slug: string;
-  year: number;
-  fuel_type_id: number;
-  body_type_id: number;
-  doors: number;
-  seats: number;
-  power: number;
-  displacement: number;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface CreateVersionDto {
@@ -389,8 +416,8 @@ export interface BodyType {
   id: number;
   name: string;
   slug: string;
+  doors: number;
   created_at: string;
-  updated_at: string;
 }
 
 export interface CreateBodyTypeDto {

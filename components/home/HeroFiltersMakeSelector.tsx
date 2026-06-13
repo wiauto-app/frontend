@@ -11,6 +11,7 @@ import { useMakeSelectorData } from "@/components/selectors/FilterMakeSelector/h
 import { MakeSelectorItem } from "@/components/selectors/FilterMakeSelector/makeSelectorItem";
 import type { SelectedItem } from "@/components/selectors/FilterMakeSelector/interfaces/makeSelector.interface";
 import { useHeroSearchFilters } from "./HeroSearchFiltersContext";
+import { ChevronDown } from "lucide-react";
 
 const buildMakeModelTriggerLabel = (
   selectedItems: SelectedItem[],
@@ -18,7 +19,7 @@ const buildMakeModelTriggerLabel = (
   models: HeroCatalogFacetItem[],
 ): string => {
   if (!selectedItems.length) {
-    return "Selecciona una marca";
+    return "Marca";
   }
 
   const makeBySlug = new Map(makes.map((make) => [make.slug, make.name]));
@@ -32,7 +33,7 @@ const buildMakeModelTriggerLabel = (
     .map((item) => modelBySlug.get(item.slug) ?? item.slug);
 
   const parts = [...makeNames, ...modelNames].filter(Boolean);
-  return parts.length > 0 ? parts.join(", ") : "Selecciona una marca";
+  return parts.length > 0 ? parts.join(", ") : "Marca";
 };
 
 export const HeroFiltersMakeSelector = () => {
@@ -53,7 +54,10 @@ export const HeroFiltersMakeSelector = () => {
       <PopoverTrigger
         render={
           <Button variant="outline" className="h-11 w-full justify-start text-base">
-            {trigger_label}
+            <div className="flex items-center justify-between w-full">
+              {trigger_label}
+              <ChevronDown className="size-4 shrink-0 opacity-50" />
+            </div>
           </Button>
         }
       />

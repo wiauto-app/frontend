@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { HomeHeroData } from "./types/home-page.types";
 import { HeroSearchForm } from "./HeroSearchForm";
+import { SearchForm } from "./searchForm";
 
 const BRAND_BLUE = "#0061F2";
 const FALLBACK_BACKGROUND =
@@ -15,7 +16,7 @@ export function HeroSection({ data }: HeroSectionProps) {
   const background_image = data.background_image_url ?? FALLBACK_BACKGROUND;
 
   return (
-    <section className="relative min-h-[560px] overflow-hidden">
+    <section className="relative min-h-[560px] overflow-hidden rounded-lg">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url('${background_image}')` }}
@@ -35,32 +36,25 @@ export function HeroSection({ data }: HeroSectionProps) {
         aria-hidden
       />
 
-      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-16 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16 lg:px-8 lg:py-24">
-        <div className="flex max-w-xl gap-5 sm:gap-6">
-          <div
-            className="mt-1 w-1.5 shrink-0 self-stretch rounded-full sm:w-2"
-            style={{ backgroundColor: BRAND_BLUE }}
-            aria-hidden
-          />
-          <div className="text-white">
-            <h1 className="text-3xl font-bold leading-[1.15] tracking-tight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.12]">
-              {data.title}
-            </h1>
-            {data.subtitle ? (
-              <p className="mt-4 text-base text-white/90 sm:text-lg">{data.subtitle}</p>
-            ) : null}
-            {primary_action ? (
+      <div className="relative mx-auto flex container-custom flex-col gap-10 px-4 py-16 sm:px-6  lg:gap-16 lg:px-8 lg:py-24">
+        <div className="text-white space-y-1">
+          <h1 className="font-bold lg:text-3xl text-2xl">{data.title}</h1>
+          {data.subtitle ? (
+            <p className="text-base text-white/90 sm:text-lg">
+              {data.subtitle}
+            </p>
+          ) : null}
+          {/* {primary_action ? (
               <Link
                 href={primary_action.url}
                 className="mt-8 inline-flex h-12 items-center justify-center rounded-lg border-2 border-white px-8 text-sm font-bold text-white transition-colors hover:bg-white/10"
               >
                 {primary_action.label}
               </Link>
-            ) : null}
-          </div>
+            ) : null} */}
         </div>
 
-        <HeroSearchForm />
+        <SearchForm />
       </div>
     </section>
   );

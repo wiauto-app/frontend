@@ -19,7 +19,7 @@ const LOAD_MORE_THRESHOLD = 2;
 
 type VehiclesCarouselLayoutProps = {
   initialVehicles: VehicleListItem[];
-  vehicleId: string;
+  vehicleId?: string;
   total: number;
   pageSize: number;
 };
@@ -56,7 +56,7 @@ export const VehiclesCarouselLayout = ({
   }, [initialVehicles, vehicleId]);
 
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || vehicles.length >= total) {
+    if (isLoadingMore || vehicles.length >= total || !vehicleId) {
       return;
     }
 
