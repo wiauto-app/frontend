@@ -116,15 +116,6 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
 
   const watchVersionId = watch("version_id");
 
-  useEffect(() => {
-    if (watchVersionId && versions.length > 0) {
-      const version = versions.find((v) => v.id === watchVersionId);
-      if (version) {
-        if (version.power) setValue("power", version.power);
-        if (version.displacement) setValue("displacement", version.displacement);
-      }
-    }
-  }, [watchVersionId, versions, setValue]);
 
   useEffect(() => {
     const load = async () => {
@@ -491,31 +482,6 @@ export default function EditarVehiculoForm({ vehicleId, userId }: EditarVehiculo
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          <div>
-            <Label className="block text-gray-700 mb-1.5">Versión</Label>
-            <Controller
-              name="version_id"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  value={field.value?.toString() ?? ""}
-                  onValueChange={(val) => field.onChange(val ? Number(val) : undefined)}
-                  disabled={selectedModelId === null}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar versión" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filteredVersions.map((v) => (
-                      <SelectItem key={v.id} value={v.id.toString()}>{v.name} ({v.year})</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.version_id && <p className="mt-1 text-xs text-red-500">{errors.version_id.message}</p>}
           </div>
 
           <div>
