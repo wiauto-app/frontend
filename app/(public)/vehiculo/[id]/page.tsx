@@ -1,4 +1,5 @@
 import { vehicleService } from "@/services/vehicleService";
+import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import { VehicleDetailContactForm } from "./components/VehicleDetailContactForm";
 import { VehicleDetailGallery } from "./components/VehicleDetailGallery";
 import { VehicleDetailFeatures } from "./components/VehicleDetailFeatures";
@@ -22,38 +23,61 @@ import { Card, CardContent } from "@/components/ui/card";
 import { VehicleFavoriteButton } from "../../vehiculos/components/VehicleFavoriteButton";
 import { VehicleShareButton } from "../../vehiculos/components/VehicleShareButton";
 import { ReportButton } from "@/components/reports/ReportButton";
+import { Metadata } from "next";
+import { getVehicleData } from "./services/getVehicleData";
+import { getImageUrl } from "@/lib/utils";
 
 type VehicleDetailPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default async function VehicleDetailPage({
-  params,
-}: VehicleDetailPageProps) {
+export async function generateMetadata({ params }: VehicleDetailPageProps): Promise<Metadata> {
   const { id } = await params;
-  const [old, data, reviews] = await Promise.all([
-    getVehicleDetail(id),
-    vehicleService.vehicles.findById(id),
-    findVehicleReviews(id),
-  ]);
+
+  const { data } = await getVehicleData(id);
 
   if (!data.ok || !data.data) {
     notFound();
   }
 
   const vehicle = data.data;
+  const title = getVehicleDisplayName(vehicle);
+  return {
+    title: title,
+    description: vehicle.description,
+    openGraph: {
+      title: title,
+      description: vehicle.description,
+      images: vehicle.images.map((image) => ({ url: getImageUrl(image.url) })),
+    },
+  };
+
+}
+
+export default async function VehicleDetailPage({
+  params,
+}: VehicleDetailPageProps) {
+  const { id } = await params;
+  const { old, data, reviews } = await getVehicleData(id);
+
+  if (!data.ok || !data.data) {
+    notFound();
+  }
+
+  const vehicle = data.data;
+  const displayName = getVehicleDisplayName(vehicle);
   return (
     <div className="min-h-screen bg-gray-50">
       <VehicleDetailTopBar
         vehicle_id={vehicle.id}
-        vehicle_title={vehicle.title}
+        vehicle_title={displayName}
       />
       <div className="mx-auto container-custom py-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 relative">
           <div className="space-y-6 lg:col-span-3">
             <VehicleDetailGallery
               images={vehicle.images}
-              title={vehicle.title}
+              title={displayName}
               condition_label={vehicle.condition}
             />
             <VehicleDetailTitleSection vehicle={vehicle} />
@@ -89,7 +113,7 @@ export default async function VehicleDetailPage({
                 />
                 <VehicleShareButton
                   vehicleId={vehicle.id}
-                  vehicleTitle={vehicle.title}
+                  vehicleTitle={displayName}
                   variant="outline"
                 />
               </div>

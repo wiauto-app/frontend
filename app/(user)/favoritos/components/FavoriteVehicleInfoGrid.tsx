@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { VehicleListItemPreview } from "@/interfaces/vehicle-list.interface";
+import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import { formatPrice } from "@/app/(public)/vehiculos/utils";
 import {
   formatFavoritePublishedDate,
@@ -56,7 +57,7 @@ export const FavoriteVehicleInfoGrid = ({
         open={priceHistoryOpen}
         onOpenChange={setPriceHistoryOpen}
         vehicleId={vehicle.id}
-        vehicleTitle={vehicle.title}
+        vehicleTitle={getVehicleDisplayName(vehicle)}
       />
     </>
   );

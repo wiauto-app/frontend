@@ -1,3 +1,5 @@
+import { StrapiLink } from "./home-page.types";
+
 export type StrapiRichTextBlock = {
   type: string;
   children?: {
@@ -36,6 +38,13 @@ export type StrapiHomepageResponse = {
       backgroundImage?: StrapiMedia | null;
       actionLinks?: { id: number; label: string; url: string }[] | null;
     } | null;
+    herramientas?: {
+      titulo: string;
+      descripcion: string;
+      imagen: StrapiMedia;
+      colorFondo: string;
+      boton: StrapiLink;
+    }[] | null;
     homeAppAdvertisment?: {
       title?: string | null;
       phrase?: string | null;

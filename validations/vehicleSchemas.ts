@@ -10,7 +10,6 @@ export const CreateVehicleSchema = z.object({
   condition: z.enum([CONDITION_VEHICLE.NEW, CONDITION_VEHICLE.USED], {
     message: "Condición inválida",
   }),
-  title: z.string().min(5, "El título debe tener al menos 5 caracteres"),
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
   version_id: z.number("ID de versión inválido"),
   phone_code: z.string().min(1, "Código de teléfono requerido"),

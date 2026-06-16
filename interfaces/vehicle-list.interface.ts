@@ -13,9 +13,11 @@ export interface VehicleListItemCategory {
   name: string;
 }
 
+import type { VehicleVersionSummary } from "@/interfaces/vehicle.interface";
+
 export interface VehicleListItemPreview {
   id: string;
-  title: string;
+  version_summary: VehicleVersionSummary;
   price: number;
   image_url: string | null;
   created_at: string;

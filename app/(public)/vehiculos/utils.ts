@@ -2,6 +2,11 @@ import { MEDIA_URL } from "@/constants";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import type { VehiclePriceHistoryItem } from "@/interfaces/vehicle-price.interface";
 import { VEHICLE_PRICE_STATUS } from "@/interfaces/vehicle-price.interface";
+import {
+  getVehicleDisplayName,
+  getVehicleMakeName,
+  getVehicleModelLine,
+} from "@/lib/vehicles/getVehicleDisplayName";
 
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat("es-ES", {
@@ -96,15 +101,15 @@ export function getConditionLabel(condition: string): string {
 
 export function getVehicleBadge(vehicle: VehicleListItem): string {
   const prefix = vehicle.condition === "new" ? "NEW" : "USED";
-  const titleParts = vehicle.title.trim().split(/\s+/);
-  const brand = titleParts[0]?.toUpperCase() ?? "";
+  const brand = getVehicleMakeName(vehicle).toUpperCase();
   return brand ? `${prefix} ${brand}` : prefix;
 }
 
 export function getVehicleModelName(vehicle: VehicleListItem): string {
-  const titleParts = vehicle.title.trim().split(/\s+/);
-  return titleParts.slice(1).join(" ") || vehicle.title;
+  return getVehicleModelLine(vehicle);
 }
+
+export { getVehicleDisplayName, getVehicleMakeName };
 
 export function getVehicleTags(vehicle: VehicleListItem): string[] {
   const tags: string[] = ["Reservable"];

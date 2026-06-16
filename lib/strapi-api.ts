@@ -36,7 +36,8 @@ export const getStrapiData = async <T>(endpoint: string): Promise<T> => {
     headers: {
       Authorization: `Bearer ${STRAPI_TOKEN}`,
     },
-    next: { revalidate: 60 },
+    // next: { revalidate: 60 },
+    cache: "no-store",
   });
 
   if (!response.ok) {

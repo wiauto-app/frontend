@@ -11,6 +11,7 @@ import {
   getFavoriteVehicleModelName,
   toCarouselImages,
 } from "../utils/favorites.utils";
+import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import { FavoriteVehicleActions } from "./FavoriteVehicleActions";
 import { FavoriteVehicleInfoGrid } from "./FavoriteVehicleInfoGrid";
 import { FavoriteVehicleTag } from "./FavoriteVehicleTag";
@@ -36,6 +37,7 @@ export const FavoriteVehicleCard = ({
 }: FavoriteVehicleCardProps) => {
   const vehicle = item.vehicle;
   const vehicleHref = getFavoriteVehicleHref(vehicle.id);
+  const displayName = getVehicleDisplayName(vehicle);
   const publishedAt = vehicle.created_at ?? item.created_at;
   const publisherId = vehicle.publisher_id ?? "";
 
@@ -70,7 +72,7 @@ export const FavoriteVehicleCard = ({
     <article className="flex flex-col gap-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6 md:flex-row">
       <VehicleImageCarousel
         images={toCarouselImages(vehicle)}
-        alt={vehicle.title}
+        alt={displayName}
         href={vehicleHref}
       />
 

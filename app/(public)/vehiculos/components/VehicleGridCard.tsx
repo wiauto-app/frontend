@@ -4,6 +4,7 @@ import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import {
   formatPrice,
   getImageUrl,
+  getVehicleDisplayName,
   getVehicleUrl,
 } from "../utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -17,6 +18,7 @@ type VehicleGridCardProps = {
 
 export function VehicleGridCard({ vehicle }: VehicleGridCardProps) {
   const imageUrl = getImageUrl(vehicle.images[0]?.url ?? "");
+  const displayName = getVehicleDisplayName(vehicle);
 
   return (
     <Card className="pt-0 gap-2">
@@ -30,13 +32,13 @@ export function VehicleGridCard({ vehicle }: VehicleGridCardProps) {
         <Image
           unoptimized
           src={imageUrl}
-          alt={vehicle.title}
+          alt={displayName}
           fill
           className="object-cover"
         />
       </CardHeader>
       <CardContent className="p-2">
-        <Link href={getVehicleUrl(vehicle.id)} className="text-base font-bold text-slate-900">{vehicle.title}</Link>
+        <Link href={getVehicleUrl(vehicle.id)} className="text-base font-bold text-slate-900">{displayName}</Link>
         <p className="text-sm text-muted-foreground">{vehicle.mileage} km</p>
         <p className="font-bold text-base">{formatPrice(vehicle.price)}</p>
         <p className="text-sm text-muted-foreground">

@@ -9,6 +9,7 @@ import {
   formatPrice,
   getFinancedPrice,
   getVehicleBadge,
+  getVehicleDisplayName,
   getVehicleModelName,
   getVehicleTags,
 } from "../utils";
@@ -27,13 +28,14 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
   const [compare, setCompare] = useState(false);
   const financedPrice = getFinancedPrice(vehicle);
   const vehicleHref = `/vehiculo/${vehicle.id}`;
+  const displayName = getVehicleDisplayName(vehicle);
 
   return (
     <article className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
       <div className="flex flex-col md:flex-row">
         <VehicleImageCarousel
           images={vehicle.images ?? []}
-          alt={vehicle.title}
+          alt={displayName}
           href={vehicleHref}
         />
 
@@ -56,7 +58,7 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
                 <VehicleFavoriteButton vehicleId={vehicle.id} />
                 <VehicleShareButton
                   vehicleId={vehicle.id}
-                  vehicleTitle={getVehicleModelName(vehicle)}
+                  vehicleTitle={displayName}
                 />
                 <Button
                   type="button"

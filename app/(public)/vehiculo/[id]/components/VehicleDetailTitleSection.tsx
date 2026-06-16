@@ -1,4 +1,5 @@
 import { Vehicle } from "@/interfaces/vehicle.interface";
+import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import { CustomSeparator } from "@/components/ui/customSeparator";
 import { Card, CardContent } from "@/components/ui/card";
 import { VehicleDetailPricingSection } from "./VehicleDetailPricingSection";
@@ -15,7 +16,7 @@ export const VehicleDetailTitleSection = ({
 }: VehicleDetailTitleSectionProps) => (
   <Card>
     <CardContent className="space-y-5">
-      <h1 className="text-2xl font-bold text-gray-900">{vehicle.title}</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{getVehicleDisplayName(vehicle)}</h1>
       <CustomSeparator />
       <VehicleDetailPricingSection vehicle={vehicle} />
       <Separator />

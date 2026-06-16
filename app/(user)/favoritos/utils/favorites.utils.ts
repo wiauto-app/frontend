@@ -1,12 +1,12 @@
 import type { VehicleImage } from "@/interfaces/vehicle.interface";
 import type { VehicleListItemPreview } from "@/interfaces/vehicle-list.interface";
+import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import {
   formatPrice,
   getConditionLabel,
   getVehicleBadge,
   getVehicleModelName,
 } from "@/app/(public)/vehiculos/utils";
-import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 
 export const formatFavoritePublishedDate = (value: string | undefined): string => {
   if (!value) {
@@ -39,7 +39,7 @@ export const toVehicleListItemAdapter = (
 ): VehicleListItem =>
   ({
     id: vehicle.id,
-    title: vehicle.title,
+    version_summary: vehicle.version_summary,
     condition: vehicle.condition ?? "used",
     price: vehicle.price,
     is_featured: vehicle.is_featured ?? false,

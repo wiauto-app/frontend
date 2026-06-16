@@ -20,6 +20,8 @@ import { vehicleService } from "@/services/vehicleService";
 import {
   formatPrice,
   getImageUrl,
+  getVehicleDisplayName,
+  getVehicleMakeName,
   getVehicleModelName,
 } from "../utils";
 
@@ -37,6 +39,8 @@ const SearchVehicleResultItem = ({
 }: SearchVehicleResultItemProps) => {
   const imageUrl = getImageUrl(vehicle.images[0].url);
   const modelName = getVehicleModelName(vehicle);
+  const makeName = getVehicleMakeName(vehicle);
+  const displayName = getVehicleDisplayName(vehicle);
 
   return (
     <Link
@@ -47,7 +51,7 @@ const SearchVehicleResultItem = ({
       <div className="relative size-16 shrink-0 overflow-hidden rounded-md bg-muted">
         <img
           src={imageUrl}
-          alt={vehicle.title}
+          alt={displayName}
           className="size-full object-cover"
         />
       </div>
@@ -56,7 +60,7 @@ const SearchVehicleResultItem = ({
         <p className="truncate text-sm font-semibold text-foreground">
           {modelName}
         </p>
-        <p className="truncate text-xs text-muted-foreground">{vehicle.title}</p>
+        <p className="truncate text-xs text-muted-foreground">{makeName}</p>
         <p className="text-sm font-bold text-foreground">
           {formatPrice(vehicle.price)}
         </p>

@@ -58,10 +58,10 @@ const buildApiUrl = (path: string): string => {
 };
 
 export const getServerSession = async (params: {
-  cookie_header: string;
+  refresh_token?: string | null;
   access_token?: string | null;
 }): Promise<ApiResponse<MeResponseDto | null>> => {
-  const { cookie_header, access_token } = params;
+  const { refresh_token, access_token } = params;
 
   if (!access_token) {
     return {
@@ -76,7 +76,7 @@ export const getServerSession = async (params: {
     method: "GET",
     headers: {
       Authorization: `Bearer ${access_token}`,
-      ...(cookie_header ? { Cookie: cookie_header } : {}),
+      ...(refresh_token ? { Cookie: `refresh_token=${refresh_token}` } : {}),
     },
   });
 
@@ -95,11 +95,14 @@ export const getServerSession = async (params: {
  * Sin efectos secundarios: no escribe cookies; el llamador aplica el resultado en Response o cookies().
  */
 export const ensureValidSession = async (params: {
-  cookie_header: string;
-  access_token?: string | null;
+  refresh_token: string;
+  access_token: string | null;
 }): Promise<EnsureSessionResult> => {
-  const { cookie_header, access_token } = params;
-  const me = await getServerSession({ cookie_header, access_token });
+  const { refresh_token, access_token } = params;
+  console.log("refresh_token", refresh_token);
+  console.log("access_token", access_token);
+  const me = await getServerSession({ refresh_token, access_token });
+  console.log("me", me);
   if (me.ok) {
     return { outcome: "session_valid" };
   }
@@ -108,7 +111,9 @@ export const ensureValidSession = async (params: {
     return { outcome: "me_not_ok", status: me.status };
   }
 
-  const refreshed = await refreshTokenService.refreshToken(cookie_header);
+
+  const refreshed = await refreshTokenService.refreshToken(refresh_token);
+  console.log("refreshed", refreshed);
   if (!refreshed.ok || !is_session_payload(refreshed.data)) {
     return { outcome: "unauthorized" };
   }

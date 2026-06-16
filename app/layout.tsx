@@ -28,7 +28,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html
       lang="en"
@@ -45,8 +44,10 @@ export default async function RootLayout({
         <Providers>
           <Navbar />
           <main className="flex flex-1 flex-col">{children}</main>
-          <NewsletterSection  />
-          <Footer />
+          <div className="mt-20">
+            <NewsletterSection />
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>

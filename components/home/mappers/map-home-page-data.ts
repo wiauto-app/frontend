@@ -190,8 +190,15 @@ export const mapHomePageData = (
   const features_block = data?.homeFeatures;
   const seo = data?.homeSeo;
   const process_section = data?.processSection;
-
+  const herramientas = data?.herramientas;
   return {
+    herramientas: herramientas?.map((item) => ({
+      titulo: item.titulo,
+      descripcion: item.descripcion,
+      imagen: item.imagen,
+      colorFondo: item.colorFondo,
+      boton: item.boton,
+    })) ?? [],
     hero: {
       title: hero?.title?.trim() || DEFAULT_HERO_TITLE,
       subtitle: hero?.subtitle?.trim() ?? null,

@@ -1,7 +1,7 @@
 import { LucideIcon } from "lucide-react";
-import type { StrapiRichTextBlock } from "./strapi-home.types";
+import type { StrapiMedia, StrapiRichTextBlock } from "./strapi-home.types";
 
-export type HomeActionLink = {
+export type StrapiLink = {
   label: string;
   url: string;
 };
@@ -10,7 +10,7 @@ export type HomeHeroData = {
   title: string;
   subtitle: string | null;
   background_image_url: string | null;
-  action_links: HomeActionLink[];
+  action_links: StrapiLink[];
 };
 
 export type HomeNewsletterData = {
@@ -69,7 +69,16 @@ export type HomeProcessSectionData = {
   tabs: HomeProcessTab[];
 };
 
+export type StrapiCard = {
+  titulo: string;
+  descripcion: string;
+  imagen: StrapiMedia;
+  colorFondo: string;
+  boton: StrapiLink;
+}
+
 export type HomePageData = {
+  herramientas: StrapiCard[];
   hero: HomeHeroData;
   newsletter: HomeNewsletterData;
   app_advertisement: HomeAppAdvertisementData;

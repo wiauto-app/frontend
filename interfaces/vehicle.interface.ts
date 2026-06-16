@@ -78,6 +78,12 @@ export interface CuotaRef {
   value: number;
 }
 
+export interface VehicleVersionSummary {
+  make_name: string;
+  model_name: string;
+  version_name: string;
+}
+
 export interface VehicleAddressDetails {
   street?: string | null;
   route?: string | null;
@@ -99,7 +105,7 @@ export interface VehicleListItem {
   address?: string | null;
   address_details?: VehicleAddressDetails | null;
   condition: string;
-  title: string;
+  version_summary: VehicleVersionSummary;
   created_at: string;
   images: VehicleImage[];
   features: Feature[];
@@ -142,7 +148,6 @@ export interface Vehicle {
   lat: number;
   lng: number;
   condition: ConditionVehicle;
-  title: string;
   description: string;
   publisher_type: PublisherType;
   publisher: Publisher;
@@ -223,7 +228,6 @@ export interface CreateVehicleDto {
   lat: number;
   lng: number;
   condition: ConditionVehicle;
-  title: string;
   description: string;
   version_id: number;
   publisher_type: PublisherType;
@@ -254,7 +258,6 @@ export interface UpdateVehicleDto {
   lat?: number;
   lng?: number;
   condition?: ConditionVehicle;
-  title?: string;
   description?: string;
   version_id?: number;
   publisher_type?: PublisherType;

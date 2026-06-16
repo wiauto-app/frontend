@@ -18,10 +18,9 @@ export async function proxy(req: NextRequest) {
   }
 
   const access_token = req.cookies.get(cookiesConfig.accessToken.name)?.value ?? null;
-  const cookie_header = req.headers.get("cookie") ?? "";
-
-  if (access_token) {
-    const result = await ensureValidSession({ cookie_header, access_token });
+  const refresh_token = req.cookies.get(cookiesConfig.refreshToken.name)?.value ?? null;
+  if (refresh_token) {
+    const result = await ensureValidSession({ refresh_token, access_token });
     if (result.outcome === "session_valid" || result.outcome === "me_not_ok") {
       return NextResponse.next();
     }
