@@ -64,7 +64,7 @@ export const PerfilContent = () => {
   return (
     <div className="space-y-6 pb-20 max-w-5xl">
       {/* Banner de Usuario Superior */}
-      <div className="bg-blue-100/50 rounded-xl p-6 flex flex-col md:flex-row items-center md:items-start gap-6 border border-blue-100">
+      <div className="bg-blue-100/50 rounded-xl p-6 flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 border border-blue-100">
         <div className="w-20 h-20 bg-blue-200 rounded-full flex-shrink-0 flex items-center justify-center text-blue-700 text-2xl font-bold overflow-hidden relative">
           {/* Avatar placeholder / initials */}
           {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
@@ -73,7 +73,7 @@ export const PerfilContent = () => {
         <div className="flex-1 text-center md:text-left">
           <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
             <h1 className="text-2xl font-bold text-gray-900">{fullName}</h1>
-            <div className="flex items-center justify-center md:justify-start gap-2">
+            <div className="flex flex-col lg:flex-row items-center justify-center md:justify-start gap-2">
               <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full text-xs font-medium">
                 <CheckCircle2 className="w-3 h-3" /> Top vendedor
               </span>
@@ -82,7 +82,7 @@ export const PerfilContent = () => {
               </span>
             </div>
           </div>
-          <p className="text-sm text-gray-700 font-medium">
+          <p className="text-sm text-gray-700 font-medium flex-wrap ">
             Particular • Lima • 4.9 ★ (23 reseñas) • desde mar 2024
           </p>
         </div>
@@ -188,7 +188,7 @@ export const PerfilContent = () => {
       {/* Soporte */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <h2 className="text-lg font-bold text-gray-900 mb-6">Soporte</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="border border-blue-100 bg-blue-50/30 rounded-xl p-5 hover:bg-blue-50 transition-colors cursor-pointer flex flex-col items-start">
             <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mb-3">
               <MessageCircle className="w-5 h-5" />

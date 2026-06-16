@@ -8,17 +8,17 @@ const rolesGrid = ({roles}:any) => {
          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-6">Roles y permisos</h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {roles.map((role:any) => (
                    <Card key={role.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-blue-100">
-            <CardContent className="px-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-blue-100 rounded-full p-2">
+            <CardContent className="px-2">
+              <div className="flex items-start justify-between mb-4 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <div className="bg-blue-100 rounded-full p-1">
                     <ShieldHalf className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">{role.name}</h3>
+                    <h3 className="lg:text-lg text-md font-bold text-gray-900">{role.name}</h3>
                   </div>
                 </div>
                <div className="items-center">
