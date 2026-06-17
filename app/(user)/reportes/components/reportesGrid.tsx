@@ -39,7 +39,7 @@ const chartConfig = {
 
 export const ReportesGrid = ({reports}: {reports: Report[]}) => {
   return (
-    <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>        {reports.map((report) => (
+    <div className='grid grid-cols-1  lg:grid-cols-4 gap-4'>        {reports.map((report) => (
            <Card
            key={report.id}
            className="flex flex-col bg-white gap-0 py-2"
@@ -51,9 +51,9 @@ export const ReportesGrid = ({reports}: {reports: Report[]}) => {
               
             </CardHeader>
                 <CardContent className=' mb-0'>
-                <div className='flex flex-row justify-between'>
-                    <div className='flex flex-col'>
-                        <Label className='text-2xl font-bold'>{report.number}</Label>
+                <div className='flex flex-row justify-between w-full max-w-8/10'>
+                    <div className='flex flex-col max-w-1/2'>
+                        <Label className='text-xl font-bold'>{report.number}</Label>
                         {report.percentage>0?(
                             <span className='text-green-500 flex items-center gap-2'>
                                 +{report.percentage}%
@@ -64,7 +64,7 @@ export const ReportesGrid = ({reports}: {reports: Report[]}) => {
                             </span>
                         )}
                     </div>
-                    <div className="w-32 h-16">
+                    <div className="w-32 h-16 max-w-1/2">
             <ChartContainer config={chartConfig} className="h-full w-full">
           <LineChart
             data={report.chartData || chartData}

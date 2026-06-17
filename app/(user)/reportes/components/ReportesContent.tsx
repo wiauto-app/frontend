@@ -207,7 +207,7 @@ export const ReportesContent = () => {
     <ReportesGrid reports={reports}/>
     <ReportesMesGrid reports={reports2}/> 
     <ReporteTable reports={reportsList}/> 
-    <div className='flex flex-row w-full justify-between gap-8'>
+    <div className='flex  flex-col lg:flex-row w-full justify-between gap-8'>
       <TrafficChart data={trafficData} />
       <RecomendationCard/>
       </div>  

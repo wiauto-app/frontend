@@ -94,7 +94,7 @@ export const NotificacionesContent = () => {
       {/* Canales */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-sm font-bold text-gray-900 mb-4">Canales</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-4">
           {canales.map((canal) => {
             const Icon = canal.icon;
             return (
@@ -175,7 +175,7 @@ export const NotificacionesContent = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {alertas.map((alerta) => (
             <div key={alerta.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg">
-              <span className="text-sm text-gray-700">{alerta.label}</span>
+              <span className=" text-[8px] md:text-sm text-gray-700">{alerta.label}</span>
               {/* Toggle */}
               <Button 
                 onClick={() => toggleAlerta(alerta.id)}

@@ -18,4 +18,5 @@ export interface User {
   phone_code?: string;
   phone?: string;
   dni?: string;
+  role_id?: string;
 }

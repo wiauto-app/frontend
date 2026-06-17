@@ -16,7 +16,7 @@ interface Plan {
 } 
 const PlanesGrid = ({plans}: {plans: Plan[]}) => {
   return (
-    <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>        {plans.map((plan) => (
+    <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>        {plans.map((plan) => (
            <Card
            key={plan.id}
            className="flex flex-col gap-6  bg-white p-4"
