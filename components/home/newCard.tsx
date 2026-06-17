@@ -37,11 +37,11 @@ export const NewCard = ({
     <Link
       href={`/noticias/${item.slug}`}
       className={cn(
-        "group relative block overflow-hidden rounded-2xl",
+        "group relative block overflow-hidden rounded-2xl h-96",
         "shadow-[0_4px_20px_rgba(15,23,42,0.08)]",
         "transition-all duration-300",
         "hover:shadow-[0_8px_28px_rgba(15,23,42,0.12)]",
-        isFeatured && "h-full sm:col-span-2 lg:col-span-2 lg:row-span-2",
+        isFeatured && " sm:col-span-2 lg:col-span-2 lg:row-span-2",
         className,
       )}
     >

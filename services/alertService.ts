@@ -1,10 +1,55 @@
-import { apiPost, type ApiResponse } from "@/lib/api";
+import {
+  apiDelete,
+  apiGet,
+  apiPatch,
+  apiPost,
+  type ApiResponse,
+} from "@/lib/api";
 import type {
   Alert,
   CreateAlertFromVehiclePayload,
+  UpdateAlertPayload,
 } from "@/interfaces/alert.interface";
+import type {
+  AlertNotificationPreferences,
+  UpdateAlertNotificationPreferencesPayload,
+} from "@/interfaces/alert-notification-preferences.interface";
+
+export const ALERTS_QUERY_KEY = ["alerts"] as const;
+export const ALERT_NOTIFICATION_PREFERENCES_QUERY_KEY = [
+  "alert-notification-preferences",
+] as const;
 
 export const alertService = {
+  findAll: (): Promise<ApiResponse<Alert[]>> => apiGet<Alert[]>("/v1/alerts"),
+
+  findOne: (alertId: string): Promise<ApiResponse<Alert>> =>
+    apiGet<Alert>(`/v1/alerts/${alertId}`),
+
+  update: (
+    alertId: string,
+    payload: UpdateAlertPayload,
+  ): Promise<ApiResponse<Alert>> =>
+    apiPatch<Alert>(`/v1/alerts/${alertId}`, payload),
+
+  remove: (alertId: string): Promise<ApiResponse<null>> =>
+    apiDelete(`/v1/alerts/${alertId}`),
+
+  markViewed: (alertId: string): Promise<ApiResponse<Alert>> =>
+    apiPost<Alert>(`/v1/alerts/${alertId}/mark-viewed`, {}),
+
+  getNotificationPreferences: (): Promise<
+    ApiResponse<AlertNotificationPreferences>
+  > => apiGet<AlertNotificationPreferences>("/v1/alerts/notification-preferences"),
+
+  updateNotificationPreferences: (
+    payload: UpdateAlertNotificationPreferencesPayload,
+  ): Promise<ApiResponse<AlertNotificationPreferences>> =>
+    apiPatch<AlertNotificationPreferences>(
+      "/v1/alerts/notification-preferences",
+      payload,
+    ),
+
   createFromVehicle: (
     vehicleId: string,
     payload?: CreateAlertFromVehiclePayload,

@@ -8,6 +8,6 @@ export const VehicleDetailDescription = ({
   description,
 }: VehicleDetailSellerCommentsSectionProps) => (
   <VehicleDetailCard title="Descripción del vehículo">
-    <p className="mb-4 leading-relaxed text-gray-600">{description}</p>
+    <p className="mb-4 leading-relaxed text-gray-600 whitespace-pre-line">{description}</p>
   </VehicleDetailCard>
 );

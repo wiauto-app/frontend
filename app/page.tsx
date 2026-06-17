@@ -47,7 +47,7 @@ export default async function Home() {
   const home_data = await getHomeData();
   return (
     <>
-      <div className="container-custom flex flex-col gap-20">
+      <div className="container-custom flex flex-col gap-12">
         <div className="bg-muted-foreground/10 rounded-xl">
           <HeroSection data={home_data.hero} />
           <VehicleExtraServices data={EXTRA_SERVICES_DATA} />

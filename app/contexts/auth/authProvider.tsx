@@ -17,7 +17,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return response.data;
     },
   });
-
   const refreshUser = useCallback(async () => {
     queryClient.invalidateQueries({ queryKey: ["user"] });
   }, [queryClient]);

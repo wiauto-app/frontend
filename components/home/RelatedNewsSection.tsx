@@ -26,14 +26,13 @@ export async function RelatedNewsSection() {
   }
 
   return (
-    <SectionContainer className="bg-white py-12 lg:py-16">
+    <SectionContainer >
       <SectionHeading
         lead="Novedades del"
         highlight="mundo automotriz"
-        className="mb-8 sm:mb-10"
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:auto-rows-[minmax(180px,1fr)]">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:auto-rows-[minmax(180px,1fr)] max-h-96">
         {items.map((item, index) => (
           <NewCard
             key={item.document_id}

@@ -14,4 +14,8 @@ export interface User {
   name?: string;
   last_name?: string;
   avatar_url?: string;
+  image_url?: string;
+  phone_code?: string;
+  phone?: string;
+  dni?: string;
 }

@@ -1,4 +1,3 @@
-import { vehicleService } from "@/services/vehicleService";
 import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import { VehicleDetailContactForm } from "./components/VehicleDetailContactForm";
 import { VehicleDetailGallery } from "./components/VehicleDetailGallery";
@@ -13,8 +12,6 @@ import { VehicleDetailServicesSection } from "./components/VehicleDetailServices
 import { VehicleDetailTitleSection } from "./components/VehicleDetailTitleSection";
 import { VehicleDetailTopBar } from "./components/VehicleDetailTopBar";
 import { VehicleDetailVerifiedSellerCard } from "./components/VehicleDetailVerifiedSellerCard";
-import { findVehicleReviews } from "./services/findVehicleReviews.server";
-import { getVehicleDetail } from "./services/getVehicleDetail.server";
 import { notFound } from "next/navigation";
 import { VehicleDetailReviewForm } from "./components/VehicleDetailReviewForm";
 import { VehicleDetailAdvertiserSection } from "./components/VehicleDetailAdvertiserSection";

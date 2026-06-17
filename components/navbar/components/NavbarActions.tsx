@@ -1,13 +1,13 @@
 "use client";
 
 import { NavbarPublishButton } from "./NavbarPublishButton";
-import { NavbarUserMenu } from "./NavbarUserMenu";
+import { UserDropdown } from "./userDropdown";
 
 export const NavbarActions = () => {
   return (
     <div className="flex items-center gap-4 sm:gap-6">
       <NavbarPublishButton />
-      <NavbarUserMenu />
+      <UserDropdown />
     </div>
   );
 };

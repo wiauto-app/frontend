@@ -4,20 +4,11 @@ import { useContext } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthContext } from "@/app/contexts/auth/authContext";
-import {
-  LayoutGrid,
-  Car,
-  Heart,
-  Search,
-  MessageSquare,
-  Bell,
-  User as UserIcon,
-  Settings,
-  LogOut,
-  Edit,
-} from "lucide-react";
+import { LogOut, Edit } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/navbar/components/userAvatar";
+import { USER_SIDEBAR_LINKS } from "../constants/user.constants";
 
 export function UserSidebar() {
   const authContext = useContext(AuthContext);
@@ -25,30 +16,13 @@ export function UserSidebar() {
 
   const user = authContext?.user;
 
-  const links = [
-    { href: "/inicio", label: "Inicio", icon: LayoutGrid },
-    { href: "/mis-anuncios", label: "Mis anuncios", icon: Car },
-    { href: "/favoritos", label: "Favoritos", icon: Heart },
-    {
-      href: "/busquedas-guardadas",
-      label: "Búsquedas guardadas",
-      icon: Search,
-    },
-    { href: "/mensajes", label: "Mensajes (chat)", icon: MessageSquare },
-    { href: "/notificaciones", label: "Notificaciones", icon: Bell },
-    { href: "/perfil", label: "Mi perfil", icon: UserIcon },
-    { href: "/configuracion", label: "Configuración", icon: Settings },
-  ];
-
   return (
     <div className="w-full  flex flex-col gap-4">
       {/* User Info Card */}
       <Card size="sm">
         <CardContent className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg overflow-hidden">
-              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-            </div>
+            <UserAvatar className="size-9" />
             <div>
               <h3 className="font-semibold text-gray-900">
                 {user?.name || "Usuario"}
@@ -68,7 +42,7 @@ export function UserSidebar() {
       {/* Navigation Links */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <nav className="flex flex-col space-y-1">
-          {links.map((link) => {
+          {USER_SIDEBAR_LINKS.map((link) => {
             const isActive =
               pathname === link.href ||
               (pathname?.startsWith(link.href) && link.href !== "/");

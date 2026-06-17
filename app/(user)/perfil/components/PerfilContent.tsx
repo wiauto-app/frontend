@@ -1,219 +1,335 @@
 "use client";
 
-import { useContext, useEffect, useTransition } from "react";
-import { AuthContext } from "@/app/contexts/auth/authContext";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import Image from "next/image";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateProfileSchema, UpdateProfileDto } from "@/validations/Schemas";
-import { updateProfileAction } from "../../userActions/userActions";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { userService } from "@/services/userService";
+import { accountService } from "@/services/accountService";
 import { toast } from "sonner";
-import { ShieldCheck, CheckCircle2, MessageCircle, Mail, BookOpen, AlertCircle } from "lucide-react";
-import { Label } from "@/components/ui/label";
+import {
+  ShieldCheck,
+  CheckCircle2,
+  MessageCircle,
+  Mail,
+  BookOpen,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { PhoneInput, DEFAULT_PHONE_CODE } from "@/components/forms/phoneInput";
+import { ImageInput } from "@/components/ui/imageInput";
+import { getImageUrl } from "@/lib/utils";
+import {
+  mapProfileFormToPayload,
+  updateProfileFormSchema,
+  type UpdateProfileFormValues,
+} from "../schemas/update-profile.schema";
+import { useUser } from "@/app/contexts/auth/useUser";
+import { EmailSettingsSection } from "./EmailSettingsSection";
+import { PasswordSettingsSection } from "./PasswordSettingsSection";
+import { TwoFactorSettingsSection } from "./TwoFactorSettingsSection";
+
+const EMPTY_PROFILE_FORM: UpdateProfileFormValues = {
+  name: "",
+  last_name: "",
+  phone: { phone_code: DEFAULT_PHONE_CODE, phone: "" },
+  dni: "",
+  avatar_url: null,
+};
 
 export const PerfilContent = () => {
-  const authContext = useContext(AuthContext);
-  const [isPending, startTransition] = useTransition();
+  const { user, isLoading, refreshUser } = useUser();
+  const queryClient = useQueryClient();
 
   const {
+    data: account,
+    isLoading: isLoadingAccount,
+    isError: isAccountError,
+  } = useQuery({
+    queryKey: ["account-settings"],
+    queryFn: async () => {
+      const response = await accountService.getAccountSettings();
+      if (!response.ok || !response.data) {
+        throw new Error("No se pudieron cargar los datos de la cuenta");
+      }
+      return response.data;
+    },
+    enabled: !isLoading && Boolean(user),
+  });
+
+  const form = useForm<UpdateProfileFormValues>({
+    resolver: zodResolver(updateProfileFormSchema),
+    defaultValues: EMPTY_PROFILE_FORM,
+  });
+
+  const {
+    control,
     register,
     handleSubmit,
     reset,
-    formState: { errors },
-  } = useForm<UpdateProfileDto>({
-    resolver: zodResolver(UpdateProfileSchema),
-    defaultValues: {
-      name: "",
-      last_name: "",
-      phone: "",
-      address: "",
-    },
-  });
+    formState: { errors, isSubmitting },
+  } = form;
+
+  const avatarUrl = useWatch({ control, name: "avatar_url" });
 
   useEffect(() => {
-    if (authContext?.user) {
-      reset({
-        name: authContext.user.name || "",
-        last_name: authContext.user.last_name || "",
-        // phone: authContext.user.phone || "",
-        // address: authContext.user.address || "",
-      });
+    if (!user) {
+      return;
     }
-  }, [authContext?.user, reset]);
 
-  const onSubmit = (data: UpdateProfileDto) => {
-    startTransition(async () => {
-      try {
-        await updateProfileAction(data);
-        toast.success("Perfil actualizado correctamente");
-        authContext?.refreshUser();
-      } catch (error) {
-        toast.error("Ocurrió un error al actualizar el perfil");
-      }
+    reset({
+      name: user.name ?? "",
+      last_name: user.last_name ?? "",
+      phone: {
+        phone_code: user.phone_code?.trim() || DEFAULT_PHONE_CODE,
+        phone: user.phone ?? "",
+      },
+      dni: user.dni ?? "",
+      avatar_url: user.avatar_url ?? null,
     });
+  }, [user, reset]);
+
+  const handleAccountUpdated = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["account-settings"] });
+    await refreshUser();
   };
 
-  if (authContext?.isLoading) {
-    return <div className="p-6 text-center text-gray-500">Cargando perfil...</div>;
+  const onSubmit = async (data: UpdateProfileFormValues) => {
+    const response = await userService.updateProfile(
+      mapProfileFormToPayload(data),
+    );
+
+    if (!response.ok) {
+      toast.error(
+        response.message || "Ocurrió un error al actualizar el perfil",
+      );
+      return;
+    }
+
+    toast.success("Perfil actualizado correctamente");
+    await refreshUser();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 text-center text-gray-500">Cargando perfil...</div>
+    );
   }
 
-  const user = authContext?.user;
-  const fullName = user?.name ? `${user.name} ${user.last_name || ""}`.trim() : "Andrea Gutiérrez";
+  const fullName = user?.name
+    ? `${user.name} ${user.last_name || ""}`.trim()
+    : "Usuario";
+
+  const isLocal = account?.provider === "local";
 
   return (
-    <div className="space-y-6 pb-20 max-w-5xl">
-      {/* Banner de Usuario Superior */}
-      <div className="bg-blue-100/50 rounded-xl p-6 flex flex-col md:flex-row items-center md:items-start gap-6 border border-blue-100">
-        <div className="w-20 h-20 bg-blue-200 rounded-full flex-shrink-0 flex items-center justify-center text-blue-700 text-2xl font-bold overflow-hidden relative">
-          {/* Avatar placeholder / initials */}
-          {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
+    <div className="max-w-5xl space-y-6 pb-20">
+      <div className="flex flex-col items-center gap-6 rounded-xl border border-blue-100 bg-blue-100/50 p-6 md:flex-row md:items-start">
+        <div className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-200 text-2xl font-bold text-blue-700">
+          {avatarUrl ? (
+            <Image
+              src={getImageUrl(avatarUrl)}
+              alt={fullName}
+              fill
+              unoptimized
+              className="object-cover"
+            />
+          ) : (
+            (user?.name?.charAt(0).toUpperCase() ?? "U")
+          )}
         </div>
-        
+
         <div className="flex-1 text-center md:text-left">
-          <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
+          <div className="mb-2 flex flex-col gap-3 md:flex-row md:items-center">
             <h1 className="text-2xl font-bold text-gray-900">{fullName}</h1>
-            <div className="flex items-center justify-center md:justify-start gap-2">
-              <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full text-xs font-medium">
-                <CheckCircle2 className="w-3 h-3" /> Top vendedor
+            <div className="flex items-center justify-center gap-2 md:justify-start">
+              <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                <CheckCircle2 className="size-3" /> Top vendedor
               </span>
-              <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full text-xs font-medium">
-                <ShieldCheck className="w-3 h-3" /> Verificado
+              <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                <ShieldCheck className="size-3" /> Verificado
               </span>
             </div>
           </div>
-          <p className="text-sm text-gray-700 font-medium">
-            Particular • Lima • 4.9 ★ (23 reseñas) • desde mar 2024
+          <p className="text-sm font-medium text-gray-700">
+            {user?.email ?? "Sin email"}
           </p>
         </div>
       </div>
 
-      {/* Formulario Principal de Datos */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-            <div>
-              <Label htmlFor="name" className="block text-gray-700 mb-1">Nombres</Label>
-              <Input type="text" id="name" placeholder="Andrea" {...register("name")} />
-            </div>
+          <Controller
+            name="avatar_url"
+            control={control}
+            render={({ field }) => (
+              <Field>
+                <FieldLabel>Foto de perfil</FieldLabel>
+                <ImageInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  bucketName="profile-images"
+                  path={`avatars/${user?.id ?? "me"}`}
+                  referenceId={user?.id}
+                  description="PNG, JPG o WEBP. Se guardará como tu avatar."
+                />
+              </Field>
+            )}
+          />
 
-            <div>
-              <Label htmlFor="last_name" className="block text-gray-700 mb-1">Apellidos</Label>
-              <Input type="text" id="last_name" placeholder="Gutierrez" {...register("last_name")} />
-            </div>
+          <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+            <Field data-invalid={Boolean(errors.name)}>
+              <FieldLabel htmlFor="name">Nombres</FieldLabel>
+              <Input
+                id="name"
+                placeholder="Andrea"
+                aria-invalid={Boolean(errors.name)}
+                {...register("name")}
+              />
+              {errors.name ? <FieldError errors={[errors.name]} /> : null}
+            </Field>
 
-            <div>
-              <Label htmlFor="email" className="block text-gray-700 mb-1">Email</Label>
-              <Input type="email" id="email" disabled value={user?.email} />
-            </div>
+            <Field data-invalid={Boolean(errors.last_name)}>
+              <FieldLabel htmlFor="last_name">Apellidos</FieldLabel>
+              <Input
+                id="last_name"
+                placeholder="Gutiérrez"
+                aria-invalid={Boolean(errors.last_name)}
+                {...register("last_name")}
+              />
+              {errors.last_name ? (
+                <FieldError errors={[errors.last_name]} />
+              ) : null}
+            </Field>
 
-            <div>
-              <Label htmlFor="phone" className="block text-gray-700 mb-1">Teléfono</Label>
-              <Input type="text" id="phone" placeholder="+51 736433393" {...register("phone")} />
-            </div>
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="phone">Teléfono</FieldLabel>
+                  <PhoneInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    ariaInvalid={fieldState.invalid}
+                  />
+                  {errors.phone?.phone_code ? (
+                    <FieldError errors={[errors.phone.phone_code]} />
+                  ) : null}
+                  {errors.phone?.phone ? (
+                    <FieldError errors={[errors.phone.phone]} />
+                  ) : null}
+                </Field>
+              )}
+            />
 
-            <div>
-              <Label htmlFor="address" className="block text-gray-700 mb-1">Ciudad</Label>
-              <Input type="text" id="address" placeholder="Madrid" {...register("address")} />
-            </div>
-
-            <div>
-              <Label htmlFor="dni" className="block text-gray-700 mb-1">DNI</Label>
-              <Input type="text" id="dni" placeholder="3947584994" />
-            </div>
+            <Field data-invalid={Boolean(errors.dni)}>
+              <FieldLabel htmlFor="dni">DNI</FieldLabel>
+              <Input
+                id="dni"
+                inputMode="numeric"
+                placeholder="12345678A"
+                aria-invalid={Boolean(errors.dni)}
+                {...register("dni")}
+              />
+              {errors.dni ? <FieldError errors={[errors.dni]} /> : null}
+            </Field>
           </div>
 
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="w-full mt-4"
-          >
-            {isPending ? "Guardando..." : "Guardar Cambios"}
+          <Button type="submit" disabled={isSubmitting} className="mt-4 w-full">
+            {isSubmitting ? "Guardando..." : "Guardar cambios"}
           </Button>
         </form>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Cambiar Contraseña */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-6">Cambiar contraseña</h2>
-          <form className="space-y-5">
-            <div>
-              <Label htmlFor="current-password" className="block text-gray-700 mb-1">Actual</Label>
-              <Input type="password" id="current-password" placeholder="Ingresar" />
-            </div>
-            <div>
-              <Label htmlFor="new-password" className="block text-gray-700 mb-1">Nueva</Label>
-              <Input type="password" id="new-password" placeholder="Ingresar" />
-            </div>
-            <div>
-              <Label htmlFor="confirm-password" className="block text-gray-700 mb-1">Confirmar</Label>
-              <Input type="password" id="confirm-password" placeholder="Ingresar" />
-            </div>
-            <Button type="button" className="w-full mt-2">
-              Actualizar
-            </Button>
-          </form>
+      {isLoadingAccount && (
+        <div
+          className="flex min-h-32 items-center justify-center rounded-xl border border-gray-100 bg-white p-6 shadow-sm"
+          role="status"
+          aria-label="Cargando configuración de cuenta"
+        >
+          <Loader2 className="size-8 animate-spin text-muted-foreground" />
         </div>
+      )}
 
-        {/* Badges de verificación */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-6">Badges de verificación</h2>
-          <div className="space-y-3">
-            {/* DNI No Verificado */}
-            <div className="flex items-center justify-between p-3 rounded-lg border border-gray-100 bg-gray-50/50">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-gray-400" />
-                <span className="text-sm font-medium text-gray-700">Identidad (DNI)</span>
-              </div>
-              <Button size="sm">
-                Verificar
-              </Button>
-            </div>
+      {isAccountError && (
+        <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-sm text-red-700">
+          No se pudieron cargar los datos de tu cuenta. Intenta recargar la
+          página.
+        </div>
+      )}
 
-            {/* Email Verificado */}
-            <div className="flex items-center justify-between p-3 rounded-lg border border-gray-100 bg-gray-50/50">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <span className="text-sm font-medium text-gray-700">Email</span>
-              </div>
-              <span className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1 rounded-full">
-                Verificado
+      {account && (
+        <>
+          <EmailSettingsSection
+            account={account}
+            onUpdated={handleAccountUpdated}
+          />
+          {isLocal && <PasswordSettingsSection />}
+          <TwoFactorSettingsSection
+            account={account}
+            onUpdated={handleAccountUpdated}
+          />
+        </>
+      )}
+
+      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+        <h2 className="mb-6 text-lg font-bold text-gray-900">
+          Badges de verificación
+        </h2>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="size-5 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">
+                Identidad (DNI)
               </span>
             </div>
+            <Button size="sm" type="button">
+              Verificar
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Soporte */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
-        <h2 className="text-lg font-bold text-gray-900 mb-6">Soporte</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="border border-blue-100 bg-blue-50/30 rounded-xl p-5 hover:bg-blue-50 transition-colors cursor-pointer flex flex-col items-start">
-            <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mb-3">
-              <MessageCircle className="w-5 h-5" />
+      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+        <h2 className="mb-6 text-lg font-bold text-gray-900">Soporte</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
+            <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
+              <MessageCircle className="size-5" />
             </div>
-            <h3 className="font-bold text-gray-900 text-sm">Chat con un asesor</h3>
-            <p className="text-xs text-gray-500 mt-1">Respuesta {'<'} 5 min en horario laboral</p>
+            <h3 className="text-sm font-bold text-gray-900">
+              Chat con un asesor
+            </h3>
+            <p className="mt-1 text-xs text-gray-500">
+              Respuesta {"<"} 5 min en horario laboral
+            </p>
           </div>
 
-          <div className="border border-blue-100 bg-blue-50/30 rounded-xl p-5 hover:bg-blue-50 transition-colors cursor-pointer flex flex-col items-start">
-            <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mb-3">
-              <Mail className="w-5 h-5" />
+          <div className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
+            <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
+              <Mail className="size-5" />
             </div>
-            <h3 className="font-bold text-gray-900 text-sm">Envía un ticket</h3>
-            <p className="text-xs text-gray-500 mt-1">ayuda@wiauto.es</p>
+            <h3 className="text-sm font-bold text-gray-900">Envía un ticket</h3>
+            <p className="mt-1 text-xs text-gray-500">ayuda@wiauto.es</p>
           </div>
 
-          <div className="border border-blue-100 bg-blue-50/30 rounded-xl p-5 hover:bg-blue-50 transition-colors cursor-pointer flex flex-col items-start">
-            <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mb-3">
-              <BookOpen className="w-5 h-5" />
+          <div className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
+            <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
+              <BookOpen className="size-5" />
             </div>
-            <h3 className="font-bold text-gray-900 text-sm">Centro de ayuda</h3>
-            <p className="text-xs text-gray-500 mt-1">Guías, FAQ y tutoriales</p>
+            <h3 className="text-sm font-bold text-gray-900">Centro de ayuda</h3>
+            <p className="mt-1 text-xs text-gray-500">
+              Guías, FAQ y tutoriales
+            </p>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
