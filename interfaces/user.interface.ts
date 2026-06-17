@@ -14,4 +14,5 @@ export interface User {
   name?: string;
   last_name?: string;
   avatar_url?: string;
+  role_id?: string;
 }

@@ -15,6 +15,8 @@ import {
   Settings,
   LogOut,
   Edit,
+  DollarSign,
+  Building2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +27,7 @@ export function UserSidebar() {
 
   const user = authContext?.user;
 
-  const links = [
+  const linksBase = [
     { href: "/inicio", label: "Inicio", icon: LayoutGrid },
     { href: "/mis-anuncios", label: "Mis anuncios", icon: Car },
     { href: "/favoritos", label: "Favoritos", icon: Heart },
@@ -39,6 +41,30 @@ export function UserSidebar() {
     { href: "/perfil", label: "Mi perfil", icon: UserIcon },
     { href: "/configuracion", label: "Configuración", icon: Settings },
   ];
+
+   const linksEmpresa = [
+    { href: "/inicio", label: "Inicio", icon: LayoutGrid },
+    { href: "/mis-anuncios", label: "Mis anuncios", icon: Car },
+    { href: "/favoritos", label: "Favoritos", icon: Heart },
+    {
+      href: "/busquedas-guardadas",
+      label: "Búsquedas guardadas",
+      icon: Search,
+    },
+    { href: "/equipo", label: "Equipo", icon: UserIcon },
+    { href: "/monetizacion", label: "Monetización", icon: DollarSign },
+    { href: "/mensajes", label: "Mensajes (chat)", icon: MessageSquare },
+    { href: "/notificaciones", label: "Notificaciones", icon: Bell },
+    { href: "/perfil", label: "Perfil empresa", icon: Building2 },
+    {
+      href: "/reportes",
+      label: "Reportes",
+      icon: Settings,
+    },
+    { href: "/configuracion", label: "Configuración", icon: Settings },
+  ];
+
+  const links = user?.role_id === "empresa" ? linksEmpresa : linksBase;
 
   return (
     <div className="w-full  flex flex-col gap-4">
@@ -68,7 +94,7 @@ export function UserSidebar() {
       {/* Navigation Links */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <nav className="flex flex-col space-y-1">
-          {links.map((link) => {
+          { links.map((link) => {
             const isActive =
               pathname === link.href ||
               (pathname?.startsWith(link.href) && link.href !== "/");
