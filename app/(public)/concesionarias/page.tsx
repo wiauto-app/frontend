@@ -1,33 +1,24 @@
 import { Suspense } from "react";
 import { LoadingComponent } from "@/components/ui/loadingComponent";
-import { ConcesionariasListingShell } from "../components/ConcesionariasListingShell";
-import { ConcesionariasHero } from "../components/ConcesionariasHero";
-import { ConcesionariasFiltersPanel } from "../components/ConcesionariasFiltersPanel";
-import { ConcesionariasPageContent } from "../components/ConcesionariasPageContent";
-import { findAllDealers } from "./services/findAllDealers.server";
-import { toUrlSearchParams } from "../utils/toUrlSearchParams";
-import { parseDealersUrl } from "../utils/dealersUrl";
+import { ConcesionariasListingShell } from "./components/ConcesionariasListingShell";
+import { ConcesionariasHero } from "./components/ConcesionariasHero";
+import { ConcesionariasFiltersPanel } from "./components/ConcesionariasFiltersPanel";
+import { ConcesionariasPageContent } from "./components/ConcesionariasPageContent";
+import { findAllDealershipsServer } from "./services/findAllDealerships.server";
+import { parseDealerSearchParams } from "./utils/dealerSearchParams";
 
 export const metadata = {
   title: "Concesionarios | WiAuto",
   description:
-    "Encuentra concesionarios verificados y confiables cerca de ti. Filtra por ubicación, tipo, servicios y calificación.",
+    "Encuentra concesionarios verificados y confiables cerca de ti. Filtra por provincia, calificación y vehículos disponibles.",
 };
 
 export default async function ConcesionariasPage(props: {
-  params: Promise<{ slug?: string[] }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { slug } = await props.params;
   const search_params = await props.searchParams;
-  const slug_segments = slug ?? [];
-
-  const filters = parseDealersUrl(
-    slug_segments,
-    toUrlSearchParams(search_params),
-  );
-
-  const listing = await findAllDealers(filters);
+  const filters = parseDealerSearchParams(search_params);
+  const listing = await findAllDealershipsServer(filters);
 
   return (
     <Suspense fallback={<LoadingComponent />}>
@@ -50,6 +41,8 @@ export default async function ConcesionariasPage(props: {
               <ConcesionariasPageContent
                 dealers={listing.dealers}
                 total={listing.total}
+                page={listing.page}
+                limit={listing.limit}
               />
             </div>
           </div>

@@ -1,26 +1,49 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Building2 } from "lucide-react";
-import type { DealerListItem } from "../interfaces";
+import type { DealershipListItem } from "@/services/dealerships/types/dealership.types";
 import { ConcesionariaCard } from "./ConcesionariaCard";
 import { DealersPagination } from "./DealersPagination";
 import { ConcesionariasToolbar } from "./ConcesionariasToolbar";
-import { useDealersListingFilters } from "../hooks/useDealersListingFilters";
 import { Button } from "@/components/ui/button";
+import { useFiltersManager } from "@/hooks/useFiltersManager";
+import {
+  DEALER_FILTER_KEYS,
+  DEALER_FILTER_KEYS_LIST,
+} from "../constants/filterKeys.constants";
 
 type ConcesionariasPageContentProps = {
-  dealers: DealerListItem[];
+  dealers: DealershipListItem[];
   total: number;
+  page: number;
+  limit: number;
 };
 
 export function ConcesionariasPageContent({
   dealers,
   total,
+  page,
+  limit,
 }: ConcesionariasPageContentProps) {
-  const { filters, resetFilters, goToPage } = useDealersListingFilters();
+  const router = useRouter();
+  const { applyUrlUpdates, handleClearAll } = useFiltersManager({
+    keys: DEALER_FILTER_KEYS_LIST,
+  });
 
-  const totalPages = Math.ceil(total / (filters.limit || 12));
-  const currentPage = filters.page ?? 1;
+  const totalPages = Math.ceil(total / limit) || 1;
+
+  const handlePageChange = (nextPage: number) => {
+    applyUrlUpdates({
+      [DEALER_FILTER_KEYS.PAGE]: nextPage > 1 ? String(nextPage) : undefined,
+    });
+    router.refresh();
+  };
+
+  const handleClearFilters = () => {
+    handleClearAll();
+    router.refresh();
+  };
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6">
@@ -37,7 +60,7 @@ export function ConcesionariasPageContent({
           </p>
           <Button
             type="button"
-            onClick={resetFilters}
+            onClick={handleClearFilters}
             className="mt-4 rounded-lg bg-[#0061F2] px-4 py-2 font-semibold text-white hover:opacity-90"
           >
             Limpiar filtros
@@ -52,9 +75,9 @@ export function ConcesionariasPageContent({
           </div>
 
           <DealersPagination
-            currentPage={currentPage}
+            currentPage={page}
             totalPages={totalPages}
-            onPageChange={goToPage}
+            onPageChange={handlePageChange}
           />
         </>
       )}

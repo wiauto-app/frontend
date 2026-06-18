@@ -1,21 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import Link from "next/link";
-import { useDealersListingFilters } from "../hooks/useDealersListingFilters";
+import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { Button } from "@/components/ui/button";
+import {
+  DEALER_FILTER_KEYS,
+  DEALER_FILTER_KEYS_LIST,
+} from "../constants/filterKeys.constants";
 
 const HERO_BG =
   "https://images.unsplash.com/photo-1562519819-016195667493?auto=format&fit=crop&w=1920&q=80";
 
 export function ConcesionariasHero() {
-  const { filters, commitFilters } = useDealersListingFilters();
-  const [query, setQuery] = useState(filters.query ?? "");
+  const router = useRouter();
+  const { values, applyUrlUpdates } = useFiltersManager({
+    keys: DEALER_FILTER_KEYS_LIST,
+  });
+
+  const rawQuery = values[DEALER_FILTER_KEYS.QUERY];
+  const queryFromUrl =
+    typeof rawQuery === "string"
+      ? rawQuery
+      : Array.isArray(rawQuery)
+        ? (rawQuery[0] ?? "")
+        : "";
+  const [query, setQuery] = useState(queryFromUrl);
+
+  useEffect(() => {
+    setQuery(queryFromUrl);
+  }, [queryFromUrl]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    commitFilters({ ...filters, query: query.trim() || undefined, page: 1 });
+    applyUrlUpdates({
+      [DEALER_FILTER_KEYS.QUERY]: query.trim() || undefined,
+      [DEALER_FILTER_KEYS.PAGE]: undefined,
+    });
+    router.refresh();
   };
 
   return (

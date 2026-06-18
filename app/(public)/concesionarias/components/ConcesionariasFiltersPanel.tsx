@@ -1,18 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import {
-  MapPin,
-  Star,
-  Building2,
-  ShoppingCart,
-  Car,
-  Shield,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { MapPin, Star, Car, Shield } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -21,15 +14,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useFiltersManager } from "@/hooks/useFiltersManager";
+import { provincesCatalogService } from "@/services/locations/provincesCatalogService";
+import type { ProvinceCatalogItem } from "@/services/locations/types/province.types";
 import {
   BRAND_BLUE,
   BRAND_BLUE_LIGHT,
-  DEALER_TYPE_OPTIONS,
-  DEALER_SERVICE_OPTIONS,
   MIN_VEHICLES_OPTIONS,
 } from "../constants";
-import { useDealersListingFilters } from "../hooks/useDealersListingFilters";
-import Link from "next/link";
+import {
+  DEALER_FILTER_KEYS,
+  DEALER_FILTER_KEYS_LIST,
+} from "../constants/filterKeys.constants";
 
 function SectionTitle({
   icon: Icon,
@@ -47,40 +43,54 @@ function SectionTitle({
 }
 
 export function ConcesionariasFiltersPanel() {
-  const { filters, commitFilters, resetFilters } = useDealersListingFilters();
+  const router = useRouter();
+  const { values, applyUrlUpdates, handleClearAll } = useFiltersManager({
+    keys: DEALER_FILTER_KEYS_LIST,
+  });
 
-  const [locationInput, setLocationInput] = useState(filters.location ?? "");
-  const [radius, setRadius] = useState(filters.radius ?? 50);
-  const [selectedTypes, setSelectedTypes] = useState(filters.types ?? []);
-  const [selectedServices, setSelectedServices] = useState(
-    filters.services ?? [],
+  const [provinces, setProvinces] = useState<ProvinceCatalogItem[]>([]);
+  const [provinceSlug, setProvinceSlug] = useState(
+    String(values[DEALER_FILTER_KEYS.PROVINCE_SLUG] ?? ""),
   );
-  const [minRating, setMinRating] = useState(filters.minRating);
-  const [minVehicles, setMinVehicles] = useState(filters.minVehicles ?? 0);
+  const [radius, setRadius] = useState(
+    Number(values[DEALER_FILTER_KEYS.RADIUS] ?? 50) || 0,
+  );
+  const [minRating, setMinRating] = useState<number | undefined>(() => {
+    const raw = values[DEALER_FILTER_KEYS.RATING_SINCE];
+    return raw ? Number(raw) : undefined;
+  });
+  const [minVehicles, setMinVehicles] = useState(
+    Number(values[DEALER_FILTER_KEYS.VEHICLES_NUMBER] ?? 0) || 0,
+  );
 
-  const toggleType = (slug: string) => {
-    setSelectedTypes((prev) =>
-      prev.includes(slug) ? prev.filter((t) => t !== slug) : [...prev, slug],
-    );
-  };
-
-  const toggleService = (slug: string) => {
-    setSelectedServices((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
-    );
-  };
+  useEffect(() => {
+    provincesCatalogService
+      .findAll({ page: 1, limit: 100, order_by: "name", order_direction: "ASC" })
+      .then((result) => setProvinces(result.data))
+      .catch(() => setProvinces([]));
+  }, []);
 
   const handleApplyFilters = () => {
-    commitFilters({
-      ...filters,
-      location: locationInput.trim() || undefined,
-      radius: radius || undefined,
-      types: selectedTypes.length ? selectedTypes : undefined,
-      services: selectedServices.length ? selectedServices : undefined,
-      minRating,
-      minVehicles: minVehicles > 0 ? minVehicles : undefined,
-      page: 1,
+    applyUrlUpdates({
+      [DEALER_FILTER_KEYS.PROVINCE_SLUG]: provinceSlug || undefined,
+      [DEALER_FILTER_KEYS.RADIUS]:
+        radius > 0 && provinceSlug ? String(radius) : undefined,
+      [DEALER_FILTER_KEYS.RATING_SINCE]:
+        minRating != null && minRating > 0 ? String(minRating) : undefined,
+      [DEALER_FILTER_KEYS.VEHICLES_NUMBER]:
+        minVehicles > 0 ? String(minVehicles) : undefined,
+      [DEALER_FILTER_KEYS.PAGE]: undefined,
     });
+    router.refresh();
+  };
+
+  const handleClearAllFilters = () => {
+    setProvinceSlug("");
+    setRadius(50);
+    setMinRating(undefined);
+    setMinVehicles(0);
+    handleClearAll();
+    router.refresh();
   };
 
   return (
@@ -90,7 +100,7 @@ export function ConcesionariasFiltersPanel() {
           <CardTitle className="text-base">Filtros</CardTitle>
           <button
             type="button"
-            onClick={resetFilters}
+            onClick={handleClearAllFilters}
             className="text-xs font-semibold transition-colors hover:opacity-80"
             style={{ color: BRAND_BLUE }}
             id="clear-dealers-filters"
@@ -102,23 +112,34 @@ export function ConcesionariasFiltersPanel() {
         <CardContent className="flex flex-col gap-5">
           <section>
             <SectionTitle icon={MapPin}>Ubicación</SectionTitle>
-            <div className="mt-2 flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2.5">
-              <MapPin className="size-3.5 shrink-0 text-slate-400" />
-              <input
-                id="dealer-location-input"
-                type="text"
-                value={locationInput}
-                onChange={(e) => setLocationInput(e.target.value)}
-                placeholder="Buscar ubicación..."
-                className="flex-1 bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400"
-              />
+            <div className="mt-2">
+              <Select
+                value={provinceSlug || undefined}
+                onValueChange={(value) => setProvinceSlug(value ?? "")}
+              >
+                <SelectTrigger
+                  className="h-10 w-full rounded-lg border-slate-200 text-sm"
+                  id="dealer-province-select"
+                >
+                  <SelectValue placeholder="Selecciona una provincia" />
+                </SelectTrigger>
+                <SelectContent>
+                  {provinces.map((province) => (
+                    <SelectItem key={province.slug} value={province.slug}>
+                      {province.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="mt-4">
               <div className="mb-1.5 flex items-center justify-between text-xs text-slate-500">
                 <span>Radio</span>
                 <span className="font-semibold" style={{ color: BRAND_BLUE }}>
-                  {radius === 0 ? "Todo el país" : `${radius} km`}
+                  {!provinceSlug || radius === 0
+                    ? "Toda la provincia"
+                    : `${radius} km`}
                 </span>
               </div>
               <input
@@ -129,56 +150,11 @@ export function ConcesionariasFiltersPanel() {
                 step={10}
                 value={radius}
                 onChange={(e) => setRadius(parseInt(e.target.value, 10))}
-                className="h-1.5 w-full cursor-pointer appearance-none rounded-full"
+                disabled={!provinceSlug}
+                className="h-1.5 w-full cursor-pointer appearance-none rounded-full disabled:opacity-40"
                 style={{ accentColor: BRAND_BLUE }}
-                aria-label="Radio de búsqueda"
+                aria-label="Radio de búsqueda en kilómetros"
               />
-            </div>
-          </section>
-
-          <Separator />
-
-          <section>
-            <SectionTitle icon={Building2}>Tipo de concesionario</SectionTitle>
-            <div className="mt-3 flex flex-col gap-2.5">
-              {DEALER_TYPE_OPTIONS.map(({ slug, label }) => (
-                <div key={slug} className="flex items-center gap-2.5">
-                  <Checkbox
-                    id={`dealer-type-${slug}`}
-                    checked={selectedTypes.includes(slug)}
-                    onCheckedChange={() => toggleType(slug)}
-                  />
-                  <Label
-                    htmlFor={`dealer-type-${slug}`}
-                    className="cursor-pointer text-sm font-normal text-slate-700"
-                  >
-                    {label}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <Separator />
-
-          <section>
-            <SectionTitle icon={ShoppingCart}>Servicios</SectionTitle>
-            <div className="mt-3 flex flex-col gap-2.5">
-              {DEALER_SERVICE_OPTIONS.map(({ slug, label }) => (
-                <div key={slug} className="flex items-center gap-2.5">
-                  <Checkbox
-                    id={`dealer-service-${slug}`}
-                    checked={selectedServices.includes(slug)}
-                    onCheckedChange={() => toggleService(slug)}
-                  />
-                  <Label
-                    htmlFor={`dealer-service-${slug}`}
-                    className="cursor-pointer text-sm font-normal text-slate-700"
-                  >
-                    {label}
-                  </Label>
-                </div>
-              ))}
             </div>
           </section>
 
@@ -222,7 +198,9 @@ export function ConcesionariasFiltersPanel() {
             <div className="mt-3">
               <Select
                 value={String(minVehicles)}
-                onValueChange={(val) => setMinVehicles(parseInt(val, 10))}
+                onValueChange={(val) =>
+                  setMinVehicles(parseInt(val ?? "0", 10))
+                }
               >
                 <SelectTrigger
                   className="h-9 w-full rounded-lg border-slate-200 text-sm"
@@ -269,23 +247,14 @@ export function ConcesionariasFiltersPanel() {
                 <p className="mt-1 text-xs leading-relaxed text-slate-600">
                   Únete a WiAuto y llega a miles de compradores potenciales.
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-3 h-8 rounded-lg border-white bg-white text-xs font-semibold hover:bg-white/90"
+                <Link
+                  href="/registrar-concesionario"
+                  className="mt-3 inline-flex h-8 items-center justify-center rounded-lg border border-white bg-white px-3 text-xs font-semibold hover:bg-white/90"
                   style={{ color: BRAND_BLUE }}
                   id="dealers-cta-btn"
                 >
-                  <Button
-                   variant="outline"
-                   size="sm"
-                   className="mt-3 h-8 rounded-lg border-white bg-white text-xs font-semibold hover:bg-white/90"
-                   style={{ color: BRAND_BLUE }}
-                   id="dealers-cta-btn"
-                 >
-                  <Link href="/registrar-concesionario">Más información</Link>
-                 </Button>
-                </Button>
+                  Más información
+                </Link>
               </div>
             </div>
           </section>
