@@ -63,9 +63,15 @@ export default async function VehiclesListingPage(props: {
     >
       <VehiclesListingShell>
         <div>
-          <VehiclesToolbar />
+          <VehiclesToolbar 
+            filtersNode={
+              <Suspense fallback={<div className="h-96 animate-pulse rounded-none bg-slate-100" />}>
+                <VehiclesFilters />
+              </Suspense>
+            }
+          />
           <div className="container-custom mx-auto flex min-h-screen gap-5">
-            <div className="w-72 shrink-0">
+            <div className="hidden lg:block w-72 shrink-0">
               <Suspense
                 fallback={
                   <div className="h-96 animate-pulse rounded-none bg-slate-100" />

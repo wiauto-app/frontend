@@ -20,7 +20,7 @@ export const refreshSessionAction =
     const access_token = store.get(cookiesConfig.accessToken.name)?.value ?? null;
     const cookie_header = requestCookiesToHeader(store.getAll());
 
-    const result = await ensureValidSession({ cookie_header, access_token });
+    const result = await ensureValidSession({ refresh_token: cookie_header, access_token });
 
     if (result.outcome === "session_refreshed") {
       writeSessionTokensToCookieStore(

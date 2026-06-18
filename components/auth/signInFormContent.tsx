@@ -78,7 +78,7 @@ export const SignInFormContent = ({
 
       {showSocialLogins ? (
         <>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <GoogleLogin
               disabled={isLoading}
               returnTo={returnTo}

@@ -11,11 +11,11 @@ export async function NewsletterSection() {
 
   return (
     <SectionContainer className="py-14 lg:py-20" style={{ backgroundColor: BRAND_BLUE_LIGHT }}>
-      <div className="mx-auto max-w-2xl text-center">
-        <p className="text-sm font-semibold sm:text-base" style={{ color: BRAND_BLUE }}>
+      <div className="mx-auto max-w-sm sm:max-w-md md:max-w-2xl text-center">
+        <p className="text-sm sm:text-base md:text-lg font-semibold" style={{ color: BRAND_BLUE }}>
           {data.subtitle}
         </p>
-        <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl lg:text-[2rem]">
+<h2 className="mt-2 text-xl sm:text-2xl md:text-3xl lg:text-[2rem] font-bold text-slate-900">
           {data.title}
         </h2>
         <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-slate-500 sm:text-base">

@@ -52,19 +52,24 @@ export default function RegisterForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="flex w-full overflow-hidden rounded-2xl shadow-xl">
-        <div className="hidden lg:flex lg:w-[37.4%] bg-blue-700 flex-col items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800" />
-          <div className="absolute top-20 left-10 w-64 h-64 bg-white/5 rounded-full" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-white/5 rounded-full" />
-          <div className="relative z-10 text-center px-8">
-            <div className="mb-8 text-start bg-blue-700 w-fit px-4 py-2 rounded-lg">
-              <span className="text-white text-7xl font-bold tracking-tighter">W</span>
+  <div className="flex min-h-screen w-full items-center justify-center p-4">
+      <div className="flex w-full max-w-5xl overflow-hidden rounded-2xl shadow-xl">
+        <div className="relative hidden flex-col items-center justify-center overflow-hidden bg-blue-700 lg:flex lg:w-[37.4%]">
+          <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-blue-800" />
+          <div className="absolute top-20 left-10 h-64 w-64 rounded-full bg-white/5" />
+          <div className="absolute right-10 bottom-20 h-96 w-96 rounded-full bg-white/5" />
+          <div className="relative z-10 px-8 text-center">
+            <div className="mb-8 w-fit rounded-lg bg-blue-700 px-4 py-2 text-start">
+              <span className="text-7xl font-bold tracking-tighter text-white">
+                W
+              </span>
             </div>
-            <h1 className="text-white text-3xl font-bold mb-4 leading-tight text-start">
-              Encuentra o vende<br />
-              tu próximo coche<br />
+
+            <h1 className="mb-4 text-start text-3xl leading-tight font-bold text-white">
+              Encuentra o vende
+              <br />
+              tu próximo coche
+              <br />
               hoy!
             </h1>
           </div>
@@ -76,7 +81,7 @@ export default function RegisterForm() {
               <h2 className="text-3xl font-bold text-gray-900">Regístrate</h2>
             </div>
 
-            <div className="flex border-b border-gray-200">
+            <div className="flex border-b border-gray-200 flex-wrap gap-2">
               <Button
                 type="button"
                 onClick={() => setAccountType("particular")}
@@ -101,7 +106,7 @@ export default function RegisterForm() {
               </Button>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <GoogleLogin disabled={isLoading} />
               <AppleLogin disabled={isLoading} />
             </div>
