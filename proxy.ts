@@ -11,7 +11,7 @@ import {
 const PUBLIC_PATHS = ['/', '/iniciar-sesion', '/registro', '/cambiar-contrasena', '/confirmar-correo', '/olvide-contrasena', '/api'];
 
 export async function proxy(req: NextRequest) {
-
+  console.log("req.nextUrl.pathname", req.nextUrl.pathname);
   const { pathname } = req.nextUrl;
   if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     return NextResponse.next();
@@ -45,6 +45,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|iniciar-sesion|registro|cambiar-contrasena|confirmar-correo|olvide-contrasena|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|iniciar-sesion|registro|cambiar-contrasena|confirmar-correo|olvide-contrasena|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
