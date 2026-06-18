@@ -10,6 +10,7 @@ const BRAND_BLUE = "#0061F2";
 const NAV_LINKS = [
   { href: "/", label: "Inicio", exact: true },
   { href: "/vehiculos", label: "Vehículos", exact: false },
+  { href: "/concesionarias", label: "Concesionarios", exact: false },
   { href: "/noticias", label: "Noticias", exact: false },
   { href: "/prensa", label: "Prensa", exact: false },
   { href: "/preguntas-frecuentes", label: "Preguntas Frecuentes", exact: false },
