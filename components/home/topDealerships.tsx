@@ -6,7 +6,7 @@ import { TopDealershipsSlider } from "./TopDealershipsSlider";
 export const TopDealerships = async () => {
   const result = await dealershipService.findAll({ page: 1, limit: 8 });
 
-  if (!result.data.length) {
+  if (!result?.data?.length) {
     return null;
   }
 
