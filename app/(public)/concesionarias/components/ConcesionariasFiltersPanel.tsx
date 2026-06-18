@@ -222,7 +222,7 @@ export function ConcesionariasFiltersPanel() {
             <div className="mt-3">
               <Select
                 value={String(minVehicles)}
-                onValueChange={(val) => setMinVehicles(parseInt(val, 10))}
+                onValueChange={(val) => setMinVehicles(parseInt(val || "0", 10))}
               >
                 <SelectTrigger
                   className="h-9 w-full rounded-lg border-slate-200 text-sm"

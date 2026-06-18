@@ -29,7 +29,8 @@ type ConcesionariasToolbarProps = {
 export function ConcesionariasToolbar({ total }: ConcesionariasToolbarProps) {
   const { filters, commitFilters } = useDealersListingFilters();
 
-  const handleSortChange = (value: string) => {
+  const handleSortChange = (value: string | null) => {
+    if (!value) return;
     commitFilters({ ...filters, sort: value, page: 1 });
   };
 
@@ -48,7 +49,7 @@ export function ConcesionariasToolbar({ total }: ConcesionariasToolbarProps) {
         <div className="flex items-center gap-2 w-full sm:w-auto">
           {/* Mobile Filters Button */}
           <Sheet>
-            <SheetTrigger asChild>
+            <SheetTrigger >
               <Button
                 variant="outline"
                 className="flex flex-1 sm:hidden items-center gap-2 border-slate-200"

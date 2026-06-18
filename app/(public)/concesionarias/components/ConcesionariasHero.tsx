@@ -24,7 +24,7 @@ export function ConcesionariasHero() {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url('${HERO_BG}')` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#001B3D]/95 via-[#001B3D]/80 to-[#001B3D]/60" />
+      <div className="absolute inset-0 bg-linear-to-r from-[#001B3D]/95 via-[#001B3D]/80 to-[#001B3D]/60" />
 
       <div className="relative z-10 container-custom mx-auto px-4 py-14 sm:px-6 sm:py-16">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">

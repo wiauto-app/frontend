@@ -55,7 +55,7 @@ export default function RegisterForm() {
   <div className="flex min-h-screen w-full items-center justify-center p-4">
       <div className="flex w-full max-w-5xl overflow-hidden rounded-2xl shadow-xl">
         <div className="relative hidden flex-col items-center justify-center overflow-hidden bg-blue-700 lg:flex lg:w-[37.4%]">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800" />
+          <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-blue-800" />
           <div className="absolute top-20 left-10 h-64 w-64 rounded-full bg-white/5" />
           <div className="absolute right-10 bottom-20 h-96 w-96 rounded-full bg-white/5" />
           <div className="relative z-10 px-8 text-center">
@@ -81,7 +81,7 @@ export default function RegisterForm() {
               <h2 className="text-3xl font-bold text-gray-900">Regístrate</h2>
             </div>
 
-            <div className="flex border-b border-gray-200 flex-wrap">
+            <div className="flex border-b border-gray-200 flex-wrap gap-2">
               <Button
                 type="button"
                 onClick={() => setAccountType("particular")}

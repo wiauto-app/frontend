@@ -1,5 +1,5 @@
-import { Card as CardInterface } from "../../interfaces/vender-vehiculo.interface";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card as CardInterface } from "../interfaces/vender-vehiculo.interface";
+import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Award, Tag } from "lucide-react";
 

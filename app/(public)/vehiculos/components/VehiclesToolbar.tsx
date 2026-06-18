@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, ArrowDownWideNarrow, LayoutGrid, List } from "lucide-react";
+import { Search, ArrowDownWideNarrow, LayoutGrid, List, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,9 +11,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SearchVehiclesInput } from "./searchVehiclesInput";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-
-export function VehiclesToolbar() {
+export function VehiclesToolbar({ filtersNode }: { filtersNode?: React.ReactNode }) {
   const router = useRouter();
   return (
     <div className="sticky top-0 z-30 border-b border-slate-200 bg-[#EEF3FA]">
@@ -31,6 +37,26 @@ export function VehiclesToolbar() {
         <SearchVehiclesInput />
 
         <div className="flex items-center gap-2 sm:gap-3">
+          {filtersNode && (
+            <div className="lg:hidden">
+              <Sheet>
+                <SheetTrigger>
+                  <Button variant="outline" className="h-11 px-3">
+                    <Filter className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto p-0">
+                  <div className="p-4 border-b">
+                    <SheetTitle>Filtros</SheetTitle>
+                  </div>
+                  <div className="p-4">
+                    {filtersNode}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          )}
+          
           <div className="relative hidden sm:block">
             <ArrowDownWideNarrow className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500 z-10" />
             <Select>

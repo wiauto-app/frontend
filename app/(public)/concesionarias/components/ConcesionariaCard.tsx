@@ -187,7 +187,6 @@ export function ConcesionariaCard({ dealer }: ConcesionariaCardProps) {
 
             <div className="order-1 flex gap-2 sm:order-2 sm:flex-col sm:gap-2">
               <Button
-                asChild
                 variant="outline"
                 size="sm"
                 className="min-w-[130px] rounded-lg border-[#0061F2]/40 text-xs font-semibold text-[#0061F2] hover:bg-[#0061F2] hover:text-white"
@@ -198,7 +197,6 @@ export function ConcesionariaCard({ dealer }: ConcesionariaCardProps) {
                 </Link>
               </Button>
               <Button
-                asChild
                 size="sm"
                 className="min-w-[130px] rounded-lg text-xs font-semibold text-white"
                 style={{ backgroundColor: BRAND_BLUE }}
