@@ -6,9 +6,6 @@ import { ArrowLeft } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
 
