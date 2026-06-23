@@ -5,20 +5,23 @@ import {
   type OAuthChannelMessage,
 } from "./oauthChannel";
 
+export const OAUTH_EVENTS = {
+  GOOGLE_LOGIN_SUCCESS: "GOOGLE_LOGIN_SUCCESS",
+  GOOGLE_LOGIN_ERROR: "GOOGLE_LOGIN_ERROR",
+  GOOGLE_LOGIN_2FA_REQUIRED: "GOOGLE_LOGIN_2FA_REQUIRED",
+  APPLE_LOGIN_SUCCESS: "APPLE_LOGIN_SUCCESS",
+  APPLE_LOGIN_ERROR: "APPLE_LOGIN_ERROR",
+  APPLE_LOGIN_2FA_REQUIRED: "APPLE_LOGIN_2FA_REQUIRED",
+} as const;
+
 export type OAuthPopupResult =
   | { success: true }
+  | { success: true; requiresTwoFactor: true }
   | {
       success: false;
       reason: "closed" | "timeout" | "error";
       message?: string;
     };
-
-export const OAUTH_EVENTS = {
-  GOOGLE_LOGIN_SUCCESS: "GOOGLE_LOGIN_SUCCESS",
-  GOOGLE_LOGIN_ERROR: "GOOGLE_LOGIN_ERROR",
-  APPLE_LOGIN_SUCCESS: "APPLE_LOGIN_SUCCESS",
-  APPLE_LOGIN_ERROR: "APPLE_LOGIN_ERROR",
-} as const;
 
 const DEFAULT_TIMEOUT_MS = 1000 * 60 * 5;
 
@@ -36,9 +39,16 @@ export const oauthPopup = async (options: {
   url: string;
   successEvent: string;
   errorEvent?: string;
+  twoFactorEvent?: string;
   timeoutMs?: number;
 }): Promise<OAuthPopupResult> => {
-  const { url, successEvent, errorEvent, timeoutMs = DEFAULT_TIMEOUT_MS } = options;
+  const {
+    url,
+    successEvent,
+    errorEvent,
+    twoFactorEvent,
+    timeoutMs = DEFAULT_TIMEOUT_MS,
+  } = options;
   const expectedOrigin = getPopupOrigin();
 
   const tab = openOAuthTab(url);
@@ -90,6 +100,17 @@ export const oauthPopup = async (options: {
     const handleOAuthEvent = (data: OAuthChannelMessage) => {
       if (data.type === successEvent) {
         finish({ success: true }, handleMessage, unsubscribeChannel, pollIntervalId, timeoutId);
+        return;
+      }
+
+      if (twoFactorEvent && data.type === twoFactorEvent) {
+        finish(
+          { success: true, requiresTwoFactor: true },
+          handleMessage,
+          unsubscribeChannel,
+          pollIntervalId,
+          timeoutId,
+        );
         return;
       }
 

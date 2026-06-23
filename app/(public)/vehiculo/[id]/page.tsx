@@ -22,13 +22,16 @@ import { VehicleShareButton } from "../../vehiculos/components/VehicleShareButto
 import { ReportButton } from "@/components/reports/ReportButton";
 import { Metadata } from "next";
 import { getVehicleData } from "./services/getVehicleData";
-import { getImageUrl } from "@/lib/utils";
+import { buildVehicleDetailSeo } from "@/lib/seo/build-vehicle-detail-seo";
+import { JsonLdScript } from "@/lib/seo/json-ld-script";
 
 type VehicleDetailPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: VehicleDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: VehicleDetailPageProps): Promise<Metadata> {
   const { id } = await params;
 
   const { data } = await getVehicleData(id);
@@ -37,18 +40,7 @@ export async function generateMetadata({ params }: VehicleDetailPageProps): Prom
     notFound();
   }
 
-  const vehicle = data.data;
-  const title = getVehicleDisplayName(vehicle);
-  return {
-    title: title,
-    description: vehicle.description,
-    openGraph: {
-      title: title,
-      description: vehicle.description,
-      images: vehicle.images.map((image) => ({ url: getImageUrl(image.url) })),
-    },
-  };
-
+  return buildVehicleDetailSeo(data.data).metadata;
 }
 
 export default async function VehicleDetailPage({
@@ -63,11 +55,15 @@ export default async function VehicleDetailPage({
 
   const vehicle = data.data;
   const displayName = getVehicleDisplayName(vehicle);
+  const { breadcrumbItems, jsonLdGraph } = buildVehicleDetailSeo(vehicle);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <JsonLdScript data={jsonLdGraph} />
       <VehicleDetailTopBar
         vehicle_id={vehicle.id}
         vehicle_title={displayName}
+        breadcrumbItems={breadcrumbItems}
       />
       <div className="mx-auto container-custom py-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 relative">

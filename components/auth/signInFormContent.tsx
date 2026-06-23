@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -8,12 +8,14 @@ import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { loginAction } from "@/app/(auth)/authActions/authActions";
+import { TwoFactorLoginStep } from "@/app/(auth)/components/TwoFactorLoginStep";
 import { AppleLogin } from "@/app/(auth)/components/appleLogin";
 import { GoogleLogin } from "@/app/(auth)/components/googleLogin";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { authService } from "@/services/authService";
 import { LoginDto, LoginSchema } from "@/validations/Schemas";
 import { PasswordInput } from "../ui/passwordInput";
 
@@ -25,6 +27,8 @@ export type SignInFormContentProps = {
   returnTo?: string;
 };
 
+type SignInStep = "credentials" | "two_factor";
+
 export const SignInFormContent = ({
   onSuccess,
   showTitle = true,
@@ -34,6 +38,8 @@ export const SignInFormContent = ({
 }: SignInFormContentProps) => {
   const router = useRouter();
   const formId = useId();
+  const [step, setStep] = useState<SignInStep>("credentials");
+  const [pendingEmail, setPendingEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
 
@@ -45,15 +51,37 @@ export const SignInFormContent = ({
     },
   });
 
+  useEffect(() => {
+    const resumePendingChallenge = async () => {
+      try {
+        const response = await authService.getTwoFactorChallenge();
+        if (response.ok && response.data?.type === "2fa_required") {
+          setPendingEmail(response.data.email);
+          setStep("two_factor");
+        }
+      } catch {
+        // Sin reto 2FA pendiente.
+      }
+    };
+
+    void resumePendingChallenge();
+  }, []);
+
   const handleSubmit = async (data: LoginDto) => {
     setIsLoading(true);
 
     try {
-      await loginAction(data);
+      const result = await loginAction(data);
+
+      if (result.type === "2fa_challenge") {
+        setPendingEmail(data.email);
+        setStep("two_factor");
+        return;
+      }
+
       await onSuccess();
     } catch (error: Error | unknown) {
       console.error("Login error:", error);
-
 
       if (
         (error as Error).message?.includes("No se encontró") ||
@@ -67,6 +95,23 @@ export const SignInFormContent = ({
       setIsLoading(false);
     }
   };
+
+  const handleBackToCredentials = async () => {
+    setStep("credentials");
+    setPendingEmail("");
+  };
+
+  if (step === "two_factor") {
+    return (
+      <div className={cn("w-full space-y-8", className)}>
+        <TwoFactorLoginStep
+          email={pendingEmail}
+          onSuccess={onSuccess}
+          onBack={handleBackToCredentials}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={cn("w-full space-y-8", className)}>

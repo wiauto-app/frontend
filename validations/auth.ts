@@ -98,3 +98,16 @@ export interface VerificationCoseResponseDto{
 export interface ResendEmailVerificationResponseDto{
   message: string;
 }
+
+export interface TwoFactorChallengeState {
+  email: string;
+  type: "2fa_required";
+}
+
+export interface VerifyTwoFactorLoginResponse {
+  message: string;
+  data: {
+    type: "session";
+    token?: string;
+  };
+}

@@ -14,7 +14,10 @@ import { getHomeData } from "@/components/home/services/homeService";
 import { Suspense } from "react";
 import { VehiclesSuggestions } from "@/components/home/vehiclesSuggestions";
 import { VehicleExtraServices } from "@/components/home/vehicleExtraServices";
-import { EXTRA_SERVICES_DATA, EXTRA_SERVICES_DATA_2 } from "@/components/home/constants/extraServices.constants";
+import {
+  EXTRA_SERVICES_DATA,
+  EXTRA_SERVICES_DATA_2,
+} from "@/components/home/constants/extraServices.constants";
 import { ToolsAccess } from "@/components/home/toolsAccess";
 import { Zones } from "@/components/home/zones";
 import { ToolsShortcuts } from "@/components/home/toolsShortcuts";
@@ -58,18 +61,16 @@ export default async function Home() {
         <Suspense fallback={<div>Loading...</div>}>
           <VehiclesSuggestions />
         </Suspense>
-        <VehicleExtraServices data={EXTRA_SERVICES_DATA_2} className="bg-muted-foreground/10 rounded-xl" />
+        <VehicleExtraServices
+          data={EXTRA_SERVICES_DATA_2}
+          className="bg-muted-foreground/10 rounded-xl"
+        />
         <ToolsAccess data={home_data.herramientas} />
         <Zones />
         <RelatedNewsSection />
         <ToolsShortcuts />
         <TopDealerships />
-        {/* <CarTypesSection />
-        <FeaturedVehiclesSection />
-        <BlogArticlesSection />
-        <AppDownloadBanner data={home_data.app_advertisement} />
-        <ValuePropositionSection data={home_data.features} />
-        <ProcessSection data={home_data.process_section} /> */}
+   
       </div>
     </>
   );

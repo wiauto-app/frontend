@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
 import { MyListing } from "./components/MyListing";
 
@@ -7,5 +8,9 @@ export const metadata = createUserAreaMetadata(
 );
 
 export default function MisAnunciosPage() {
-  return <MyListing />;
+  return (
+    <Suspense fallback={<div className="p-6">Cargando tus anuncios...</div>}>
+      <MyListing />
+    </Suspense>
+  );
 }

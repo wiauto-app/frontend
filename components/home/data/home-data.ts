@@ -64,4 +64,5 @@ export const FOOTER_QUICK_LINKS = [
   { label: "Blog", href: "/blog" },
   { label: "Prensa", href: "/prensa" },
   { label: "Contacto", href: "/contacto" },
+  { label: "Planes", href: "/planes" },
 ] as const;

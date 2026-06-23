@@ -79,7 +79,7 @@ export const SavedSearchesContent = () => {
   };
 
   return (
-    <div className="max-w-5xl space-y-6 pb-20">
+    <div className="space-y-6 pb-20">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
           <LayoutGrid className="h-6 w-6 text-gray-700" />

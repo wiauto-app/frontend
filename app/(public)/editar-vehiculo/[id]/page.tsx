@@ -1,10 +1,8 @@
 "use client";
 
-import { useContext } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Car } from "lucide-react";
-import { AuthContext } from "@/app/contexts/auth/authContext";
 import {
   Card,
   CardContent,
@@ -13,13 +11,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
+import { useUser } from "@/app/contexts/auth/useUser";
 
 export default function EditarVehiculoPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const authContext = useContext(AuthContext);
-
-  if (authContext?.isLoading) {
+  const { isLoading, isAuthenticated, user } = useUser();
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -30,7 +28,7 @@ export default function EditarVehiculoPage() {
     );
   }
 
-  if (!authContext?.isAuthenticated || !authContext.user) {
+  if (!isAuthenticated || !user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center bg-white p-8 rounded-xl shadow-sm border border-gray-100 max-w-md">

@@ -5,32 +5,19 @@ export const serializeQuickVehiclePayload = (
   data: QuickVehicleSchema,
   options?: { isUpdate?: boolean },
 ) => {
-  const payload = serializeVehiclePayload(
+  const { catalog_fuel_can_charge: _canCharge, ...formData } = data;
+
+  return serializeVehiclePayload(
     {
-      ...data,
-      vehicle_type_id: "",
-      traction_id: data.traction_id,
-      displacement: data.displacement,
-      power: data.power,
-      transmission_type: data.transmission_type,
-      publisher_type: data.publisher_type ?? "particular",
-      description: data.description.trim(),
-      vin_code: undefined,
-      category_id: undefined,
-      cuota_ids: [],
-      videos: [],
-      color_id: undefined,
-      dgt_label_id: undefined,
-      warranty_type_id: undefined,
-      vehicle_price_id: undefined,
+      ...formData,
+      publisher_type: formData.publisher_type ?? "particular",
+      description: formData.description.trim(),
+      license_plate: formData.license_plate || undefined,
+      vin_code: formData.vin_code || undefined,
     },
     {
       only_temp_images: options?.isUpdate,
       is_update: options?.isUpdate,
     },
   );
-
-  delete payload.vehicle_type_id;
-
-  return payload;
 };

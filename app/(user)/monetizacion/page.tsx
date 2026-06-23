@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
 import { MonetizacionContent } from "./components/MonetizacionContent";
 
@@ -7,5 +8,9 @@ export const metadata = createUserAreaMetadata(
 );
 
 export default function MonetizacionPage() {
-  return <MonetizacionContent />;
+  return (
+    <Suspense fallback={<div className="p-6">Cargando monetización...</div>}>
+      <MonetizacionContent />
+    </Suspense>
+  );
 }

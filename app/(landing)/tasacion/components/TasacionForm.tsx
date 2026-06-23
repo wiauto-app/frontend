@@ -1,9 +1,10 @@
 'use client'
 
-import { Controller, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import { Controller, useForm, type Resolver } from "react-hook-form"
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { toast } from "sonner"
 
+import { VehicleTransmissionTypeSelector } from "@/components/dynamicSelectors/vehicleTransmissionTypeSelector"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -18,251 +19,121 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  VersionForm,
+  type CatalogCascadeIds,
+} from "@/components/vehicles/forms/versionForm"
+import {
+  buildTasacionPayload,
+  createTasacionDefaultValues,
+  tasacionSchema,
+  type TasacionFormValues,
+} from "../schemas/tasacion.schema"
 
-const marcas = [
-  'Audi','BMW','Chevrolet','Citroën','Ford','Honda',
-  'Hyundai','Kia','Mazda','Mercedes-Benz','Nissan',
-  'Peugeot','Renault','Seat','Toyota','Volkswagen',
-]
-const modelos: Record<string, string[]> = {
-  Audi:          ['A1','A3','A4','A6','Q3','Q5','Q7'],
-  BMW:           ['Serie 1','Serie 3','Serie 5','X1','X3','X5'],
-  Chevrolet:     ['Aveo','Captiva','Cruze','Spark','Trax'],
-  Citroën:       ['C3','C4','C5 Aircross','Berlingo'],
-  Ford:          ['EcoSport','Edge','Escape','Explorer','Fiesta','Focus','Mustang'],
-  Honda:         ['Accord','Civic','CR-V','HR-V','Pilot'],
-  Hyundai:       ['Accent','Elantra','Santa Fe','Sonata','Tucson'],
-  Kia:           ['Carnival','Cerato','Rio','Sorento','Sportage'],
-  Mazda:         ['CX-3','CX-5','CX-9','Mazda2','Mazda3','Mazda6'],
-  'Mercedes-Benz':['Clase A','Clase C','Clase E','GLA','GLC','GLE'],
-  Nissan:        ['Frontier','Kicks','Leaf','Murano','Note','Sentra','Versa','X-Trail'],
-  Peugeot:       ['2008','208','3008','308','5008','508'],
-  Renault:       ['Captur','Clio','Duster','Koleos','Logan','Megane','Sandero'],
-  Seat:          ['Arona','Ateca','Ibiza','Leon','Tarraco'],
-  Toyota:        ['Camry','Corolla','Fortuner','Hilux','Land Cruiser','RAV4','Yaris'],
-  Volkswagen:    ['Amarok','Golf','Jetta','Passat','Polo','T-Cross','Tiguan'],
+const toCatalogId = (value?: string) => (value ? Number(value) : 0)
+
+const syncCatalogIdsToForm = (
+  ids: CatalogCascadeIds,
+  setValue: ReturnType<typeof useForm<TasacionFormValues>>["setValue"],
+) => {
+  setValue("catalog_make_id", toCatalogId(ids.makeId))
+  setValue("catalog_model_id", toCatalogId(ids.modelId))
+  setValue("catalog_body_type_id", toCatalogId(ids.bodyTypeId))
+  setValue("catalog_fuel_type_id", toCatalogId(ids.fuelTypeId))
+  setValue("catalog_year_id", toCatalogId(ids.yearId))
 }
-const carrocerias  = ['Berlina','Cabrio','Coupé','Familiar','Monovolumen','Off-road','Pickup','SUV']
-const combustibles = ['Diésel','Eléctrico','Gasolina','Híbrido','Híbrido enchufable','GLP']
-const años         = Array.from({ length: 25 }, (_, i) => String(2025 - i))
-const versiones: Record<string, string[]> = {
-  Audi:    ['1.0 TFSI 95 CV','1.4 TFSI 125 CV','2.0 TDI 150 CV','S line'],
-  BMW:     ['116i','318i','320d','xDrive20d','M Sport'],
-  default: ['1.0 i','1.2 TSI','1.4 TDI','1.6 HDI','2.0 TDI','2.0 GTI'],
-}
-
-const TasacionSchema = z.object({
-  marca: z.string().min(1, "Por favor selecciona una marca."),
-  modelo: z.string().min(1, "Por favor selecciona un modelo."),
-  carroceria: z.string().min(1, "Por favor selecciona una carrocería."),
-  combustible: z.string().min(1, "Por favor selecciona un tipo de combustible."),
-  year: z.string().min(1, "Por favor selecciona un año."),
-  version: z.string().min(1, "Por favor selecciona una versión."),
-  caja: z.string().min(1, "Por favor selecciona un tipo de caja."),
-  km: z.string().min(1, "Por favor ingresa los kilómetros."),
-  cp: z.string().min(1, "Por favor ingresa tu código postal."),
-})
-
-type TasacionDto = z.infer<typeof TasacionSchema>
 
 export default function TasacionForm() {
-  const form = useForm<TasacionDto>({
-    resolver: zodResolver(TasacionSchema),
-    defaultValues: {
-      marca: "",
-      modelo: "",
-      carroceria: "",
-      combustible: "",
-      year: "",
-      version: "",
-      caja: "",
-      km: "",
-      cp: "",
-    },
+  const form = useForm<TasacionFormValues>({
+    resolver: standardSchemaResolver(tasacionSchema) as Resolver<TasacionFormValues>,
+    defaultValues: createTasacionDefaultValues(),
   })
 
-  const marcaValue = form.watch("marca")
-  const availableModelos = marcaValue ? (modelos[marcaValue] ?? []) : []
-  const availableVersiones = marcaValue ? (versiones[marcaValue] ?? versiones.default) : versiones.default
+  const handleCatalogIdsChange = (ids: CatalogCascadeIds) => {
+    syncCatalogIdsToForm(ids, form.setValue)
+  }
 
-  function onSubmit(data: TasacionDto) {
-    console.log(data)
+  const handleSubmit = (values: TasacionFormValues) => {
+    const payload = buildTasacionPayload(values)
+    console.log(payload)
+    toast.success("Datos listos para tasación")
   }
 
   return (
     <Card className="w-full border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.09)]">
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(handleSubmit)}>
         <CardContent className="px-6 py-6">
           <FieldGroup className="flex flex-col gap-4">
             <Controller
-              name="marca"
+              name="version_id"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="sel-marca">Marca</FieldLabel>
-                  <Select
+                  <VersionForm
+                    ariaInvalid={fieldState.invalid}
+                    versionId={
+                      field.value > 0 ? String(field.value) : undefined
+                    }
+                    onVersionIdChange={(next) =>
+                      field.onChange(next ? Number(next) : 0)
+                    }
+                    onCatalogIdsChange={handleCatalogIdsChange}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="transmission_type"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="sel-transmission">
+                    Tipo de caja
+                  </FieldLabel>
+                  <VehicleTransmissionTypeSelector
                     value={field.value}
-                    onValueChange={v => { field.onChange(v); form.setValue("modelo", ""); form.setValue("version", "") }}
-                  >
-                    <SelectTrigger ref={field.ref} id="sel-marca">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {marcas.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    onValueChange={(next) =>
+                      field.onChange(next ?? "manual")
+                    }
+                    disabled={field.disabled}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
 
             <Controller
-              name="modelo"
+              name="mileage"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="sel-modelo">Modelo</FieldLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={!marcaValue}
-                  >
-                    <SelectTrigger ref={field.ref} id="sel-modelo">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableModelos.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="carroceria"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="sel-carroceria">Carrocería</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger ref={field.ref} id="sel-carroceria">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {carrocerias.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="combustible"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="sel-combustible">Combustible</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger ref={field.ref} id="sel-combustible">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {combustibles.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="year"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="sel-year">Año de matrícula</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger ref={field.ref} id="sel-year">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {años.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="version"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="sel-version">Versión</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger ref={field.ref} id="sel-version">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableVersiones.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="caja"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="sel-caja">Tipo de caja</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger ref={field.ref} id="sel-caja">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="manual">Manual</SelectItem>
-                      <SelectItem value="automatica">Automática</SelectItem>
-                      <SelectItem value="dsg">DSG / CVT</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="km"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="input-km">Kilómetros del vehículo</FieldLabel>
+                  <FieldLabel htmlFor="input-km">
+                    Kilómetros del vehículo
+                  </FieldLabel>
                   <Input
                     ref={field.ref}
                     id="input-km"
                     type="number"
+                    min={0}
                     placeholder="Ingresa"
-                    value={field.value}
+                    value={field.value == null ? "" : String(field.value)}
                     onChange={field.onChange}
+                    aria-invalid={fieldState.invalid}
                   />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
 
             <Controller
-              name="cp"
+              name="postal_code"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
@@ -273,8 +144,11 @@ export default function TasacionForm() {
                     placeholder="Ingresa"
                     value={field.value}
                     onChange={field.onChange}
+                    aria-invalid={fieldState.invalid}
                   />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />

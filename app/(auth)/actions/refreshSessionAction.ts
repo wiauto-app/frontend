@@ -7,7 +7,6 @@ import {
   ensureValidSession,
   writeSessionTokensToCookieStore,
   clearSessionFromCookieStore,
-  requestCookiesToHeader,
 } from "@/lib/ensure-session.server";
 
 export type RefreshSessionActionResult =
@@ -18,9 +17,18 @@ export const refreshSessionAction =
   async (): Promise<RefreshSessionActionResult> => {
     const store = await cookies();
     const access_token = store.get(cookiesConfig.accessToken.name)?.value ?? null;
-    const cookie_header = requestCookiesToHeader(store.getAll());
+    const refresh_token = store.get(cookiesConfig.refreshToken.name)?.value;
 
-    const result = await ensureValidSession({ refresh_token: cookie_header, access_token });
+    if (!refresh_token) {
+      clearSessionFromCookieStore(store);
+      return { ok: false, reason: "unauthorized" };
+    }
+
+    const result = await ensureValidSession({ refresh_token, access_token });
+
+    if (result.outcome === "two_factor_pending") {
+      return { ok: true, refreshed: false };
+    }
 
     if (result.outcome === "session_refreshed") {
       writeSessionTokensToCookieStore(

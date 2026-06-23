@@ -97,30 +97,34 @@ export const SearchSelect = ({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="w-full" disabled={disabled}>
-        <Button
-          type="button"
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          disabled={disabled}
-          className="w-full justify-between bg-transparent font-normal"
-        >
-          <span
-            className={
-              value &&
-              (selectedOption?.value === value ||
-                resolvedOption?.value === value)
-                ? "truncate"
-                : "truncate text-muted-foreground"
-            }
+      <PopoverTrigger
+        className="w-full"
+        disabled={disabled}
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            disabled={disabled}
+            className="w-full justify-between bg-transparent font-normal"
           >
-            {displayLabel}
-          </span>
+            <span
+              className={
+                value &&
+                (selectedOption?.value === value ||
+                  resolvedOption?.value === value)
+                  ? "truncate"
+                  : "truncate text-muted-foreground"
+              }
+            >
+              {displayLabel}
+            </span>
 
-          <ChevronDown className="size-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+            <ChevronDown className="size-4 shrink-0 opacity-50" />
+          </Button>
+        }
+      />
 
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-[280px] p-0">
         <Command shouldFilter={false}>

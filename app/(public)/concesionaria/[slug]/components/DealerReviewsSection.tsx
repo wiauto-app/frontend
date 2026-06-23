@@ -32,6 +32,22 @@ function RatingBar({
 }
 
 export function DealerReviewsSection({ dealer }: DealerReviewsSectionProps) {
+  if (dealer.reviewCount === 0) {
+    return (
+      <div
+        id="reviews"
+        className="mt-6 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm"
+      >
+        <div className="p-5 sm:p-6">
+          <h2 className="text-lg font-bold text-slate-900">Reseñas de clientes</h2>
+          <p className="mt-3 text-sm text-slate-500">
+            Esta concesionaria aún no tiene reseñas publicadas.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const maxCount = Math.max(
     ...(dealer.ratingDistribution ?? []).map((item) => item.count),
     1,
@@ -99,7 +115,12 @@ export function DealerReviewsSection({ dealer }: DealerReviewsSectionProps) {
 
           {/* Right: Review cards */}
           <div className="space-y-5">
-            {dealer.reviews.map((review) => (
+            {dealer.reviews.length === 0 ? (
+              <p className="text-sm text-slate-500">
+                Esta concesionaria aún no tiene reseñas publicadas.
+              </p>
+            ) : (
+              dealer.reviews.map((review) => (
               <article
                 key={review.id}
                 className="flex gap-3 border-b border-slate-100 pb-5 last:border-b-0 last:pb-0"
@@ -146,7 +167,8 @@ export function DealerReviewsSection({ dealer }: DealerReviewsSectionProps) {
                   </p>
                 </div>
               </article>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

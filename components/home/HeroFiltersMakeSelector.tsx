@@ -54,7 +54,7 @@ export const HeroFiltersMakeSelector = () => {
       <PopoverTrigger
         render={
           <Button variant="outline" className="h-11 w-full justify-start text-base">
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-between w-full text-sm ">
               {trigger_label}
               <ChevronDown className="size-4 shrink-0 opacity-50" />
             </div>

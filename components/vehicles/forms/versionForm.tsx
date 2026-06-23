@@ -20,6 +20,8 @@ export type VersionFormProps = {
   versionId?: string;
   /** Notifica cambios de versión al padre (string id del catálogo). */
   onVersionIdChange?: (value: string | undefined) => void;
+  /** Notifica cambios de IDs de cascada al formulario padre. */
+  onCatalogIdsChange?: (ids: CatalogCascadeIds) => void;
   /** Precarga marca → año al editar un vehículo existente. */
   initialCatalogIds?: CatalogCascadeIds;
   ariaInvalid?: boolean;
@@ -54,6 +56,7 @@ const catalog_ids_signature = (ids?: CatalogCascadeIds) =>
 export const VersionForm = ({
   versionId,
   onVersionIdChange,
+  onCatalogIdsChange,
   initialCatalogIds,
   ariaInvalid,
   hideVersionLabel = false,
@@ -79,7 +82,11 @@ export const VersionForm = ({
     value: string | undefined,
     resetKeys: (keyof CatalogCascadeIds)[] = [],
   ) => {
-    setIds((prev) => patchIds(prev, field, value, resetKeys));
+    setIds((prev) => {
+      const next = patchIds(prev, field, value, resetKeys);
+      onCatalogIdsChange?.(next);
+      return next;
+    });
     onVersionIdChange?.(undefined);
   };
 

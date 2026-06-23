@@ -58,7 +58,7 @@ export const PriceUntilSelector = () => {
         aria-expanded={is_open}
         aria-haspopup="listbox"
       >
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full text-sm ">
           {displayValue ?? "Precio hasta"}
           <ChevronDown className="size-4 shrink-0 opacity-50" />
         </div>

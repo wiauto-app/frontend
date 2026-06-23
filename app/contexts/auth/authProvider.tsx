@@ -11,11 +11,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     queryKey: ["user"],
     queryFn: async () => {
       const response = await authService.getMe();
-      if(!response.ok) {
-        return null
+      if (!response.ok) {
+        return null;
       }
       return response.data;
     },
+    placeholderData: (previous) => previous,
+    staleTime: 60_000,
   });
   const refreshUser = useCallback(async () => {
     queryClient.invalidateQueries({ queryKey: ["user"] });

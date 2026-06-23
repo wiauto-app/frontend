@@ -112,6 +112,7 @@ export const LEGACY_API_QUERY_KEYS = new Set([
   "color_slugs",
   "cuota_slugs",
   "condition",
+  "dealership_ids",
 ]);
 
 export const ARRAY_DTO_KEYS = new Set<keyof FindAllVehiclesParams>([
@@ -130,6 +131,7 @@ export const ARRAY_DTO_KEYS = new Set<keyof FindAllVehiclesParams>([
   "features_slugs",
   "color_slugs",
   "cuota_slugs",
+  "dealership_ids",
 ]);
 
 export const NUMERIC_DTO_KEYS = new Set<keyof FindAllVehiclesParams>([

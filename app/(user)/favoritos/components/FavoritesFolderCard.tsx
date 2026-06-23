@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { VehicleList } from "@/interfaces/vehicle-list.interface";
 import { cn } from "@/lib/utils";
 import { formatVehicleCountLabel } from "../utils/favorites.utils";
@@ -42,7 +43,6 @@ export const FavoritesFolderCard = ({
   isUpdating = false,
   isDeleting = false,
 }: FavoritesFolderCardProps) => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [renameValue, setRenameValue] = useState(list.name);
@@ -56,13 +56,11 @@ export const FavoritesFolderCard = ({
 
     await onRename(list.id, trimmedName);
     setRenameOpen(false);
-    setMenuOpen(false);
   };
 
   const handleDelete = async () => {
     await onDelete(list.id);
     setDeleteOpen(false);
-    setMenuOpen(false);
   };
 
   return (
@@ -106,24 +104,23 @@ export const FavoritesFolderCard = ({
           </div>
         </Button>
 
-        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-          <PopoverTrigger >
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={`Opciones de ${list.name}`}
-              className="text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <MoreHorizontal className="size-5" aria-hidden />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-44 p-2">
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full justify-start gap-2 px-3 py-2 text-gray-700 hover:bg-gray-50"
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={`Opciones de ${list.name}`}
+                className="text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <MoreHorizontal className="size-5" aria-hidden />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem
               onClick={() => {
                 setRenameValue(list.name);
                 setRenameOpen(true);
@@ -131,20 +128,18 @@ export const FavoritesFolderCard = ({
             >
               <Pencil className="size-4" aria-hidden />
               Renombrar
-            </Button>
+            </DropdownMenuItem>
             {!list.is_default && (
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full justify-start gap-2 px-3 py-2 text-red-600 hover:bg-red-50"
+              <DropdownMenuItem
+                variant="destructive"
                 onClick={() => setDeleteOpen(true)}
               >
                 <Trash2 className="size-4" aria-hidden />
                 Eliminar
-              </Button>
+              </DropdownMenuItem>
             )}
-          </PopoverContent>
-        </Popover>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>

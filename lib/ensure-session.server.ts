@@ -15,8 +15,33 @@ export type EnsureSessionResult =
       access_token: string;
       refresh_token_hash: string;
     }
+  | { outcome: "two_factor_pending" }
   | { outcome: "unauthorized" }
   | { outcome: "me_not_ok"; status: number };
+
+const TWO_FA_REQUIRED_MESSAGE = "Debes completar la verificación en dos pasos";
+
+const decodeJwtScope = (access_token: string | null): string | null => {
+  if (!access_token) return null;
+
+  try {
+    const payloadBase64 = access_token.split(".")[1];
+    if (!payloadBase64) return null;
+
+    const payload = JSON.parse(
+      Buffer.from(payloadBase64, "base64url").toString("utf8"),
+    ) as { scope?: string };
+
+    return typeof payload.scope === "string" ? payload.scope : null;
+  } catch {
+    return null;
+  }
+};
+
+const isTwoFactorPendingResponse = (
+  me: ApiResponse<MeResponseDto | null>,
+): boolean =>
+  me.status === 401 && me.message === TWO_FA_REQUIRED_MESSAGE;
 
 const get_refresh_cookie_value = (
   data: Pick<AuthResponseDto, "token"> & {
@@ -99,21 +124,26 @@ export const ensureValidSession = async (params: {
   access_token: string | null;
 }): Promise<EnsureSessionResult> => {
   const { refresh_token, access_token } = params;
-  console.log("refresh_token", refresh_token);
-  console.log("access_token", access_token);
+
+  if (decodeJwtScope(access_token) === "2fa_challenge") {
+    return { outcome: "two_factor_pending" };
+  }
+
   const me = await getServerSession({ refresh_token, access_token });
-  console.log("me", me);
+
   if (me.ok) {
     return { outcome: "session_valid" };
+  }
+
+  if (isTwoFactorPendingResponse(me)) {
+    return { outcome: "two_factor_pending" };
   }
 
   if (me.status !== 401) {
     return { outcome: "me_not_ok", status: me.status };
   }
 
-
   const refreshed = await refreshTokenService.refreshToken(refresh_token);
-  console.log("refreshed", refreshed);
   if (!refreshed.ok || !is_session_payload(refreshed.data)) {
     return { outcome: "unauthorized" };
   }

@@ -8,10 +8,21 @@ import {
 } from "@/lib/ensure-session.server";
 
 
-const PUBLIC_PATHS = ['/', '/iniciar-sesion', '/registro', '/cambiar-contrasena', '/confirmar-correo', '/olvide-contrasena', '/api'];
+const PUBLIC_PATHS = [
+  '/',
+  '/iniciar-sesion',
+  '/registro',
+  '/cambiar-contrasena',
+  '/confirmar-correo',
+  '/olvide-contrasena',
+  '/verificacion-2fa',
+  '/oauth-popup-complete',
+  '/api',
+];
+
+const TWO_FACTOR_PATHS = ['/verificacion-2fa', '/oauth-popup-complete'];
 
 export async function proxy(req: NextRequest) {
-  console.log("req.nextUrl.pathname", req.nextUrl.pathname);
   const { pathname } = req.nextUrl;
   if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     return NextResponse.next();
@@ -34,6 +45,18 @@ export async function proxy(req: NextRequest) {
       );
     }
 
+    if (result.outcome === "two_factor_pending") {
+      if (
+        TWO_FACTOR_PATHS.some(
+          (p) => pathname === p || pathname.startsWith(`${p}/`),
+        )
+      ) {
+        return NextResponse.next();
+      }
+
+      return NextResponse.redirect(new URL("/verificacion-2fa", req.url));
+    }
+
     const redirect_res = NextResponse.redirect(
       new URL("/iniciar-sesion", req.url),
     );
@@ -45,6 +68,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|iniciar-sesion|registro|cambiar-contrasena|confirmar-correo|olvide-contrasena|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|iniciar-sesion|registro|cambiar-contrasena|confirmar-correo|olvide-contrasena|verificacion-2fa|oauth-popup-complete|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

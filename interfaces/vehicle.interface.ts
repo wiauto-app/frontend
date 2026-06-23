@@ -324,6 +324,7 @@ export interface FindAllVehiclesParams {
   color_slugs?: string[];
   cuota_slugs?: string[];
   exclude_vehicle_ids?: string[];
+  dealership_ids?: string[];
 }
 
 export interface PaginatedResponse<T> {
@@ -435,6 +436,7 @@ export interface VehicleType {
   id: string;
   name: string;
   slug: string;
+  image_url?: string;
   created_at: string;
   updated_at: string;
 }

@@ -33,9 +33,8 @@ export const myListingsService = {
 
   renew(id: string): Promise<
     ApiResponse<{
-      expires_at: string;
+      renewed_at: string;
       can_renew: boolean;
-      status: VehicleStatus;
     }>
   > {
     return apiPost(`${V1_VEHICLES}/${id}/renew`, {});

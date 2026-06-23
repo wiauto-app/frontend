@@ -4,10 +4,9 @@ import { cookiesConfig } from "@/config/cookies.config";
 
 export const GET = async () => {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get(cookiesConfig.accessToken.name);
   const refreshToken = cookieStore.get(cookiesConfig.refreshToken.name);
 
-  if (!accessToken || !refreshToken) {
+  if (!refreshToken) {
     return NextResponse.json({ isLoggedIn: false });
   }
 

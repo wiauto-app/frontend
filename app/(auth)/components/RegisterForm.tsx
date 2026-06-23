@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -15,17 +15,27 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/authService";
 
-export default function RegisterForm() {
+type RegisterFormProps = {
+  invitedEmail?: string;
+};
+
+export default function RegisterForm({ invitedEmail: invitedEmailProp }: RegisterFormProps = {}) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const invitationEmailFromQuery = searchParams.get("email")?.trim() ?? "";
+  const invitedEmail = invitedEmailProp ?? invitationEmailFromQuery;
+  const isInvitationFlow = invitedEmail.length > 0;
   const [isLoading, setIsLoading] = useState(false);
-  const [accountType, setAccountType] = useState<"particular" | "empresa">("particular");
+  const [accountType, setAccountType] = useState<"particular" | "empresa">(
+    isInvitationFlow ? "empresa" : "particular",
+  );
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptNewsletter, setAcceptNewsletter] = useState(false);
 
   const form = useForm<RegisterDto>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      email: "",
+      email: invitedEmail ?? "",
       password: "",
       name: "",
       last_name: "",
@@ -79,8 +89,14 @@ export default function RegisterForm() {
           <div className="w-full max-w-xl space-y-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold text-gray-900">Regístrate</h2>
+              {isInvitationFlow ? (
+                <p className="mt-3 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                  Te invitaron a unirte al equipo. Crea tu cuenta para continuar.
+                </p>
+              ) : null}
             </div>
 
+            {!isInvitationFlow ? (
             <div className="flex border-b border-gray-200 flex-wrap gap-2">
               <Button
                 type="button"
@@ -105,6 +121,7 @@ export default function RegisterForm() {
                 Empresa
               </Button>
             </div>
+            ) : null}
 
             <div className="flex gap-3 flex-wrap">
               <GoogleLogin disabled={isLoading} />
@@ -165,6 +182,9 @@ export default function RegisterForm() {
                   id="register-email"
                   type="email"
                   placeholder="Email *"
+                  readOnly={isInvitationFlow}
+                  aria-readonly={isInvitationFlow}
+                  className={isInvitationFlow ? "bg-gray-50" : undefined}
                   {...form.register("email")}
                   disabled={isLoading}
                 />

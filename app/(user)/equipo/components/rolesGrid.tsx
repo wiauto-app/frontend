@@ -1,54 +1,88 @@
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@base-ui/react'
-import { Check, ShieldHalf } from 'lucide-react'
-import React from 'react'
+"use client";
 
-const rolesGrid = ({roles}:any) => {
+import { ShieldHalf } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import type { DealershipMemberRole } from "@/services/dealerships/types/team.types";
+import { getRoleLabel } from "../utils/teamPermissions";
+
+type RoleInfo = {
+  role: DealershipMemberRole;
+  description: string;
+  permissions: string[];
+  memberCount: number;
+};
+
+const DEFAULT_ROLES: Omit<RoleInfo, "memberCount">[] = [
+  {
+    role: "owner",
+    description: "Control total del concesionario y del equipo.",
+    permissions: ["Gestionar equipo", "Invitar miembros", "Configuración"],
+  },
+  {
+    role: "admin",
+    description: "Gestiona miembros e invitaciones del equipo.",
+    permissions: ["Gestionar equipo", "Invitar miembros"],
+  },
+  {
+    role: "member",
+    description: "Accede al área profesional del concesionario.",
+    permissions: ["Ver equipo", "Salir del equipo"],
+  },
+];
+
+type RolesGridProps = {
+  membersByRole: Record<DealershipMemberRole, number>;
+};
+
+const RolesGrid = ({ membersByRole }: RolesGridProps) => {
+  const roles: RoleInfo[] = DEFAULT_ROLES.map((role) => ({
+    ...role,
+    memberCount: membersByRole[role.role] ?? 0,
+  }));
+
   return (
-         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-6">Roles y permisos</h2>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {roles.map((role:any) => (
-                   <Card key={role.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-blue-100">
-            <CardContent className="px-2">
-              <div className="flex items-start justify-between mb-4 flex-wrap">
-                <div className="flex items-center gap-1">
-                  <div className="bg-blue-100 rounded-full p-1">
-                    <ShieldHalf className="w-6 h-6 text-blue-600" />
+    <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+      <h2 className="mb-6 text-lg font-bold text-gray-900">Roles del equipo</h2>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {roles.map((role) => (
+          <Card key={role.role} className="overflow-hidden bg-blue-50/40">
+            <CardContent className="px-4 py-4">
+              <div className="mb-4 flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="rounded-full bg-blue-100 p-2">
+                    <ShieldHalf className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="lg:text-lg text-md font-bold text-gray-900">{role.name}</h3>
+                    <h3 className="font-bold text-gray-900">{getRoleLabel(role.role)}</h3>
+                    <p className="text-sm text-gray-500">{role.memberCount} miembros</p>
                   </div>
                 </div>
-               <div className="items-center">
-                 <p className="text-sm text-gray-500">{role.numberOfMembers} Miembros</p>
-               </div>
               </div>
 
-              <div className="space-y-2 mb-6">
-             
-                <div className="flex flex-wrap gap-2">
-                  {role.permissions.map((permission:string, idx:number) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-md text-sm text-gray-700"
-                    >
-                      <Check className="w-3 h-3 text-green-600" />
-                      <span>{permission}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>    
-                <Button type="button"  className="mt-4 inline-block text-sm text-blue-600">
-         Editar permisos →
-        </Button>
-            </CardContent>
-          </Card>
+              <p className="mb-4 text-sm text-gray-600">{role.description}</p>
+
+              <div className="flex flex-wrap gap-2">
+                {role.permissions.map((permission) => (
+                  <span
+                    key={permission}
+                    className="rounded-md bg-white px-2 py-1 text-xs text-gray-700"
+                  >
+                    {permission}
+                  </span>
                 ))}
               </div>
-            </div>
-  )
-}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-export default rolesGrid;
+export default RolesGrid;
+
+
+
+
+

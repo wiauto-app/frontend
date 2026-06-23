@@ -5,7 +5,7 @@ import { authService } from "@/services/authService";
 import { LoginDto } from "@/validations/Schemas";
 import { cookies } from "next/headers";
 
-export async function loginAction(data: LoginDto) {
+export async function loginAction(data: LoginDto): Promise<{ type: "session" | "2fa_challenge" }> {
   try {
     const response = await authService.login(data);
     if (!response.ok) {
@@ -19,6 +19,7 @@ export async function loginAction(data: LoginDto) {
       throw new Error("No se recibió el token de actualización");
     }
     cookiesStore.set(cookiesConfig.refreshToken.name, refresh_token, cookiesConfig.refreshToken.options);
+    return { type: response.data.type };
   } catch (error) {
     throw error;
   }

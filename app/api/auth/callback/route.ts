@@ -7,7 +7,7 @@ import { OAUTH_POPUP_COMPLETE_PATH } from "@/lib/auth/oauthPopup.constants";
 
 const buildPopupCompleteUrl = (
   provider: string | null,
-  status: "success" | "error",
+  status: "success" | "error" | "2fa_required",
   message?: string | null,
 ): URL => {
   const url = new URL(OAUTH_POPUP_COMPLETE_PATH, FRONTEND_URL);
@@ -66,11 +66,11 @@ export async function GET(request: NextRequest) {
   if (type === "2fa_challenge") {
     if (isPopup) {
       return NextResponse.redirect(
-        buildPopupCompleteUrl(provider, "error", "No se pudo iniciar sesión"),
+        buildPopupCompleteUrl(provider, "2fa_required"),
       );
     }
 
-    return NextResponse.redirect(new URL("/2fa-challenge", FRONTEND_URL));
+    return NextResponse.redirect(new URL("/verificacion-2fa", FRONTEND_URL));
   }
 
   if (isPopup) {

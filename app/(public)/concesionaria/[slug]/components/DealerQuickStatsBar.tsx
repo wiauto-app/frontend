@@ -1,4 +1,4 @@
-import { Car, ThumbsUp, ArrowLeftRight, CalendarDays } from "lucide-react";
+import { Car, ThumbsUp, CalendarDays } from "lucide-react";
 import { BRAND_BLUE } from "@/app/(public)/concesionarias/constants";
 import type { DealerQuickStats } from "../interfaces";
 
@@ -12,32 +12,41 @@ const STAT_ITEMS = [
     label: "Vehículos publicados",
     icon: Car,
     format: (v: number) => String(v),
+    isAvailable: () => true,
   },
   {
     key: "positiveReviewsPercent" as const,
     label: "Reseñas positivas",
     icon: ThumbsUp,
     format: (v: number) => `${v}%`,
-  },
-  {
-    key: "transactions" as const,
-    label: "Transacciones",
-    icon: ArrowLeftRight,
-    format: (v: number) => `+${v}`,
+    isAvailable: (stats: DealerQuickStats) =>
+      stats.positiveReviewsPercent !== undefined,
   },
   {
     key: "yearsOnPlatform" as const,
     label: "En WiAuto",
     icon: CalendarDays,
     format: (v: number) => `${v} años`,
+    isAvailable: (stats: DealerQuickStats) =>
+      stats.yearsOnPlatform !== undefined,
   },
 ] as const;
 
 export function DealerQuickStatsBar({ stats }: DealerQuickStatsBarProps) {
+  const visible_items = STAT_ITEMS.filter((item) => item.isAvailable(stats));
+
   return (
     <div className="mb-6 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-      <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-4 sm:divide-y-0">
-        {STAT_ITEMS.map(({ key, label, icon: Icon, format }, i) => (
+      <div
+        className={`grid grid-cols-1 divide-x divide-y divide-slate-100 sm:divide-y-0 ${
+          visible_items.length === 1
+            ? "sm:grid-cols-1"
+            : visible_items.length === 2
+              ? "sm:grid-cols-2"
+              : "sm:grid-cols-3"
+        }`}
+      >
+        {visible_items.map(({ key, label, icon: Icon, format }) => (
           <div
             key={key}
             className="flex items-center gap-3 px-4 py-4 sm:px-5 sm:py-5"
@@ -50,7 +59,7 @@ export function DealerQuickStatsBar({ stats }: DealerQuickStatsBarProps) {
             </div>
             <div>
               <p className="text-base font-extrabold text-slate-900 sm:text-lg">
-                {format(stats[key])}
+                {format(stats[key] as number)}
               </p>
               <p className="text-[11px] leading-tight text-slate-500">{label}</p>
             </div>

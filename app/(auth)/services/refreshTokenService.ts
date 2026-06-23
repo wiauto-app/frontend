@@ -12,13 +12,17 @@ const buildApiUrl = (path: string): string => {
 };
 
 export const refreshTokenService = {
-  refreshToken: async (cookies: string): Promise<ApiResponse<AuthResponseDto>> => {
+  refreshToken: async (
+    refresh_token_value: string,
+  ): Promise<ApiResponse<AuthResponseDto>> => {
     const refreshResponse = await fetch(buildApiUrl("/auth/refresh"), {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        ...(cookies ? { Cookie: cookies } : {}),
+        ...(refresh_token_value
+          ? { Cookie: `refresh_token=${refresh_token_value}` }
+          : {}),
       },
     });
 

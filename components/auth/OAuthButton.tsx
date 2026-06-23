@@ -52,7 +52,13 @@ export const OAuthButton = ({
         url: providerConfig.getUrl(true),
         successEvent: providerConfig.successEvent,
         errorEvent: providerConfig.errorEvent,
+        twoFactorEvent: providerConfig.twoFactorEvent,
       });
+
+      if (result.success && "requiresTwoFactor" in result && result.requiresTwoFactor) {
+        router.push("/verificacion-2fa");
+        return;
+      }
 
       if (!result.success) {
         if (result.reason === "closed") {

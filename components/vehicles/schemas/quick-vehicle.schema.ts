@@ -1,12 +1,59 @@
 import z from "zod";
 import { VEHICLE_CONDITION_VALUES } from "../constants/vehicle-enums.constants";
 import { phoneSchema } from "@/validations/resources/phone.schema";
-import { vehicle_image_schema } from "./vehicle.schema";
+import {
+  vehicle_image_schema,
+  vehicle_video_schema,
+} from "./vehicle.schema";
 
-export const quickVehicleSchema = z.object({
+const optionalUuid = z
+  .union([
+    z.uuid({ error: "Identificador no válido." }),
+    z.literal(""),
+    z.null(),
+  ])
+  .optional()
+  .transform((value) => {
+    if (value === "" || value === undefined) return undefined;
+    if (value === null) return null;
+    return value;
+  });
+
+const optionalUuidArray = z
+  .array(z.uuid({ error: "Identificador no válido." }))
+  .optional()
+  .default([]);
+
+const optionalNonNegativeNumber = z.coerce
+  .number({ error: "Introduce un número válido." })
+  .min(0, { error: "El valor no puede ser negativo." })
+  .optional();
+
+const optional_vehicle_videos_array = z
+  .array(vehicle_video_schema)
+  .optional()
+  .default([]);
+
+const quickVehicleBaseSchema = z.object({
+  vehicle_type_id: z.uuid({ error: "Selecciona un tipo de vehículo." }),
+  license_plate: z
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .min(5, { error: "La matrícula debe tener al menos 5 caracteres." }),
+    ])
+    .optional(),
+  vin_code: z
+    .union([
+      z.literal(""),
+      z.string().min(1, { error: "El VIN debe tener al menos 1 carácter." }),
+    ])
+    .optional(),
   images: z
     .array(vehicle_image_schema)
     .min(3, { error: "Añade al menos 3 fotos del vehículo." }),
+  videos: optional_vehicle_videos_array,
   version_id: z.coerce
     .number({ error: "Selecciona una versión del catálogo." })
     .int()
@@ -14,9 +61,15 @@ export const quickVehicleSchema = z.object({
   catalog_make_id: z.coerce.number().int().positive().optional(),
   catalog_model_id: z.coerce.number().int().positive().optional(),
   catalog_year_id: z.coerce.number().int().positive().optional(),
+  catalog_fuel_type_id: z.coerce.number().int().positive().optional(),
+  /** Solo formulario: indica si el combustible admite recarga. No se envía al API. */
+  catalog_fuel_can_charge: z.boolean().optional().default(false),
   condition: z.enum(VEHICLE_CONDITION_VALUES),
   mileage: z.coerce.number().min(0, { error: "El kilometraje no puede ser negativo." }),
   price: z.coerce.number().min(0, { error: "El precio no puede ser negativo." }),
+  color_id: optionalUuid,
+  category_id: optionalUuid,
+  dgt_label_id: optionalUuid,
   lat: z.coerce.number({ error: "Selecciona una ubicación en el mapa." }),
   lng: z.coerce.number({ error: "Selecciona una ubicación en el mapa." }),
   phone: phoneSchema,
@@ -29,17 +82,50 @@ export const quickVehicleSchema = z.object({
   }),
   power: z.coerce.number().min(1, { error: "Introduce la potencia del vehículo." }),
   displacement: z.coerce.number().min(0, { error: "Introduce la cilindrada del vehículo." }),
+  autonomy: optionalNonNegativeNumber,
+  battery_capacity: optionalNonNegativeNumber,
+  time_to_charge: optionalNonNegativeNumber,
   traction_id: z.uuid({ error: "Selecciona un tipo de tracción." }),
-  features_ids: z.array(z.uuid()).optional().default([]),
-  services_ids: z.array(z.uuid()).optional().default([]),
+  features_ids: optionalUuidArray,
+  services_ids: optionalUuidArray,
+  cuota_ids: optionalUuidArray,
+  warranty_type_id: optionalUuid,
   publisher_type: z.enum(["professional", "particular"]).default("particular"),
+});
+
+export const quickVehicleSchema = quickVehicleBaseSchema.superRefine((data, ctx) => {
+  if (!data.catalog_fuel_can_charge) {
+    return;
+  }
+
+  const electricFields = [
+    { key: "autonomy" as const, label: "autonomía" },
+    { key: "battery_capacity" as const, label: "capacidad de la batería" },
+    { key: "time_to_charge" as const, label: "tiempo de carga" },
+  ];
+
+  for (const field of electricFields) {
+    const value = data[field.key];
+    if (value == null || value <= 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Introduce la ${field.label} del vehículo eléctrico.`,
+        path: [field.key],
+      });
+    }
+  }
 });
 
 export type QuickVehicleSchema = z.infer<typeof quickVehicleSchema>;
 
 export const createQuickVehicleDefaultValues: QuickVehicleSchema = {
+  vehicle_type_id: "",
+  license_plate: "",
+  vin_code: "",
   images: [],
+  videos: [],
   version_id: 0,
+  catalog_fuel_can_charge: false,
   condition: "used",
   mileage: 0,
   price: 0,
@@ -54,5 +140,10 @@ export const createQuickVehicleDefaultValues: QuickVehicleSchema = {
   traction_id: "",
   features_ids: [],
   services_ids: [],
+  cuota_ids: [],
+  color_id: undefined,
+  category_id: undefined,
+  dgt_label_id: undefined,
+  warranty_type_id: undefined,
   publisher_type: "particular",
 };

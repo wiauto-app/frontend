@@ -1,17 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import { MakeSelector } from "@/components/dynamicSelectors/makeSelector";
 import { ModelSelector } from "@/components/dynamicSelectors/modelSelector";
 import { QuickYearSelector } from "@/components/dynamicSelectors/quickYearSelector";
 import { VersionSelector } from "@/components/dynamicSelectors/versionSelector";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
-import { useEffect, useMemo, useState } from "react";
+import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
+import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
+import { useEffect, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 
 type CatalogIds = {
   makeId?: string;
   modelId?: string;
   yearId?: string;
+};
+
+const clearElectricFields = (
+  setValue: ReturnType<typeof useFormContext<QuickVehicleSchema>>["setValue"],
+) => {
+  setValue("autonomy", undefined, { shouldDirty: true });
+  setValue("battery_capacity", undefined, { shouldDirty: true });
+  setValue("time_to_charge", undefined, { shouldDirty: true });
 };
 
 export const QuickCatalogFields = () => {
@@ -54,6 +65,29 @@ export const QuickCatalogFields = () => {
     });
   }, [initialSignature, form]);
 
+  const syncFuelTypeFromVersion = async (numericVersionId: number) => {
+    if (!numericVersionId) {
+      form.setValue("catalog_fuel_type_id", undefined, { shouldDirty: true });
+      form.setValue("catalog_fuel_can_charge", false, { shouldDirty: true });
+      clearElectricFields(form.setValue);
+      return;
+    }
+
+    try {
+      const version = await catalogVersionsService.findOne(numericVersionId);
+      form.setValue("catalog_fuel_type_id", version.fuel_type_id, { shouldDirty: true });
+      const fuelType = await fuelTypesService.findOne(version.fuel_type_id);
+      form.setValue("catalog_fuel_can_charge", fuelType.can_charge, { shouldDirty: true });
+      if (!fuelType.can_charge) {
+        clearElectricFields(form.setValue);
+      }
+    } catch {
+      form.setValue("catalog_fuel_type_id", undefined, { shouldDirty: true });
+      form.setValue("catalog_fuel_can_charge", false, { shouldDirty: true });
+      clearElectricFields(form.setValue);
+    }
+  };
+
   const updateIds = (
     field: keyof CatalogIds,
     value: string | undefined,
@@ -67,15 +101,25 @@ export const QuickCatalogFields = () => {
       return next;
     });
     form.setValue("version_id", 0, { shouldDirty: true });
+    form.setValue("catalog_fuel_type_id", undefined, { shouldDirty: true });
+    form.setValue("catalog_fuel_can_charge", false, { shouldDirty: true });
+    clearElectricFields(form.setValue);
   };
 
   const handleVersionChange = (value: string | undefined) => {
-    form.setValue(
-      "version_id",
-      value ? Number(value) : 0,
-      { shouldDirty: true, shouldValidate: true },
-    );
+    const numericVersionId = value ? Number(value) : 0;
+    form.setValue("version_id", numericVersionId, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    void syncFuelTypeFromVersion(numericVersionId);
   };
+
+  useEffect(() => {
+    if (!versionId || versionId <= 0) return;
+    if (form.getValues("catalog_fuel_type_id")) return;
+    void syncFuelTypeFromVersion(versionId);
+  }, [versionId, form]);
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,14 +1,29 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import type { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
+import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
 import { myListingsService } from "@/services/myListings/myListingsService";
+import { billingService } from "@/services/billingService";
+import { absoluteUrl } from "@/lib/seo/absolute-url";
 
 export const MY_LISTINGS_QUERY_KEY = ["my-listings"] as const;
+export const BILLING_ME_QUERY_KEY = ["billing-me"] as const;
+export const BILLING_CATALOG_QUERY_KEY = ["billing-catalog"] as const;
 
-export const useMyListingsPage = () => {
+const FEATURE_PLAN_SLUG = "destacar-vehiculo";
+
+type UseMyListingsPageOptions = {
+  audience?: string;
+  enabled?: boolean;
+};
+
+export const useMyListingsPage = ({
+  audience = "particular",
+  enabled = true,
+}: UseMyListingsPageOptions = {}) => {
   const queryClient = useQueryClient();
 
   const listingsQuery = useQuery({
@@ -20,10 +35,37 @@ export const useMyListingsPage = () => {
       }
       return response.data;
     },
+    enabled,
   });
+
+  const billingMeQuery = useQuery({
+    queryKey: BILLING_ME_QUERY_KEY,
+    queryFn: () => billingService.getMe(),
+    enabled,
+  });
+
+  const billingCatalogQuery = useQuery({
+    queryKey: [...BILLING_CATALOG_QUERY_KEY, audience],
+    queryFn: () => billingService.getCatalog(audience),
+    enabled,
+  });
+
+  const featurePlan = useMemo((): BillingCatalogPlan | null => {
+    return (
+      billingCatalogQuery.data?.find((plan) => plan.slug === FEATURE_PLAN_SLUG) ?? null
+    );
+  }, [billingCatalogQuery.data]);
+
+  const featurePrice = useMemo(() => {
+    return featurePlan?.prices.find((price) => price.interval === "one_time") ?? null;
+  }, [featurePlan]);
 
   const invalidateListings = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: MY_LISTINGS_QUERY_KEY });
+  }, [queryClient]);
+
+  const refetchBillingMe = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: BILLING_ME_QUERY_KEY });
   }, [queryClient]);
 
   const duplicateMutation = useMutation({
@@ -46,6 +88,32 @@ export const useMyListingsPage = () => {
       return response.data;
     },
     onSuccess: invalidateListings,
+  });
+
+  const featureMutation = useMutation({
+    mutationFn: async (vehicleId: string) => {
+      if (!featurePrice) {
+        throw new Error("El plan de destacado no está disponible");
+      }
+
+      const checkoutUrl = await billingService.createOneTimeCheckout(
+        featurePrice.id,
+        { vehicle_id: vehicleId },
+        {
+          success_url: absoluteUrl("/mis-anuncios?checkout=success"),
+          cancel_url: absoluteUrl("/mis-anuncios?checkout=cancel"),
+        },
+      );
+
+      if (!checkoutUrl) {
+        throw new Error("No se pudo iniciar el checkout de destacado");
+      }
+
+      return checkoutUrl;
+    },
+    onSuccess: (checkoutUrl) => {
+      window.location.href = checkoutUrl;
+    },
   });
 
   const scheduleMutation = useMutation({
@@ -97,14 +165,21 @@ export const useMyListingsPage = () => {
   return {
     listings,
     total: listingsQuery.data?.total ?? 0,
+    billingMe: billingMeQuery.data ?? null,
+    featurePlan,
+    featurePrice,
     isLoading: listingsQuery.isLoading,
+    isBillingLoading: billingMeQuery.isLoading || billingCatalogQuery.isLoading,
     isFetching: listingsQuery.isFetching,
     error: listingsQuery.error,
     refetch: listingsQuery.refetch,
+    refetchBillingMe,
     duplicate: duplicateMutation.mutateAsync,
     isDuplicating: duplicateMutation.isPending,
     renew: renewMutation.mutateAsync,
     isRenewing: renewMutation.isPending,
+    featureListing: featureMutation.mutateAsync,
+    isFeaturing: featureMutation.isPending,
     schedule: scheduleMutation.mutateAsync,
     isScheduling: scheduleMutation.isPending,
     updateStatus: updateStatusMutation.mutateAsync,

@@ -1,17 +1,23 @@
 import { API_URL, FRONTEND_URL } from "@/constants";
 import { User } from "@/interfaces/user.interface";
 import { VehicleList } from "@/interfaces/vehicle-list.interface";
+import { PublisherType } from "@/interfaces/vehicle.interface";
+import type { DealershipMembership } from "@/services/dealerships/types/team.types";
 import { ApiResponse, apiGet, apiPost, fetchWithAuth } from "@/lib/api";
 import {
   AuthResponseDto,
   Validate2faDto,
   ValidateBackupCodeDto,
   ResendEmailVerificationResponseDto,
+  TwoFactorChallengeState,
+  VerifyTwoFactorLoginResponse,
 } from "@/validations/auth";
 import { LoginDto, RegisterDto, ResetPasswordDto, ContactDto } from "@/validations/Schemas";
 
 export interface MeResponseDto extends User {
   vehicle_lists: VehicleList[];
+  userType: PublisherType;
+  dealership_membership?: DealershipMembership | null;
 }
 
 export const authService = {
@@ -48,15 +54,18 @@ export const authService = {
           data: null,
         };
       }
+
+      return fetchWithAuth<MeResponseDto>("/auth/me", {
+        method: "GET",
+        credentials: "include",
+      });
     }
 
     return fetchWithAuth<MeResponseDto>("/auth/me", {
       method: "GET",
       skipAuthRefresh: true,
       credentials: "include",
-      headers: accessToken
-        ? { Authorization: `Bearer ${accessToken}` }
-        : undefined,
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
   },
 
@@ -91,6 +100,21 @@ export const authService = {
 
   refreshToken: (): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/auth/refresh`, {}),
+
+  getTwoFactorChallenge: (): Promise<ApiResponse<TwoFactorChallengeState>> =>
+    fetchWithAuth<TwoFactorChallengeState>("/auth/two-factor/challenge", {
+      skipAuthRefresh: true,
+    }),
+
+  verifyTwoFactorLogin: (
+    code: string,
+  ): Promise<ApiResponse<VerifyTwoFactorLoginResponse>> =>
+    apiPost<VerifyTwoFactorLoginResponse>("/auth/verify-2fa", { code }),
+
+  verifyBackupCodeLogin: (
+    code: string,
+  ): Promise<ApiResponse<VerifyTwoFactorLoginResponse>> =>
+    apiPost<VerifyTwoFactorLoginResponse>("/auth/verify-backup-code", { code }),
 
 
   appleLogin: (opts?: { popup?: boolean }): string =>

@@ -1,21 +1,43 @@
 "use client";
 
-import { useContext } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { AuthContext } from "@/app/contexts/auth/authContext";
+import { usePathname, useSearchParams } from "next/navigation";
 import { LogOut, Edit } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/navbar/components/userAvatar";
-import { USER_SIDEBAR_LINKS } from "../constants/user.constants";
+import { getUserSidebarLinks } from "../constants/user.constants";
+import { useUser } from "@/app/contexts/auth/useUser";
+
+const isSidebarLinkActive = (
+  linkHref: string,
+  pathname: string | null,
+  tab: string | null,
+): boolean => {
+  if (linkHref.startsWith("/perfil")) {
+    if (linkHref.includes("tab=dealership")) {
+      return pathname === "/perfil" && tab === "dealership";
+    }
+
+    return pathname === "/perfil" && tab !== "dealership";
+  }
+
+  return (
+    pathname === linkHref ||
+    (Boolean(pathname?.startsWith(linkHref)) && linkHref !== "/")
+  );
+};
 
 export function UserSidebar() {
-  const authContext = useContext(AuthContext);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
 
-  const user = authContext?.user;
-
+  const { user, logout } = useUser();
+  const sidebarLinks = getUserSidebarLinks({
+    userType: user?.userType,
+    dealershipMembership: user?.dealership_membership,
+  });
   return (
     <div className="w-full  flex flex-col gap-4">
       {/* User Info Card */}
@@ -42,10 +64,8 @@ export function UserSidebar() {
       {/* Navigation Links */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <nav className="flex flex-col space-y-1">
-          {USER_SIDEBAR_LINKS.map((link) => {
-            const isActive =
-              pathname === link.href ||
-              (pathname?.startsWith(link.href) && link.href !== "/");
+          {sidebarLinks.map((link) => {
+            const isActive = isSidebarLinkActive(link.href, pathname, tab);
             const Icon = link.icon;
             return (
               <Link
@@ -66,7 +86,7 @@ export function UserSidebar() {
           <div className="pt-4 mt-2 border-t border-gray-100">
             <Button
               variant="ghost"
-              onClick={() => authContext?.logout()}
+              onClick={() => logout()}
               className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50"
             >
               <LogOut className="w-5 h-5" />

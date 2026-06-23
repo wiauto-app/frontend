@@ -17,7 +17,7 @@ export const TopDealershipCard = ({ dealership }: TopDealershipCardProps) => {
 
   return (
     <Link
-      href={`/vendedor/${dealership.id}`}
+      href={`/concesionaria/${dealership.slug}`}
       aria-label={`Ver perfil de ${dealership.name}`}
       className={cn(
         "group relative block h-full overflow-hidden rounded-2xl",

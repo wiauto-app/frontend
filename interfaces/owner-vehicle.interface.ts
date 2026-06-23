@@ -1,4 +1,5 @@
 import type { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
+import type { VehicleTransmissionTypeValue } from "@/components/vehicles/constants/vehicle-enums.constants";
 
 export interface OwnerVehicleStatTrend {
   current: number;
@@ -19,6 +20,12 @@ export interface OwnerVehicleListItem {
   can_schedule: boolean;
   scheduled_publish_at: string | null;
   renewed_at: string | null;
+  is_featured: boolean;
+  featured_expires_at: string | null;
+  is_featured_active: boolean;
+  can_feature: boolean;
+  transmission_type?: VehicleTransmissionTypeValue | string | null;
+  fuel_type?: string | null;
   image: { id: string; url: string } | null;
   stats: {
     views: OwnerVehicleStatTrend;

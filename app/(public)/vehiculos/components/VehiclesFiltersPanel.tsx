@@ -27,7 +27,10 @@ import { DgtLabelSelector } from "@/components/selectors/dgtLabelSelector";
 import { ColorSelector } from "@/components/selectors/colorSelector";
 import { FeaturesSelector } from "@/components/selectors/featuresSelector";
 import { ElectricSelector } from "@/components/selectors/electricSelector";
-import type { PriceFilterValue, PublisherTypesValue } from "@/components/selectors/types";
+import type {
+  PriceFilterValue,
+  PublisherTypesValue,
+} from "@/components/selectors/types";
 import type { FiltersResponse } from "@/interfaces/filters.interface";
 import type { TransmissionType } from "@/interfaces/vehicle.interface";
 import { Accordion } from "@/components/ui/accordion";
@@ -157,29 +160,23 @@ export const VehiclesFiltersPanel = ({
         <CardTitle>Filtros</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">
+        <VehicleTypeSelector
+          vehicleTypes={catalog.vehicleTypes}
+          value={type_slug}
+          onChange={(next) => {
+            setTypeSlug(next);
+            commitFilters({
+              ...filters,
+              type_slug: next,
+              page: 1,
+            });
+          }}
+        />
         <Accordion
           multiple
           value={openSections}
           onValueChange={setOpenSections}
         >
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.VEHICLE_TYPE}
-            title="Tipo de vehículo"
-            Icon={CarIcon}
-          >
-            <VehicleTypeSelector
-              vehicleTypes={catalog.vehicleTypes}
-              value={type_slug}
-              onChange={(next) => {
-                setTypeSlug(next);
-                commitFilters({
-                  ...filters,
-                  type_slug: next,
-                  page: 1,
-                });
-              }}
-            />
-          </FilterAccordeon>
           <Separator />
           <FilterAccordeon
             sectionId={FILTER_SECTION_IDS.MAKE_MODEL}

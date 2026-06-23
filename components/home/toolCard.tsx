@@ -57,25 +57,23 @@ export const ToolCard = ({ item }: ToolCardProps) => {
               {item.descripcion}
             </p>
           </div>
-
-          <Button
-            variant="secondary"
-            size="sm"
-            className={cn(
-              "mt-auto w-fit border-white/20 bg-white text-slate-900",
-              "hover:bg-white/90 focus-visible:ring-white/40",
-              "group-hover/card:shadow-md",
-            )}
-            render={
-              <Link href={item.boton.url} aria-label={ctaAriaLabel} />
-            }
-          >
-            {ctaLabel}
-            <ArrowRight
-              className="size-4 transition-transform duration-300 group-hover/card:translate-x-0.5"
-              aria-hidden
-            />
-          </Button>
+          <Link href={item.boton.url} aria-label={ctaAriaLabel}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className={cn(
+                "mt-auto w-fit border-white/20 bg-white text-slate-900",
+                "hover:bg-white/90 focus-visible:ring-white/40",
+                "group-hover/card:shadow-md",
+              )}
+            >
+              {ctaLabel}
+              <ArrowRight
+                className="size-4 transition-transform duration-300 group-hover/card:translate-x-0.5"
+                aria-hidden
+              />
+            </Button>
+          </Link>
         </div>
 
         {imageUrl ? (

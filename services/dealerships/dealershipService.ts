@@ -1,8 +1,14 @@
-import { apiGet } from "@/lib/api";
+import { apiGet, apiPatch, apiPost, type ApiResponse } from "@/lib/api";
 import { objectToQueryString } from "@/lib/utils";
 import type { PaginatedResult, PaginationParams } from "@/types/general.types";
-import { V1_DEALERSHIPS } from "./route.constants";
-import type { DealershipListItem } from "./types/dealership.types";
+import { V1_DEALERSHIPS, V1_DEALERSHIPS_BY_SLUG, V1_DEALERSHIPS_MY_PROFILE } from "./route.constants";
+import type {
+  CreateDealershipPayload,
+  CreateMyDealershipPayload,
+  DealershipDetail,
+  DealershipListItem,
+  UpdateDealershipPayload,
+} from "./types/dealership.types";
 
 export type FindAllDealershipsParams = PaginationParams & {
   query?: string;
@@ -60,4 +66,34 @@ export const dealershipService = {
     );
     return response.data;
   },
+
+  findOne: async (id: string): Promise<ApiResponse<DealershipDetail>> =>
+    apiGet<DealershipDetail>(`${V1_DEALERSHIPS}/${id}`),
+
+  findBySlug: async (slug: string): Promise<DealershipDetail | null> => {
+    try {
+      const response = await apiGet<DealershipDetail>(
+        `${V1_DEALERSHIPS_BY_SLUG}/${slug}`,
+      );
+      return response.data;
+    } catch {
+      return null;
+    }
+  },
+
+  createMyProfile: async (
+    data: CreateMyDealershipPayload,
+  ): Promise<ApiResponse<DealershipDetail>> =>
+    apiPost<DealershipDetail>(V1_DEALERSHIPS_MY_PROFILE, data),
+
+  create: async (
+    data: CreateDealershipPayload,
+  ): Promise<ApiResponse<DealershipDetail>> =>
+    apiPost<DealershipDetail>(V1_DEALERSHIPS, data),
+
+  update: async (
+    id: string,
+    data: UpdateDealershipPayload,
+  ): Promise<ApiResponse<DealershipDetail>> =>
+    apiPatch<DealershipDetail>(`${V1_DEALERSHIPS}/${id}`, data),
 };

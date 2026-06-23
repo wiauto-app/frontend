@@ -1,11 +1,11 @@
 import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
-import { Panel } from "./components/panel";
+import { DashboardContent } from "./components/dashboard/DashboardContent";
 
 export const metadata = createUserAreaMetadata(
   "Inicio",
-  "Resumen de actividad, estadísticas y publicaciones recientes.",
+  "Resumen y analytics de tu actividad, inventario y oportunidades.",
 );
 
 export default function InicioPage() {
-  return <Panel />;
+  return <DashboardContent />;
 }

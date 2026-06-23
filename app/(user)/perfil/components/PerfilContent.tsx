@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -32,6 +33,8 @@ import { useUser } from "@/app/contexts/auth/useUser";
 import { EmailSettingsSection } from "./EmailSettingsSection";
 import { PasswordSettingsSection } from "./PasswordSettingsSection";
 import { TwoFactorSettingsSection } from "./TwoFactorSettingsSection";
+import { DealershipProfileTabContent } from "./DealershipProfileTabContent";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const EMPTY_PROFILE_FORM: UpdateProfileFormValues = {
   name: "",
@@ -44,6 +47,24 @@ const EMPTY_PROFILE_FORM: UpdateProfileFormValues = {
 export const PerfilContent = () => {
   const { user, isLoading, refreshUser } = useUser();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const activeTab =
+    searchParams.get("tab") === "dealership" ? "dealership" : "profile";
+
+  const handleTabChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value === "dealership") {
+      params.set("tab", "dealership");
+    } else {
+      params.delete("tab");
+    }
+
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
 
   const {
     data: account,
@@ -127,7 +148,14 @@ export const PerfilContent = () => {
   const isLocal = account?.provider === "local";
 
   return (
-    <div className="max-w-5xl space-y-6 pb-20">
+    <div className="space-y-6 pb-20">
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="profile">Mi perfil</TabsTrigger>
+          <TabsTrigger value="dealership">Perfil de concesionaria</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-6">
       <div className="flex flex-col items-center gap-6 rounded-xl border border-blue-100 bg-blue-100/50 p-6 md:flex-row md:items-start">
         <div className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-200 text-2xl font-bold text-blue-700">
           {avatarUrl ? (
@@ -330,6 +358,12 @@ export const PerfilContent = () => {
           </div>
         </div>
       </div>
+        </TabsContent>
+
+        <TabsContent value="dealership">
+          <DealershipProfileTabContent />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

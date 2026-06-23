@@ -1,20 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Bell,
-  Car,
-  Heart,
-  LayoutGrid,
-  LogOut,
-  MessageSquare,
-  Search,
-  Settings,
-  UserIcon,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 
 import { useUser } from "@/app/contexts/auth/useUser";
-import { cn } from "@/lib/utils";
 import { UserAvatar } from "./userAvatar";
 
 import {
@@ -24,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { USER_SIDEBAR_LINKS } from "@/app/(user)/constants/user.constants";
+import { getUserSidebarLinks } from "@/app/(user)/constants/user.constants";
 
 function getDisplayName(name?: string, lastName?: string, email?: string) {
   const fullName = [name, lastName].filter(Boolean).join(" ").trim();
@@ -43,7 +32,7 @@ export function UserDropdown() {
     return (
       <Link
         href="/iniciar-sesion"
-        className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white"
+        className="text-sm font-semibold  hover:text-primary hover:underline"
       >
         Iniciar sesión
       </Link>
@@ -51,6 +40,10 @@ export function UserDropdown() {
   }
 
   const displayName = getDisplayName(user.name, user.last_name, user.email);
+  const sidebarLinks = getUserSidebarLinks({
+    userType: user.userType,
+    dealershipMembership: user.dealership_membership,
+  });
 
   return (
     <DropdownMenu>
@@ -62,7 +55,7 @@ export function UserDropdown() {
           >
             <UserAvatar />
 
-            <span className="max-w-[160px] truncate text-sm font-bold text-slate-900">
+            <span className="hidden max-w-[160px] truncate text-sm font-bold text-slate-900 sm:inline">
               {displayName}
             </span>
           </button>
@@ -75,7 +68,7 @@ export function UserDropdown() {
           <p className="truncate text-xs text-muted-foreground">{user.email}</p>
         </div>
 
-        {USER_SIDEBAR_LINKS.map((item) => {
+        {sidebarLinks.map((item) => {
           const Icon = item.icon;
 
           return (

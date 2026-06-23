@@ -28,7 +28,7 @@ type FilterChip = {
   onRemove: () => void;
 };
 
-type VehiclesListingFiltersContextValue = {
+export type VehiclesListingFiltersContextValue = {
   filters: FindAllVehiclesParams;
   commitFilters: (nextFilters: FindAllVehiclesParams) => void;
   priceMin: string;
@@ -67,6 +67,8 @@ type VehiclesListingFiltersContextValue = {
 
 const VehiclesListingFiltersContext =
   createContext<VehiclesListingFiltersContextValue | null>(null);
+
+export { VehiclesListingFiltersContext };
 
 const resolveSlugArray = (slug: string | string[] | undefined): string[] => {
   if (!slug) {

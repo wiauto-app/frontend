@@ -9,10 +9,12 @@ const PROVIDER_EVENTS = {
   google: {
     success: OAUTH_EVENTS.GOOGLE_LOGIN_SUCCESS,
     error: OAUTH_EVENTS.GOOGLE_LOGIN_ERROR,
+    twoFactor: OAUTH_EVENTS.GOOGLE_LOGIN_2FA_REQUIRED,
   },
   apple: {
     success: OAUTH_EVENTS.APPLE_LOGIN_SUCCESS,
     error: OAUTH_EVENTS.APPLE_LOGIN_ERROR,
+    twoFactor: OAUTH_EVENTS.APPLE_LOGIN_2FA_REQUIRED,
   },
 } as const;
 
@@ -41,7 +43,12 @@ export default function OAuthPopupCompletePage() {
     }
 
     const events = PROVIDER_EVENTS[provider];
-    const eventType = status === "success" ? events.success : events.error;
+    const eventType =
+      status === "success"
+        ? events.success
+        : status === "2fa_required"
+          ? events.twoFactor
+          : events.error;
     const payload = {
       type: eventType,
       message: message ?? undefined,

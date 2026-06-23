@@ -37,7 +37,7 @@ export const ConfiguracionContent = () => {
   };
 
   return (
-    <div className="space-y-6 pb-20 max-w-5xl">
+    <div className="space-y-6 pb-20">
       
       {/* Idioma y región */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">

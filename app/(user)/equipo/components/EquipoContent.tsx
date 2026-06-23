@@ -1,98 +1,208 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LayoutGrid } from "lucide-react";
 import Link from "next/link";
-import RolesGrid from "./rolesGrid";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { useUser } from "@/app/contexts/auth/useUser";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { dealershipTeamService } from "@/services/dealerships/dealershipTeamService";
+import { dealershipInvitationService } from "@/services/dealerships/dealershipInvitationService";
+import type { DealershipMemberRole } from "@/services/dealerships/types/team.types";
+
 import TeamTable from "./teamTable";
+import RolesGrid from "./rolesGrid";
+import { PendingInvitationsTable } from "./PendingInvitationsTable";
+import { canManageTeam } from "../utils/teamPermissions";
 
 export const EquipoContent = () => {
-  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+  const { user, isLoading: isUserLoading } = useUser();
+
+  const membership = user?.dealership_membership;
+  const dealershipId = membership?.dealership_id;
+  const isManager = canManageTeam(membership?.role);
+
+  const {
+    data: members = [],
+    isLoading: isTeamLoading,
+  } = useQuery({
+    queryKey: ["dealership-team", dealershipId],
+    queryFn: () => dealershipTeamService.getTeam(dealershipId!),
+    enabled: Boolean(dealershipId),
+  });
+
+  const {
+    data: invitationsResult,
+    isLoading: isInvitationsLoading,
+    refetch: refetchInvitations,
+  } = useQuery({
+    queryKey: ["dealership-invitations", dealershipId],
+    queryFn: () =>
+      dealershipInvitationService.listInvitations({
+        dealership_id: dealershipId!,
+        status: "pending",
+      }),
+    enabled: Boolean(dealershipId) && isManager,
+  });
+
+  const membersByRole = useMemo(
+    () =>
+      members.reduce<Record<DealershipMemberRole, number>>(
+        (acc, member) => {
+          acc[member.role] += 1;
+          return acc;
+        },
+        { owner: 0, admin: 0, member: 0 },
+      ),
+    [members],
+  );
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null);
-      }
-    };
-
-    if (openDropdown !== null) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+    if (!isUserLoading && !membership) {
+      router.replace("/inicio");
     }
-  }, [openDropdown]);
+  }, [isUserLoading, membership, router]);
 
-  const equipo = [
-    {
-      id: 1,
-      avatar: "",
-      name: "Andres Gutierrez",
-      email: "andres@wiauto.es",
-      phone: "+34 612 345 678",
-      leads: 24,
-      sales: 12,
-      role: "Admin",
-      status: "Activo"
-    },
-    {
-      id: 2,
-      avatar: "",
-      name: "Maria Rodriguez",
-      email: "maria@wiauto.es",
-      phone: "+34 623 456 789",
-      leads: 18,
-      sales: 9,
-      role: "Vendedor",
-      status: "Activo",
-    },
-    {
-      id: 3,
-      avatar: "",
-      name: "Carlos Lopez",
-      email: "carlos@wiauto.es",
-      phone: "+34 634 567 890",
-      leads: 32,
-      sales: 15,
-      role: "Vendedor",
-      status: "Inactivo"
-    },
-    {
-      id: 4,
-      avatar: "",
-      name: "Laura Fernandez",
-      email: "laura@wiauto.es",
-      phone: "+34 645 678 901",
-      leads: 41,
-      sales: 28,
-      role: "Supervisor",
-      status: "Activo",
+  useEffect(() => {
+    if (searchParams.get("joined") === "1") {
+      toast.success("Te uniste al equipo correctamente");
+      router.replace("/equipo");
     }
-  ];
+  }, [router, searchParams]);
 
-  const roles = [
-    { id: 1, name: "Admin", permissions:["Acceso total","facturación","equipo"], numberOfMembers:1 },
-    { id: 2, name: "Vendedor", permissions: ["leads"], numberOfMembers:2 },
-    { id: 3, name: "Supervisor", permissions: ["leads", "sales"], numberOfMembers:1 }
-  ];
+  const invalidateTeamQueries = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ["dealership-team", dealershipId] });
+    await queryClient.invalidateQueries({ queryKey: ["dealership-invitations", dealershipId] });
+    await queryClient.invalidateQueries({ queryKey: ["user"] });
+  }, [dealershipId, queryClient]);
+
+  const handleUpdateRole = async (memberId: string, role: "admin" | "member") => {
+    if (!dealershipId) {
+      return;
+    }
+
+    try {
+      await dealershipTeamService.updateMemberRole(dealershipId, memberId, { role });
+      await invalidateTeamQueries();
+      toast.success("Rol actualizado");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "No se pudo actualizar el rol",
+      );
+    }
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    if (!dealershipId) {
+      return;
+    }
+
+    try {
+      await dealershipTeamService.removeMember(dealershipId, memberId);
+      await invalidateTeamQueries();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "No se pudo eliminar al miembro",
+      );
+      throw error;
+    }
+  };
+
+  const handleLeaveTeam = async () => {
+    if (!dealershipId) {
+      return;
+    }
+
+    try {
+      await dealershipTeamService.leaveTeam(dealershipId);
+      await invalidateTeamQueries();
+      router.replace("/inicio");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "No se pudo salir del equipo",
+      );
+      throw error;
+    }
+  };
+
+  const handleRevokeInvitation = async (invitationId: string) => {
+    try {
+      await dealershipInvitationService.revokeInvitation(invitationId);
+      await refetchInvitations();
+      toast.success("Invitación revocada");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "No se pudo revocar la invitación",
+      );
+      throw error;
+    }
+  };
+
+  if (isUserLoading || !membership) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <p className="text-gray-500">Cargando equipo...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-20">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <LayoutGrid className="w-6 h-6 text-gray-700" />
-          <h1 className="text-2xl font-bold text-gray-900">Equipo</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <div className="mb-1 flex items-center gap-2">
+            <LayoutGrid className="h-6 w-6 text-gray-700" />
+            <h1 className="text-2xl font-bold text-gray-900">Equipo</h1>
+          </div>
+          <p className="text-sm text-gray-500">{membership.dealership_name}</p>
         </div>
-        <Link 
-          href="/invitar-miembro" 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          Invitar miembro
-        </Link>
+        {isManager ? (
+          <Link
+            href="/invitar-miembro"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Invitar miembro
+          </Link>
+        ) : null}
       </div>
 
-     <TeamTable equipo={equipo} />
-      <RolesGrid roles={roles}/>
+      <Tabs defaultValue="members">
+        <TabsList>
+          <TabsTrigger value="members">Miembros</TabsTrigger>
+          {isManager ? (
+            <TabsTrigger value="invitations">Invitaciones pendientes</TabsTrigger>
+          ) : null}
+        </TabsList>
+
+        <TabsContent value="members" className="space-y-6">
+          <TeamTable
+            members={members}
+            currentMemberId={membership.member_id}
+            currentRole={membership.role}
+            isLoading={isTeamLoading}
+            onUpdateRole={handleUpdateRole}
+            onRemoveMember={handleRemoveMember}
+            onLeaveTeam={handleLeaveTeam}
+          />
+          <RolesGrid membersByRole={membersByRole} />
+        </TabsContent>
+
+        {isManager ? (
+          <TabsContent value="invitations">
+            <PendingInvitationsTable
+              invitations={invitationsResult?.data ?? []}
+              isLoading={isInvitationsLoading}
+              onRevoke={handleRevokeInvitation}
+            />
+          </TabsContent>
+        ) : null}
+      </Tabs>
     </div>
   );
-}
+};

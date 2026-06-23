@@ -20,7 +20,7 @@ const HeroSearchFormContent = () => {
   return (
     <div className="w-full  rounded-b-2xl rounded-r-2xl bg-white p-6 shadow-2xl sm:p-7">
       <form
-        className="grid grid-cols-5 gap-3"
+        className="grid grid-cols-1 sm:grid-cols-4  gap-3"
         onSubmit={(event) => {
           event.preventDefault();
           handleSearch();
@@ -29,7 +29,6 @@ const HeroSearchFormContent = () => {
         <HeroFiltersMakeSelector />
         <HeroFiltersLocationSelector />
         <PriceUntilSelector />
-        <div></div>
         <Button type="submit" className="h-full">
           Buscar autos
         </Button>

@@ -118,9 +118,7 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
           mapId="vehicle-publish-map"
           gestureHandling="greedy"
           defaultCenter={hasCoords ? value : DEFAULT_CENTER}
-          center={hasCoords ? value : DEFAULT_CENTER}
           defaultZoom={hasCoords ? 14 : 6}
-          zoom={hasCoords ? 14 : 6}
           onClick={handleMapClick}
           style={{ width: "100%", height: "100%" }}
         >

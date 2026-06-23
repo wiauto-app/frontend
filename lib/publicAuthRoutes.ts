@@ -3,6 +3,8 @@ import { AUTH_ROUTES } from "@/constants/auth.constants";
 const PUBLIC_AUTH_PATH_PREFIXES = [
   AUTH_ROUTES.LOGIN,
   AUTH_ROUTES.REGISTER,
+  "/invitacion/rechazada",
+  "/verificacion-2fa",
   "/olvide-contrasena",
   "/cambiar-contrasena",
   "/confirmar-correo",

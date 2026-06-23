@@ -97,8 +97,7 @@ export const VehiclePriceSelector = ({
               aria-label="Precio del vehículo en euros"
               onChange={(event) => {
                 const raw_value = event.target.value;
-                const parsed_price =
-                  raw_value === "" ? 0 : Number(raw_value);
+                const parsed_price = raw_value === "" ? 0 : Number(raw_value);
 
                 field.onChange(parsed_price);
 
@@ -107,28 +106,31 @@ export const VehiclePriceSelector = ({
                   parsed_price,
                 );
 
-                form.setValue(
-                  "vehicle_price_id",
-                  matching_item?.id,
-                  { shouldDirty: true },
-                );
+                form.setValue("vehicle_price_id", matching_item?.id, {
+                  shouldDirty: true,
+                });
               }}
             />
 
             {has_history ? (
               <InputGroupAddon align="inline-end">
                 <Popover open={history_open} onOpenChange={setHistoryOpen}>
-                  <PopoverTrigger>
-                    <InputGroupButton
-                      type="button"
-                      size="icon-xs"
-                      aria-label="Ver historial de precios"
-                      aria-expanded={history_open}
-                    >
-                      <History className="size-4" aria-hidden />
-                      <ChevronDown className="size-3 opacity-50" aria-hidden />
-                    </InputGroupButton>
-                  </PopoverTrigger>
+                  <PopoverTrigger
+                    render={
+                      <InputGroupButton
+                        type="button"
+                        size="icon-xs"
+                        aria-label="Ver historial de precios"
+                        aria-expanded={history_open}
+                      >
+                        <History className="size-4" aria-hidden />
+                        <ChevronDown
+                          className="size-3 opacity-50"
+                          aria-hidden
+                        />
+                      </InputGroupButton>
+                    }
+                  ></PopoverTrigger>
 
                   <PopoverContent
                     className="w-[var(--radix-popover-trigger-width)] min-w-[320px] p-0"
@@ -173,9 +175,7 @@ export const VehiclePriceSelector = ({
             ) : null}
           </InputGroup>
 
-          {fieldState.error ? (
-            <FieldError errors={[fieldState.error]} />
-          ) : null}
+          {fieldState.error ? <FieldError errors={[fieldState.error]} /> : null}
         </Field>
       )}
     />
