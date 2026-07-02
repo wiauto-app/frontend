@@ -6,22 +6,30 @@ import { Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "@/app/(public)/concesionarias/constants";
 import { formatPrice } from "@/app/(public)/vehiculos/utils";
-import type { DealerProfileVehicle } from "../interfaces";
+import { Vehicle } from "@/interfaces/vehicle.interface";
+import { getImageUrl } from "@/lib/utils";
 
 type DealerVehicleCardProps = {
-  vehicle: DealerProfileVehicle;
+  vehicle: Vehicle;
 };
 
 export function DealerVehicleCard({ vehicle }: DealerVehicleCardProps) {
   const [favorite, setFavorite] = useState(false);
+  const primaryImageUrl = vehicle.images[0]?.url
+    ? getImageUrl(vehicle.images[0].url)
+    : null;
+  const makeName = vehicle.version.make.name;
+  const modelName = vehicle.version.model.name;
+  const imageCount = vehicle.images.length;
+  const tags = vehicle.features.slice(0, 3).map((feature) => feature.name);
 
   return (
     <Card className="overflow-hidden rounded-2xl border-slate-100 pt-0 shadow-sm transition-shadow hover:shadow-md">
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-        {vehicle.image ? (
+        {primaryImageUrl ? (
           <img
-            src={vehicle.image}
-            alt={`${vehicle.make} ${vehicle.model}`}
+            src={primaryImageUrl}
+            alt={`${makeName} ${modelName}`}
             className="size-full object-cover transition-transform duration-300 hover:scale-105"
           />
         ) : (
@@ -46,9 +54,11 @@ export function DealerVehicleCard({ vehicle }: DealerVehicleCardProps) {
           />
         </button>
 
-        <span className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-[11px] font-semibold text-white">
-          1/{vehicle.imageCount}
-        </span>
+        {imageCount > 0 ? (
+          <span className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-[11px] font-semibold text-white">
+            1/{imageCount}
+          </span>
+        ) : null}
       </div>
 
       <CardContent className="space-y-2 p-4">
@@ -58,24 +68,26 @@ export function DealerVehicleCard({ vehicle }: DealerVehicleCardProps) {
             style={{ color: BRAND_BLUE }}
           >
             {vehicle.condition === "new" ? "New " : ""}
-            {vehicle.make}
+            {makeName}
           </p>
-          <p className="text-base font-bold text-slate-900">{vehicle.model}</p>
+          <p className="text-base font-bold text-slate-900">{modelName}</p>
         </Link>
         <p className="text-lg font-extrabold text-slate-900">
           {formatPrice(vehicle.price)}
         </p>
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          {vehicle.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-              style={{ backgroundColor: BRAND_BLUE_LIGHT, color: BRAND_BLUE }}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        {tags.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                style={{ backgroundColor: BRAND_BLUE_LIGHT, color: BRAND_BLUE }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );

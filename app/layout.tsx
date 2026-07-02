@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
 import { Footer, NewsletterSection } from "@/components/home";
+import { AssistantDialog } from "@/components/assistant/assistantDialog";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -48,6 +49,7 @@ export default async function RootLayout({
             <NewsletterSection />
             <Footer />
           </div>
+          <AssistantDialog />
         </Providers>
       </body>
     </html>

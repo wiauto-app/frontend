@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
 import {
-  AppDownloadBanner,
-  BlogArticlesSection,
-  FeaturedVehiclesSection,
   HeroSection,
-  CarTypesSection,
   PopularCategoriesGrid,
-  ProcessSection,
   RelatedNewsSection,
-  ValuePropositionSection,
 } from "@/components/home";
 import { getHomeData } from "@/components/home/services/homeService";
 import { Suspense } from "react";
