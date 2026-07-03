@@ -20,7 +20,6 @@ export const QuickVehicleMediaStep = ({ vehicleId }: QuickVehicleMediaStepProps)
       <VehicleFormStep
         number={1}
         label="Fotos y vídeos"
-        isRequired
         description="Añade al menos 3 fotos. Los vídeos son opcionales."
       />
       <Tabs defaultValue="images">

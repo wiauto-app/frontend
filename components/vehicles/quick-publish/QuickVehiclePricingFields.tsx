@@ -14,7 +14,7 @@ export const QuickVehiclePricingFields = () => {
 
   return (
     <section className="flex flex-col gap-4">
-      <VehicleFormStep number={3} label="Estado, kilometraje y precio" isRequired />
+      <VehicleFormStep number={3} label="Estado, kilometraje y precio"  />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Controller
           name="condition"

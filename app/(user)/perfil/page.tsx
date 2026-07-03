@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
 import { PerfilContent } from "./components/PerfilContent";
 
@@ -7,5 +8,9 @@ export const metadata = createUserAreaMetadata(
 );
 
 export default function PerfilPage() {
-  return <PerfilContent />;
+  return (
+    <Suspense fallback={<div className="p-6">Cargando perfil...</div>}>
+      <PerfilContent />
+    </Suspense>
+  );
 }

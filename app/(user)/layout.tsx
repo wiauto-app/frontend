@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Menu } from "lucide-react";
 import Providers from "../providers";
-import { UserSidebar } from "./components/UserSidebar";
+import { UserSidebar, UserSidebarFallback } from "./components/UserSidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const USER_AREA_MAX_WIDTH = "max-w-[1800px]";
@@ -34,13 +34,17 @@ export default function Layout({
                   className="bg-[#F3F5F9] p-2"
                   showCloseButton={false}
                 >
-                  <UserSidebar />
+                  <Suspense fallback={<UserSidebarFallback />}>
+                    <UserSidebar />
+                  </Suspense>
                 </SheetContent>
               </Sheet>
             </div>
 
             <aside className={`hidden shrink-0 md:block ${USER_SIDEBAR_WIDTH}`}>
-              <UserSidebar />
+              <Suspense fallback={<UserSidebarFallback />}>
+                <UserSidebar />
+              </Suspense>
             </aside>
 
             <main className="min-w-0 w-full flex-1">{children}</main>

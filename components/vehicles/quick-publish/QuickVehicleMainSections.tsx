@@ -34,7 +34,7 @@ export const QuickVehicleMainSections = ({
       <QuickVehicleMediaStep vehicleId={vehicleId} />
 
       <section className="flex flex-col gap-4">
-        <VehicleFormStep number={2} label="¿Qué vehículo vendes?" isRequired />
+        <VehicleFormStep number={2} label="¿Qué vehículo vendes?"  />
         <QuickCatalogFields />
         {form.formState.errors.version_id ? (
           <p className="text-sm text-destructive">
@@ -50,7 +50,6 @@ export const QuickVehicleMainSections = ({
         <VehicleFormStep
           number={5}
           label="Descripción del vehículo"
-          isRequired
           description="Describe el estado, historial y puntos destacados del vehículo."
         />
         <Controller
@@ -72,13 +71,13 @@ export const QuickVehicleMainSections = ({
       </section>
 
       <section className="flex flex-col gap-4">
-        <VehicleFormStep number={6} label="Ficha técnica" isRequired />
+        <VehicleFormStep number={6} label="Ficha técnica"  />
         <QuickVehicleTechnicalFields />
         <QuickVehicleElectricFields />
       </section>
 
       <section className="flex flex-col gap-4">
-        <VehicleFormStep number={7} label="Ubicación" isRequired />
+        <VehicleFormStep number={7} label="Ubicación"  />
         <Controller
           name="lat"
           control={form.control}
@@ -102,7 +101,7 @@ export const QuickVehicleMainSections = ({
       </section>
 
       <section className="flex flex-col gap-4">
-        <VehicleFormStep number={8} label="Tu contacto" isRequired />
+        <VehicleFormStep number={8} label="Tu contacto"  />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Field>
             <FieldLabel htmlFor="contact-name">Nombre</FieldLabel>

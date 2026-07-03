@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { LayoutGrid, Search } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSavedSearchesPage } from "../hooks/useSavedSearchesPage";
 import { SavedSearchCard } from "./SavedSearchCard";

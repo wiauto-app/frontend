@@ -106,7 +106,10 @@ export const SignInFormContent = ({
       <div className={cn("w-full space-y-8", className)}>
         <TwoFactorLoginStep
           email={pendingEmail}
-          onSuccess={onSuccess}
+          onSuccess={async () => {
+            onSuccess();
+            router.push("/");
+          }}
           onBack={handleBackToCredentials}
         />
       </div>
