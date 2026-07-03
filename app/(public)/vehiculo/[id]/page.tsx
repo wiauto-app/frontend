@@ -1,5 +1,6 @@
 import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
-import { VehicleDetailContactForm } from "./components/VehicleDetailContactForm";
+import { VehicleDetailContactChannels } from "./components/VehicleDetailContactChannels";
+import { VehicleDetailContactTabs } from "./components/VehicleDetailContactTabs";
 import { VehicleDetailGallery } from "./components/VehicleDetailGallery";
 import { VehicleDetailFeatures } from "./components/VehicleDetailFeatures";
 import { VehicleDetailLocationSection } from "./components/VehicleDetailLocationSection";
@@ -61,8 +62,7 @@ export default async function VehicleDetailPage({
     <div className="min-h-screen bg-gray-50">
       <JsonLdScript data={jsonLdGraph} />
       <VehicleDetailTopBar
-        vehicle_id={vehicle.id}
-        vehicle_title={displayName}
+        vehicle={vehicle}
         breadcrumbItems={breadcrumbItems}
       />
       <div className="mx-auto container-custom py-6">
@@ -90,31 +90,24 @@ export default async function VehicleDetailPage({
             <VehicleDetailLocationSection vehicle={vehicle} />
           </div>
 
-          <Card className="space-y-6 sticky top-20 right-0 h-fit" size="sm">
+          <Card
+            id="vehicle-contact-section"
+            className="space-y-6 sticky top-20 right-0 h-fit scroll-mt-24"
+            size="sm"
+          >
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-end gap-2">
-                <ReportButton
-                  publisherType={vehicle.publisher_type}
-                  profileId={vehicle.profile_id}
-                  publisher={vehicle.publisher}
-                  dealership={vehicle.dealership}
-                  variant="outline"
-                />
-                <VehicleFavoriteButton
-                  vehicleId={vehicle.id}
-                  variant="outline"
-                />
-                <VehicleShareButton
-                  vehicleId={vehicle.id}
-                  vehicleTitle={displayName}
-                  variant="outline"
-                />
-              </div>
-              <VehicleDetailVerifiedSellerCard
+        
+              {/* <VehicleDetailVerifiedSellerCard
                 verified_seller={old.verified_seller}
                 dealership={vehicle.dealership}
+              /> */}
+              <VehicleDetailContactChannels
+                vehicleId={vehicle.id}
+                showPhone={vehicle.show_phone !== false}
+                hasWhatsApp={vehicle.has_whatsapp === true}
+                vehicleTitle={displayName}
               />
-              <VehicleDetailContactForm
+              <VehicleDetailContactTabs
                 vehicleId={vehicle.id}
                 publisherProfileId={
                   vehicle.profile_id ?? vehicle.publisher.id
@@ -128,7 +121,12 @@ export default async function VehicleDetailPage({
 
       <VehicleSimilarVehiclesSection vehicleId={vehicle.id} />
 
-      <VehicleDetailMobileActions contact_phone={old.contact_phone} />
+      <VehicleDetailMobileActions
+        vehicleId={vehicle.id}
+        showPhone={vehicle.show_phone !== false}
+        hasWhatsApp={vehicle.has_whatsapp === true}
+        vehicleTitle={displayName}
+      />
     </div>
   );
 }

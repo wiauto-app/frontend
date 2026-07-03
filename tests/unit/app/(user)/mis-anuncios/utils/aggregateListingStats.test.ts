@@ -30,6 +30,8 @@ const createListing = (
     leads: { current: 2, previous: 1, change_percent: 100 },
     favorites: { current: 3, previous: 3, change_percent: 0 },
     shares: { current: 0, previous: 0, change_percent: null },
+    phone_clicks: { current: 0, previous: 0, change_percent: null },
+    whatsapp_clicks: { current: 0, previous: 0, change_percent: null },
   },
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
@@ -46,6 +48,8 @@ describe("aggregateListingStats", () => {
           leads: { current: 2, previous: 1, change_percent: 100 },
           favorites: { current: 1, previous: 0, change_percent: 100 },
           shares: { current: 0, previous: 0, change_percent: null },
+          phone_clicks: { current: 0, previous: 0, change_percent: null },
+          whatsapp_clicks: { current: 0, previous: 0, change_percent: null },
         },
       }),
       createListing({
@@ -56,6 +60,8 @@ describe("aggregateListingStats", () => {
           leads: { current: 4, previous: 2, change_percent: 100 },
           favorites: { current: 2, previous: 1, change_percent: 100 },
           shares: { current: 0, previous: 0, change_percent: null },
+          phone_clicks: { current: 0, previous: 0, change_percent: null },
+          whatsapp_clicks: { current: 0, previous: 0, change_percent: null },
         },
       }),
     ];
@@ -78,6 +84,8 @@ describe("aggregateListingStats", () => {
           leads: { current: 0, previous: 0, change_percent: null },
           favorites: { current: 0, previous: 0, change_percent: null },
           shares: { current: 0, previous: 0, change_percent: null },
+          phone_clicks: { current: 0, previous: 0, change_percent: null },
+          whatsapp_clicks: { current: 0, previous: 0, change_percent: null },
         },
       }),
     ];
@@ -95,6 +103,8 @@ describe("aggregateListingStats", () => {
           leads: { current: 0, previous: 0, change_percent: null },
           favorites: { current: 0, previous: 0, change_percent: null },
           shares: { current: 0, previous: 0, change_percent: null },
+          phone_clicks: { current: 0, previous: 0, change_percent: null },
+          whatsapp_clicks: { current: 0, previous: 0, change_percent: null },
         },
       }),
     ];

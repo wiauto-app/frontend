@@ -16,6 +16,10 @@ import { ToolsAccess } from "@/components/home/toolsAccess";
 import { Zones } from "@/components/home/zones";
 import { ToolsShortcuts } from "@/components/home/toolsShortcuts";
 import { TopDealerships } from "@/components/home/topDealerships";
+import {
+  VehicleDiscoverySection,
+  VehicleDiscoverySectionSkeleton,
+} from "@/components/discovery";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
@@ -61,10 +65,13 @@ export default async function Home() {
         />
         <ToolsAccess data={home_data.herramientas} />
         <Zones />
+       
         <RelatedNewsSection />
         <ToolsShortcuts />
         <TopDealerships />
-   
+        <Suspense fallback={<VehicleDiscoverySectionSkeleton />}>
+          <VehicleDiscoverySection />
+        </Suspense>
       </div>
     </>
   );

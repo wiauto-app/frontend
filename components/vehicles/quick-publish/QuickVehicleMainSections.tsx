@@ -5,8 +5,9 @@ import { VehicleFormStep } from "@/app/(public)/components/vehicleFormStep";
 import { MapInput } from "@/components/forms/mapInput";
 import { PhoneInput } from "@/components/forms/phoneInput";
 import { ControllerInput } from "@/components/ui/controllerInput";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { QuickCatalogFields } from "./QuickCatalogFields";
@@ -26,6 +27,7 @@ export const QuickVehicleMainSections = ({
   contactName,
 }: QuickVehicleMainSectionsProps) => {
   const form = useFormContext<QuickVehicleSchema>();
+  const phoneValue = form.watch("phone");
 
   return (
     <div className="flex flex-col gap-6">
@@ -135,6 +137,59 @@ export const QuickVehicleMainSections = ({
             )}
           </ControllerInput>
         </div>
+
+        <Controller
+          name="show_phone"
+          control={form.control}
+          render={({ field }) => (
+            <Field>
+              <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
+                <div className="space-y-1">
+                  <FieldLabel htmlFor="quick-show-phone">
+                    Mostrar teléfono en el anuncio
+                  </FieldLabel>
+                  <FieldDescription>
+                    Si lo desactivas, se ocultará el contacto telefónico en el
+                    anuncio público.
+                  </FieldDescription>
+                </div>
+                <Switch
+                  id="quick-show-phone"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  aria-label="Mostrar teléfono en el anuncio"
+                />
+              </div>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="has_whatsapp"
+          control={form.control}
+          render={({ field }) => (
+            <Field>
+              <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
+                <div className="space-y-1">
+                  <FieldLabel htmlFor="quick-has-whatsapp">
+                    Disponible por WhatsApp
+                  </FieldLabel>
+                  <FieldDescription>
+                    Indica si el número de contacto puede recibir mensajes por
+                    WhatsApp.
+                  </FieldDescription>
+                </div>
+                <Switch
+                  id="quick-has-whatsapp"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={!phoneValue?.phone?.trim()}
+                  aria-label="Disponible por WhatsApp"
+                />
+              </div>
+            </Field>
+          )}
+        />
       </section>
     </div>
   );

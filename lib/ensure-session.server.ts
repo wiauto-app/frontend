@@ -1,10 +1,10 @@
 import type { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 import { cookiesConfig } from "@/config/cookies.config";
 import { API_URL } from "@/constants";
 import { refreshTokenService } from "@/app/(auth)/services/refreshTokenService";
 import type { ApiResponse } from "@/lib/api";
-import type { User } from "@/interfaces/user.interface";
 import type { AuthResponseDto } from "@/validations/auth";
 import { MeResponseDto } from "@/services/authService";
 
@@ -82,7 +82,21 @@ const buildApiUrl = (path: string): string => {
   return `${base}${normalizedPath}`;
 };
 
-export const getServerSession = async (params: {
+export interface SessionTokens {
+  access_token: string | null;
+  refresh_token: string | null;
+}
+
+export const readSessionTokensFromCookies = async (): Promise<SessionTokens> => {
+  const cookieStore = await cookies();
+
+  return {
+    access_token: cookieStore.get(cookiesConfig.accessToken.name)?.value ?? null,
+    refresh_token: cookieStore.get(cookiesConfig.refreshToken.name)?.value ?? null,
+  };
+};
+
+export const getServerSessionWithTokens = async (params: {
   refresh_token?: string | null;
   access_token?: string | null;
 }): Promise<ApiResponse<MeResponseDto | null>> => {
@@ -115,6 +129,16 @@ export const getServerSession = async (params: {
   };
 };
 
+export const getServerSession = async (): Promise<ApiResponse<MeResponseDto | null>> => {
+  const tokens = await readSessionTokensFromCookies();
+  return getServerSessionWithTokens(tokens);
+};
+
+export const getServerSessionOrNull = async (): Promise<MeResponseDto | null> => {
+  const session = await getServerSession();
+  return session.ok ? session.data : null;
+};
+
 /**
  * Comprueba /auth/me y, solo ante 401, intenta POST /auth/refresh con el header Cookie.
  * Sin efectos secundarios: no escribe cookies; el llamador aplica el resultado en Response o cookies().
@@ -129,7 +153,7 @@ export const ensureValidSession = async (params: {
     return { outcome: "two_factor_pending" };
   }
 
-  const me = await getServerSession({ refresh_token, access_token });
+  const me = await getServerSessionWithTokens({ refresh_token, access_token });
 
   if (me.ok) {
     return { outcome: "session_valid" };

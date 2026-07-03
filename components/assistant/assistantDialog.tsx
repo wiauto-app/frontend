@@ -11,7 +11,7 @@ export const AssistantDialog = () => {
 
   return (
     <>
-      <Link href="/asistente/chat">
+      <Link href="/asistente/chat" className="hidden md:block">
         <Button className="fixed bottom-4 right-4">
           <MessageSquareIcon className="size-6" />
           Asistente

@@ -5,7 +5,10 @@ import {
   assistantConversationService,
   type AssistantConversationListItem,
 } from "@/services/assistant/assistantConversationService";
+import { assistantQuotaService } from "@/services/assistant/assistantQuotaService";
+import type { AssistantQuotaResponse } from "@/interfaces/billing.interface";
 import { useChat } from "@ai-sdk/react";
+import { useQuery } from "@tanstack/react-query";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import {
   createContext,
@@ -18,14 +21,22 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 const ASSISTANT_CHAT_API_URL = `${API_URL}/v1/assistant/chat`;
+const QUOTA_EXCEEDED_ERROR = "ASSISTANT_QUOTA_EXCEEDED";
 
 type AssistantChatContextValue = ReturnType<typeof useChat> & {
   conversationId?: string;
   conversations: AssistantConversationListItem[];
   isConversationLoading: boolean;
   isConversationsLoading: boolean;
+  quota: AssistantQuotaResponse | null;
+  isQuotaLoading: boolean;
+  refreshQuota: () => Promise<void>;
+  isPurchaseDialogOpen: boolean;
+  openPurchaseDialog: () => void;
+  closePurchaseDialog: () => void;
   refreshConversations: () => Promise<void>;
   handleNewConversation: () => Promise<void>;
   handleSelectConversation: (conversationId: string) => void;
@@ -53,6 +64,7 @@ export const AssistantChatProvider = ({
   const searchParams = useSearchParams();
   const conversationId = searchParams.get("conversationId") ?? undefined;
   const conversationIdRef = useRef(conversationId);
+  const [isPurchaseDialogOpen, setIsPurchaseDialogOpen] = useState(false);
 
   const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
   const [isConversationLoading, setIsConversationLoading] = useState(
@@ -65,6 +77,27 @@ export const AssistantChatProvider = ({
 
   conversationIdRef.current = conversationId;
 
+  const {
+    data: quota = null,
+    isLoading: isQuotaLoading,
+    refetch: refetchQuota,
+  } = useQuery({
+    queryKey: ["assistant-quota"],
+    queryFn: () => assistantQuotaService.getQuota(),
+  });
+
+  const refreshQuota = useCallback(async () => {
+    await refetchQuota();
+  }, [refetchQuota]);
+
+  const openPurchaseDialog = useCallback(() => {
+    setIsPurchaseDialogOpen(true);
+  }, []);
+
+  const closePurchaseDialog = useCallback(() => {
+    setIsPurchaseDialogOpen(false);
+  }, []);
+
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -73,6 +106,15 @@ export const AssistantChatProvider = ({
         body: () => ({
           conversation_id: conversationIdRef.current,
         }),
+        fetch: async (input, init) => {
+          const response = await fetch(input, init);
+
+          if (response.status === 402) {
+            throw new Error(QUOTA_EXCEEDED_ERROR);
+          }
+
+          return response;
+        },
       }),
     [],
   );
@@ -93,13 +135,36 @@ export const AssistantChatProvider = ({
     id: conversationId ?? "assistant-new-chat",
     transport,
     onFinish: async () => {
-      await refreshConversations();
+      await Promise.all([refreshConversations(), refreshQuota()]);
+    },
+    onError: (error) => {
+      if (error.message === QUOTA_EXCEEDED_ERROR) {
+        toast.error("No tienes consultas disponibles. Compra un pack para continuar.");
+        openPurchaseDialog();
+        void refreshQuota();
+        return;
+      }
+
+      toast.error("No se pudo enviar el mensaje al asistente");
     },
   });
 
   useEffect(() => {
     void refreshConversations();
   }, [refreshConversations]);
+
+  useEffect(() => {
+    const checkout = searchParams.get("checkout");
+
+    if (checkout === "success") {
+      toast.success("Compra completada. Tus consultas ya están disponibles.");
+      void refreshQuota();
+    }
+
+    if (checkout === "cancel") {
+      toast.error("La compra fue cancelada");
+    }
+  }, [refreshQuota, searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -230,6 +295,12 @@ export const AssistantChatProvider = ({
       conversations,
       isConversationLoading,
       isConversationsLoading,
+      quota,
+      isQuotaLoading,
+      refreshQuota,
+      isPurchaseDialogOpen,
+      openPurchaseDialog,
+      closePurchaseDialog,
       refreshConversations,
       handleNewConversation,
       handleSelectConversation,
@@ -239,6 +310,7 @@ export const AssistantChatProvider = ({
     }),
     [
       chat,
+      closePurchaseDialog,
       conversationId,
       conversations,
       ensureConversationId,
@@ -248,7 +320,12 @@ export const AssistantChatProvider = ({
       handleSelectConversation,
       isConversationLoading,
       isConversationsLoading,
+      isPurchaseDialogOpen,
+      isQuotaLoading,
+      openPurchaseDialog,
+      quota,
       refreshConversations,
+      refreshQuota,
     ],
   );
 

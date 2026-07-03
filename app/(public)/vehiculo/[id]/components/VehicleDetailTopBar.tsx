@@ -3,17 +3,18 @@
 import { VehicleFavoriteButton } from "@/app/(public)/vehiculos/components/VehicleFavoriteButton";
 import { VehicleShareButton } from "@/app/(public)/vehiculos/components/VehicleShareButton";
 import { PageBreadcrumbs } from "@/components/navigation/page-breadcrumbs";
+import { ReportButton } from "@/components/reports/ReportButton";
+import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
+import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 
 type VehicleDetailTopBarProps = {
-  vehicle_id: string;
-  vehicle_title: string;
+  vehicle: Vehicle;
   breadcrumbItems: BreadcrumbItem[];
 };
 
 export const VehicleDetailTopBar = ({
-  vehicle_id,
-  vehicle_title,
+  vehicle,
   breadcrumbItems,
 }: VehicleDetailTopBarProps) => {
   return (
@@ -21,11 +22,19 @@ export const VehicleDetailTopBar = ({
       <div className="mx-auto container-custom flex items-center justify-between gap-4 py-3">
         <PageBreadcrumbs items={breadcrumbItems} />
 
-        <div className="flex shrink-0 items-center gap-2">
-          <VehicleFavoriteButton vehicleId={vehicle_id} />
+        <div className="flex items-center justify-end gap-2">
+          <ReportButton
+            publisherType={vehicle.publisher_type}
+            profileId={vehicle.profile_id}
+            publisher={vehicle.publisher}
+            dealership={vehicle.dealership}
+            variant="outline"
+          />
+          <VehicleFavoriteButton vehicleId={vehicle.id} variant="outline" />
           <VehicleShareButton
-            vehicleId={vehicle_id}
-            vehicleTitle={vehicle_title}
+            vehicleId={vehicle.id}
+            vehicleTitle={getVehicleDisplayName(vehicle)}
+            variant="outline"
           />
         </div>
       </div>

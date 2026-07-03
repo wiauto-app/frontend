@@ -168,6 +168,8 @@ export interface Vehicle {
   vin_code?: string;
   phone_code: string;
   phone: string;
+  has_whatsapp?: boolean;
+  show_phone?: boolean;
   email: string;
   created_at: string;
   updated_at: string;

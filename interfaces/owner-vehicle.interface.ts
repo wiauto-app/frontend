@@ -32,6 +32,8 @@ export interface OwnerVehicleListItem {
     leads: OwnerVehicleStatTrend;
     favorites: OwnerVehicleStatTrend;
     shares: OwnerVehicleStatTrend;
+    phone_clicks: OwnerVehicleStatTrend;
+    whatsapp_clicks: OwnerVehicleStatTrend;
   };
   created_at: string;
   updated_at: string;

@@ -43,6 +43,8 @@ export const mapVehicleDetailToFormValues = (
       phone_code: vehicle.phone_code,
       phone: vehicle.phone,
     },
+    show_phone: vehicle.show_phone ?? true,
+    has_whatsapp: vehicle.has_whatsapp ?? false,
     email: vehicle.email,
     color_id: vehicle.color_id ?? undefined,
     dgt_label_id: vehicle.dgt_label_id ?? undefined,

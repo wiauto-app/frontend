@@ -35,7 +35,7 @@ export const ASSISTANT_TRENDING_SEARCHES: AssistantSuggestionItem[] = [
   {
     label: "Híbridos enchufables",
     description: "Hasta 30.000 €",
-    prompt: "hasta 30.000 €",
+    prompt: "Híbridos enchufables hasta 30.000 €",
   },
   {
     label: "Berlinas automáticas",

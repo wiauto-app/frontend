@@ -197,6 +197,11 @@ export const MyListingTableRow = ({
         <div className="flex items-start justify-center gap-3">
           <PerformanceCell label="Visitas" trend={listing.stats.views} />
           <PerformanceCell label="Contactos" trend={listing.stats.leads} />
+          <PerformanceCell label="Teléfono" trend={listing.stats.phone_clicks} />
+          <PerformanceCell
+            label="WhatsApp"
+            trend={listing.stats.whatsapp_clicks}
+          />
           <PerformanceCell label="Favoritos" trend={listing.stats.favorites} />
         </div>
       </td>

@@ -1,6 +1,7 @@
 import { AssistantMapPanel } from "@/components/assistant/assistantMapPanel";
 import { AssistantSearchPanel } from "@/components/assistant/assistantSearchPanel";
 import { AssistantSuggestions } from "@/components/assistant/assistantSuggestions";
+
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
   description: "Asistente de búsqueda de vehículos con IA",
 };
 
-export default async function Page(props: { params: Promise<{ value: string }> }) {
+export default async function Page(props: {
+  params: Promise<{ value: string }>;
+}) {
   const params = await props.params;
 
   switch (params.value) {

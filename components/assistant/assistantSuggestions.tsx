@@ -22,7 +22,12 @@ import { IconContainer } from "../ui/iconContainer";
 import { Button } from "../ui/button";
 
 export const AssistantSuggestions = () => {
-  const { sendMessage, status, ensureConversationId } = useAssistantChat();
+  const {
+    sendMessage,
+    status,
+    ensureConversationId,
+    openPurchaseDialog,
+  } = useAssistantChat();
   const { user } = useUser();
   const isBusy = status === "submitted" || status === "streaming";
 
@@ -133,7 +138,7 @@ export const AssistantSuggestions = () => {
         </CardContent>
       </Card>
 
-      <Card size="sm" className="relative flex min-h-26 justify-center overflow-hidden sm:min-h-30">
+      <Card size="sm" className="relative flex min-h-26 justify-center overflow-hidden sm:min-h-44">
         <CardContent className="relative z-10 flex flex-col gap-1 py-3 sm:gap-2 sm:py-4">
           <CardTitle className="text-sm sm:text-base">
             ¿Quieres aumentar el uso de tu asistente?
@@ -142,9 +147,13 @@ export const AssistantSuggestions = () => {
             Conoce nuestras opciones de uso y descubre cómo puedes obtener más
             para tu asistente.
           </CardDescription>
-          <Button className="mt-2 h-8 w-fit text-xs sm:mt-3 sm:h-9 sm:text-sm">
+          <Button
+            className="mt-2 h-8 w-fit text-xs sm:mt-3 sm:h-9 sm:text-sm"
+            onClick={openPurchaseDialog}
+            type="button"
+          >
             <ShoppingCart className="size-3.5 sm:size-4" />
-            Comprar tokens
+            Comprar consultas
           </Button>
         </CardContent>
         <Image

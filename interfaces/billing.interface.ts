@@ -12,6 +12,11 @@ export type BillingPlanFeature = {
   included: boolean;
 };
 
+export type BillingPlanEffectConfig = {
+  type?: "assistant_credits" | "feature_vehicle";
+  credits?: number;
+};
+
 export type BillingCatalogPlan = {
   id: string;
   slug: string;
@@ -21,8 +26,16 @@ export type BillingCatalogPlan = {
   billing_type: "recurring" | "one_time";
   is_featured: boolean;
   sort_order: number;
+  effect_config?: BillingPlanEffectConfig;
   prices: BillingPlanPrice[];
   features: BillingPlanFeature[];
+};
+
+export type AssistantQuotaResponse = {
+  monthlyFreeLimit: number;
+  monthlyFreeRemaining: number;
+  purchasedCredits: number;
+  totalRemaining: number;
 };
 
 export type BillingMeResponse = {

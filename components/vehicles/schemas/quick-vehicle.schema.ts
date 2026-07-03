@@ -73,6 +73,8 @@ const quickVehicleBaseSchema = z.object({
   lat: z.coerce.number({ error: "Selecciona una ubicación en el mapa." }),
   lng: z.coerce.number({ error: "Selecciona una ubicación en el mapa." }),
   phone: phoneSchema,
+  show_phone: z.boolean().default(true),
+  has_whatsapp: z.boolean().default(false),
   email: z.email({ error: "Introduce un correo electrónico válido." }),
   description: z
     .string()
@@ -132,6 +134,8 @@ export const createQuickVehicleDefaultValues: QuickVehicleSchema = {
   lat: 40.4168,
   lng: -3.7038,
   phone: { phone_code: "+34", phone: "" },
+  show_phone: true,
+  has_whatsapp: false,
   email: "",
   description: "",
   transmission_type: "manual",

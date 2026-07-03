@@ -54,6 +54,8 @@ export interface AdminVehicleListItem {
   time_to_charge: number;
   phone_code: string;
   phone: string;
+  has_whatsapp: boolean;
+  show_phone: boolean;
   email: string;
   version_id: number;
   expires_at: Date;
@@ -114,6 +116,8 @@ export interface AdminVehicleDetail {
   publisher_type: "professional" | "particular";
   phone_code: string;
   phone: string;
+  has_whatsapp: boolean;
+  show_phone: boolean;
   email: string;
   features_ids: string[];
   services_ids: string[];
@@ -147,6 +151,8 @@ export interface Vehicle {
   time_to_charge: number;
   phone_code: string;
   phone: string;
+  has_whatsapp: boolean;
+  show_phone: boolean;
   email: string;
   created_at: Date;
   updated_at: Date;
@@ -192,6 +198,8 @@ export const createVehicleDefaultValues: VehicleSchema = {
   displacement: 0,
   publisher_type: "professional",
   phone: { phone_code: "", phone: "" },
+  show_phone: true,
+  has_whatsapp: false,
   email: "",
   category_id: undefined,
   features_ids: [],

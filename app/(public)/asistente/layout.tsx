@@ -1,10 +1,13 @@
 import { Suspense } from "react";
 import { AssistantChatProvider } from "@/components/assistant/assistantChatProvider";
 import { AssistantLayoutHeader } from "@/components/assistant/assistantLayoutHeader";
+import { AssistantLayoutPreview } from "@/components/assistant/AssistantLayoutPreview";
 import { AssistantMainArea } from "@/components/assistant/assistantMainArea";
 import { AssistantSidebar } from "@/components/assistant/assistantSidebar";
+import { AuthRequiredScreen } from "@/components/auth/AuthRequiredScreen";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
+import { getServerSession } from "@/lib/ensure-session.server";
 
 interface AssistantLayoutContentProps {
   children: React.ReactNode;
@@ -28,7 +31,17 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default async function Layout({ children }: LayoutProps) {
+  const session = await getServerSession();
+
+  if (!session.ok) {
+    return (
+      <AuthRequiredScreen returnTo="/asistente/chat">
+        <AssistantLayoutPreview />
+      </AuthRequiredScreen>
+    );
+  }
+
   return (
     <Suspense
       fallback={
@@ -40,4 +53,4 @@ export default function Layout({ children }: LayoutProps) {
       <AssistantLayoutContent>{children}</AssistantLayoutContent>
     </Suspense>
   );
-}
+};
