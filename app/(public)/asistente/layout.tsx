@@ -11,9 +11,13 @@ import { getServerSession } from "@/lib/ensure-session.server";
 
 interface AssistantLayoutContentProps {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }
 
-const AssistantLayoutContent = ({ children }: AssistantLayoutContentProps) => {
+const AssistantLayoutContent = ({
+  children,
+  modal,
+}: AssistantLayoutContentProps) => {
   return (
     <AssistantChatProvider>
       <SidebarProvider defaultOpen>
@@ -23,15 +27,17 @@ const AssistantLayoutContent = ({ children }: AssistantLayoutContentProps) => {
           <AssistantMainArea>{children}</AssistantMainArea>
         </SidebarInset>
       </SidebarProvider>
+      {modal}
     </AssistantChatProvider>
   );
 };
 
 interface LayoutProps {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }
 
-export default async function Layout({ children }: LayoutProps) {
+export default async function Layout({ children, modal }: LayoutProps) {
   const session = await getServerSession();
 
   if (!session.ok) {
@@ -50,7 +56,7 @@ export default async function Layout({ children }: LayoutProps) {
         </div>
       }
     >
-      <AssistantLayoutContent>{children}</AssistantLayoutContent>
+      <AssistantLayoutContent modal={modal}>{children}</AssistantLayoutContent>
     </Suspense>
   );
-};
+}

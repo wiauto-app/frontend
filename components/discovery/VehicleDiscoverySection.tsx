@@ -50,7 +50,6 @@ export const VehicleDiscoverySection = async ({
   return (
     <section
       className={cn(
-        "w-full rounded-xl bg-muted-foreground/10 p-6",
         className,
       )}
       aria-labelledby="vehicle-discovery-title"

@@ -81,4 +81,18 @@ describe("quickVehicleSchema", () => {
 
     expect(result.success).toBe(true);
   });
+
+  it("valida description solo con min(10) y sin max", () => {
+    const shortDescription = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      description: "corta",
+    });
+    expect(shortDescription.success).toBe(false);
+
+    const longDescription = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      description: "a".repeat(5000),
+    });
+    expect(longDescription.success).toBe(true);
+  });
 });

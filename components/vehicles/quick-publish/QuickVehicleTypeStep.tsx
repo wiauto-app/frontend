@@ -56,21 +56,26 @@ export const QuickVehicleTypeStep = () => {
                         <div
                           className={cn(
                             "relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg",
-                            active ? "bg-white/15" : "bg-muted group-hover:bg-primary/5",
+                            active
+                              ? "bg-white/15"
+                              : "bg-muted group-hover:bg-primary/5",
                           )}
                         >
                           <WiautoImage
-                            unoptimized
-                            src={String(vehicleType.image_url)}
+                            unoptimized={false}
+                            src={vehicleType.image_url}
                             alt={vehicleType.name}
                             fill
+                            sizes="80px"
                             className="object-cover"
                           />
                         </div>
                       ) : null}
 
                       <div className="flex flex-1 items-center justify-between px-3 py-2.5">
-                        <p className="text-sm font-medium">{vehicleType.name}</p>
+                        <p className="text-sm font-medium">
+                          {vehicleType.name}
+                        </p>
                         {active ? <Check className="h-4 w-4 shrink-0" /> : null}
                       </div>
                     </button>
@@ -79,7 +84,9 @@ export const QuickVehicleTypeStep = () => {
               </div>
             )}
             {fieldState.error ? (
-              <p className="mt-2 text-sm text-destructive">{fieldState.error.message}</p>
+              <p className="mt-2 text-sm text-destructive">
+                {fieldState.error.message}
+              </p>
             ) : null}
           </div>
         )}

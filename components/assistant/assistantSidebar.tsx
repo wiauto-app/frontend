@@ -18,7 +18,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { MapIcon, MessageSquare, Plus, Search } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { AssistantConversationHistoryItem } from "./assistantConversationHistoryItem";
 import { useAssistantChat } from "./assistantChatProvider";
 import { AssistantCreditsPurchaseDialog } from "./AssistantCreditsPurchaseDialog";
@@ -36,14 +36,8 @@ const assistantNavItems: AssistantNavItem[] = [
   { title: "Mapa", Icon: MapIcon, href: "/asistente/map" },
 ];
 
-const buildAssistantHref = (href: string, query: string): string => {
-  return query ? `${href}?${query}` : href;
-};
-
 export const AssistantSidebar = () => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const query = searchParams.toString();
   const {
     conversationId,
     conversations,
@@ -75,7 +69,7 @@ export const AssistantSidebar = () => {
                     <SidebarMenuItem key={title}>
                       <SidebarMenuButton
                         isActive={isActive}
-                        render={<Link href={buildAssistantHref(href, query)} />}
+                        render={<Link href={href} />}
                         tooltip={title}
                       >
                         <Icon />

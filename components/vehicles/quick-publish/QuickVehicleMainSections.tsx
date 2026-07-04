@@ -5,22 +5,27 @@ import { VehicleFormStep } from "@/app/(public)/components/vehicleFormStep";
 import { MapInput } from "@/components/forms/mapInput";
 import { PhoneInput } from "@/components/forms/phoneInput";
 import { ControllerInput } from "@/components/ui/controllerInput";
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { QuickCatalogFields } from "./QuickCatalogFields";
 import { QuickVehicleClassificationFields } from "./QuickVehicleClassificationFields";
-import { QuickVehicleElectricFields } from "./QuickVehicleElectricFields";
 import { QuickVehicleMediaStep } from "./QuickVehicleMediaStep";
+import { QuickVehicleAiDescriptionCard } from "./QuickVehicleAiDescriptionCard";
 import { QuickVehiclePricingFields } from "./QuickVehiclePricingFields";
 import { QuickVehicleTechnicalFields } from "./QuickVehicleTechnicalFields";
 
-type QuickVehicleMainSectionsProps = {
+interface QuickVehicleMainSectionsProps {
   vehicleId?: string;
   contactName: string;
-};
+}
 
 export const QuickVehicleMainSections = ({
   vehicleId,
@@ -30,54 +35,54 @@ export const QuickVehicleMainSections = ({
   const phoneValue = form.watch("phone");
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-12">
       <QuickVehicleMediaStep vehicleId={vehicleId} />
 
-      <section className="flex flex-col gap-4">
-        <VehicleFormStep number={2} label="¿Qué vehículo vendes?"  />
+      <VehicleFormStep number={2} label="¿Qué vehículo vendes?">
         <QuickCatalogFields />
         {form.formState.errors.version_id ? (
           <p className="text-sm text-destructive">
             {form.formState.errors.version_id.message}
           </p>
         ) : null}
-      </section>
+      </VehicleFormStep>
 
       <QuickVehiclePricingFields />
       <QuickVehicleClassificationFields />
 
-      <section className="flex flex-col gap-4">
-        <VehicleFormStep
-          number={5}
-          label="Descripción del vehículo"
-          description="Describe el estado, historial y puntos destacados del vehículo."
-        />
-        <Controller
-          name="description"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="quick-description">Descripción</FieldLabel>
-              <Textarea
-                {...field}
-                id="quick-description"
-                rows={5}
-                aria-invalid={fieldState.invalid}
-              />
-              {fieldState.error ? <FieldError errors={[fieldState.error]} /> : null}
-            </Field>
-          )}
-        />
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <VehicleFormStep number={6} label="Ficha técnica"  />
+      <VehicleFormStep number={5} label="Ficha técnica">
         <QuickVehicleTechnicalFields />
-        <QuickVehicleElectricFields />
-      </section>
+      </VehicleFormStep>
 
-      <section className="flex flex-col gap-4">
-        <VehicleFormStep number={7} label="Ubicación"  />
+      <VehicleFormStep
+        number={6}
+        label="Descripción del vehículo"
+        description="Describe el estado, historial y puntos destacados del vehículo."
+      >
+        <div className="flex flex-col gap-4">
+          <QuickVehicleAiDescriptionCard />
+          <Controller
+            name="description"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="quick-description">Descripción</FieldLabel>
+                <Textarea
+                  {...field}
+                  id="quick-description"
+                  className="h-72 resize-none whitespace-pre-wrap"
+                  aria-invalid={fieldState.invalid}
+                />
+                {fieldState.error ? (
+                  <FieldError errors={[fieldState.error]} />
+                ) : null}
+              </Field>
+            )}
+          />
+        </div>
+      </VehicleFormStep>
+
+      <VehicleFormStep number={7} label="Ubicación">
         <Controller
           name="lat"
           control={form.control}
@@ -93,15 +98,16 @@ export const QuickVehicleMainSections = ({
                     shouldValidate: true,
                   });
                 }}
-                ariaInvalid={fieldState.invalid || Boolean(form.formState.errors.lng)}
+                ariaInvalid={
+                  fieldState.invalid || Boolean(form.formState.errors.lng)
+                }
               />
             );
           }}
         />
-      </section>
+      </VehicleFormStep>
 
-      <section className="flex flex-col gap-4">
-        <VehicleFormStep number={8} label="Tu contacto"  />
+      <VehicleFormStep number={8} label="Tu contacto">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Field>
             <FieldLabel htmlFor="contact-name">Nombre</FieldLabel>
@@ -118,7 +124,9 @@ export const QuickVehicleMainSections = ({
                   onChange={field.onChange}
                   ariaInvalid={fieldState.invalid}
                 />
-                {fieldState.error ? <FieldError errors={[fieldState.error]} /> : null}
+                {fieldState.error ? (
+                  <FieldError errors={[fieldState.error]} />
+                ) : null}
               </Field>
             )}
           />
@@ -189,7 +197,7 @@ export const QuickVehicleMainSections = ({
             </Field>
           )}
         />
-      </section>
+      </VehicleFormStep>
     </div>
   );
 };

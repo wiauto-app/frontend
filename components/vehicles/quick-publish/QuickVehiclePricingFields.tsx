@@ -8,13 +8,13 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { VEHICLE_CONDITION_OPTIONS } from "@/components/vehicles/constants/vehicle-enums.constants";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
+import { VehiclePriceRecommendation } from "./VehiclePriceRecommendation";
 
 export const QuickVehiclePricingFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
 
   return (
-    <section className="flex flex-col gap-4">
-      <VehicleFormStep number={3} label="Estado, kilometraje y precio"  />
+    <VehicleFormStep number={3} label="Estado, kilometraje y precio">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Controller
           name="condition"
@@ -39,7 +39,9 @@ export const QuickVehiclePricingFields = () => {
                   </button>
                 ))}
               </div>
-              {fieldState.error ? <FieldError errors={[fieldState.error]} /> : null}
+              {fieldState.error ? (
+                <FieldError errors={[fieldState.error]} />
+              ) : null}
             </Field>
           )}
         />
@@ -66,6 +68,7 @@ export const QuickVehiclePricingFields = () => {
           )}
         </ControllerInput>
       </div>
-    </section>
+      <VehiclePriceRecommendation />
+    </VehicleFormStep>
   );
 };

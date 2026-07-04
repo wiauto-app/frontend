@@ -41,7 +41,8 @@ export const VehicleTypeSelector = ({
                 )}
               >
                 <WiautoImage
-                  unoptimized
+                  sizes="100px"
+                  
                   src={vehicleType.image_url}
                   alt={vehicleType.name}
                   fill

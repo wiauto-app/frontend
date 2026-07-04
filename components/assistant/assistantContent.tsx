@@ -10,9 +10,9 @@ import {
 
 export const AssistantContent = () => {
   return (
-    <Card size="sm" className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
+    <Card size="sm" className="flex min-h-0 flex-1 flex-col overflow-hidden border-none ">
    
-      <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 sm:px-4">
+      <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden ">
         <AssistantMessages />
       </CardContent>
       <CardFooter className="shrink-0 flex-col gap-2 px-3 pb-3 sm:px-4 sm:pb-4">

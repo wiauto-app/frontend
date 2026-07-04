@@ -4,6 +4,7 @@ export interface CatalogItemWithSlug {
   id: string;
   name: string;
   slug: string;
+  image_url: string;
 }
 
 export interface ColorCatalogItem extends CatalogItemWithSlug {

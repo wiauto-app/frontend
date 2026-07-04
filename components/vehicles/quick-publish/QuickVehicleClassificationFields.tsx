@@ -12,12 +12,11 @@ export const QuickVehicleClassificationFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
 
   return (
-    <section className="flex flex-col gap-4">
-      <VehicleFormStep
-        number={4}
-        label="Color, categoría y etiqueta DGT"
-        description="Clasifica tu vehículo para que los compradores lo encuentren más fácilmente."
-      />
+    <VehicleFormStep
+      number={4}
+      label="Color, categoría y etiqueta DGT"
+      description="Clasifica tu vehículo para que los compradores lo encuentren más fácilmente."
+    >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <ControllerInput name="color_id" control={form.control} label="Color" optional>
           {({ field, fieldState }) => (
@@ -50,6 +49,6 @@ export const QuickVehicleClassificationFields = () => {
           )}
         </ControllerInput>
       </div>
-    </section>
+    </VehicleFormStep>
   );
 };

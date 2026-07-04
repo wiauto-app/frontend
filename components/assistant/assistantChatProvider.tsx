@@ -20,7 +20,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 const ASSISTANT_CHAT_API_URL = `${API_URL}/v1/assistant/chat`;
@@ -60,9 +60,10 @@ export const AssistantChatProvider = ({
   children,
 }: AssistantChatProviderProps) => {
   const router = useRouter();
-  const pathname = usePathname();
+  const params = useParams<{ conversationId?: string }>();
   const searchParams = useSearchParams();
-  const conversationId = searchParams.get("conversationId") ?? undefined;
+  const conversationId =
+    typeof params.conversationId === "string" ? params.conversationId : undefined;
   const conversationIdRef = useRef(conversationId);
   const [isPurchaseDialogOpen, setIsPurchaseDialogOpen] = useState(false);
 
@@ -211,18 +212,17 @@ export const AssistantChatProvider = ({
 
   const updateConversationIdInUrl = useCallback(
     (nextConversationId?: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const checkout = searchParams.get("checkout");
+      const query = checkout ? `?checkout=${checkout}` : "";
 
       if (nextConversationId) {
-        params.set("conversationId", nextConversationId);
-      } else {
-        params.delete("conversationId");
+        router.replace(`/asistente/chat/${nextConversationId}${query}`);
+        return;
       }
 
-      const query = params.toString();
-      router.replace(query ? `${pathname}?${query}` : pathname);
+      router.replace(`/asistente/chat${query}`);
     },
-    [pathname, router, searchParams],
+    [router, searchParams],
   );
 
   const handleNewConversation = useCallback(async () => {
