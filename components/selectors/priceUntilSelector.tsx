@@ -52,7 +52,7 @@ export const PriceUntilSelector = () => {
       <InputButton
         asPopoverTrigger
         className={cn(
-          "h-11 text-start text-base",
+          "text-start text-base",
           displayValue ? "text-foreground" : undefined,
         )}
         aria-expanded={is_open}

@@ -1,3 +1,4 @@
+import { ENVIRONMENT } from "@/constants";
 import { STRAPI_API_URL, STRAPI_TOKEN } from "@/constants/strapi.constants";
 
 
@@ -30,14 +31,22 @@ const parseStrapiError = async (response: Response): Promise<string> => {
   }
 };
 
-export const getStrapiData = async <T>(endpoint: string): Promise<T> => {
+interface GetStrapiDataOptions {
+  revalidate?: number;
+}
+
+export const getStrapiData = async <T>(
+  endpoint: string,
+  options?: GetStrapiDataOptions,
+): Promise<T> => {
+  const defaultRevalidate = ENVIRONMENT === "development" ? 0 : 60;
+  const revalidate = options?.revalidate ?? defaultRevalidate;
   const url = buildStrapiUrl(endpoint);
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${STRAPI_TOKEN}`,
     },
-    // next: { revalidate: 60 },
-    cache: "no-store",
+    next: { revalidate },
   });
 
   if (!response.ok) {

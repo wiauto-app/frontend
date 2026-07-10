@@ -14,6 +14,14 @@ import {
 } from "@/components/ui/carousel";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { vehicleService } from "@/services/vehicleService";
+import { motion } from "motion/react";
+
+import {
+  getVariant,
+  staggerContainer,
+  staggerItem,
+} from "@/components/home/motion";
+import { usePrefersReducedMotion } from "@/components/home/motion/usePrefersReducedMotion";
 
 const LOAD_MORE_THRESHOLD = 2;
 
@@ -44,6 +52,9 @@ export const VehiclesCarouselLayout = ({
   total,
   pageSize,
 }: VehiclesCarouselLayoutProps) => {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const containerVariants = getVariant(staggerContainer, prefersReducedMotion);
+  const itemVariants = getVariant(staggerItem, prefersReducedMotion);
   const [api, setApi] = useState<CarouselApi>();
   const [vehicles, setVehicles] = useState(initialVehicles);
   const [page, setPage] = useState(1);
@@ -147,16 +158,25 @@ export const VehiclesCarouselLayout = ({
   return (
     <Carousel className="w-full" opts={{ loop: false, align: "start" }} setApi={setApi}>
       <div className="relative px-10 sm:px-12">
-        <CarouselContent className="-ml-3 sm:-ml-4">
-          {vehicles.map((vehicle) => (
-            <CarouselItem
-              key={vehicle.id}
-              className="basis-full pl-3 sm:basis-1/2 sm:pl-4 lg:basis-1/4"
-            >
-              <VehicleGridCard vehicle={vehicle} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <CarouselContent className="-ml-3 sm:-ml-4">
+            {vehicles.map((vehicle) => (
+              <CarouselItem
+                key={vehicle.id}
+                className="basis-full pl-3 sm:basis-1/2 sm:pl-4 lg:basis-1/4"
+              >
+                <motion.div variants={itemVariants}>
+                  <VehicleGridCard vehicle={vehicle} />
+                </motion.div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </motion.div>
 
         <CarouselPrevious
           aria-label="Ver vehículos anteriores"

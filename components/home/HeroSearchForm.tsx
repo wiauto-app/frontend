@@ -18,7 +18,7 @@ const HeroSearchFormContent = () => {
   };
 
   return (
-    <div className="w-full  rounded-b-2xl rounded-r-2xl bg-white p-6 shadow-2xl sm:p-7">
+    <div className="w-full  rounded-b-2xl rounded-r-2xl bg-white  shadow-2xl sm:p-4">
       <form
         className="grid grid-cols-1 sm:grid-cols-4  gap-3"
         onSubmit={(event) => {

@@ -42,6 +42,7 @@ export interface ActiveFiltersResolved {
   vehicle_type: ActiveFilterItem | null;
   makes: ActiveFilterItem[];
   models: ActiveFilterItem[];
+  categories: ActiveFilterItem[];
   provinces: ActiveFilterItem[];
   communities: ActiveFilterItem[];
   municipalities: ActiveFilterItem[];

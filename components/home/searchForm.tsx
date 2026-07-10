@@ -1,36 +1,51 @@
 "use client";
 
-import { useState } from "react";
-import { ConditionButton } from "./conditionButton";
 import { HeroSearchForm } from "./HeroSearchForm";
-import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { AiSearchForm } from "./aiSearchForm";
+import { Card, CardContent } from "../ui/card";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { Badge } from "../ui/badge";
+import { FilterIcon, SparklesIcon } from "lucide-react";
 
 export const SearchForm = () => {
-  const [condition, setCondition] = useState<"new" | "used">("new");
-  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"search-ai" | "search-filters">(
+    "search-ai",
+  );
   return (
-    <div className="flex flex-col gap-0 w-full md:max-w-[85%]">
-      <div className="flex">
-        <ConditionButton
-          isActive={condition === "new"}
-          onClick={() => setCondition("new")}
-        >
-          Nuevos
-        </ConditionButton>
-        <ConditionButton
-          isActive={condition === "used"}
-          onClick={() => setCondition("used")}
-        >
-          Usados
-        </ConditionButton>
-        <ConditionButton
-          isActive={false}
-          onClick={() => router.push("/crear-vehiculo")}
-        >
-          Vender
-        </ConditionButton>
-      </div>
-      <HeroSearchForm/>
-    </div>
+    <Card
+      size="sm"
+      className={cn(
+        activeTab === "search-ai" &&
+          "bg-primary shadow-lg ring-4 ring-primary/50",
+      )}
+    >
+      <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList>
+            <TabsTrigger value="search-ai">
+              <div className="flex items-center gap-2">
+                <Badge>Nuevo</Badge>
+                <span className="flex items-center gap-2  font-bold text-primary">
+                  <SparklesIcon className="size-5" />
+                  Buscar con IA
+                </span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="search-filters">
+              Filtros
+              <FilterIcon className="size-5" />
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="search-ai">
+            <AiSearchForm />
+          </TabsContent>
+          <TabsContent value="search-filters">
+            <HeroSearchForm />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };

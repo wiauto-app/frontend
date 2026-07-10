@@ -10,6 +10,7 @@ const empty_active_filters: ActiveFiltersResponse = {
     vehicle_type: null,
     makes: [],
     models: [],
+    categories: [],
     provinces: [],
     communities: [],
     municipalities: [],

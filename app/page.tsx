@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  AppDownloadBanner,
   HeroSection,
   PopularCategoriesGrid,
   RelatedNewsSection,
@@ -20,6 +21,7 @@ import {
   VehicleDiscoverySection,
   VehicleDiscoverySectionSkeleton,
 } from "@/components/discovery";
+import { mapLowEmissionsLinkToQuickLink } from "@/components/discovery/mappers/map-low-emissions-link-to-quick-link";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
@@ -46,13 +48,17 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 export default async function Home() {
   const home_data = await getHomeData();
+  const lowEmissionsQuickLinks =
+    home_data.low_emissions.links.length > 0
+      ? home_data.low_emissions.links.map(mapLowEmissionsLinkToQuickLink)
+      : undefined;
+
   return (
     <>
       <div className="container-custom flex flex-col gap-12">
-        <div className="bg-muted-foreground/10 rounded-xl">
-          <HeroSection data={home_data.hero} />
-          <VehicleExtraServices data={EXTRA_SERVICES_DATA} />
-        </div>
+        <HeroSection data={home_data.hero} app_advertisement={home_data.app_advertisement} />
+        <VehicleExtraServices data={EXTRA_SERVICES_DATA} />
+        <AppDownloadBanner data={home_data.app_advertisement} />
         <Suspense fallback={<div>Loading...</div>}>
           <PopularCategoriesGrid />
         </Suspense>
@@ -65,13 +71,19 @@ export default async function Home() {
         />
         <ToolsAccess data={home_data.herramientas} />
         <Zones />
-       
+
         <RelatedNewsSection />
         <ToolsShortcuts />
         <TopDealerships />
         <Suspense fallback={<VehicleDiscoverySectionSkeleton />}>
-          <VehicleDiscoverySection />
+          <VehicleDiscoverySection
+            title={home_data.low_emissions.title}
+            description={home_data.low_emissions.description}
+            imageUrl={home_data.low_emissions.image_url}
+            quickLinks={lowEmissionsQuickLinks}
+          />
         </Suspense>
+        {/* <ExtraFilters showProvinceBadges showMakeBadges /> */}
       </div>
     </>
   );

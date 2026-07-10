@@ -1,13 +1,36 @@
 import { cn } from "@/lib/utils";
+import { provincesCatalogService } from "@/services/locations/provincesCatalogService";
 import { heroFacetService } from "@/services/search/heroFacetService";
+import { buildVehicleDiscoverySections } from "./buildVehicleDiscoverySections";
 import {
-  buildDefaultQuickLinks,
-  buildVehicleDiscoverySections,
-} from "./buildVehicleDiscoverySections";
-import { DISCOVERY_DEFAULT_TITLE } from "./vehicleDiscovery.constants";
+  DISCOVERY_DEFAULT_TITLE,
+  DISCOVERY_PROVINCES_LIMIT,
+} from "./vehicleDiscovery.constants";
 import { VehicleDiscoveryAccordion } from "./VehicleDiscoveryAccordion";
 import { VehicleDiscoveryQuickCards } from "./VehicleDiscoveryQuickCards";
 import type { VehicleDiscoverySectionProps } from "./types";
+import { FaLeaf } from "react-icons/fa";
+import Image from "next/image";
+
+const DEFAULT_DESCRIPTION =
+  "Explora las opciones más eficientes para moverte mejor y cuidar del planeta";
+
+const renderHighlightedTitle = (title: string) => {
+  const highlight = "bajas emisiones";
+  const index = title.toLowerCase().indexOf(highlight);
+
+  if (index === -1) {
+    return title;
+  }
+
+  return (
+    <>
+      {title.slice(0, index)}
+      <span className="text-nature">{title.slice(index, index + highlight.length)}</span>
+      {title.slice(index + highlight.length)}
+    </>
+  );
+};
 
 export const VehicleDiscoverySectionSkeleton = () => (
   <section
@@ -26,45 +49,69 @@ export const VehicleDiscoverySectionSkeleton = () => (
 
 export const VehicleDiscoverySection = async ({
   title = DISCOVERY_DEFAULT_TITLE,
+  description = DEFAULT_DESCRIPTION,
+  imageUrl,
   quickLinks,
   sections,
   className,
 }: VehicleDiscoverySectionProps) => {
-  const resolvedQuickLinks = quickLinks ?? buildDefaultQuickLinks();
-
   let resolvedSections = sections;
 
   if (!resolvedSections) {
-    const [provinces, makes] = await Promise.all([
-      heroFacetService.getProvinces({}),
+    const [provincesPage, makes] = await Promise.all([
+      provincesCatalogService.findAll({
+        page: 1,
+        limit: DISCOVERY_PROVINCES_LIMIT,
+        order_by: "name",
+        order_direction: "ASC",
+      }),
       heroFacetService.getMakes(),
     ]);
 
-    resolvedSections = buildVehicleDiscoverySections(provinces, makes);
+    resolvedSections = buildVehicleDiscoverySections(provincesPage.data, makes);
   }
 
-  if (resolvedSections.length === 0 && resolvedQuickLinks.length === 0) {
+  if (resolvedSections.length === 0 && quickLinks?.length === 0) {
     return null;
   }
 
   return (
     <section
-      className={cn(
-        className,
-      )}
+      className={cn(className, "flex flex-col space-y-4")}
       aria-labelledby="vehicle-discovery-title"
     >
-      <h2
-        id="vehicle-discovery-title"
-        className="mb-6 text-xl font-bold text-foreground"
-      >
-        {title}
-      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="gap-5 flex flex-col justify-center">
+          <h2
+            id="vehicle-discovery-title"
+            className="text-4xl font-bold text-foreground space-y-2"
+          >
+            <span className="flex flex-wrap items-center gap-2">
+              {renderHighlightedTitle(title)}
+              <FaLeaf className="w-4 h-4 text-nature" aria-hidden />
+            </span>
+          </h2>
+          <p>{description}</p>
+        </div>
+        {imageUrl ? (
+          <div className="relative aspect-video overflow-hidden rounded-xl">
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
+        ) : (
+          <div />
+        )}
+      </div>
 
-      {resolvedQuickLinks.length > 0 ? (
+      {quickLinks && quickLinks.length > 0 ? (
         <VehicleDiscoveryQuickCards
-          quickLinks={resolvedQuickLinks}
-          className="mb-6"
+          quickLinks={quickLinks}
+          className=""
         />
       ) : null}
 

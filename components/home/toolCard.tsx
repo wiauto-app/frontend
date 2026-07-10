@@ -36,9 +36,10 @@ export const ToolCard = ({ item }: ToolCardProps) => {
   return (
     <Card
       className={cn(
-        "group/card h-full overflow-hidden border-0 py-0 text-white shadow-[0_4px_20px_rgba(15,23,42,0.12)]",
-        "transition-all duration-300 ease-out",
-        "hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(0,97,242,0.22)]",
+        "home-card-interactive group/card h-full overflow-hidden border-0 py-0 text-white shadow-[0_4px_20px_rgba(15,23,42,0.12)]",
+        "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(0,97,242,0.22)]",
+        "active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100",
       )}
       style={{ backgroundColor }}
     >
@@ -50,10 +51,10 @@ export const ToolCard = ({ item }: ToolCardProps) => {
 
         <div className="relative z-10 flex flex-1 flex-col justify-center gap-4 p-5 sm:p-6 lg:p-7">
           <div className="space-y-2">
-            <h3 className="text-lg font-bold leading-tight sm:text-xl lg:text-2xl">
+            <h3 className="text-lg font-bold leading-tight sm:text-xl lg:text-2xl" style={{ color: item.colorTexto }}>
               {item.titulo}
             </h3>
-            <p className="max-w-md text-sm leading-relaxed text-white/90 sm:text-base">
+            <p className="max-w-md text-sm leading-relaxed  sm:text-base" style={{ color: item.colorTexto }}>
               {item.descripcion}
             </p>
           </div>
@@ -69,7 +70,7 @@ export const ToolCard = ({ item }: ToolCardProps) => {
             >
               {ctaLabel}
               <ArrowRight
-                className="size-4 transition-transform duration-300 group-hover/card:translate-x-0.5"
+                className="size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/card:translate-x-0.5 motion-reduce:transition-none"
                 aria-hidden
               />
             </Button>
@@ -83,7 +84,7 @@ export const ToolCard = ({ item }: ToolCardProps) => {
                 src={imageUrl}
                 alt={imageAlt}
                 fill
-                className="object-contain object-bottom drop-shadow-lg transition-transform duration-500 ease-out group-hover/card:-translate-y-1 group-hover/card:scale-105"
+                className="home-card-image object-contain object-bottom drop-shadow-lg transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/card:scale-105 motion-reduce:transition-none motion-reduce:group-hover/card:scale-100"
                 sizes="(max-width: 640px) 112px, 160px"
               />
             </div>

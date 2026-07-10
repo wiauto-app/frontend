@@ -4,10 +4,16 @@ import { HERO_PRICE_UNTIL_OPTIONS } from "@/interfaces/hero-facet.interface";
 import { buildVehicleListingHref } from "@/lib/vehicles/listing-url/build-listing-url";
 import {
   DISCOVERY_COLOR_LINKS,
+  DISCOVERY_MAKES_LIMIT,
   DISCOVERY_QUICK_LINKS,
   PLUG_IN_HYBRID_FUEL_SLUG,
 } from "./vehicleDiscovery.constants";
-import type { DiscoveryAccordionSection, QuickLink } from "./types";
+import type {
+  DiscoveryAccordionSection,
+  DiscoveryCatalogItem,
+  QuickLink,
+} from "./types";
+import { MapPinIcon, Settings2, Tag } from "lucide-react";
 
 const sortByVehicleCount = (
   items: HeroCatalogFacetItem[],
@@ -19,7 +25,7 @@ const sortByVehicleCount = (
 export const buildDefaultQuickLinks = (): QuickLink[] => DISCOVERY_QUICK_LINKS;
 
 export const buildVehicleDiscoverySections = (
-  provinces: HeroCatalogFacetItem[],
+  provinces: DiscoveryCatalogItem[],
   makes: HeroCatalogFacetItem[],
 ): DiscoveryAccordionSection[] => {
   const pricePills = HERO_PRICE_UNTIL_OPTIONS.map((untilPrice) => ({
@@ -49,7 +55,8 @@ export const buildVehicleDiscoverySections = (
     {
       id: "provinces",
       title: "Por provincia",
-      pills: sortByVehicleCount(provinces).map((province) => ({
+      Icon: MapPinIcon,
+      pills: provinces.map((province) => ({
         label: province.name,
         href: buildVehicleListingHref({
           provinces_slugs: [province.slug],
@@ -59,14 +66,18 @@ export const buildVehicleDiscoverySections = (
     {
       id: "makes",
       title: "Por marca",
-      pills: sortByVehicleCount(makes).map((make) => ({
-        label: make.name,
-        href: buildVehicleListingHref({ makes_slugs: [make.slug] }),
-      })),
+      Icon:Tag,
+      pills: sortByVehicleCount(makes)
+        .slice(0, DISCOVERY_MAKES_LIMIT)
+        .map((make) => ({
+          label: make.name,
+          href: buildVehicleListingHref({ makes_slugs: [make.slug] }),
+        })),
     },
     {
       id: "more-filters",
       title: "Más filtros",
+      Icon:Settings2,
       pills: [
         ...pricePills,
         ...fuelPills,

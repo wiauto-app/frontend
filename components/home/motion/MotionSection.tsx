@@ -1,0 +1,43 @@
+"use client";
+
+import { motion, type HTMLMotionProps, type Variants } from "motion/react";
+import type { ReactNode } from "react";
+
+import { cn } from "@/lib/utils";
+
+import { fadeUp, getVariant } from "./motion-variants";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+
+interface MotionSectionProps extends Omit<HTMLMotionProps<"div">, "children"> {
+  children: ReactNode;
+  className?: string;
+  variants?: Variants;
+  as?: "section" | "div";
+  amount?: number;
+}
+
+export const MotionSection = ({
+  children,
+  className,
+  variants = fadeUp,
+  as = "div",
+  amount = 0.2,
+  ...rest
+}: MotionSectionProps) => {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const resolvedVariants = getVariant(variants, prefersReducedMotion);
+  const Component = as === "section" ? motion.section : motion.div;
+
+  return (
+    <Component
+      className={cn(className)}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount }}
+      variants={resolvedVariants}
+      {...rest}
+    >
+      {children}
+    </Component>
+  );
+};

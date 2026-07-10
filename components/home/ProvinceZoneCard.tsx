@@ -30,9 +30,11 @@ export const ProvinceZoneCard = ({ province }: ProvinceZoneCardProps) => {
       href={href}
       aria-label={`Explorar vehículos en ${province.name}`}
       className={cn(
-        "group relative block h-full overflow-hidden rounded-2xl",
+        "home-card-interactive group relative block h-full overflow-hidden rounded-2xl",
         "bg-white shadow-[0_4px_20px_rgba(15,23,42,0.08)]",
-        "transition-all duration-300 ease-out",
+        "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(0,97,242,0.18)]",
+        "active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0061F2] focus-visible:ring-offset-2",
       )}
     >
@@ -43,7 +45,7 @@ export const ProvinceZoneCard = ({ province }: ProvinceZoneCardProps) => {
             alt={province.name}
             fill
             quality={80}
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            className="home-card-image object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             sizes="(max-width: 640px) 50vw, 25vw"
           />
         ) : (

@@ -43,12 +43,10 @@ export default async function VehiclesListingPage(props: {
   const { slug } = await props.params;
   const search_params = await props.searchParams;
   const slug_segments = slug ?? [];
-
   const filters = parseVehicleListingUrl(
     slug_segments,
     toUrlSearchParams(search_params),
   );
-
 
   const [listing, activeFilters] = await Promise.all([
     findAllVehicles(filters),

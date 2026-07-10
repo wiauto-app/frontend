@@ -79,6 +79,27 @@ describe("parseVehicleListingUrl — Opción C", () => {
     });
   });
 
+  it("parsea categorías desde query amigable", () => {
+    const params = new URLSearchParams("categoria=suv");
+    expect(parseVehicleListingUrl(undefined, params)).toMatchObject({
+      categories_slugs: ["suv"],
+    });
+  });
+
+  it("parsea varias categorías desde query amigable", () => {
+    const params = new URLSearchParams("categorias=suv,sedan");
+    expect(parseVehicleListingUrl(undefined, params)).toMatchObject({
+      categories_slugs: ["suv", "sedan"],
+    });
+  });
+
+  it("parsea categories_slugs legacy desde query", () => {
+    const params = new URLSearchParams("categories_slugs=suv&categories_slugs=sedan");
+    expect(parseVehicleListingUrl(undefined, params)).toMatchObject({
+      categories_slugs: ["suv", "sedan"],
+    });
+  });
+
   it("parsea varios modelos desde query con marca en path legacy", () => {
     const params = new URLSearchParams("modelos=corolla,rav4");
     expect(parseVehicleListingUrl(["toyota"], params)).toMatchObject({
@@ -390,6 +411,21 @@ describe("round-trip", () => {
     const rebuilt = buildVehicleListingHref(parsed);
 
     expect(parsed.provinces_slugs).toEqual(["madrid", "barcelona"]);
+    expect(normalize(rebuilt)).toBe(normalize(href));
+  });
+
+  it("round-trip categorías en query amigable", () => {
+    const href = buildVehicleListingHref({
+      categories_slugs: ["suv", "sedan"],
+    });
+
+    const url = new URL(href, "http://localhost");
+    const slug = extractSlugFromPathname(url.pathname);
+    const parsed = parseVehicleListingUrl(slug, url.searchParams);
+    const rebuilt = buildVehicleListingHref(parsed);
+
+    expect(parsed.categories_slugs).toEqual(["suv", "sedan"]);
+    expect(rebuilt).toContain("categoria=suv%2Csedan");
     expect(normalize(rebuilt)).toBe(normalize(href));
   });
 });

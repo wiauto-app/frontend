@@ -107,3 +107,7 @@ export const useHeroSearchFilters = (): HeroSearchFiltersContextValue => {
   }
   return context;
 };
+
+export const useOptionalHeroSearchFilters =
+  (): HeroSearchFiltersContextValue | null =>
+    useContext(HeroSearchFiltersContext);

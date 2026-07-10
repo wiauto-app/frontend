@@ -1,5 +1,6 @@
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
 import type {
+  HomeLowEmissionsData,
   HomePageData,
   HomeProcessSectionData,
   HomeProcessTab,
@@ -102,7 +103,15 @@ const DEFAULT_PROCESS_SECTION: HomeProcessSectionData = {
   tabs: DEFAULT_PROCESS_TABS,
 };
 
-const pickProcessImageUrl = (media?: StrapiMedia | null): string | null => {
+const DEFAULT_LOW_EMISSIONS: HomeLowEmissionsData = {
+  title: "Encuentra tu vehículo de bajas emisiones",
+  description:
+    "Explora las opciones más eficientes para moverte mejor y cuidar del planeta",
+  image_url: null,
+  links: [],
+};
+
+const pickMediaUrl = (media?: StrapiMedia | null): string | null => {
   if (!media) {
     return null;
   }
@@ -135,7 +144,7 @@ const mapProcessSection = (
           tab.descripcion?.length ?
             tab.descripcion
           : plainTextToBlocks(""),
-        image_url: pickProcessImageUrl(tab.image),
+        image_url: pickMediaUrl(tab.image),
         image_alt: tab.image?.alternativeText ?? tab.titulo!.trim(),
       })) ?? [];
 
@@ -168,6 +177,34 @@ const richTextToStoreLabels = (
 
 type StrapiHomeHero = NonNullable<StrapiHomepageResponse["data"]>["homeHero"];
 
+const mapLowEmissions = (
+  low_emissions?: NonNullable<StrapiHomepageResponse["data"]>["bajas_emisiones"],
+): HomeLowEmissionsData => {
+  if (!low_emissions) {
+    return DEFAULT_LOW_EMISSIONS;
+  }
+
+  return {
+    title:
+      low_emissions.header?.titulo?.trim() || DEFAULT_LOW_EMISSIONS.title,
+    description:
+      low_emissions.header?.descripcion?.trim() ||
+      DEFAULT_LOW_EMISSIONS.description,
+    image_url: pickMediaUrl(low_emissions.imagen),
+    links:
+      low_emissions.links
+        ?.filter((item) => item.titulo?.trim() && item.boton?.url?.trim())
+        .map((item) => ({
+          title: item.titulo.trim(),
+          description: item.descripcion?.trim() ?? "",
+          href: item.boton.url.trim(),
+          image_url: pickMediaUrl(item.imagen),
+          border_color: item.colorFondo?.trim() ?? "",
+          title_color: item.colorTexto?.trim() ?? "",
+        })) ?? [],
+  };
+};
+
 const pickBackgroundImageUrl = (hero?: StrapiHomeHero): string | null => {
   const media = hero?.backgroundImage;
   if (!media) {
@@ -191,23 +228,37 @@ export const mapHomePageData = (
   const seo = data?.homeSeo;
   const process_section = data?.processSection;
   const herramientas = data?.herramientas;
+  const low_emissions = data?.bajas_emisiones;
   return {
     herramientas: herramientas?.map((item) => ({
       titulo: item.titulo,
       descripcion: item.descripcion,
       imagen: item.imagen,
       colorFondo: item.colorFondo,
+      colorTexto: item.colorTexto,
       boton: item.boton,
     })) ?? [],
+    low_emissions: mapLowEmissions(low_emissions ?? undefined),
     hero: {
       title: hero?.title?.trim() || DEFAULT_HERO_TITLE,
       subtitle: hero?.subtitle?.trim() ?? null,
+      download_app_label: hero?.descarga_app?.trim() ?? null,
       background_image_url: pickBackgroundImageUrl(hero ?? undefined),
       action_links:
         hero?.actionLinks?.map((link) => ({
           label: link.label,
           url: link.url,
         })) ?? [DEFAULT_HERO_ACTION],
+      features:
+        hero?.caracteristicas
+          ?.filter((item) => item.label?.trim())
+          .map((item) => ({
+            id: String(item.id),
+            label: item.label.trim(),
+            description: item.descripcion?.trim() ?? null,
+            icon_url: getStrapiMediaUrl(item.icon?.url),
+            icon_alt: item.icon?.alternativeText ?? item.label.trim(),
+          })) ?? [],
     },
     newsletter: {
       subtitle: newsletter?.subtitle?.trim() || DEFAULT_NEWSLETTER.subtitle,

@@ -35,14 +35,22 @@ export type StrapiHomepageResponse = {
     homeHero?: {
       title?: string | null;
       subtitle?: string | null;
+      descarga_app?: string | null;
       backgroundImage?: StrapiMedia | null;
       actionLinks?: { id: number; label: string; url: string }[] | null;
+      caracteristicas?: {
+        id: number;
+        label: string;
+        descripcion?: string | null;
+        icon?: StrapiMedia | null;
+      }[] | null;
     } | null;
     herramientas?: {
       titulo: string;
       descripcion: string;
       imagen: StrapiMedia;
       colorFondo: string;
+      colorTexto: string;
       boton: StrapiLink;
     }[] | null;
     homeAppAdvertisment?: {
@@ -75,6 +83,22 @@ export type StrapiHomepageResponse = {
         titulo?: string | null;
         descripcion?: StrapiRichTextBlock[] | null;
         image?: StrapiMedia | null;
+      }[] | null;
+    } | null;
+    bajas_emisiones?: {
+      header?: {
+        titulo?: string | null;
+        descripcion?: string | null;
+      } | null;
+      imagen?: StrapiMedia | null;
+      links?: {
+        id?: number;
+        titulo: string;
+        descripcion: string;
+        imagen?: StrapiMedia | null;
+        colorFondo: string;
+        colorTexto: string;
+        boton: StrapiLink;
       }[] | null;
     } | null;
   } | null;

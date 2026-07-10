@@ -175,6 +175,10 @@ const parseQueryParams = (
         applyQueryValue(query_filters, "models_slugs", raw_value);
         return;
       }
+      if (key === "category_slug") {
+        applyQueryValue(query_filters, "categories_slugs", raw_value);
+        return;
+      }
       applyQueryValue(
         query_filters,
         key as keyof FindAllVehiclesParams,

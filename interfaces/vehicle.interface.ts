@@ -293,6 +293,7 @@ export interface FindAllVehiclesParams {
   type_slug?: string;
   makes_slugs?: string[];
   models_slugs?: string[];
+  categories_slugs?: string[];
   since_price?: number;
   until_price?: number;
   price_offer?: boolean;
@@ -340,6 +341,7 @@ export interface Make {
   id: string;
   name: string;
   slug: string;
+  image_url?: string | null;
   created_at: string;
 }
 

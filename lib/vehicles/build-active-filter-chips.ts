@@ -15,6 +15,7 @@ type SlugFilterKey = Extract<
   keyof FindAllVehiclesParams,
   | "makes_slugs"
   | "models_slugs"
+  | "categories_slugs"
   | "provinces_slugs"
   | "comunities_slugs"
   | "municipalities_slugs"
@@ -270,6 +271,7 @@ export const hasVisibleActiveFilters = (
     resolved.vehicle_type != null ||
     resolved.makes.length > 0 ||
     resolved.models.length > 0 ||
+    resolved.categories.length > 0 ||
     resolved.provinces.length > 0 ||
     resolved.communities.length > 0 ||
     resolved.municipalities.length > 0 ||
@@ -341,6 +343,15 @@ export const buildActiveFilterChips = (
       key: `model-${model.slug}`,
       label: model.name,
       onRemove: () => remove_slug_from_filter("models_slugs", model.slug, handlers),
+    });
+  });
+
+  resolved.categories.forEach((category) => {
+    chips.push({
+      key: `category-${category.slug}`,
+      label: category.name,
+      onRemove: () =>
+        remove_slug_from_filter("categories_slugs", category.slug, handlers),
     });
   });
 

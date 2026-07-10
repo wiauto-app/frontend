@@ -6,6 +6,7 @@ import type { StrapiHomepageResponse } from "../types/strapi-home.types";
 const HOME_POPULATE_QUERY = `
 /homepage
 ?populate[homeSeo][populate][shareImage]=true
+&populate[homeHero][populate][caracteristicas][populate][icon]=true
 &populate[homeHero][populate][backgroundImage]=true
 &populate[homeHero][populate][actionLinks]=true
 &populate[homeAppAdvertisment][populate][appMockup]=true
@@ -14,6 +15,11 @@ const HOME_POPULATE_QUERY = `
 &populate[processSection][populate][tabs][populate][image]=true
 &populate[herramientas][populate][imagen]=true
 &populate[herramientas][populate][boton]=true
+&populate[bajas_emisiones][populate][header]=true
+&populate[bajas_emisiones][populate][imagen]=true
+&populate[bajas_emisiones][populate][links][populate][imagen]=true
+&populate[bajas_emisiones][populate][links][populate][boton]=true
+
 `.replace(/\s/g, "");
 
 export const getHomeData = async (): Promise<HomePageData> => {

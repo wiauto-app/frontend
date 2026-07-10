@@ -16,10 +16,30 @@ export interface SearchMakesParams {
   limit?: number;
 }
 
+export interface FindAllMakesParams {
+  page?: number;
+  limit?: number;
+  order_by?: string;
+  order_direction?: "ASC" | "DESC";
+  search?: string;
+}
+
 export const makeService = {
-  findAll: async (): Promise<PaginatedResponse<Make>> => {
+  findAll: async (
+    params?: FindAllMakesParams,
+  ): Promise<PaginatedResponse<Make>> => {
+    const query = qs.stringify(
+      {
+        page: params?.page ?? 1,
+        limit: params?.limit ?? 10,
+        order_by: params?.order_by,
+        order_direction: params?.order_direction,
+        search: params?.search,
+      },
+      { skipNulls: true, addQueryPrefix: true },
+    );
     const response = await apiGet<PaginatedResponse<Make>>(
-      `${V1_CATALOG_MAKES}`,
+      `${V1_CATALOG_MAKES}${query}`,
     );
     return response.data ?? { data: [], total: 0, page: 1, limit: 10 };
   },

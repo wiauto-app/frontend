@@ -2,16 +2,28 @@ import { LucideIcon } from "lucide-react";
 import type { StrapiMedia, StrapiRichTextBlock } from "./strapi-home.types";
 
 export type StrapiLink = {
+  id?: number;
   label: string;
   url: string;
+  destacado?: boolean | null;
 };
 
-export type HomeHeroData = {
+export interface HomeHeroFeature {
+  id: string;
+  label: string;
+  description: string | null;
+  icon_url: string | null;
+  icon_alt: string | null;
+}
+
+export interface HomeHeroData {
   title: string;
   subtitle: string | null;
+  download_app_label: string | null;
   background_image_url: string | null;
   action_links: StrapiLink[];
-};
+  features: HomeHeroFeature[];
+}
 
 export type HomeNewsletterData = {
   subtitle: string;
@@ -74,11 +86,29 @@ export type StrapiCard = {
   descripcion: string;
   imagen: StrapiMedia;
   colorFondo: string;
+  colorTexto?: string;
   boton: StrapiLink;
-}
+};
+
+export type HomeLowEmissionsLink = {
+  title: string;
+  description: string;
+  href: string;
+  image_url: string | null;
+  border_color: string;
+  title_color: string;
+};
+
+export type HomeLowEmissionsData = {
+  title: string;
+  description: string;
+  image_url: string | null;
+  links: HomeLowEmissionsLink[];
+};
 
 export type HomePageData = {
   herramientas: StrapiCard[];
+  low_emissions: HomeLowEmissionsData;
   hero: HomeHeroData;
   newsletter: HomeNewsletterData;
   app_advertisement: HomeAppAdvertisementData;

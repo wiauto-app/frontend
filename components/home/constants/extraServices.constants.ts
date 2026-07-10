@@ -32,7 +32,7 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
 
 export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
   {
-    name: "Miles de anuncios verificados",
+    name: "Miles de anuncios",
     icon: Check,
     href: "/anuncios-verificados",
     description: "Compra con confianza.",
@@ -44,15 +44,15 @@ export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
     description: "Publica tu anuncio gratis.",
   },
   {
-    name: "Financiamiento a tu medida",
+    name: "Financiamiento",
     icon: CreditCard,
     href: "/financiamiento",
-    description: "Encuentra la mejor opción de financiamiento para tu auto.",
+    description: "Encuentra la mejor opción de financiamiento.",
   },
   {
     name: "Atención personalizada",
     icon: User,
     href: "/atencion-personalizada",
-    description: "Contáctanos y te ayudaremos a encontrar el auto ideal para ti.",
+    description: "Te ayudaremos a encontrar el auto ideal.",
   },
 ];

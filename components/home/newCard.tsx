@@ -37,11 +37,9 @@ export const NewCard = ({
     <Link
       href={`/noticias/${item.slug}`}
       className={cn(
-        "group relative block overflow-hidden rounded-2xl h-96",
-        "shadow-[0_4px_20px_rgba(15,23,42,0.08)]",
-        "transition-all duration-300",
-        "hover:shadow-[0_8px_28px_rgba(15,23,42,0.12)]",
-        isFeatured && " sm:col-span-2 lg:col-span-2 lg:row-span-2",
+        "rounded-lg overflow-hidden",
+        "hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(15,23,42,0.12)] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        isFeatured ? "col-span-2" : "col-span-1",
         className,
       )}
     >
@@ -58,7 +56,8 @@ export const NewCard = ({
           alt={item.title}
           fill
           unoptimized
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+          // className="home-card-image object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          className="object-cover rounded-lg overflow-hidden"
           sizes={
             isFeatured
               ? "(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"

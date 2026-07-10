@@ -20,10 +20,11 @@ export const PopularCategoryCard = ({ category }: PopularCategoryCardProps) => {
       href={`/vehiculos?categoria=${category.slug}`}
       aria-label={`Explorar vehículos de categoría ${category.name}`}
       className={cn(
-        "group relative block h-full overflow-hidden rounded-2xl",
+        "home-card-interactive group relative block h-full overflow-hidden rounded-2xl",
         "bg-white shadow-[0_4px_20px_rgba(15,23,42,0.08)]",
-        "transition-all duration-300 ease-out",
-        "hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(0,97,242,0.18)]",
+        "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(0,97,242,0.18)]",
+        "active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0061F2] focus-visible:ring-offset-2",
       )}
     >
@@ -34,7 +35,7 @@ export const PopularCategoryCard = ({ category }: PopularCategoryCardProps) => {
             alt={category.name}
             fill
             quality={80}
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            className="home-card-image object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             sizes="(max-width: 640px) 50vw, 25vw"
           />
         ) : (
@@ -62,7 +63,7 @@ export const PopularCategoryCard = ({ category }: PopularCategoryCardProps) => {
         />
 
         <div
-          className="absolute bottom-0 left-0 h-1 w-0 transition-all duration-500 ease-out group-hover:w-full"
+          className="absolute bottom-0 left-0 h-1 w-full origin-left scale-x-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 motion-reduce:transition-none"
           style={{ backgroundColor: BRAND_BLUE }}
           aria-hidden
         />
@@ -82,12 +83,13 @@ export const PopularCategoryCard = ({ category }: PopularCategoryCardProps) => {
               className={cn(
                 "flex size-9 shrink-0 items-center justify-center rounded-full",
                 "border border-white/20 bg-white/10 text-white backdrop-blur-sm",
-                "transition-all duration-300",
-                "group-hover:scale-110 group-hover:border-transparent group-hover:bg-[#0061F2]",
+                "transition-[transform,background-color,border-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                "group-hover:scale-105 group-hover:border-transparent group-hover:bg-[#0061F2]",
+                "motion-reduce:transition-none motion-reduce:group-hover:scale-100",
               )}
               aria-hidden
             >
-              <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-12" />
+              <ArrowUpRight className="size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-12 motion-reduce:transition-none" />
             </span>
           </div>
         </div>
