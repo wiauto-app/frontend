@@ -1,13 +1,20 @@
-import { apiGet, apiPatch, apiPost, type ApiResponse } from "@/lib/api";
+import { apiGet, apiPatch, apiPost, apiPut, type ApiResponse } from "@/lib/api";
 import { objectToQueryString } from "@/lib/utils";
 import type { PaginatedResult, PaginationParams } from "@/types/general.types";
-import { V1_DEALERSHIPS, V1_DEALERSHIPS_BY_SLUG, V1_DEALERSHIPS_MY_PROFILE } from "./route.constants";
+import {
+  V1_DEALERSHIPS,
+  V1_DEALERSHIPS_BY_SLUG,
+  V1_DEALERSHIPS_MY_PROFILE,
+  v1DealershipSchedules,
+} from "./route.constants";
 import type {
   CreateDealershipPayload,
   CreateMyDealershipPayload,
   DealershipDetail,
   DealershipListItem,
+  DealershipScheduleDay,
   UpdateDealershipPayload,
+  UpdateDealershipSchedulesPayload,
 } from "./types/dealership.types";
 
 export type FindAllDealershipsParams = PaginationParams & {
@@ -96,4 +103,13 @@ export const dealershipService = {
     data: UpdateDealershipPayload,
   ): Promise<ApiResponse<DealershipDetail>> =>
     apiPatch<DealershipDetail>(`${V1_DEALERSHIPS}/${id}`, data),
+
+  updateSchedules: async (
+    dealershipId: string,
+    data: UpdateDealershipSchedulesPayload,
+  ): Promise<ApiResponse<DealershipScheduleDay[]>> =>
+    apiPut<DealershipScheduleDay[]>(
+      v1DealershipSchedules(dealershipId),
+      data,
+    ),
 };

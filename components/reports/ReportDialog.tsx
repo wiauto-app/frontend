@@ -145,6 +145,10 @@ export const ReportDialog = ({
                   value={field.value}
                   onValueChange={field.onChange}
                   disabled={isSubmitting}
+                  items={categories.map((category) => ({
+                    label: category.name,
+                    value: category.id,
+                  }))}
                 >
                   <SelectTrigger
                     id="report-category"

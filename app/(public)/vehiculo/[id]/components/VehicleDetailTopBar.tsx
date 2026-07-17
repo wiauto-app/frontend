@@ -1,4 +1,3 @@
-"use client";
 
 import { VehicleFavoriteButton } from "@/app/(public)/vehiculos/components/VehicleFavoriteButton";
 import { VehicleShareButton } from "@/app/(public)/vehiculos/components/VehicleShareButton";

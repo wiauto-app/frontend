@@ -1,57 +1,27 @@
 import Link from "next/link";
+import type { ComponentProps } from "react";
 
-import { cn } from "@/lib/utils";
-
-import { BRAND_BLUE } from "../constants/navLinks.constants";
+import { useUser } from "@/app/contexts/auth/useUser";
 import { SignInDialog } from "@/components/auth/signInDialog";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/app/contexts/auth/useUser";
 
-type NavbarPublishButtonProps = {
-  variant?: "navbar" | "mobile";
-};
+type NavbarPublishButtonProps = ComponentProps<typeof Button>;
 
-export function NavbarPublishButton({
-  variant = "navbar",
-}: NavbarPublishButtonProps) {
-  const isMobileMenu = variant === "mobile";
+export function NavbarPublishButton({ ...props }: NavbarPublishButtonProps) {
   const { user } = useUser();
 
   if (user) {
     return (
-      <Link
-        href="/crear-vehiculo"
-        className={cn(
-          "inline-flex h-10 items-center justify-center rounded-lg px-5 text-sm font-bold text-white transition-opacity duration-200 hover:opacity-90",
-          isMobileMenu
-            ? "flex min-h-11 w-full"
-            : "hidden shrink-0 sm:inline-flex",
-        )}
-        style={{ backgroundColor: BRAND_BLUE }}
-      >
-        Publicar
+      <Link href="/crear-vehiculo">
+        <Button {...props}>Publicar</Button>
       </Link>
     );
   }
 
   return (
-    <>
-      <SignInDialog
-        returnTo="/crear-vehiculo"
-        trigger={
-          <Button
-            className={cn(
-              "inline-flex h-10 items-center justify-center rounded-lg px-5 text-sm font-bold text-white transition-opacity duration-200 hover:opacity-90",
-              isMobileMenu
-                ? "flex min-h-11 w-full"
-                : "hidden shrink-0 sm:inline-flex",
-            )}
-            style={{ backgroundColor: BRAND_BLUE }}
-          >
-            Publicar
-          </Button>
-        }
-      />
-    </>
+    <SignInDialog
+      returnTo="/crear-vehiculo"
+      trigger={<Button {...props}>Publicar</Button>}
+    />
   );
 }

@@ -244,6 +244,24 @@ export const mapHomePageData = (
       subtitle: hero?.subtitle?.trim() ?? null,
       download_app_label: hero?.descarga_app?.trim() ?? null,
       background_image_url: pickBackgroundImageUrl(hero ?? undefined),
+      hero_images:
+        hero?.heroImages
+          ?.slice()
+          .sort((a, b) => a.order - b.order)
+          .map((item) => {
+            const image_url = pickMediaUrl(item.image);
+            if (!image_url) {
+              return null;
+            }
+
+            return {
+              id: String(item.id),
+              image_url,
+              image_alt: item.alt?.trim() || item.image?.alternativeText || "",
+              order: item.order,
+            };
+          })
+          .filter((item): item is NonNullable<typeof item> => item !== null) ?? [],
       action_links:
         hero?.actionLinks?.map((link) => ({
           label: link.label,

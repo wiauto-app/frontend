@@ -3,6 +3,7 @@ import { NewsContent } from "./components/NewsContent";
 import { NewsCategories } from "./components/newsCategories";
 import { parseNewsSearchParams } from "./utils/parse-news-search-params";
 import type { NewsCategory, NewsPaginatedResult } from "./types/news.types";
+import { LandingHeader } from "@/components/ui/landingHeader";
 
 export default async function NewsPage({
   searchParams,
@@ -46,19 +47,7 @@ export default async function NewsPage({
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      <section className="bg-[#E8F0FE] py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-medium text-slate-800 md:text-5xl lg:text-6xl">
-            <span className="relative inline-block">
-              Noticias
-              <span className="absolute -bottom-2 left-0 h-1 w-3/4 bg-blue-600"></span>
-            </span>
-            <span className="relative inline-block pl-4 font-bold text-blue-600">
-              de actualidad
-            </span>
-          </h1>
-        </div>
-      </section>
+      <LandingHeader title="Noticias" description="Noticias de actualidad" />
 
       <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
         {error_message && items.length === 0 ? (

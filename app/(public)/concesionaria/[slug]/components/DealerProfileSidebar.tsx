@@ -151,9 +151,11 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
                 </li>
               ) : null}
               {dealer.contact.schedule ? (
-                <li className="flex items-center gap-3">
-                  <Clock className="size-4 shrink-0 text-[#0061F2]" />
-                  {dealer.contact.schedule}
+                <li className="flex items-start gap-3">
+                  <Clock className="mt-0.5 size-4 shrink-0 text-[#0061F2]" />
+                  <span className="whitespace-pre-line">
+                    {dealer.contact.schedule}
+                  </span>
                 </li>
               ) : null}
             </ul>

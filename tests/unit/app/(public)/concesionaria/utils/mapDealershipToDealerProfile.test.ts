@@ -47,4 +47,47 @@ describe("mapDealershipToDealerProfile", () => {
 
     expect(profile.contact.phone).toBeUndefined();
   });
+
+  it("mapea schedules a texto legible en contacto", () => {
+    const profile = mapDealershipToDealerProfile({
+      dealership: buildMockDealership({
+        schedules: [
+          {
+            day: 1,
+            open_times: [
+              { open_time: "09:00", close_time: "14:00" },
+              { open_time: "16:00", close_time: "20:00" },
+            ],
+          },
+          {
+            day: 6,
+            open_times: [{ open_time: "10:00:00", close_time: "14:00:00" }],
+          },
+        ],
+      }),
+      reviews: [],
+      reviewTotal: 0,
+      publishedVehicles: 0,
+    });
+
+    expect(profile.contact.schedule).toContain(
+      "Lunes: 09:00–14:00, 16:00–20:00",
+    );
+    expect(profile.contact.schedule).toContain("Martes: Cerrado");
+    expect(profile.contact.schedule).toContain("Sábado: 10:00–14:00");
+    expect(profile.contact.schedule).toContain("Domingo: Cerrado");
+  });
+
+  it("no expone schedule si no hay tramos abiertos", () => {
+    const profile = mapDealershipToDealerProfile({
+      dealership: buildMockDealership({
+        schedules: [{ day: 1, open_times: [] }],
+      }),
+      reviews: [],
+      reviewTotal: 0,
+      publishedVehicles: 0,
+    });
+
+    expect(profile.contact.schedule).toBeUndefined();
+  });
 });

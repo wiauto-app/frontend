@@ -1,6 +1,6 @@
-import { FaApple, FaGooglePlay } from "react-icons/fa";
+import { FaApple } from "react-icons/fa";
 import type { StoreButtonLabels } from "./types/home-page.types";
-
+import Image from "next/image";
 type StoreButtonsProps = {
   className?: string;
   google_store_labels: StoreButtonLabels;
@@ -32,7 +32,7 @@ export function StoreButtons({
         className="inline-flex h-[52px] min-w-[155px] items-center gap-2.5 rounded-xl border border-white/20 bg-white px-4 text-black transition-opacity hover:opacity-95"
         aria-label={`${google_store_labels.line1} ${google_store_labels.line2}`}
       >
-        <FaGooglePlay className="size-6"/>
+        <Image src="/icons/playStore.svg" alt="Google Play" width={24} height={24} />
         <span className="flex flex-col leading-tight">
           <span className="text-[9px] font-medium uppercase leading-none">
             {google_store_labels.line1}

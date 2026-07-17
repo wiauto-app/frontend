@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FormProvider, useForm, type Resolver } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useQuery } from "@tanstack/react-query";
@@ -25,6 +26,7 @@ interface QuickVehicleFormProps {
 }
 
 export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps) => {
+  const router = useRouter();
   const { user } = useUser();
   const isEditMode = Boolean(vehicleId);
 
@@ -38,7 +40,6 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
     resolver: standardSchemaResolver(quickVehicleSchema) as Resolver<QuickVehicleSchema>,
     defaultValues: createQuickVehicleDefaultValues,
   });
-
 
   useEffect(() => {
     if (vehicleDetail) {
@@ -68,12 +69,19 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
     }
 
     const response = await vehiclesService.create(payload as never);
-    if (response.ok) {
-      toast.success("Vehículo publicado correctamente");
+    if (response.ok && response.data?.id) {
       onSuccess?.();
-    } else {
-      toast.error(response.message || "Error al publicar el vehículo");
+      router.push(`/crear-vehiculo/exito?id=${encodeURIComponent(response.data.id)}`);
+      return;
     }
+
+    if (response.ok) {
+      onSuccess?.();
+      router.push("/crear-vehiculo/exito");
+      return;
+    }
+
+    toast.error(response.message || "Error al publicar el vehículo");
   };
 
   if (isEditMode && isLoadingVehicle) {

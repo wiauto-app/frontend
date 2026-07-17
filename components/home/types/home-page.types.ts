@@ -21,6 +21,12 @@ export interface HomeHeroData {
   subtitle: string | null;
   download_app_label: string | null;
   background_image_url: string | null;
+  hero_images: {
+    id: string;
+    image_url: string;
+    image_alt: string;
+    order: number;
+  }[];
   action_links: StrapiLink[];
   features: HomeHeroFeature[];
 }

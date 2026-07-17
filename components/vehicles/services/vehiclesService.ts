@@ -1,4 +1,10 @@
-import { apiGet, apiPatch, apiPost, type ApiResponse } from "@/lib/api";
+import {
+  apiGet,
+  apiPatch,
+  apiPost,
+  fetchOptionalAuth,
+  type ApiResponse,
+} from "@/lib/api";
 import type { Vehicle } from "@/interfaces/vehicle.interface";
 import type { UpdateVehicleSchema, VehicleSchema } from "../types/vehicles.types";
 import { V1_VEHICLES } from "./route.constants";
@@ -28,5 +34,16 @@ export const vehiclesService = {
         is_update: true,
       }),
     );
+  },
+
+  async recordView(
+    vehicleId: string,
+    body?: { user_id?: string; metadata?: Record<string, unknown> },
+  ): Promise<ApiResponse<unknown>> {
+    return fetchOptionalAuth(`${V1_VEHICLES}/${vehicleId}/views`, {
+      method: "POST",
+      body: JSON.stringify(body ?? {}),
+      noResponse: true,
+    });
   },
 };

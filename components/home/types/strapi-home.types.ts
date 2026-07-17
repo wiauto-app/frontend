@@ -37,6 +37,12 @@ export type StrapiHomepageResponse = {
       subtitle?: string | null;
       descarga_app?: string | null;
       backgroundImage?: StrapiMedia | null;
+      heroImages?: {
+        id: number;
+        image: StrapiMedia;
+        alt: string;
+        order: number;
+      }[] | null;
       actionLinks?: { id: number; label: string; url: string }[] | null;
       caracteristicas?: {
         id: number;

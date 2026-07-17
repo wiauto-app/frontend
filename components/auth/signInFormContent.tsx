@@ -132,12 +132,10 @@ export const SignInFormContent = ({
             <GoogleLogin
               disabled={isLoading}
               returnTo={returnTo}
-              onSuccess={onSuccess}
             />
             <AppleLogin
               disabled={isLoading}
               returnTo={returnTo}
-              onSuccess={onSuccess}
             />
           </div>
 

@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+
 import { cookiesConfig } from "@/config/cookies.config";
 import { FRONTEND_URL } from "@/constants";
 import { isValidReturnPath } from "@/lib/auth/authReturnTo";
 import { buildPopupCompleteUrl } from "./utils";
 
+const resolvePostLoginPath = (
+  redirectUrl: string | undefined,
+  next: string | null,
+): string => {
+  if (redirectUrl && isValidReturnPath(redirectUrl)) {
+    return redirectUrl;
+  }
+
+  if (next && isValidReturnPath(next)) {
+    return next;
+  }
+
+  return "/";
+};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -13,7 +28,6 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type");
   const message = searchParams.get("message");
   const isPopup = searchParams.get("popup") === "1";
-  console.log("isPopup", isPopup);
   const provider = searchParams.get("provider");
   const status = searchParams.get("status");
 
@@ -30,21 +44,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (!token) {
-      return NextResponse.json({ error: "Token not found" }, { status: 400 });
-    }
-
-    if (!refreshToken) {
-      return NextResponse.json({ error: "Refresh token not found" }, { status: 400 });
-    }
-
-    return NextResponse.json({ error: "Type not found" }, { status: 400 });
+    const loginError = new URL("/iniciar-sesion", FRONTEND_URL);
+    loginError.searchParams.set(
+      "error",
+      message ?? "No se pudo iniciar sesión",
+    );
+    return NextResponse.redirect(loginError);
   }
 
   const cookieStore = await cookies();
-  const redirectUrl = cookieStore.get("redirect_url")?.value;
-  cookieStore.set(cookiesConfig.accessToken.name, token, cookiesConfig.accessToken.options);
-  cookieStore.set(cookiesConfig.refreshToken.name, refreshToken, cookiesConfig.refreshToken.options);
+  const redirectUrl = cookieStore.get(cookiesConfig.redirectUrl.name)?.value;
+
+  cookieStore.set(
+    cookiesConfig.accessToken.name,
+    token,
+    cookiesConfig.accessToken.options,
+  );
+  cookieStore.set(
+    cookiesConfig.refreshToken.name,
+    refreshToken,
+    cookiesConfig.refreshToken.options,
+  );
+  cookieStore.delete({
+    name: cookiesConfig.redirectUrl.name,
+    path: cookiesConfig.redirectUrl.options.path,
+    domain: cookiesConfig.redirectUrl.options.domain,
+  });
 
   if (type === "2fa_challenge") {
     if (isPopup) {
@@ -56,17 +81,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/verificacion-2fa", FRONTEND_URL));
   }
 
-  if (isPopup) {
-    return NextResponse.redirect(new URL(redirectUrl as string, FRONTEND_URL));
-  }
-
   if (message) {
     return NextResponse.redirect(new URL("/?verified=1", FRONTEND_URL));
   }
 
-  const next = searchParams.get("next");
-  const redirectPath =
-    next && isValidReturnPath(next) ? next : "/";
+  const redirectPath = resolvePostLoginPath(
+    redirectUrl,
+    searchParams.get("next"),
+  );
 
   return NextResponse.redirect(new URL(redirectPath, FRONTEND_URL));
 }

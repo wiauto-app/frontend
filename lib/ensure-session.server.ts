@@ -17,7 +17,19 @@ export type EnsureSessionResult =
     }
   | { outcome: "two_factor_pending" }
   | { outcome: "unauthorized" }
+  | { outcome: "refresh_unavailable"; status: number }
   | { outcome: "me_not_ok"; status: number };
+
+/** Resultado listo para Route Handler / Server Action al renovar sesión desde cookies. */
+export interface ResolveSessionRefreshResult {
+  status: number;
+  refreshed: boolean;
+  clearCookies: boolean;
+  tokens?: {
+    access_token: string;
+    refresh_token_hash: string;
+  };
+}
 
 const TWO_FA_REQUIRED_MESSAGE = "Debes completar la verificación en dos pasos";
 
@@ -169,7 +181,14 @@ export const ensureValidSession = async (params: {
 
   const refreshed = await refreshTokenService.refreshToken(refresh_token);
   if (!refreshed.ok || !is_session_payload(refreshed.data)) {
-    return { outcome: "unauthorized" };
+    if (refreshed.status === 401) {
+      return { outcome: "unauthorized" };
+    }
+
+    return {
+      outcome: "refresh_unavailable",
+      status: refreshed.status || 503,
+    };
   }
 
   const refresh_cookie_value = get_refresh_cookie_value(refreshed.data);
@@ -182,6 +201,54 @@ export const ensureValidSession = async (params: {
     access_token: refreshed.data.token,
     refresh_token_hash: refresh_cookie_value,
   };
+};
+
+/**
+ * Orquesta ensureValidSession para cookies del request.
+ * Errores de red / 5xx → status 503 sin clearCookies (no invalidar refresh válido).
+ */
+export const resolveSessionRefresh = async (params: {
+  access_token: string | null;
+  refresh_token: string | null;
+}): Promise<ResolveSessionRefreshResult> => {
+  if (!params.refresh_token) {
+    return { status: 401, refreshed: false, clearCookies: true };
+  }
+
+  try {
+    const result = await ensureValidSession({
+      refresh_token: params.refresh_token,
+      access_token: params.access_token,
+    });
+
+    if (result.outcome === "session_refreshed") {
+      return {
+        status: 200,
+        refreshed: true,
+        clearCookies: false,
+        tokens: {
+          access_token: result.access_token,
+          refresh_token_hash: result.refresh_token_hash,
+        },
+      };
+    }
+
+    if (result.outcome === "unauthorized") {
+      return { status: 401, refreshed: false, clearCookies: true };
+    }
+
+    if (result.outcome === "refresh_unavailable") {
+      return {
+        status: result.status >= 500 ? result.status : 503,
+        refreshed: false,
+        clearCookies: false,
+      };
+    }
+
+    return { status: 200, refreshed: false, clearCookies: false };
+  } catch {
+    return { status: 503, refreshed: false, clearCookies: false };
+  }
 };
 
 /** Serializa cookies del request (middleware) o del store (server action) para el header Cookie. */

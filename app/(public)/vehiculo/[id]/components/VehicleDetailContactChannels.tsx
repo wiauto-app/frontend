@@ -5,6 +5,7 @@ import { MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVehicleContactDialogs } from "../hooks/useVehicleContactDialogs";
 import { VehicleContactDialogs } from "./VehicleContactDialogs";
+import { FaWhatsapp } from "react-icons/fa";
 
 interface VehicleDetailContactChannelsProps {
   vehicleId: string;
@@ -54,7 +55,7 @@ export const VehicleDetailContactChannels = ({
             disabled={isLoadingWhatsApp}
             aria-label="Contactar por WhatsApp"
           >
-            <MessageCircle className="size-4" aria-hidden />
+            <FaWhatsapp className="size-5" aria-hidden />
             {isLoadingWhatsApp ? "Cargando..." : "WhatsApp"}
           </Button>
         ) : null}

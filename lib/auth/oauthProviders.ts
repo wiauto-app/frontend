@@ -14,13 +14,13 @@ export const OAUTH_PROVIDERS: Record<
   }
 > = {
   google: {
-    getUrl: (popup = true) => authService.googleLogin({ popup }),
+    getUrl: (popup = false) => authService.googleLogin({ popup }),
     successEvent: OAUTH_EVENTS.GOOGLE_LOGIN_SUCCESS,
     errorEvent: OAUTH_EVENTS.GOOGLE_LOGIN_ERROR,
     twoFactorEvent: OAUTH_EVENTS.GOOGLE_LOGIN_2FA_REQUIRED,
   },
   apple: {
-    getUrl: (popup = true) => authService.appleLogin({ popup }),
+    getUrl: (popup = false) => authService.appleLogin({ popup }),
     successEvent: OAUTH_EVENTS.APPLE_LOGIN_SUCCESS,
     errorEvent: OAUTH_EVENTS.APPLE_LOGIN_ERROR,
     twoFactorEvent: OAUTH_EVENTS.APPLE_LOGIN_2FA_REQUIRED,

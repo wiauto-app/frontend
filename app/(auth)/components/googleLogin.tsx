@@ -3,20 +3,18 @@
 import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { OAuthButton } from "@/components/auth/OAuthButton";
 
-type GoogleLoginProps = {
+interface GoogleLoginProps {
   disabled?: boolean;
   className?: string;
   iconClassName?: string;
   returnTo?: string;
-  onSuccess?: () => void | Promise<void>;
-};
+}
 
 export const GoogleLogin = ({
   disabled = false,
   className,
   iconClassName,
   returnTo,
-  onSuccess,
 }: GoogleLoginProps) => {
   return (
     <OAuthButton
@@ -24,7 +22,6 @@ export const GoogleLogin = ({
       disabled={disabled}
       className={className}
       returnTo={returnTo}
-      onSuccess={onSuccess}
     >
       <GoogleIcon className={iconClassName} />
       Continuar con Google

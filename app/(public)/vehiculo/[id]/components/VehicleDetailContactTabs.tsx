@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VehicleDetailContactForm } from "./VehicleDetailContactForm";
 import { VehicleDetailCallMeForm } from "./VehicleDetailCallMeForm";
-import type { VehicleDetailAdvertiser } from "../types/vehicle-detail.types";
 import {
   VEHICLE_CONTACT_TAB_EVENT,
   type VehicleContactTab,
@@ -13,13 +12,11 @@ import {
 interface VehicleDetailContactTabsProps {
   vehicleId: string;
   publisherProfileId: string;
-  advertiser: VehicleDetailAdvertiser;
 }
 
 export const VehicleDetailContactTabs = ({
   vehicleId,
   publisherProfileId,
-  advertiser,
 }: VehicleDetailContactTabsProps) => {
   const [activeTab, setActiveTab] = useState<VehicleContactTab>("contact");
 
@@ -52,7 +49,6 @@ export const VehicleDetailContactTabs = ({
         <VehicleDetailContactForm
           vehicleId={vehicleId}
           publisherProfileId={publisherProfileId}
-          advertiser={advertiser}
         />
       </TabsContent>
 

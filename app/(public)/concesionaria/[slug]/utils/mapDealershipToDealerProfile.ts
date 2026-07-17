@@ -6,6 +6,7 @@ import type {
   DealerProfileReview,
   DealerRatingDistribution,
 } from "../interfaces";
+import { formatDealershipSchedules } from "./formatDealershipSchedules";
 
 const formatMemberSince = (created_at: string): string => {
   const date = new Date(created_at);
@@ -91,6 +92,7 @@ export const mapDealershipToDealerProfile = ({
       phone,
       email: dealership.email,
       location: dealership.address,
+      schedule: formatDealershipSchedules(dealership.schedules),
     },
     stats: {
       score: rating,

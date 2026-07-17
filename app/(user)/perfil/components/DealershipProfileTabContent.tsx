@@ -9,6 +9,7 @@ import { Building2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { useUser } from "@/app/contexts/auth/useUser";
+import { canManageTeam } from "@/app/(user)/equipo/utils/teamPermissions";
 import { MapInput } from "@/components/forms/mapInput";
 import { PhoneInput, DEFAULT_PHONE_CODE } from "@/components/forms/phoneInput";
 import { Button } from "@/components/ui/button";
@@ -28,12 +29,14 @@ import {
   slugifyDealershipName,
   type DealershipProfileFormValues,
 } from "../schemas/dealership-profile.schema";
+import { DealershipScheduleSection } from "./DealershipScheduleSection";
 
 export const DealershipProfileTabContent = () => {
   const { user, isLoading: isUserLoading, refreshUser } = useUser();
   const queryClient = useQueryClient();
   const dealershipId = user?.dealership_membership?.dealership_id;
   const isCreateMode = !dealershipId;
+  const canEditSchedule = canManageTeam(user?.dealership_membership?.role);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   const {
@@ -436,6 +439,14 @@ export const DealershipProfileTabContent = () => {
           </Button>
         </form>
       </div>
+
+      {!isCreateMode && dealershipId ? (
+        <DealershipScheduleSection
+          dealershipId={dealershipId}
+          schedules={dealership?.schedules}
+          canEdit={canEditSchedule}
+        />
+      ) : null}
     </div>
   );
 };

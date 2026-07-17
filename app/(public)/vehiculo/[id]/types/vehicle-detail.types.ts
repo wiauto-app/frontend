@@ -5,14 +5,6 @@ export type VehicleDetailReview = {
   comment: string;
 };
 
-export type VehicleDetailAdvertiser = {
-  name: string;
-  email: string;
-  email_verified: boolean;
-  phone: string;
-  profile_href: string;
-};
-
 export type VehicleDetailSellerComments = {
   description: string;
   equipment_title: string;
@@ -48,25 +40,3 @@ export type VehicleDetailVerifiedSeller = {
   whatsapp_verified: boolean;
 };
 
-export type VehicleDetailView = {
-  id: string;
-  title: string;
-  condition_label: string;
-  published_at: string;
-  modified_at: string;
-  price: string;
-  previous_price: string | null;
-  price_note: string | null;
-  financing: string | null;
-  vat_note: string;
-  images: string[];
-  services: string[];
-  advertiser: VehicleDetailAdvertiser;
-  seller_comments: VehicleDetailSellerComments;
-  price_analysis: VehicleDetailPriceAnalysis;
-  specs: VehicleDetailSpec[];
-  reviews: VehicleDetailReview[];
-  location: VehicleDetailLocation;
-  verified_seller: VehicleDetailVerifiedSeller;
-  contact_phone: string;
-};

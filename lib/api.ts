@@ -10,21 +10,26 @@ export interface ApiResponse<T> {
   status: number;
 }
 
-type FetchWithAuthOptions = RequestInit & {
+interface FetchWithAuthOptions extends RequestInit {
   noResponse?: boolean;
   _auth_retry_count?: number;
   /** Evita refresh/logout automático (p. ej. `/auth/me` dentro de `ensureValidSession`). */
   skipAuthRefresh?: boolean;
   isFileUpload?: boolean;
   isFormData?: boolean;
-};
+}
 
-type BackendJsonBody<T> = {
+interface BackendJsonBody<T> {
   ok?: boolean;
   status?: number;
   message?: string;
   data?: T;
-};
+}
+
+interface TryRefreshSessionResult {
+  ok: boolean;
+  unauthorized: boolean;
+}
 
 const buildApiUrl = (path: string): string => {
   const base = (API_URL ?? "").replace(/\/$/, "");
@@ -128,31 +133,42 @@ const bestEffortLogout = async (): Promise<void> => {
 };
 
 const redirectToLogin = (): void => {
-  if (typeof window !== "undefined") {
-    window.location.href = AUTH_ROUTES.LOGIN;
+  // if (typeof window !== "undefined") {
+  //   window.location.href = AUTH_ROUTES.LOGIN;
+  // }
+};
+
+/** Single-flight: una sola petición de refresh compartida mientras hay otra en curso. */
+let refreshSessionInFlight: Promise<TryRefreshSessionResult> | null = null;
+
+const executeRefreshSession = async (): Promise<TryRefreshSessionResult> => {
+  try {
+    const res = await fetch("/api/auth/refresh", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      return { ok: true, unauthorized: false };
+    }
+
+    return {
+      ok: false,
+      unauthorized: res.status === 401,
+    };
+  } catch {
+    return { ok: false, unauthorized: false };
   }
 };
 
-const tryRefreshSession = async (): Promise<boolean> => {
-  if (typeof window !== "undefined") {
-    try {
-      const { refreshSessionAction } = await import(
-        "@/app/(auth)/actions/refreshSessionAction"
-      );
-      const result = await refreshSessionAction();
-      return result.ok;
-    } catch {
-      return false;
-    }
+const tryRefreshSession = async (): Promise<TryRefreshSessionResult> => {
+  if (!refreshSessionInFlight) {
+    refreshSessionInFlight = executeRefreshSession().finally(() => {
+      refreshSessionInFlight = null;
+    });
   }
 
-  const refreshResponse = await fetch(buildApiUrl("/auth/refresh"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-
-  return refreshResponse.ok;
+  return refreshSessionInFlight;
 };
 
 export const fetchWithAuth = async <T>(
@@ -205,21 +221,30 @@ export const fetchWithAuth = async <T>(
       };
     }
 
-    const refreshed = await tryRefreshSession();
+    const refreshResult = await tryRefreshSession();
 
-    if (refreshed) {
+    if (refreshResult.ok) {
       return fetchWithAuth<T>(path, {
         ...options,
         _auth_retry_count: _auth_retry_count + 1,
       });
     }
 
-    await bestEffortLogout();
-    redirectToLogin();
+    if (refreshResult.unauthorized) {
+      await bestEffortLogout();
+      redirectToLogin();
+      return {
+        ok: false,
+        message: "Sesión expirada",
+        status: 401,
+        data: null as T,
+      };
+    }
+
     return {
       ok: false,
-      message: "Sesión expirada",
-      status: res.status,
+      message: "No se pudo renovar la sesión",
+      status: 503,
       data: null as T,
     };
   }

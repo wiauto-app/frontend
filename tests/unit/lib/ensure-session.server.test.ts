@@ -21,6 +21,7 @@ import {
   getServerSessionOrNull,
   getServerSessionWithTokens,
   readSessionTokensFromCookies,
+  resolveSessionRefresh,
 } from "@/lib/ensure-session.server";
 import { refreshTokenService } from "@/app/(auth)/services/refreshTokenService";
 
@@ -233,5 +234,96 @@ describe("ensureValidSession", () => {
 
     expect(result).toEqual({ outcome: "two_factor_pending" });
     expect(refreshTokenService.refreshToken).not.toHaveBeenCalled();
+  });
+
+  it("retorna unauthorized cuando el refresh responde 401", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      statusText: "Unauthorized",
+      json: async () => ({
+        ok: false,
+        message: "Unauthorized",
+        status: 401,
+        data: null,
+      }),
+    } as Response);
+
+    vi.mocked(refreshTokenService.refreshToken).mockResolvedValueOnce({
+      ok: false,
+      message: "Refresh inválido",
+      status: 401,
+      data: null as never,
+    });
+
+    const result = await ensureValidSession({
+      refresh_token: "rt-hash",
+      access_token: "access-expired",
+    });
+
+    expect(result).toEqual({ outcome: "unauthorized" });
+  });
+
+  it("retorna refresh_unavailable cuando el refresh responde 5xx", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      statusText: "Unauthorized",
+      json: async () => ({
+        ok: false,
+        message: "jwt expired",
+        status: 401,
+        data: null,
+      }),
+    } as Response);
+
+    vi.mocked(refreshTokenService.refreshToken).mockResolvedValueOnce({
+      ok: false,
+      message: "Service Unavailable",
+      status: 503,
+      data: null as never,
+    });
+
+    const result = await ensureValidSession({
+      refresh_token: "rt-hash",
+      access_token: "access-expired",
+    });
+
+    expect(result).toEqual({
+      outcome: "refresh_unavailable",
+      status: 503,
+    });
+  });
+});
+
+describe("resolveSessionRefresh", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  it("limpia cookies (401) cuando no hay refresh_token", async () => {
+    await expect(
+      resolveSessionRefresh({ access_token: "a", refresh_token: null }),
+    ).resolves.toEqual({
+      status: 401,
+      refreshed: false,
+      clearCookies: true,
+    });
+  });
+
+  it("no limpia cookies ante error de red", async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new Error("network"));
+
+    await expect(
+      resolveSessionRefresh({
+        access_token: "access-expired",
+        refresh_token: "rt-hash",
+      }),
+    ).resolves.toEqual({
+      status: 503,
+      refreshed: false,
+      clearCookies: false,
+    });
   });
 });

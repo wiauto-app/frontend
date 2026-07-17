@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { ControlledInput } from "@/components/forms/controlledInput";
 import { CustomCheckbox } from "@/components/ui/customCheckbox";
 import { leadService } from "@/services/leadService";
-import type { VehicleDetailAdvertiser } from "../types/vehicle-detail.types";
 import {
   authenticatedContactFormSchema,
   guestContactFormSchema,
@@ -23,7 +22,6 @@ import {
 type VehicleDetailContactFormProps = {
   vehicleId: string;
   publisherProfileId: string;
-  advertiser: VehicleDetailAdvertiser;
 };
 
 const defaultGuestValues: GuestContactFormValues = {

@@ -15,31 +15,34 @@ import { VehicleDetailTopBar } from "./VehicleDetailTopBar";
 import { VehicleDetailReviewForm } from "./VehicleDetailReviewForm";
 import { VehicleDetailAdvertiserSection } from "./VehicleDetailAdvertiserSection";
 import { VehicleSimilarVehiclesSection } from "./VehicleSimilarVehiclesSection";
+import { VehicleDetailViewTracker } from "./VehicleDetailViewTracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
 import type {
   VehicleDetailReview,
-  VehicleDetailView,
 } from "../types/vehicle-detail.types";
 
 interface VehicleDetailBodyProps {
   vehicle: Vehicle;
-  old: VehicleDetailView;
   reviews: VehicleDetailReview[];
   breadcrumbItems: BreadcrumbItem[];
 }
 
 export const VehicleDetailBody = ({
   vehicle,
-  old,
   reviews,
   breadcrumbItems,
 }: VehicleDetailBodyProps) => {
   const displayName = getVehicleDisplayName(vehicle);
+  const ownerProfileId = vehicle.profile_id ?? vehicle.publisher?.id ?? null;
 
   return (
     <>
+      <VehicleDetailViewTracker
+        vehicleId={vehicle.id}
+        ownerProfileId={ownerProfileId}
+      />
       <VehicleDetailTopBar
         vehicle={vehicle}
         breadcrumbItems={breadcrumbItems}
@@ -57,9 +60,8 @@ export const VehicleDetailBody = ({
             <VehicleDetailServicesSection services={vehicle.services} />
             <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
             <VehicleDetailDescription description={vehicle.description} />
-            <VehicleDetailPriceAnalysisSection
-              price_analysis={old.price_analysis}
-            />
+            {/* <VehicleDetailPriceAnalysisSection
+            /> */}
             <VehicleDetailFeatures features={vehicle.features} />
             <VehicleDetailAdvertiserSection vehicle={vehicle} />
             <VehicleDetailReviewForm vehicle_id={vehicle.id} />
@@ -84,7 +86,6 @@ export const VehicleDetailBody = ({
                 publisherProfileId={
                   vehicle.profile_id ?? vehicle.publisher.id
                 }
-                advertiser={old.advertiser}
               />
             </CardContent>
           </Card>

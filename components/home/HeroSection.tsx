@@ -1,13 +1,15 @@
+import Image from "next/image";
+
+import { cn } from "@/lib/utils";
+
+import { HeroBackgroundCarousel } from "./HeroBackgroundCarousel";
+import { StoreButtons } from "./StoreButtons";
 import type {
   HomeAppAdvertisementData,
   HomeHeroData,
   HomeHeroFeature,
 } from "./types/home-page.types";
-import { SearchForm } from "./searchForm";
-import { AiSearchForm } from "./aiSearchForm";
-import Image from "next/image";
-import { StoreButtons } from "./StoreButtons";
-import { cn } from "@/lib/utils";
+import { HeroSearchForm } from "./HeroSearchForm";
 
 interface HeroSectionProps {
   data: HomeHeroData;
@@ -96,51 +98,38 @@ const HeroFeaturesList = ({ features }: { features: HomeHeroFeature[] }) => {
 
 export function HeroSection({ data, app_advertisement }: HeroSectionProps) {
   return (
-    <section className="relative min-h-[560px]  rounded-lg mb-20 ">
-      <div className="absolute top-10 right-0 bg-black/50 rounded-s-lg p-4 z-10 flex flex-col gap-2">
-        <p className="text-white text-sm font-bold">
+    <section className="relative h-[560px]  rounded-lg py-12 ">
+      <div className="absolute top-5 right-0 bg-black/50 rounded-s-lg p-2 z-10 flex flex-col gap-1">
+        {/* <p className="text-white text-sm font-bold">
           {data.download_app_label}
-        </p>
+        </p> */}
         <StoreButtons
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-1"
           google_store_labels={app_advertisement.google_store_labels}
           apple_store_labels={app_advertisement.apple_store_labels}
         />
       </div>
-      <Image
-        src={data.background_image_url ?? ""}
-        alt={data.title}
-        fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        priority
-        className="object-cover rounded-b-lg overflow-hidden"
-        aria-hidden
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to right, rgba(10,25,60,0.88) 0%, rgba(10,25,60,0.72) 45%, rgba(10,25,60,0.45) 100%)",
-        }}
-        aria-hidden
-      />
-      <div
-        className="absolute bottom-0 right-0 h-32 w-48 bg-[#0a193c] sm:h-40 sm:w-64"
-        style={{ clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }}
-        aria-hidden
+      <HeroBackgroundCarousel
+        images={data.hero_images}
+        fallbackUrl={data.background_image_url}
+        title={data.title}
       />
 
-      <div className="relative mx-auto flex container-custom flex-col gap-10 pt-10 pb-32">
-        <div className="text-white space-y-5 px-14">
-          <h1 className="font-bold lg:text-4xl max-w-md">{data.title}</h1>
-          {data.subtitle ? (
-            <p className="text-base text-white/90  max-w-md">{data.subtitle}</p>
-          ) : null}
-          <HeroFeaturesList features={data.features} />
+      <div className="relative mx-auto  container-custom grid grid-cols-1 lg:grid-cols-2 gap-10  h-full">
+        <div className="flex flex-col ">
+          <div className="text-white space-y-5 px-14">
+            <h1 className="font-bold lg:text-4xl max-w-md">{data.title}</h1>
+            {data.subtitle ? (
+              <p className="text-base text-white/90  max-w-md">
+                {data.subtitle}
+              </p>
+            ) : null}
+            <HeroFeaturesList features={data.features} />
+          </div>
         </div>
-      </div>
-      <div className="absolute -bottom-24 w-[90%] left-1/2 -translate-x-1/2">
-        <SearchForm />
+        <div className="flex flex-col justify-end items-end">
+          <HeroSearchForm />
+        </div>
       </div>
     </section>
   );

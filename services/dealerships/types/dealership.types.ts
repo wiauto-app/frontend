@@ -23,6 +23,20 @@ export type DealershipListItem = {
   distance?: number | null;
 };
 
+export interface DealershipOpenTime {
+  open_time: string;
+  close_time: string;
+}
+
+export interface DealershipScheduleDay {
+  day: number;
+  open_times: DealershipOpenTime[];
+}
+
+export interface UpdateDealershipSchedulesPayload {
+  schedules: DealershipScheduleDay[];
+}
+
 export type DealershipDetail = DealershipListItem & {
   members?: Array<{
     id: string;
@@ -39,6 +53,7 @@ export type DealershipDetail = DealershipListItem & {
       email: string;
     };
   }>;
+  schedules?: DealershipScheduleDay[];
 };
 
 export type CreateDealershipMemberInput = {
