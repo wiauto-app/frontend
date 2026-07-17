@@ -11,7 +11,7 @@ export const serializeQuickVehiclePayload = (
     {
       ...formData,
       publisher_type: formData.publisher_type ?? "particular",
-      description: formData.description.trim(),
+      description: formData?.description?.trim(),
       license_plate: formData.license_plate || undefined,
       vin_code: formData.vin_code || undefined,
     },
