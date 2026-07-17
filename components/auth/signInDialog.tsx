@@ -15,13 +15,13 @@ import { cn } from "@/lib/utils";
 
 import { SignInFormContent } from "./signInFormContent";
 
-export type SignInDialogProps = {
+interface SignInDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   trigger?: React.ReactElement;
   onSuccess?: () => void | Promise<void>;
   returnTo?: string;
-};
+}
 
 export const SignInDialog = ({
   open,

@@ -1,10 +1,10 @@
-
+import type { AuthProvider } from "./account.interface";
 
 export interface User {
   id: string;
   email: string;
-  provider: "local" | "google" | "apple";
-  provider_id: string | null;
+  providers: AuthProvider[];
+  has_password: boolean;
   last_sign_in: Date;
   is_email_verified: boolean;
   two_factor_enabled: boolean;

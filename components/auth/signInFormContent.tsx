@@ -19,13 +19,13 @@ import { authService } from "@/services/authService";
 import { LoginDto, LoginSchema } from "@/validations/Schemas";
 import { PasswordInput } from "../ui/passwordInput";
 
-export type SignInFormContentProps = {
+interface SignInFormContentProps {
   onSuccess: () => void | Promise<void>;
   showTitle?: boolean;
   showSocialLogins?: boolean;
   className?: string;
   returnTo?: string;
-};
+}
 
 type SignInStep = "credentials" | "two_factor";
 
@@ -78,7 +78,9 @@ export const SignInFormContent = ({
         setStep("two_factor");
         return;
       }
-
+      if(returnTo) {
+        router.push(returnTo);
+      }
       await onSuccess();
     } catch (error: Error | unknown) {
       console.error("Login error:", error);

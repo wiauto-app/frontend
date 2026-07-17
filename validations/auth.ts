@@ -13,11 +13,11 @@ export interface RegisterResponseDto {
   data: {
     id: string;
     email: string;
-    provider_id: string;
     last_sign_in: string;
     two_factor_secret: string;
     two_factor_backup_codes: string;
-    provider: string;
+    providers: Array<"local" | "google" | "apple">;
+    has_password: boolean;
     is_email_verified: boolean;
     two_factor_enabled: boolean;
     created_at: string;
@@ -30,7 +30,8 @@ export interface RegisterResponseDto {
 export interface myredentianlresponse {
   id: string;
   email: string;
-  provider: string;
+  providers: Array<"local" | "google" | "apple">;
+  has_password: boolean;
   name: string;
   last_name: string;
   avatar_url: string;
@@ -74,7 +75,8 @@ export interface ValidateBackupCodeDto {
 export interface Usersesiondto {
   id: string;
   email: string;
-  provider: string;
+  providers: Array<"local" | "google" | "apple">;
+  has_password: boolean;
   name: string;
   last_name: string;
   avatar_url: string;

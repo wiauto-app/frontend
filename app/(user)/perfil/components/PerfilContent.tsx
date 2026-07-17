@@ -145,7 +145,7 @@ export const PerfilContent = () => {
     ? `${user.name} ${user.last_name || ""}`.trim()
     : "Usuario";
 
-  const isLocal = account?.provider === "local";
+  const hasPassword = account?.has_password ?? false;
 
   return (
     <div className="space-y-6 pb-20">
@@ -297,7 +297,7 @@ export const PerfilContent = () => {
             account={account}
             onUpdated={handleAccountUpdated}
           />
-          {isLocal && <PasswordSettingsSection />}
+          {hasPassword && <PasswordSettingsSection />}
           <TwoFactorSettingsSection
             account={account}
             onUpdated={handleAccountUpdated}
