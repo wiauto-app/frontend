@@ -1,61 +1,81 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronDown } from "lucide-react";
 
-import { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
+import type { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
 import { Button } from "@/components/ui/button";
+import { CustomCheckbox } from "@/components/ui/customCheckbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SearchInput } from "@/components/ui/searchInput";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMakeSelectorData } from "@/components/selectors/FilterMakeSelector/hooks/useMakeSelectorData";
-import { MakeSelectorItem } from "@/components/selectors/FilterMakeSelector/makeSelectorItem";
-import type { SelectedItem } from "@/components/selectors/FilterMakeSelector/interfaces/makeSelector.interface";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { heroFacetService } from "@/services/search/heroFacetService";
 import { useHeroSearchFilters } from "./HeroSearchFiltersContext";
-import { ChevronDown } from "lucide-react";
 
-const buildMakeModelTriggerLabel = (
-  selectedItems: SelectedItem[],
-  makes: HeroCatalogFacetItem[],
-  models: HeroCatalogFacetItem[],
+const buildMakeTriggerLabel = (
+  selectedMakes: HeroCatalogFacetItem[],
 ): string => {
-  if (!selectedItems.length) {
+  if (!selectedMakes.length) {
     return "Marca";
   }
 
-  const makeBySlug = new Map(makes.map((make) => [make.slug, make.name]));
-  const modelBySlug = new Map(models.map((model) => [model.slug, model.name]));
-
-  const makeNames = selectedItems
-    .filter((item) => item.type === "make")
-    .map((item) => makeBySlug.get(item.slug) ?? item.slug);
-  const modelNames = selectedItems
-    .filter((item) => item.type === "model")
-    .map((item) => modelBySlug.get(item.slug) ?? item.slug);
-
-  const parts = [...makeNames, ...modelNames].filter(Boolean);
-  return parts.length > 0 ? parts.join(", ") : "Marca";
+  return selectedMakes.map((make) => make.name).join(", ");
 };
 
 export const HeroFiltersMakeSelector = () => {
-  const { setMakeModelPayload } = useHeroSearchFilters();
-  const [selectedMakes, setSelectedMakes] = useState<HeroCatalogFacetItem[]>([]);
-  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const { selectedMakes, handleToggleMake, facetQueryParams } =
+    useHeroSearchFilters();
+  const [search, setSearch] = useState("");
+  const debounced_search = useDebouncedValue(search, 300);
 
-  const { makes, models, isLoading, isLoadingModels, search, setSearch } =
-    useMakeSelectorData(selectedMakes);
+  const make_cascade_filters = useMemo(
+    () => ({
+      province_slug: facetQueryParams.province_slug,
+      municipality_slug: facetQueryParams.municipality_slug,
+      until_price: facetQueryParams.until_price,
+    }),
+    [
+      facetQueryParams.municipality_slug,
+      facetQueryParams.province_slug,
+      facetQueryParams.until_price,
+    ],
+  );
+
+  const { data: makes = [], isLoading } = useQuery({
+    queryKey: ["hero-facets", "makes", make_cascade_filters, debounced_search],
+    queryFn: () =>
+      heroFacetService.getMakes(
+        make_cascade_filters,
+        debounced_search.trim() || undefined,
+      ),
+  });
+
+  const selected_make_ids = useMemo(
+    () => new Set(selectedMakes.map((make) => make.id)),
+    [selectedMakes],
+  );
 
   const trigger_label = useMemo(
-    () => buildMakeModelTriggerLabel(selectedItems, makes, models),
-    [makes, models, selectedItems],
+    () => buildMakeTriggerLabel(selectedMakes),
+    [selectedMakes],
   );
+
+  const handleMakeCheckedChange = (
+    make: HeroCatalogFacetItem,
+    checked: boolean,
+  ) => {
+    handleToggleMake(make, checked);
+  };
 
   return (
     <Popover>
       <PopoverTrigger
         render={
           <Button variant="outline" className="w-full justify-start text-base">
-            <div className="flex items-center justify-between w-full text-sm ">
-              {trigger_label}
+            <div className="flex w-full items-center justify-between text-sm">
+              <span className="truncate">{trigger_label}</span>
               <ChevronDown className="size-4 shrink-0 opacity-50" />
             </div>
           </Button>
@@ -83,16 +103,20 @@ export const HeroFiltersMakeSelector = () => {
         )}
         {!isLoading &&
           makes.map((make) => (
-            <MakeSelectorItem
+            <CustomCheckbox
               key={make.id}
-              item={make}
-              models={models}
-              isLoading={isLoadingModels}
-              selectedMakes={selectedMakes}
-              setSelectedMakes={setSelectedMakes}
-              selectedItems={selectedItems}
-              setSelectedItems={setSelectedItems}
-              onApplyMakeModelPayload={setMakeModelPayload}
+              checked={selected_make_ids.has(make.id)}
+              onChange={(event) =>
+                handleMakeCheckedChange(make, event.target.checked)
+              }
+              label={
+                <div className="flex w-full items-center justify-between">
+                  <p>{make.name}</p>
+                  <span className="text-xs text-muted-foreground">
+                    {make.vehicle_count}
+                  </span>
+                </div>
+              }
             />
           ))}
       </PopoverContent>

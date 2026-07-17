@@ -9,6 +9,7 @@ import { useUser } from "@/app/contexts/auth/useUser";
 import { AUTH_ROUTES } from "@/constants/auth.constants";
 import { authService } from "@/services/authService";
 
+
 export default function Verificacion2faPage() {
   const router = useRouter();
   const { refreshUser } = useUser();

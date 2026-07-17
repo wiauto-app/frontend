@@ -13,6 +13,7 @@ import {
   type OAuthProvider,
 } from "@/lib/auth/oauthProviders";
 import { cn } from "@/lib/utils";
+import { saveRedirectUrlAction } from "./saveRedirectUrlAction";
 
 type OAuthButtonProps = {
   provider: OAuthProvider;
@@ -44,7 +45,7 @@ export const OAuthButton = ({
       return;
     }
 
-    saveAuthReturnTo(returnTo ?? window.location.pathname);
+    saveRedirectUrlAction(returnTo ?? window.location.pathname);
     setIsLoading(true);
 
     try {

@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
   '/iniciar-sesion',
   '/registro',
   '/cambiar-contrasena',
+  '/crear-vehiculo',
   '/confirmar-correo',
   '/olvide-contrasena',
   '/verificacion-2fa',
@@ -32,6 +33,7 @@ export async function proxy(req: NextRequest) {
   const refresh_token = req.cookies.get(cookiesConfig.refreshToken.name)?.value ?? null;
   if (refresh_token) {
     const result = await ensureValidSession({ refresh_token, access_token });
+    console.log("result", result);
     if (result.outcome === "session_valid" || result.outcome === "me_not_ok") {
       return NextResponse.next();
     }

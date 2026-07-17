@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useFormContext } from "react-hook-form";
 import { ChevronLeft, ChevronRight, Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,13 +10,17 @@ import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-veh
 import { QuickVehicleIdentificationStep } from "./QuickVehicleIdentificationStep";
 import { QuickVehicleMainSections } from "./QuickVehicleMainSections";
 import { QuickVehicleTypeStep } from "./QuickVehicleTypeStep";
-import { QUICK_VEHICLE_INTRO_STEPS } from "./quick-vehicle-wizard.constants";
+import {
+  parseQuickVehicleStep,
+  QUICK_VEHICLE_INTRO_STEPS,
+  QUICK_VEHICLE_STEP_QUERY_PARAM,
+} from "./quick-vehicle-wizard.constants";
 
-type QuickVehicleIntroWizardProps = {
+interface QuickVehicleIntroWizardProps {
   vehicleId?: string;
   contactName: string;
   isEditMode?: boolean;
-};
+}
 
 export const QuickVehicleIntroWizard = ({
   vehicleId,
@@ -23,21 +28,43 @@ export const QuickVehicleIntroWizard = ({
   isEditMode = false,
 }: QuickVehicleIntroWizardProps) => {
   const form = useFormContext<QuickVehicleSchema>();
-  const [currentStep, setCurrentStep] = useState(isEditMode ? 3 : 1);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const totalSteps = QUICK_VEHICLE_INTRO_STEPS.length;
+  const rawStep = searchParams.get(QUICK_VEHICLE_STEP_QUERY_PARAM);
+  const parsedStep = parseQuickVehicleStep(rawStep);
+  const currentStep = isEditMode ? totalSteps : (parsedStep ?? 1);
+
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === totalSteps;
 
+  const navigateToStep = (step: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(QUICK_VEHICLE_STEP_QUERY_PARAM, String(step));
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  useEffect(() => {
+    if (isEditMode || parsedStep !== null) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(QUICK_VEHICLE_STEP_QUERY_PARAM, "1");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [isEditMode, parsedStep, pathname, router, searchParams]);
+
   const handleStepClick = (step: number) => {
     if (step < currentStep) {
-      setCurrentStep(step);
+      navigateToStep(step);
     }
   };
 
   const handlePrevious = () => {
     if (!isFirstStep) {
-      setCurrentStep((prev) => prev - 1);
+      navigateToStep(currentStep - 1);
     }
   };
 
@@ -52,7 +79,7 @@ export const QuickVehicleIntroWizard = ({
     }
 
     if (!isLastStep) {
-      setCurrentStep((prev) => prev + 1);
+      navigateToStep(currentStep + 1);
     }
   };
 

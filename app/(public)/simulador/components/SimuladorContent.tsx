@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { SimulatorTopBar } from "./SimulatorTopBar";
-import { ChevronLeft, Camera, Info, Wallet, CalendarDays, Percent, CarFront } from "lucide-react";
-import Link from "next/link";
+import { Camera, Info, Wallet, CalendarDays, Percent, CarFront } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { VehicleCard } from "@/components/home/VehicleCard";
@@ -95,7 +94,7 @@ const [vehiclePrice, setVehiclePrice] = useState(150000);
                       sliderMin={5000}
                       sliderMax={150000}
                       step={1000}
-                      onValueChange={(val: any) => setVehiclePrice(Array.isArray(val) ? val[0] : val)}
+                      onValueChange={(val) => setVehiclePrice(val[0])}
                     />
                     <ControlCard 
                       icon={<Wallet className="h-5 w-5 text-blue-600" />}
@@ -107,7 +106,7 @@ const [vehiclePrice, setVehiclePrice] = useState(150000);
                       sliderMin={0}
                       sliderMax={70}
                       step={1}
-                      onValueChange={(val: any) => setInitialPercent(Array.isArray(val) ? val[0] : val)}
+                      onValueChange={(val) => setInitialPercent(val[0])}
                     />
                     <ControlCard 
                       icon={<CalendarDays className="h-5 w-5 text-blue-600" />}
@@ -119,7 +118,7 @@ const [vehiclePrice, setVehiclePrice] = useState(150000);
                       sliderMin={12}
                       sliderMax={84}
                       step={12}
-                      onValueChange={(val: any) => setTermMonths(Array.isArray(val) ? val[0] : val)}
+                      onValueChange={(val) => setTermMonths(val[0])}
                     />
                     <ControlCard 
                       icon={<Percent className="h-5 w-5 text-blue-600" />}
@@ -131,7 +130,7 @@ const [vehiclePrice, setVehiclePrice] = useState(150000);
                       sliderMin={0}
                       sliderMax={25}
                       step={0.5}
-                      onValueChange={(val: any) => setInterestRate(Array.isArray(val) ? val[0] : val)}
+                      onValueChange={(val) => setInterestRate(val[0])}
                     />
         
                     {/* Warning */}

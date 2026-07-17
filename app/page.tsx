@@ -67,7 +67,7 @@ export default async function Home() {
         </Suspense>
         <VehicleExtraServices
           data={EXTRA_SERVICES_DATA_2}
-          className="bg-muted-foreground/10 rounded-xl"
+          className="bg-muted-foreground/10 rounded-xl lg:grid-cols-4"
         />
         <ToolsAccess data={home_data.herramientas} />
         <Zones />

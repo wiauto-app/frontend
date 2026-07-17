@@ -91,7 +91,7 @@ export const SignInFormContent = ({
       } else {
         toast.error((error as Error).message || "Error al iniciar sesión");
       }
-    } finally {
+    } finally { 
       setIsLoading(false);
     }
   };
@@ -117,7 +117,7 @@ export const SignInFormContent = ({
   }
 
   return (
-    <div className={cn("w-full space-y-8", className)}>
+    <div className={cn("w-full space-y-4", className)}>
       {showTitle ? (
         <h2 className="text-center text-3xl font-bold text-gray-900">
           Inicia Sesión
@@ -165,7 +165,7 @@ export const SignInFormContent = ({
           <Input
             id={`${formId}-email`}
             type="email"
-            placeholder="Email *"
+            placeholder="ejemplo@correo.com"
             autoComplete="email"
             {...form.register("email")}
             disabled={isLoading}
@@ -186,7 +186,6 @@ export const SignInFormContent = ({
           </label>
           <PasswordInput
             id={`${formId}-password`}
-            placeholder="Contraseña *"
             autoComplete="current-password"
             {...form.register("password")}
             disabled={isLoading}

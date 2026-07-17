@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,19 +14,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 
-type ScheduleListingDialogProps = {
+interface ScheduleListingDialogProps {
   listing: OwnerVehicleListItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSchedule: (id: string, scheduled_publish_at: string) => Promise<void>;
   isSubmitting?: boolean;
-};
+}
 
 const toLocalDateTimeInputValue = (date: Date): string => {
   const offset = date.getTimezoneOffset();
   const local = new Date(date.getTime() - offset * 60_000);
   return local.toISOString().slice(0, 16);
 };
+
+const getDefaultScheduleValue = (): string =>
+  toLocalDateTimeInputValue(new Date(Date.now() + 24 * 60 * 60 * 1000));
 
 export const ScheduleListingDialog = ({
   listing,
@@ -35,10 +38,17 @@ export const ScheduleListingDialog = ({
   onSchedule,
   isSubmitting = false,
 }: ScheduleListingDialogProps) => {
-  const defaultDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const [dateTimeValue, setDateTimeValue] = useState(
-    toLocalDateTimeInputValue(defaultDate),
-  );
+  const [dateTimeValue, setDateTimeValue] = useState(getDefaultScheduleValue);
+  const [minDateTimeValue, setMinDateTimeValue] = useState(getDefaultScheduleValue);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setDateTimeValue(getDefaultScheduleValue());
+    setMinDateTimeValue(toLocalDateTimeInputValue(new Date()));
+  }, [open]);
 
   const handleSubmit = async () => {
     if (!listing || !dateTimeValue) {
@@ -67,7 +77,7 @@ export const ScheduleListingDialog = ({
             type="datetime-local"
             value={dateTimeValue}
             onChange={(event) => setDateTimeValue(event.target.value)}
-            min={toLocalDateTimeInputValue(new Date())}
+            min={minDateTimeValue}
           />
         </div>
 
@@ -82,7 +92,7 @@ export const ScheduleListingDialog = ({
           </Button>
           <Button
             type="button"
-            onClick={handleSubmit}
+            onClick={() => void handleSubmit()}
             disabled={isSubmitting || !listing}
           >
             Programar

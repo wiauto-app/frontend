@@ -10,7 +10,10 @@ import { useChatFilters } from "@/components/chat/hooks/useChatFilters";
 export const ChatSearchInput = () => {
   const { handleChange, search: currentSearch } = useChatFilters();
   const handleChangeRef = useRef(handleChange);
-  handleChangeRef.current = handleChange;
+
+  useEffect(() => {
+    handleChangeRef.current = handleChange;
+  }, [handleChange]);
 
   const [searchValue, setSearchValue] = useState(currentSearch ?? "");
   const debouncedSearchValue = useDebouncedValue(searchValue, 350);

@@ -53,12 +53,7 @@ export const FiltersLocationSelector = () => {
           selectedProvinces.length === 0 &&
           provinces.length > 0,
       ),
-    [
-      activeFilters?.resolved.municipalities.length,
-      activeFilters?.resolved.provinces.length,
-      provinces.length,
-      selectedProvinces.length,
-    ],
+    [activeFilters, provinces.length, selectedProvinces.length],
   );
 
   useEffect(() => {

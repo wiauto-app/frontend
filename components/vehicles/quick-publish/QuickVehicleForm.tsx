@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { FormProvider, useForm, type Resolver } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useQuery } from "@tanstack/react-query";
@@ -19,10 +19,10 @@ import { QuickVehicleOptionalSections } from "./QuickVehicleOptionalSections";
 import { QuickVehicleIntroWizard } from "./QuickVehicleIntroWizard";
 import { useUser } from "@/app/contexts/auth/useUser";
 
-type QuickVehicleFormProps = {
+interface QuickVehicleFormProps {
   vehicleId?: string;
   onSuccess?: () => void;
-};
+}
 
 export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps) => {
   const { user } = useUser();
@@ -96,11 +96,20 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
         className="grid grid-cols-1 gap-5 lg:grid-cols-4"
       >
         <div className="flex flex-col gap-6 lg:col-span-3">
-          <QuickVehicleIntroWizard
-            vehicleId={vehicleId}
-            contactName={contactName}
-            isEditMode={isEditMode}
-          />
+          <Suspense
+            fallback={
+              <div className="flex min-h-48 items-center justify-center gap-2 text-muted-foreground">
+                <Loader2 className="size-5 animate-spin" aria-hidden />
+                Cargando pasos…
+              </div>
+            }
+          >
+            <QuickVehicleIntroWizard
+              vehicleId={vehicleId}
+              contactName={contactName}
+              isEditMode={isEditMode}
+            />
+          </Suspense>
         </div>
 
         <aside className="flex flex-col gap-6 lg:col-span-1">

@@ -68,7 +68,7 @@ export const SignInDialog = ({
         )}
       >
         <DialogHeader>
-          <DialogTitle className="text-center text-xl font-semibold tracking-tight">
+          <DialogTitle className="sr-only">
             Inicia Sesión
           </DialogTitle>
         </DialogHeader>

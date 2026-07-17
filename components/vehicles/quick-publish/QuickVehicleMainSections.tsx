@@ -21,6 +21,7 @@ import { QuickVehicleMediaStep } from "./QuickVehicleMediaStep";
 import { QuickVehicleAiDescriptionCard } from "./QuickVehicleAiDescriptionCard";
 import { QuickVehiclePricingFields } from "./QuickVehiclePricingFields";
 import { QuickVehicleTechnicalFields } from "./QuickVehicleTechnicalFields";
+import { GeneratedDescriptionConfig } from "./generatedDescription/generatedDescriptionConfig";
 
 interface QuickVehicleMainSectionsProps {
   vehicleId?: string;
@@ -56,11 +57,14 @@ export const QuickVehicleMainSections = ({
 
       <VehicleFormStep
         number={6}
+        isOptional
         label="Descripción del vehículo"
         description="Describe el estado, historial y puntos destacados del vehículo."
       >
         <div className="flex flex-col gap-4">
           <QuickVehicleAiDescriptionCard />
+          <GeneratedDescriptionConfig />
+
           <Controller
             name="description"
             control={form.control}

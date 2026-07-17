@@ -1,4 +1,10 @@
 import ChangePasswordForm from "@/app/(auth)/components/ChangePasswordForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cambiar contraseña",
+  description: "Cambia tu contraseña en Wiauto",
+};
 
 export default function Page({
   params,

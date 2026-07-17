@@ -1,5 +1,11 @@
 import { Suspense } from "react";
 import RegisterForm from "@/app/(auth)/components/RegisterForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Registro",
+  description: "Regístrate en Wiauto",
+};
 
 export default function Page() {
   return (

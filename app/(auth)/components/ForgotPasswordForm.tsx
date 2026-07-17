@@ -35,13 +35,14 @@ export default function ForgotPasswordForm() {
       toast.success(response.data.message);
       setSent(true);
       form.reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Olvide contraseña error:", error);
       const genericMessage = "Error al enviar el correo electrónico. Por favor, intenta de nuevo.";
-      if (error.message?.includes("No se encontró") || error.message?.includes("incorrectos")) {
+      const message = error instanceof Error ? error.message : undefined;
+      if (message?.includes("No se encontró") || message?.includes("incorrectos")) {
         toast.error(genericMessage);
       } else {
-        toast.error(error.message || genericMessage);
+        toast.error(message || genericMessage);
       }
     } finally {
       setIsLoading(false);

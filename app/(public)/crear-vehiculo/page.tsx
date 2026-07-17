@@ -1,6 +1,4 @@
-"use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -8,9 +6,14 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Publicar un vehículo",
+  description: "Publica tu vehículo en menos de 1 minuto con IA",
+};
 
 export default function CrearVehiculoPage() {
-  const router = useRouter();
 
   return (
     <div className="container-custom mx-auto py-8">
@@ -30,7 +33,7 @@ export default function CrearVehiculoPage() {
 
       <Card>
         <CardContent>
-          <QuickVehicleForm onSuccess={() => router.push("/mis-anuncios")} />
+          <QuickVehicleForm />
         </CardContent>
       </Card>
     </div>

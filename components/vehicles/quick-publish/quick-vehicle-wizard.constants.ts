@@ -1,10 +1,12 @@
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 
-export type QuickVehicleIntroStep = {
+export interface QuickVehicleIntroStep {
   id: number;
   name: string;
   fields: (keyof QuickVehicleSchema)[];
-};
+}
+
+export const QUICK_VEHICLE_STEP_QUERY_PARAM = "step";
 
 export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
   {
@@ -23,3 +25,20 @@ export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
     fields: [],
   },
 ];
+
+export const parseQuickVehicleStep = (value: string | null): number | null => {
+  if (value == null) {
+    return null;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed)) {
+    return null;
+  }
+
+  if (parsed < 1 || parsed > QUICK_VEHICLE_INTRO_STEPS.length) {
+    return null;
+  }
+
+  return parsed;
+};

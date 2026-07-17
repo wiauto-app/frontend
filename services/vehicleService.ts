@@ -1,4 +1,4 @@
-import { ApiResponse, apiGet, apiPost, apiPut, apiPatch, apiDelete } from "@/lib/api";
+import { ApiResponse, apiGet, apiPost, apiPut, apiPatch, apiDelete, fetchWithAuth } from "@/lib/api";
 import {
   Vehicle,
   VehicleListItem,
@@ -55,7 +55,7 @@ export type FindSimilarVehiclesParams = {
 };
 
 export type SimilarVehiclesPaginatedResponse = PaginatedResponse<VehicleListItem> & {
-  tier?: 1 | 2;
+  tier?: 1 | 2; 
   listing_href_slugs?: {
     make: string;
     model: string;
@@ -63,6 +63,7 @@ export type SimilarVehiclesPaginatedResponse = PaginatedResponse<VehicleListItem
 };
 
 export const vehicleService = {
+
   vehicles: {
     findAll: (params?: FindAllVehiclesParams): Promise<ApiResponse<PaginatedResponse<VehicleListItem>>> => {
       const query = buildVehiclesQueryString(params);

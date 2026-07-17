@@ -1,8 +1,30 @@
-import type { VehicleIdentificationLookupResult } from "./hooks/useVehicleIdentificationLookup";
+import type { ApiVehicleResponse } from "@/components/vehicles/services/vehicleIdentificationService";
+import { parseDisplacementCc } from "@/components/vehicles/services/vehicleIdentificationService";
 
-type QuickVehicleIdentificationPreviewProps = {
-  result: VehicleIdentificationLookupResult | null;
+interface SourceRowProps {
+  label: string;
+  value: string | number | null | undefined;
+}
+
+const SourceRow = ({ label, value }: SourceRowProps) => {
+  if (value == null || value === "") {
+    return null;
+  }
+
+  return (
+    <>
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd>{value}</dd>
+    </>
+  );
 };
+
+const transmissionLabel = (value: ApiVehicleResponse["transmission_type"]): string =>
+  value === "automatic" ? "Automática" : "Manual";
+
+interface QuickVehicleIdentificationPreviewProps {
+  result: ApiVehicleResponse | null;
+}
 
 export const QuickVehicleIdentificationPreview = ({
   result,
@@ -13,29 +35,34 @@ export const QuickVehicleIdentificationPreview = ({
         className="rounded-lg border border-dashed bg-muted/30 p-4 text-sm text-muted-foreground"
         aria-live="polite"
       >
-        Los datos del vehículo aparecerán aquí cuando la búsqueda por matrícula esté disponible.
+        Los datos detectados aparecerán aquí tras buscar por matrícula o VIN.
       </div>
     );
   }
 
-  const rows = [
-    { label: "Marca", value: result.make },
-    { label: "Modelo", value: result.model },
-    { label: "Año", value: result.year?.toString() },
-    { label: "Combustible", value: result.fuel_type },
-    { label: "Versión", value: result.version },
-  ].filter((row) => row.value);
+  const displacement = parseDisplacementCc(result.displacement);
 
   return (
-    <div className="rounded-lg border bg-card p-4">
-      <h4 className="mb-3 text-sm font-semibold">Datos identificados</h4>
-      <dl className="grid gap-2 text-sm">
-        {rows.map((row) => (
-          <div key={row.label} className="flex justify-between gap-4">
-            <dt className="text-muted-foreground">{row.label}</dt>
-            <dd className="font-medium text-right">{row.value}</dd>
-          </div>
-        ))}
+    <div className="rounded-lg border bg-card p-4 text-sm" aria-live="polite">
+      <p className="mb-2 font-medium">Datos aplicados al formulario</p>
+      <p className="mb-3 text-xs text-muted-foreground">
+        Marca, modelo, año y versión del catálogo se rellenaron automáticamente.
+      </p>
+      <dl className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+        <SourceRow label="Matrícula" value={result.license_plate} />
+        <SourceRow label="VIN" value={result.vin} />
+        <SourceRow
+          label="Potencia"
+          value={result.power != null ? `${result.power} CV` : null}
+        />
+        <SourceRow
+          label="Cilindrada"
+          value={displacement != null ? `${displacement} cc` : null}
+        />
+        <SourceRow
+          label="Transmisión"
+          value={transmissionLabel(result.transmission_type)}
+        />
       </dl>
     </div>
   );

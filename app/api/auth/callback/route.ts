@@ -3,27 +3,8 @@ import { cookies } from "next/headers";
 import { cookiesConfig } from "@/config/cookies.config";
 import { FRONTEND_URL } from "@/constants";
 import { isValidReturnPath } from "@/lib/auth/authReturnTo";
-import { OAUTH_POPUP_COMPLETE_PATH } from "@/lib/auth/oauthPopup.constants";
+import { buildPopupCompleteUrl } from "./utils";
 
-const buildPopupCompleteUrl = (
-  provider: string | null,
-  status: "success" | "error" | "2fa_required",
-  message?: string | null,
-): URL => {
-  const url = new URL(OAUTH_POPUP_COMPLETE_PATH, FRONTEND_URL);
-
-  if (provider) {
-    url.searchParams.set("provider", provider);
-  }
-
-  url.searchParams.set("status", status);
-
-  if (message) {
-    url.searchParams.set("message", message);
-  }
-
-  return url;
-};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -32,6 +13,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type");
   const message = searchParams.get("message");
   const isPopup = searchParams.get("popup") === "1";
+  console.log("isPopup", isPopup);
   const provider = searchParams.get("provider");
   const status = searchParams.get("status");
 
@@ -60,6 +42,7 @@ export async function GET(request: NextRequest) {
   }
 
   const cookieStore = await cookies();
+  const redirectUrl = cookieStore.get("redirect_url")?.value;
   cookieStore.set(cookiesConfig.accessToken.name, token, cookiesConfig.accessToken.options);
   cookieStore.set(cookiesConfig.refreshToken.name, refreshToken, cookiesConfig.refreshToken.options);
 
@@ -74,7 +57,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (isPopup) {
-    return NextResponse.redirect(buildPopupCompleteUrl(provider, "success"));
+    return NextResponse.redirect(new URL(redirectUrl as string, FRONTEND_URL));
   }
 
   if (message) {

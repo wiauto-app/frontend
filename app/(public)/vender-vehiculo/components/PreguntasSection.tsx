@@ -2,7 +2,7 @@ import { PreguntasSection as PreguntasSectionInterface } from "../interfaces/ven
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { StrapiRenderer } from "@/components/ui/strapiRenderer";
 import { Button } from "@/components/ui/button";
-import { s } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
+import type { BlocksContent } from "@strapi/blocks-react-renderer";
 
 interface Props {
   data: PreguntasSectionInterface;
@@ -29,7 +29,7 @@ export function PreguntasSection({ data }: Props) {
               <AccordionContent className="text-slate-600">
                 <div className="prose prose-slate max-w-none">
                   {item.descripcion ? (
-                    <StrapiRenderer content={item.descripcion as any} />
+                    <StrapiRenderer content={item.descripcion as BlocksContent} />
                   ) : null}
                 </div>
               </AccordionContent>

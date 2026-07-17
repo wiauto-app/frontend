@@ -1,5 +1,5 @@
 
-import { Car, Check, CreditCard, Landmark, Shield, Star, User } from "lucide-react";
+import { Brain, Car, Check, CreditCard, Landmark, Shield, Star, User } from "lucide-react";
 import { VehicleExtraServiceItem } from "../types/home-page.types";
 
 export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
@@ -25,7 +25,13 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
     name: "Tasar vehículo",
     icon: Star,
     href: "/valora-tu-vehiculo",
-    description: "Obtén una valoración estimada.",
+    description: "Obtén una valoración.",
+  },
+  {
+    name: "Buscar Con IA",
+    icon: Brain,
+    href: "/asistente/chat",
+    description: "Tu asistente virtual para comprar y vender coches.",
   },
 ];
 
@@ -38,7 +44,7 @@ export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
     description: "Compra con confianza.",
   },
   {
-    name: "Vender tu auto gratis",
+    name: "Vender tu coche",
     icon: Car,
     href: "/vende-tu-vehiculo",
     description: "Publica tu anuncio gratis.",
@@ -53,6 +59,6 @@ export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
     name: "Atención personalizada",
     icon: User,
     href: "/atencion-personalizada",
-    description: "Te ayudaremos a encontrar el auto ideal.",
+    description: "Te ayudaremos a encontrar el coche ideal.",
   },
 ];

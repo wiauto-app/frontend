@@ -10,7 +10,7 @@ export const ServiceHomeItem = ({ item }: ServiceHomeItemProps) => {
   return (
     <div
       className={cn(
-        "home-card-interactive flex items-center gap-2 rounded-xl p-2",
+        "home-card-interactive flex items-center gap-2 rounded-xl p-1",
         "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
         "hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)]",
         "motion-reduce:transition-none motion-reduce:hover:translate-y-0",

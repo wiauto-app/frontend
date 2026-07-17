@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getUserSidebarLinks } from "@/app/(user)/constants/user.constants";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function getDisplayName(name?: string, lastName?: string, email?: string) {
   const fullName = [name, lastName].filter(Boolean).join(" ").trim();
@@ -25,7 +26,15 @@ export function UserDropdown() {
   const { user, logout, isLoading } = useUser();
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="space-y-1">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-2 w-20" />
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -86,10 +95,7 @@ export function UserDropdown() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          onClick={logout}
-          variant="destructive"
-        >
+        <DropdownMenuItem onClick={logout} variant="destructive">
           <LogOut className="size-4" />
           Cerrar sesión
         </DropdownMenuItem>

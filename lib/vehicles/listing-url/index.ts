@@ -35,6 +35,12 @@ export { parseVehicleListingUrl } from "./parse-listing-url";
 export { heroFiltersToListingParams } from "./hero-to-listing-params";
 export type { HeroListingFilters } from "./hero-to-listing-params";
 export {
+  buildAiSearchListingHref,
+  hasMeaningfulFilters,
+  hasMeaningfulSearchFilters,
+  mapSearchFiltersToListingParams,
+} from "./map-search-filters-to-listing-params";
+export {
   buildHeroListingHref,
   type HeroListingSearchState,
 } from "./build-hero-listing-href";

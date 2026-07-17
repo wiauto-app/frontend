@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -49,13 +48,13 @@ export default function ChangePasswordForm({token}: {token: string}) {
       }
       toast.success(response.data.message);
       form.reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Olvide contraseña error:", error);
       const genericMessage = "Error al cambiar la contraseña. Por favor, intenta de nuevo.";
-      if (error.message?.includes("No se encontró") || error.message?.includes("incorrectos")) {
+      if (error instanceof Error && (error.message?.includes("No se encontró") || error.message?.includes("incorrectos"))) {
         toast.error(genericMessage);
       } else {
-        toast.error(error.message || genericMessage);
+        toast.error(error instanceof Error ? error.message : genericMessage);
       }
     } finally {
       setIsLoading(false);

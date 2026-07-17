@@ -478,7 +478,12 @@ export const PromptInputActionAddScreenshot = ({
   );
 
   return (
-    <DropdownMenuItem {...props} onSelect={handleSelect as any}>
+    <DropdownMenuItem
+      {...props}
+      onSelect={(event) => {
+        void handleSelect(event);
+      }}
+    >
       <Monitor className="mr-2 size-4" />
       {label}
     </DropdownMenuItem>

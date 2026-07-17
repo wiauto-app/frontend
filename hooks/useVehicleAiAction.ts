@@ -12,6 +12,7 @@ import {
   type GenerateVehicleDescriptionResponse,
   type RecommendVehiclePriceResponse,
 } from "@/components/vehicles/services/vehicleAiService";
+import { useGenerationSettingsStore } from "@/components/vehicles/quick-publish/stores/generationSettingsStore";
 
 export type VehicleAiAction = "recommendPrice" | "generateDescription";
 
@@ -74,6 +75,7 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
   action: TAction,
 ): UseVehicleAiActionResult<TAction> => {
   const form = useFormContext<QuickVehicleSchema>();
+  const { settings } = useGenerationSettingsStore();
   const watchedValues = useWatch({ control: form.control });
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<VehicleAiActionError | null>(null);
@@ -121,7 +123,7 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
         };
       }
 
-      const response = await vehicleAiService.generateDescription(context);
+      const response = await vehicleAiService.generateDescription(context, settings);
 
       if (isVehicleAiRateLimited(response)) {
         toast.error(VEHICLE_AI_RATE_LIMIT_MESSAGE);
@@ -144,7 +146,7 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
     } finally {
       setIsPending(false);
     }
-  }, [action, canExecute, form, isPending]);
+  }, [action, canExecute, form, isPending, settings]);
 
   return {
     execute,

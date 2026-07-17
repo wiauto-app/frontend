@@ -3,22 +3,21 @@ import { SectionContainer } from "./SectionContainer";
 import { SectionHeading } from "./SectionHeading";
 import { IconContainer } from "../ui/iconContainer";
 import { Card, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
 import Link from "next/link";
 
 const TOOLS_SHORTCUTS_DATA = [
   {
-    title: "Valorar mi auto",
+    title: "Valorar mi coche",
     description: "Conoce el precio del mercado",
     icon: Car,
     href: "/valora-tu-vehiculo",
     label: "Valorar",
   },
   {
-    title: "Comparador de autos",
+    title: "Comparador de coches",
     description: "Compara y elige mejor",
     icon: Scale,
-    href: "/comparador-de-autos",
+    href: "/comparador-de-coches",
     label: "Comparar",
   },
   {
@@ -30,7 +29,7 @@ const TOOLS_SHORTCUTS_DATA = [
   },
   {
     title: "Calculadora de seguro",
-    description: "Calcula tu seguro de auto",
+    description: "Calcula tu seguro",
     icon: Shield,
     href: "/calculadora-de-seguro",
     label: "Calcular",

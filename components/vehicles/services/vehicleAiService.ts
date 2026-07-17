@@ -1,5 +1,6 @@
 import { apiPost, type ApiResponse } from "@/lib/api";
 import type { QuickVehicleSchema } from "../schemas/quick-vehicle.schema";
+import { GenerationSettings } from "../quick-publish/stores/generationSettingsStore";
 
 export interface VehicleAiContext {
   version_id: number;
@@ -87,9 +88,13 @@ export const vehicleAiService = {
 
   generateDescription: async (
     context: VehicleAiContext,
+    settings: GenerationSettings,
   ): Promise<ApiResponse<GenerateVehicleDescriptionResponse>> =>
     apiPost<GenerateVehicleDescriptionResponse>(
       "/v1/vehicles/ai/generate-description",
-      context,
+      {
+        ...context,
+        settings,
+      },
     ),
 };

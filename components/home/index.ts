@@ -14,5 +14,5 @@ export { BlogArticlesSection } from "./BlogArticlesSection";
 export { RelatedNewsSection } from "./RelatedNewsSection";
 export { ProcessSection } from "./ProcessSection";
 export { NewsletterSection } from "./NewsletterSection";
-export { Footer } from "./Footer";
+export { Footer } from "./footer/Footer";
 export { SectionContainer } from "./SectionContainer";

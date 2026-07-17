@@ -78,7 +78,7 @@ const quickVehicleBaseSchema = z.object({
   email: z.email({ error: "Introduce un correo electrónico válido." }),
   description: z
     .string()
-    .min(10, { error: "La descripción debe tener al menos 10 caracteres." }),
+    .optional(),
   transmission_type: z.enum(["manual", "automatic"], {
     error: "Selecciona un tipo de transmisión.",
   }),

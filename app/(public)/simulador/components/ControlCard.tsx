@@ -2,10 +2,21 @@
 
 import { Slider } from "@/components/ui/slider"
 
+interface ControlCardProps {
+  icon: React.ReactNode;
+  title: string;
+  valueStr: string;
+  minStr: string;
+  maxStr: string;
+  sliderValue: number[];
+  sliderMin?: number;
+  sliderMax?: number;
+  step?: number;
+  onValueChange: (value: number[]) => void;
+}
 
 
-
-export const ControlCard = ({ icon, title, valueStr, minStr, maxStr, sliderValue, sliderMin = 0, sliderMax = 100, step = 1, onValueChange }: any) => {
+export const ControlCard = ({ icon, title, valueStr, minStr, maxStr, sliderValue, sliderMin = 0, sliderMax = 100, step = 1, onValueChange }: ControlCardProps) => {
   return (
     <div className="bg-white rounded-xl p-5 sm:p-6 shadow-[0_2px_10px_rgba(15,23,42,0.04)] flex flex-col gap-5">
       <div className="flex items-center justify-between">
@@ -23,7 +34,7 @@ export const ControlCard = ({ icon, title, valueStr, minStr, maxStr, sliderValue
             min={sliderMin} 
             max={sliderMax} 
             step={step} 
-            onValueChange={onValueChange} 
+            onValueChange={(value) => onValueChange(value as number[])} 
             className="mb-3" 
          />
          <div className="flex justify-between text-[11px] text-slate-400 font-medium">

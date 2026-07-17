@@ -10,7 +10,7 @@ export const VehiclesSuggestions = async () => {
     
   return (
     <VehiclesListingSection
-      title={{ lead: "Recomendados", highlight: "para ti" }}
+      title={{ lead: "Destacados", highlight: "para ti" }}
       variant="carousel"
       vehicles={vehicles.data}
       total={vehicles.total}

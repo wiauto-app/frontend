@@ -12,25 +12,45 @@ import {
 import type { MakeModelUrlPayload } from "@/components/selectors/FilterMakeSelector/utils/make-model-selection";
 import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
 
-import type { HeroFacetCascadeFilters } from "@/interfaces/hero-facet.interface";
+import type {
+  HeroCatalogFacetItem,
+  HeroFacetCascadeFilters,
+} from "@/interfaces/hero-facet.interface";
 import {
   buildHeroListingHref,
   type HeroListingSearchState,
 } from "@/lib/vehicles/listing-url";
 
-type HeroSearchFiltersContextValue = {
+interface HeroSearchFiltersContextValue {
   makeModelPayload: MakeModelUrlPayload;
+  selectedMakes: HeroCatalogFacetItem[];
+  selectedModels: HeroCatalogFacetItem[];
   locationPayload: LocationUrlPayload;
   untilPrice?: number;
-  setMakeModelPayload: (payload: MakeModelUrlPayload) => void;
+  handleToggleMake: (make: HeroCatalogFacetItem, checked: boolean) => void;
+  handleToggleModel: (model: HeroCatalogFacetItem, checked: boolean) => void;
   setLocationPayload: (payload: LocationUrlPayload) => void;
   setUntilPrice: (until_price?: number) => void;
   facetQueryParams: HeroFacetCascadeFilters;
   buildListingHref: () => string;
-};
+}
 
 const HeroSearchFiltersContext =
   createContext<HeroSearchFiltersContextValue | null>(null);
+
+const toMakeModelPayload = (
+  selectedMakes: HeroCatalogFacetItem[],
+  selectedModels: HeroCatalogFacetItem[],
+): MakeModelUrlPayload => ({
+  marcas:
+    selectedMakes.length > 0
+      ? selectedMakes.map((make) => make.slug)
+      : undefined,
+  modelos:
+    selectedModels.length > 0
+      ? selectedModels.map((model) => model.slug)
+      : undefined,
+});
 
 const toFacetQueryParams = (
   makeModelPayload: MakeModelUrlPayload,
@@ -49,11 +69,71 @@ export const HeroSearchFiltersProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [makeModelPayload, setMakeModelPayload] = useState<MakeModelUrlPayload>(
+  const [selectedMakes, setSelectedMakes] = useState<HeroCatalogFacetItem[]>(
+    [],
+  );
+  const [selectedModels, setSelectedModels] = useState<HeroCatalogFacetItem[]>(
+    [],
+  );
+  const [locationPayload, setLocationPayload] = useState<LocationUrlPayload>(
     {},
   );
-  const [locationPayload, setLocationPayload] = useState<LocationUrlPayload>({});
   const [untilPrice, setUntilPrice] = useState<number | undefined>();
+
+  const makeModelPayload = useMemo(
+    () => toMakeModelPayload(selectedMakes, selectedModels),
+    [selectedMakes, selectedModels],
+  );
+
+  const handleToggleMake = useCallback(
+    (make: HeroCatalogFacetItem, checked: boolean) => {
+      if (checked) {
+        setSelectedMakes((prev) => {
+          if (prev.some((item) => item.id === make.id)) {
+            return prev;
+          }
+          return [...prev, make];
+        });
+        return;
+      }
+
+      setSelectedMakes((prev) => prev.filter((item) => item.id !== make.id));
+      setSelectedModels((prev) =>
+        prev.filter((model) => model.make_id !== make.id),
+      );
+    },
+    [],
+  );
+
+  const handleToggleModel = useCallback(
+    (model: HeroCatalogFacetItem, checked: boolean) => {
+      if (!checked) {
+        setSelectedModels((prev) =>
+          prev.filter((item) => item.id !== model.id),
+        );
+        return;
+      }
+
+      setSelectedModels((prev) => {
+        if (prev.some((item) => item.id === model.id)) {
+          return prev;
+        }
+        return [...prev, model];
+      });
+
+      if (model.make_id === undefined) {
+        return;
+      }
+
+      setSelectedMakes((prev) => {
+        if (prev.some((item) => item.id === model.make_id)) {
+          return prev;
+        }
+        return prev;
+      });
+    },
+    [],
+  );
 
   const facetQueryParams = useMemo(
     () => toFacetQueryParams(makeModelPayload, locationPayload, untilPrice),
@@ -64,9 +144,7 @@ export const HeroSearchFiltersProvider = ({
     const state: HeroListingSearchState = {
       ...makeModelPayload,
       ...locationPayload,
-      ...(untilPrice !== undefined
-        ? { precio_hasta: untilPrice }
-        : {}),
+      ...(untilPrice !== undefined ? { precio_hasta: untilPrice } : {}),
     };
     return buildHeroListingHref(state);
   }, [locationPayload, makeModelPayload, untilPrice]);
@@ -74,9 +152,12 @@ export const HeroSearchFiltersProvider = ({
   const value = useMemo(
     (): HeroSearchFiltersContextValue => ({
       makeModelPayload,
+      selectedMakes,
+      selectedModels,
       locationPayload,
       untilPrice,
-      setMakeModelPayload,
+      handleToggleMake,
+      handleToggleModel,
       setLocationPayload,
       setUntilPrice,
       facetQueryParams,
@@ -84,8 +165,12 @@ export const HeroSearchFiltersProvider = ({
     }),
     [
       makeModelPayload,
+      selectedMakes,
+      selectedModels,
       locationPayload,
       untilPrice,
+      handleToggleMake,
+      handleToggleModel,
       facetQueryParams,
       buildListingHref,
     ],

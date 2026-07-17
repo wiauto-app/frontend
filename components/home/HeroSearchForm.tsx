@@ -8,6 +8,7 @@ import {
   useHeroSearchFilters,
 } from "./HeroSearchFiltersContext";
 import { HeroFiltersMakeSelector } from "./HeroFiltersMakeSelector";
+import { HeroFiltersModelSelector } from "./HeroFiltersModelSelector";
 import { HeroFiltersLocationSelector } from "./HeroFiltersLocationSelector";
 
 const HeroSearchFormContent = () => {
@@ -18,15 +19,16 @@ const HeroSearchFormContent = () => {
   };
 
   return (
-    <div className="w-full  rounded-b-2xl rounded-r-2xl bg-white  shadow-2xl sm:p-4">
+    <div className="w-full rounded-b-2xl rounded-r-2xl bg-white shadow-2xl sm:p-4">
       <form
-        className="grid grid-cols-1 sm:grid-cols-4  gap-3"
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5"
         onSubmit={(event) => {
           event.preventDefault();
           handleSearch();
         }}
       >
         <HeroFiltersMakeSelector />
+        <HeroFiltersModelSelector />
         <HeroFiltersLocationSelector />
         <PriceUntilSelector />
         <Button type="submit" className="h-full">

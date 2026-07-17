@@ -16,7 +16,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -64,7 +63,7 @@ export const AssistantChatProvider = ({
   const searchParams = useSearchParams();
   const conversationId =
     typeof params.conversationId === "string" ? params.conversationId : undefined;
-  const conversationIdRef = useRef(conversationId);
+  const [resolvedConversationId, setResolvedConversationId] = useState(conversationId);
   const [isPurchaseDialogOpen, setIsPurchaseDialogOpen] = useState(false);
 
   const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
@@ -76,7 +75,9 @@ export const AssistantChatProvider = ({
   >([]);
   const [isConversationsLoading, setIsConversationsLoading] = useState(true);
 
-  conversationIdRef.current = conversationId;
+  useEffect(() => {
+    setResolvedConversationId(conversationId);
+  }, [conversationId]);
 
   const {
     data: quota = null,
@@ -104,9 +105,9 @@ export const AssistantChatProvider = ({
       new DefaultChatTransport({
         api: ASSISTANT_CHAT_API_URL,
         credentials: "include",
-        body: () => ({
-          conversation_id: conversationIdRef.current,
-        }),
+        body: {
+          conversation_id: resolvedConversationId,
+        },
         fetch: async (input, init) => {
           const response = await fetch(input, init);
 
@@ -117,7 +118,7 @@ export const AssistantChatProvider = ({
           return response;
         },
       }),
-    [],
+    [resolvedConversationId],
   );
 
   const refreshConversations = useCallback(async () => {
@@ -130,7 +131,7 @@ export const AssistantChatProvider = ({
     } finally {
       setIsConversationsLoading(false);
     }
-  }, []);
+  }, [setConversations, setIsConversationsLoading]);
 
   const chat = useChat({
     id: conversationId ?? "assistant-new-chat",
@@ -227,11 +228,17 @@ export const AssistantChatProvider = ({
 
   const handleNewConversation = useCallback(async () => {
     const created = await assistantConversationService.create();
+    setResolvedConversationId(created.id);
     updateConversationIdInUrl(created.id);
     setInitialMessages([]);
     chat.setMessages([]);
     await refreshConversations();
-  }, [chat, refreshConversations, updateConversationIdInUrl]);
+  }, [
+    chat,
+    refreshConversations,
+    setInitialMessages,
+    updateConversationIdInUrl,
+  ]);
 
   const handleSelectConversation = useCallback(
     (nextConversationId: string) => {
@@ -246,6 +253,7 @@ export const AssistantChatProvider = ({
       await refreshConversations();
 
       if (conversationId === targetConversationId) {
+        setResolvedConversationId(undefined);
         updateConversationIdInUrl(undefined);
         setInitialMessages([]);
         chat.setMessages([]);
@@ -255,6 +263,7 @@ export const AssistantChatProvider = ({
       chat,
       conversationId,
       refreshConversations,
+      setInitialMessages,
       updateConversationIdInUrl,
     ],
   );
@@ -277,16 +286,16 @@ export const AssistantChatProvider = ({
   );
 
   const ensureConversationId = useCallback(async () => {
-    if (conversationIdRef.current) {
-      return conversationIdRef.current;
+    if (resolvedConversationId) {
+      return resolvedConversationId;
     }
 
     const created = await assistantConversationService.create();
-    conversationIdRef.current = created.id;
+    setResolvedConversationId(created.id);
     updateConversationIdInUrl(created.id);
     await refreshConversations();
     return created.id;
-  }, [refreshConversations, updateConversationIdInUrl]);
+  }, [refreshConversations, resolvedConversationId, updateConversationIdInUrl]);
 
   const contextValue = useMemo(
     () => ({

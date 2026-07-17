@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form";
 import { MakeSelector } from "@/components/dynamicSelectors/makeSelector";
 import { ModelSelector } from "@/components/dynamicSelectors/modelSelector";
 import { QuickYearSelector } from "@/components/dynamicSelectors/quickYearSelector";
@@ -8,8 +9,6 @@ import { VersionSelector } from "@/components/dynamicSelectors/versionSelector";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
 import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
-import { useEffect, useMemo } from "react";
-import { useFormContext } from "react-hook-form";
 
 type CatalogIds = {
   makeId?: string;
@@ -28,42 +27,24 @@ const clearElectricFields = (
 export const QuickCatalogFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
   const versionId = form.watch("version_id");
+  const catalogMakeId = form.watch("catalog_make_id");
+  const catalogModelId = form.watch("catalog_model_id");
+  const catalogYearId = form.watch("catalog_year_id");
 
   const [ids, setIds] = useState<CatalogIds>(() => ({
-    makeId: form.getValues("catalog_make_id")
-      ? String(form.getValues("catalog_make_id"))
-      : undefined,
-    modelId: form.getValues("catalog_model_id")
-      ? String(form.getValues("catalog_model_id"))
-      : undefined,
-    yearId: form.getValues("catalog_year_id")
-      ? String(form.getValues("catalog_year_id"))
-      : undefined,
+    makeId: catalogMakeId ? String(catalogMakeId) : undefined,
+    modelId: catalogModelId ? String(catalogModelId) : undefined,
+    yearId: catalogYearId ? String(catalogYearId) : undefined,
   }));
 
-  const initialSignature = useMemo(
-    () =>
-      [
-        form.getValues("catalog_make_id") ?? "",
-        form.getValues("catalog_model_id") ?? "",
-        form.getValues("catalog_year_id") ?? "",
-      ].join(":"),
-    [],
-  );
-
+  // Sincroniza selectores cuando el formulario se rellena desde identificación (matrícula/VIN).
   useEffect(() => {
-    const makeId = form.getValues("catalog_make_id");
-    if (!makeId) return;
     setIds({
-      makeId: String(makeId),
-      modelId: form.getValues("catalog_model_id")
-        ? String(form.getValues("catalog_model_id"))
-        : undefined,
-      yearId: form.getValues("catalog_year_id")
-        ? String(form.getValues("catalog_year_id"))
-        : undefined,
+      makeId: catalogMakeId ? String(catalogMakeId) : undefined,
+      modelId: catalogModelId ? String(catalogModelId) : undefined,
+      yearId: catalogYearId ? String(catalogYearId) : undefined,
     });
-  }, [initialSignature, form]);
+  }, [catalogMakeId, catalogModelId, catalogYearId]);
 
   const syncFuelTypeFromVersion = async (numericVersionId: number) => {
     if (!numericVersionId) {

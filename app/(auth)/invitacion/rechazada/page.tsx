@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { MailX } from "lucide-react";
 import { AUTH_ROUTES } from "@/constants/auth.constants";
+import { Metadata } from "next";
 
 type RejectedInvitationPageProps = {
   searchParams: Promise<{ email?: string }>;
+};
+
+export const metadata: Metadata = {
+  title: "Invitación rechazada",
+  description: "Has rechazado la invitación para unirte al equipo del concesionario.",
 };
 
 export default async function RejectedInvitationPage({
