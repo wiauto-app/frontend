@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
@@ -10,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import {
   parseDisplacementCc,
+  vehicleIdentificationService,
   VEHICLE_IDENTIFICATION_GENERIC_ERROR_MESSAGE,
   VEHICLE_IDENTIFICATION_NOT_FOUND_MESSAGE,
   VEHICLE_IDENTIFICATION_RATE_LIMIT_MESSAGE,
@@ -71,7 +73,41 @@ export const QuickVehicleIdentificationStep = () => {
   const form = useFormContext<QuickVehicleSchema>();
   const { lookupByLicensePlate, lookupByVin, isLoading, result } =
     useVehicleIdentificationLookup();
-  
+  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(true);
+  const [isLookupAvailable, setIsLookupAvailable] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadAvailability = async () => {
+      setIsAvailabilityLoading(true);
+      try {
+        const response = await vehicleIdentificationService.getAvailability();
+        if (cancelled) {
+          return;
+        }
+
+        setIsLookupAvailable(
+          Boolean(response.ok && response.data?.available),
+        );
+      } catch {
+        if (!cancelled) {
+          setIsLookupAvailable(false);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsAvailabilityLoading(false);
+        }
+      }
+    };
+
+    void loadAvailability();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleLookupOutcome = (outcome: VehicleIdentificationLookupOutcome) => {
     if (outcome.error) {
       toast.error(getLookupErrorMessage(outcome.error));
@@ -112,7 +148,11 @@ export const QuickVehicleIdentificationStep = () => {
       <VehicleFormStep
         number={2}
         label="Identificación del vehículo"
-        description="Opcional. Busca por matrícula o VIN para rellenar automáticamente los datos del vehículo."
+        description={
+          isLookupAvailable
+            ? "Opcional. Busca por matrícula o VIN para rellenar automáticamente los datos del vehículo."
+            : "Opcional. Introduce la matrícula y el VIN de forma manual."
+        }
       />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <ControllerInput name="license_plate" control={form.control} label="Matrícula" optional>
@@ -136,43 +176,51 @@ export const QuickVehicleIdentificationStep = () => {
           )}
         </ControllerInput>
       </div>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="flex shrink-0 flex-col gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleLookupByPlate}
-            disabled={isLoading}
-            className="w-full sm:w-auto"
-            aria-label="Buscar vehículo por matrícula"
-          >
-            {isLoading ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : (
-              <Search className="size-4" aria-hidden />
-            )}
-            Buscar por matrícula
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleLookupByVin}
-            disabled={isLoading}
-            className="w-full sm:w-auto"
-            aria-label="Buscar vehículo por VIN"
-          >
-            {isLoading ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : (
-              <Search className="size-4" aria-hidden />
-            )}
-            Buscar por VIN
-          </Button>
+      {isAvailabilityLoading ? (
+        <p className="flex items-center gap-2 text-sm text-slate-500" role="status">
+          <Loader2 className="size-4 animate-spin" aria-hidden />
+          Comprobando búsqueda automática...
+        </p>
+      ) : null}
+      {isLookupAvailable ? (
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+          <div className="flex shrink-0 flex-col gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleLookupByPlate}
+              disabled={isLoading}
+              className="w-full sm:w-auto"
+              aria-label="Buscar vehículo por matrícula"
+            >
+              {isLoading ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Search className="size-4" aria-hidden />
+              )}
+              Buscar por matrícula
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleLookupByVin}
+              disabled={isLoading}
+              className="w-full sm:w-auto"
+              aria-label="Buscar vehículo por VIN"
+            >
+              {isLoading ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Search className="size-4" aria-hidden />
+              )}
+              Buscar por VIN
+            </Button>
+          </div>
+          <div className="flex-1">
+            <QuickVehicleIdentificationPreview result={result} />
+          </div>
         </div>
-        <div className="flex-1">
-          <QuickVehicleIdentificationPreview result={result} />
-        </div>
-      </div>
+      ) : null}
     </section>
   );
 };

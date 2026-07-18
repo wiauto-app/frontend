@@ -1,5 +1,5 @@
 import { TransmissionType } from "@/interfaces/vehicle.interface";
-import { apiPost, type ApiResponse } from "@/lib/api";
+import { apiGet, apiPost, type ApiResponse } from "@/lib/api";
 
 export interface VehicleIdentificationLookupRequest {
   plate?: string;
@@ -18,6 +18,12 @@ export interface ApiVehicleResponse {
   transmission_type: TransmissionType;
   vin: string | null;
   license_plate: string | null;
+}
+
+export interface VehicleIdentificationAvailability {
+  available: boolean;
+  remaining_requests: number;
+  total_requests: number;
 }
 
 export const VEHICLE_IDENTIFICATION_RATE_LIMIT_MESSAGE =
@@ -56,6 +62,12 @@ export const parseDisplacementCc = (
 };
 
 export const vehicleIdentificationService = {
+  getAvailability: async (): Promise<
+    ApiResponse<VehicleIdentificationAvailability>
+  > =>
+    apiGet<VehicleIdentificationAvailability>(
+      "/v1/vehicles/identification/availability",
+    ),
   lookup: async (
     body: VehicleIdentificationLookupRequest,
   ): Promise<ApiResponse<ApiVehicleResponse>> =>
