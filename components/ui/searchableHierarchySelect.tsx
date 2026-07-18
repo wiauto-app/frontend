@@ -3,9 +3,8 @@
 import { useState, type MouseEvent } from "react";
 import { ChevronDown, Loader2, Search } from "lucide-react";
 import { Skeleton } from "./skeleton";
-import { Popover, PopoverContent } from "./popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Input } from "./input";
-import { InputButton } from "./inputButton";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
 import { CustomCheckbox } from "./customCheckbox";
@@ -275,18 +274,20 @@ export function SearchableHierarchySelect<TItem extends HierarchySelectItem>({
 
   return (
     <Popover open={is_open} onOpenChange={handleOpenChange}>
-      <InputButton
-        asPopoverTrigger
-        label={label}
-        className={cn(
-          "h-11 text-start text-base",
-          displayValue ? "text-foreground" : undefined,
-        )}
-        aria-expanded={is_open}
-        aria-haspopup="listbox"
-      >
-        {displayValue ?? placeholder}
-      </InputButton>
+      <PopoverTrigger
+        render={
+          <Button
+            className={cn(
+              "h-11 text-start text-base",
+              displayValue ? "text-foreground" : undefined,
+            )}
+            aria-expanded={is_open}
+            aria-haspopup="listbox"
+          >
+            {displayValue ?? placeholder}
+          </Button>
+        }
+      ></PopoverTrigger>
       <PopoverContent
         align="start"
         sideOffset={8}
@@ -463,9 +464,7 @@ export function SearchableHierarchySelect<TItem extends HierarchySelectItem>({
                                 <CustomCheckbox
                                   checked={child_checked}
                                   disabled={parent_checked}
-                                  onChange={() =>
-                                    toggleChildMulti(item, child)
-                                  }
+                                  onChange={() => toggleChildMulti(item, child)}
                                   aria-label={`Seleccionar ${child.label}`}
                                 />
                               ) : null}

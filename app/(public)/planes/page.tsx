@@ -48,7 +48,7 @@ export default async function Page() {
   }
 
   return (
-    <div className="container-custom">
+    <div className="container-custom flex flex-col gap-16">
       {cms?.hero ? <PlansHeroSection hero={cms.hero} /> : null}
 
       {cms?.estadisticas && cms.estadisticas.length > 0 ? (

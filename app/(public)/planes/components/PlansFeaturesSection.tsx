@@ -10,7 +10,7 @@ type PlansFeaturesSectionProps = {
 
 export const PlansFeaturesSection = ({ data }: PlansFeaturesSectionProps) => {
   return (
-    <section className="bg-white py-16 lg:py-20">
+    <section className="">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">

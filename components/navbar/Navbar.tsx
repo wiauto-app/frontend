@@ -1,5 +1,5 @@
+import { BrandLogo } from "../ui/brandLogo";
 import { NavbarActions } from "./components/NavbarActions";
-import { NavbarBrand } from "./components/NavbarBrand";
 import { NavbarLinks } from "./components/NavbarLinks";
 import { NavbarMobileMenu } from "./components/NavbarMobileMenu";
 
@@ -10,7 +10,7 @@ export const Navbar = () => {
         aria-label="Navegación principal"
         className="container-custom mx-auto flex h-16 w-full items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
       >
-        <NavbarBrand />
+        <BrandLogo />
 
         <div className="flex items-center gap-3 sm:gap-4">
           <NavbarLinks />

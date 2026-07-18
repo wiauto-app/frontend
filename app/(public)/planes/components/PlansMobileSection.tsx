@@ -6,6 +6,7 @@ import { getStrapiMediaUrl } from "@/lib/strapi-media";
 import { cn } from "@/lib/utils";
 
 import type { PlanesMobileBlock } from "../interfaces/planes.interface";
+import { StoreButtons } from "@/components/home/StoreButtons";
 
 type PlansMobileSectionProps = {
   data: PlanesMobileBlock;
@@ -17,23 +18,17 @@ export const PlansMobileSection = ({ data }: PlansMobileSectionProps) => {
     getStrapiMediaUrl(data.imagen?.url);
 
   return (
-    <section className="bg-white py-16 lg:py-20">
+    <section className="">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center">
-          <div className="relative mx-auto aspect-[9/16] w-full max-w-xs overflow-hidden rounded-3xl bg-slate-100 shadow-xl lg:mx-0">
-            {image_url ? (
-              <Image
-                src={image_url}
-                alt={data.imagen?.alternativeText ?? data.header.titulo}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 80vw, 320px"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-slate-400">
-                App móvil WiAuto
-              </div>
-            )}
+          <div className="flex justify-center">
+            <Image
+              src={image_url ?? ""}
+              alt={data.imagen?.alternativeText ?? data.header.titulo}
+              width={260}
+              height={520}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
           </div>
 
           <div className="flex flex-col gap-6">
@@ -42,14 +37,19 @@ export const PlansMobileSection = ({ data }: PlansMobileSectionProps) => {
                 {data.header.titulo}
               </h2>
               {data.header.descripcion ? (
-                <p className="text-base text-slate-600 md:text-lg">{data.header.descripcion}</p>
+                <p className="text-base text-slate-600 md:text-lg">
+                  {data.header.descripcion}
+                </p>
               ) : null}
             </div>
 
             {data.caracteristicas?.length > 0 ? (
               <ul className="flex flex-col gap-3">
                 {data.caracteristicas.map((item) => (
-                  <li key={item.id} className="flex items-start gap-3 text-slate-700">
+                  <li
+                    key={item.id}
+                    className="flex items-start gap-3 text-slate-700"
+                  >
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600" />
                     <span>{item.label}</span>
                   </li>
@@ -58,32 +58,7 @@ export const PlansMobileSection = ({ data }: PlansMobileSectionProps) => {
             ) : null}
 
             <div className="flex flex-wrap gap-3">
-              {data.apple?.url ? (
-                <Link
-                  href={data.apple.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "border-slate-900 text-slate-900",
-                  )}
-                >
-                  {data.apple.label || "App Store"}
-                </Link>
-              ) : null}
-              {data.google?.url ? (
-                <Link
-                  href={data.google.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "border-slate-900 text-slate-900",
-                  )}
-                >
-                  {data.google.label || "Google Play"}
-                </Link>
-              ) : null}
+              <StoreButtons />
             </div>
           </div>
         </div>

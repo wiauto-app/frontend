@@ -13,7 +13,7 @@ interface RefreshRouteBody {
   refreshed: boolean;
 }
 
-export const POST = async (): Promise<NextResponse<RefreshRouteBody>> => {
+export const POST = async () => {
   const cookieStore = await cookies();
   const access_token =
     cookieStore.get(cookiesConfig.accessToken.name)?.value ?? null;

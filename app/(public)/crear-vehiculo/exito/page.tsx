@@ -20,7 +20,7 @@ export default async function CrearVehiculoExitoPage({
   const vehicleId = params.id?.trim() || null;
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center bg-[#F4F7FB] px-4 py-12">
+    <div className="flex min-h-[70vh] items-center justify-center  px-4 py-12">
       <div className="w-full max-w-lg rounded-2xl border border-slate-100 bg-white p-8 text-center shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:p-10">
         <div
           className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/60"

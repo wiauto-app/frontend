@@ -40,9 +40,7 @@ interface DayRowProps {
   dayIndex: number;
   dayName: string;
   canEdit: boolean;
-  control: ReturnType<
-    typeof useForm<DealershipScheduleFormValues>
-  >["control"];
+  control: ReturnType<typeof useForm<DealershipScheduleFormValues>>["control"];
   setValue: ReturnType<
     typeof useForm<DealershipScheduleFormValues>
   >["setValue"];
@@ -58,11 +56,7 @@ const DayScheduleRow = ({
   watch,
 }: DayRowProps) => {
   const isOpen = watch(`days.${dayIndex}.is_open`);
-  const {
-    fields,
-    append,
-    remove,
-  } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: `days.${dayIndex}.open_times`,
   });
@@ -124,10 +118,7 @@ const DayScheduleRow = ({
                 name={`days.${dayIndex}.open_times.${slotIndex}.open_time`}
                 control={control}
                 render={({ field: timeField, fieldState }) => (
-                  <Field
-                    className="flex-1"
-                    data-invalid={fieldState.invalid}
-                  >
+                  <Field className="flex-1" data-invalid={fieldState.invalid}>
                     <FieldLabel
                       htmlFor={`schedule-${dayIndex}-open-${slotIndex}`}
                     >
@@ -151,10 +142,7 @@ const DayScheduleRow = ({
                 name={`days.${dayIndex}.open_times.${slotIndex}.close_time`}
                 control={control}
                 render={({ field: timeField, fieldState }) => (
-                  <Field
-                    className="flex-1"
-                    data-invalid={fieldState.invalid}
-                  >
+                  <Field className="flex-1" data-invalid={fieldState.invalid}>
                     <FieldLabel
                       htmlFor={`schedule-${dayIndex}-close-${slotIndex}`}
                     >
@@ -190,16 +178,7 @@ const DayScheduleRow = ({
             </div>
           ))}
 
-          <Controller
-            name={`days.${dayIndex}.open_times`}
-            control={control}
-            render={({ fieldState }) =>
-              fieldState.error ? (
-                <FieldError errors={[fieldState.error]} />
-              ) : null
-            }
-          />
-
+       
           {canEdit ? (
             <Button
               type="button"
@@ -255,9 +234,7 @@ export const DealershipScheduleSection = ({
     );
 
     if (!response.ok) {
-      toast.error(
-        response.message || "No se pudieron guardar los horarios",
-      );
+      toast.error(response.message || "No se pudieron guardar los horarios");
       return;
     }
 

@@ -5,7 +5,6 @@ import { LandingHeader } from "@/components/ui/landingHeader";
 import { SimuladorContent } from "./components/SimuladorContent";
 import {
   SIMULADOR_CTA,
-  SIMULADOR_PANEL_COPY,
   SIMULADOR_SEO_DEFAULTS,
 } from "./constants/simulador-panel-copy";
 import type { SimuladorPageViewModel } from "./interfaces/simulador-page.interface";
@@ -23,7 +22,6 @@ const buildPanelOnlyContent = (): SimuladorPageViewModel => ({
   testimoniosTitulo: "",
   testimonios: [],
   ctaFinal: SIMULADOR_CTA,
-  copyUi: SIMULADOR_PANEL_COPY,
   seoTitle: SIMULADOR_SEO_DEFAULTS.title,
   seoDescription: SIMULADOR_SEO_DEFAULTS.description,
 });
@@ -33,7 +31,8 @@ export async function generateMetadata(): Promise<Metadata> {
     const content = await getSimuladorPageData();
     return {
       title: content?.seoTitle ?? SIMULADOR_SEO_DEFAULTS.title,
-      description: content?.seoDescription ?? SIMULADOR_SEO_DEFAULTS.description,
+      description:
+        content?.seoDescription ?? SIMULADOR_SEO_DEFAULTS.description,
     };
   } catch {
     return {
@@ -44,13 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SimuladorPage() {
-  let content: SimuladorPageViewModel | null = null;
-
-  try {
-    content = await getSimuladorPageData();
-  } catch {
-    content = null;
-  }
+  const content = await getSimuladorPageData();
 
   const pageContent = content ?? buildPanelOnlyContent();
 

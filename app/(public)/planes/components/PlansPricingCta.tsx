@@ -3,37 +3,43 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { billingService } from "@/services/billingService";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { billingService } from "@/services/billingService";
 
-type PlansPricingCtaProps = {
-  plan_name: string;
-  plan_price_id: string | null;
-};
+interface PlansPricingCtaProps {
+  planName: string;
+  planPriceId: string | null;
+  featured?: boolean;
+}
 
-export const PlansPricingCta = ({ plan_name, plan_price_id }: PlansPricingCtaProps) => {
-  const [is_loading, set_is_loading] = useState(false);
+export const PlansPricingCta = ({
+  planName,
+  planPriceId,
+  featured = false,
+}: PlansPricingCtaProps) => {
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async () => {
-    if (!plan_price_id) {
+    if (!planPriceId) {
       toast.error("Este plan no tiene un precio mensual disponible");
       return;
     }
 
-    set_is_loading(true);
+    setIsLoading(true);
     try {
-      const checkout_url = await billingService.createPublicSubscriptionCheckout(plan_price_id);
+      const checkoutUrl = await billingService.createPublicSubscriptionCheckout(planPriceId);
 
-      if (!checkout_url) {
+      if (!checkoutUrl) {
         toast.error("No se pudo iniciar el checkout. Inténtalo de nuevo.");
         return;
       }
 
-      window.location.href = checkout_url;
+      window.location.href = checkoutUrl;
     } catch {
       toast.error("No se pudo iniciar el checkout. Inténtalo de nuevo.");
     } finally {
-      set_is_loading(false);
+      setIsLoading(false);
     }
   };
 
@@ -41,11 +47,17 @@ export const PlansPricingCta = ({ plan_name, plan_price_id }: PlansPricingCtaPro
     <Button
       type="button"
       onClick={handleClick}
-      disabled={is_loading || !plan_price_id}
-      className="w-full bg-blue-500 text-white hover:bg-blue-600"
-      aria-label={`Quiero el plan ${plan_name}`}
+      disabled={isLoading || !planPriceId}
+      className={cn(
+        "h-11 w-full text-sm font-semibold transition-transform duration-200",
+        featured
+          ? "bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:scale-[1.02]"
+          : "border border-slate-200 bg-slate-900 text-white hover:bg-slate-800 hover:scale-[1.02]",
+      )}
+      aria-label={`Quiero el plan ${planName}`}
+      aria-busy={isLoading}
     >
-      {is_loading ? "Redirigiendo..." : "Quiero este plan"}
+      {isLoading ? "Redirigiendo..." : "Quiero este plan"}
     </Button>
   );
 };

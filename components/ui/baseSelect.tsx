@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Skeleton } from "./skeleton";
-import { Popover, PopoverContent } from "./popover";
-import { InputButton } from "./inputButton";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
 
 export function BaseSelect({
   label,
@@ -33,15 +33,11 @@ export function BaseSelect({
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <InputButton
-        asPopoverTrigger
-        label={label}
-        className="text-start"
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-      >
-        {selected ?? "Selecciona una opción"}
-      </InputButton>
+      <PopoverTrigger render={
+        <Button variant="outline" className="w-full">
+          {selected ?? "Selecciona una opción"}
+        </Button>
+      }></PopoverTrigger>
       <PopoverContent
         align="start"
         className="w-(--anchor-width) p-1"

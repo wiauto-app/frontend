@@ -14,7 +14,7 @@ export const PlansFinalCtaSection = ({ primaryCta }: PlansFinalCtaSectionProps) 
   const cta_label = primaryCta?.label?.trim() || "Contactar ahora";
 
   return (
-    <section className="bg-blue-600 py-16 lg:py-20">
+    <section className="bg-blue-600 py-16 lg:py-20 rounded-xl">
       <div className="container mx-auto max-w-4xl px-4 text-center">
         <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
           Únete a miles de profesionales que ya confían en WiAuto

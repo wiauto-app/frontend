@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { useUser } from "@/app/contexts/auth/useUser";
 import { SignInFormContent } from "@/components/auth/signInFormContent";
+import { BrandLogo } from "@/components/ui/brandLogo";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -25,13 +26,8 @@ export default function LoginForm() {
           <div className="absolute top-20 left-10 h-64 w-64 rounded-full bg-white/5" />
           <div className="absolute right-10 bottom-20 h-96 w-96 rounded-full bg-white/5" />
           <div className="relative z-10 px-8 text-center">
-            <div className="mb-8 w-fit rounded-lg bg-blue-700 px-4 py-2 text-start">
-              <span className="text-7xl font-bold tracking-tighter text-white">
-                W
-              </span>
-            </div>
-
-            <h1 className="mb-4 text-start text-3xl leading-tight font-bold text-white">
+            <BrandLogo variant="icon" className="w-20 h-20"/>
+            <h1 className="mb-4 text-center text-3xl leading-tight font-bold text-white">
               Encuentra o vende
               <br />
               tu próximo coche
@@ -44,7 +40,9 @@ export default function LoginForm() {
         <div className="flex w-full items-center justify-center bg-white p-8 lg:flex-1">
           <div className="w-full max-w-md space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900">Inicia Sesión</h2>
+              <h2 className="text-3xl font-bold text-gray-900">
+                Inicia Sesión
+              </h2>
             </div>
 
             <SignInFormContent

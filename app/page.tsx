@@ -57,7 +57,7 @@ export default async function Home() {
   return (
     <>
       <div className="container-custom flex flex-col gap-12">
-        <HeroSection data={home_data.hero} app_advertisement={home_data.app_advertisement} />
+        <HeroSection data={home_data.hero} />
         <SearchForm />
 
         <VehicleExtraServices data={EXTRA_SERVICES_DATA} />

@@ -15,10 +15,10 @@ export const PlansTechSection = ({ data }: PlansTechSectionProps) => {
     getStrapiMediaUrl(data.imagen?.url);
 
   return (
-    <section className="bg-slate-50 py-16 lg:py-20">
+    <section className=" ">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center">
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 bg-slate-50 rounded-xl p-6">
             <div className="flex flex-col gap-3">
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
                 {data.header.titulo}
@@ -35,7 +35,7 @@ export const PlansTechSection = ({ data }: PlansTechSectionProps) => {
                   getStrapiMediaUrl(item.icon?.url);
 
                 return (
-                  <li key={item.id} className="flex items-start gap-4">
+                  <li key={item.id} className="flex items-center gap-4">
                     {icon_url ? (
                       <div className="relative mt-0.5 h-8 w-8 shrink-0">
                         <Image

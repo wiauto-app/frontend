@@ -60,11 +60,7 @@ export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
             <p className="mx-auto max-w-xl text-sm leading-relaxed text-white/95 sm:text-base lg:mx-0">
               {data.description}
             </p>
-            <StoreButtons
-              className=" justify-center lg:justify-start"
-              google_store_labels={data.google_store_labels}
-              apple_store_labels={data.apple_store_labels}
-            />
+            <StoreButtons className=" justify-center lg:justify-start" />
           </div>
         </div>
       </div>

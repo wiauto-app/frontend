@@ -134,21 +134,6 @@ export interface SimuladorTestimonioView {
   rol: string;
 }
 
-/** Textos del panel — constantes locales (no vienen de Strapi). */
-export interface SimuladorCopyUiView {
-  tituloConfig: string;
-  tituloResultados: string;
-  botonCalcular: string;
-  textoConfianza: string;
-  avisoReferencial: string;
-  labelPrecio: string;
-  labelEntrada: string;
-  labelPlazo: string;
-  labelTasa: string;
-  labelSeguro: string;
-  badgeAprobacion: string;
-}
-
 export interface SimuladorPageViewModel {
   header: {
     titulo: string;
@@ -165,7 +150,6 @@ export interface SimuladorPageViewModel {
     botonTexto: string;
     botonUrl: string;
   };
-  copyUi: SimuladorCopyUiView;
   seoTitle: string;
   seoDescription: string;
 }

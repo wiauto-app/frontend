@@ -19,8 +19,8 @@ export const PlansHeroSection = ({ hero }: PlansHeroSectionProps) => {
     getStrapiMediaUrl(hero.imagen?.url);
 
   return (
-    <section className="gradient-primary py-12 ">
-      <div className="container mx-auto max-w-7xl px-4 relative">
+    <section className="gradient-primary py-12 overflow-hidden rounded-b-xl">
+      <div className="container mx-auto max-w-7xl px-10 relative">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:items-start z-10">
           <div className="flex flex-col gap-6 z-10 col-span-2 justify-center h-full lg:max-w-[600px]">
             <div className="flex flex-col gap-4 z-10">

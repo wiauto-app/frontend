@@ -13,7 +13,6 @@ import { HeroSearchForm } from "./HeroSearchForm";
 
 interface HeroSectionProps {
   data: HomeHeroData;
-  app_advertisement: HomeAppAdvertisementData;
 }
 
 interface HeroFeatureIconProps {
@@ -96,18 +95,14 @@ const HeroFeaturesList = ({ features }: { features: HomeHeroFeature[] }) => {
   );
 };
 
-export function HeroSection({ data, app_advertisement }: HeroSectionProps) {
+export function HeroSection({ data }: HeroSectionProps) {
   return (
     <section className="relative h-[560px]  rounded-lg py-12 ">
       <div className="absolute top-5 right-0 bg-black/50 rounded-s-lg p-2 z-10 flex flex-col gap-1">
         {/* <p className="text-white text-sm font-bold">
           {data.download_app_label}
         </p> */}
-        <StoreButtons
-          className="flex flex-col gap-1"
-          google_store_labels={app_advertisement.google_store_labels}
-          apple_store_labels={app_advertisement.apple_store_labels}
-        />
+        <StoreButtons className="flex flex-col gap-1" />
       </div>
       <HeroBackgroundCarousel
         images={data.hero_images}

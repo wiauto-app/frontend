@@ -4,7 +4,6 @@ import qs from "qs";
 
 import {
   SIMULADOR_CTA,
-  SIMULADOR_PANEL_COPY,
   SIMULADOR_SEO_DEFAULTS,
 } from "../constants/simulador-panel-copy";
 import type {
@@ -149,7 +148,6 @@ const mapToViewModel = (data: SimuladorPageStrapiData): SimuladorPageViewModel =
     testimoniosTitulo: data.comentarios?.titulo?.trim() || "",
     testimonios: mapComentarios(data.comentarios),
     ctaFinal: SIMULADOR_CTA,
-    copyUi: SIMULADOR_PANEL_COPY,
     seoTitle: headerTitulo
       ? `${headerTitulo} | WiAuto`
       : SIMULADOR_SEO_DEFAULTS.title,

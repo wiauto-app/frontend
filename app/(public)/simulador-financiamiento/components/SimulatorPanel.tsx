@@ -20,7 +20,6 @@ import type {
 import { financingSimulatorService } from "@/services/financingSimulatorService";
 // import { cn } from "@/lib/utils";
 
-import type { SimuladorCopyUiView } from "../interfaces/simulador-page.interface";
 import {
   formatCurrency,
   formatPercent,
@@ -28,11 +27,6 @@ import {
 } from "../utils/format";
 import { SimulatorBreakdownChart } from "./SimulatorBreakdownChart";
 import { SimulatorSlider } from "./SimulatorSlider";
-
-interface SimulatorPanelProps {
-  copyUi: SimuladorCopyUiView;
-  confianzaTexto: string;
-}
 
 const DEFAULT_CONFIG: FinancingSimulatorConfigDto = {
   currency: "USD",
@@ -65,7 +59,7 @@ const pickPreviewRows = (schedule: SimulateFinancingResultDto["schedule"]) => {
   ];
 };
 
-export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) => {
+export const SimulatorPanel = () => {
   const [config, setConfig] = useState<FinancingSimulatorConfigDto>(DEFAULT_CONFIG);
   const [vehiclePrice, setVehiclePrice] = useState(DEFAULT_CONFIG.vehicle_price.default);
   const [downPaymentPercent, setDownPaymentPercent] = useState(
@@ -201,7 +195,7 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
         {/* Config */}
         <div className="flex flex-col gap-6 border-b border-slate-100 p-6 sm:p-8 lg:border-b-0 lg:border-r">
           <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
-            {copyUi.tituloConfig}
+            1. Configura tu financiamiento
           </h2>
 
           {configError ? (
@@ -212,7 +206,7 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
 
           <div className="flex flex-col gap-2">
             <label htmlFor="vehicle-price" className="text-sm font-medium text-slate-700">
-              {copyUi.labelPrecio}
+              Precio del vehículo
             </label>
             <div className="relative">
               <span
@@ -227,14 +221,14 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
                 value={priceInput}
                 onChange={(event) => handlePriceChange(event.target.value)}
                 onBlur={handlePriceBlur}
-                aria-label={copyUi.labelPrecio}
+                aria-label="Precio del vehículo"
                 className="h-11 pl-7 text-base font-semibold"
               />
             </div>
           </div>
 
           <SimulatorSlider
-            label={copyUi.labelEntrada}
+            label="Entrada inicial"
             valueStr={`${downPaymentPercent}% (${formatCurrency(downPaymentPreview, currency)})`}
             minStr={`${config.down_payment_percent.min}%`}
             maxStr={`${config.down_payment_percent.max}%`}
@@ -246,7 +240,7 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
           />
 
           <SimulatorSlider
-            label={copyUi.labelPlazo}
+            label="Meses del financiamiento"
             valueStr={`${termMonths} meses`}
             minStr={`${config.term_months.min} meses`}
             maxStr={`${config.term_months.max} meses`}
@@ -262,7 +256,7 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
           {/* Seguro: UI comentada temporalmente; se sigue enviando el id default (standard) al API
           {config.insurance_options.length > 0 ? (
             <div className="flex flex-col gap-3">
-              <p className="text-sm font-medium text-slate-700">{copyUi.labelSeguro}</p>
+              <p className="text-sm font-medium text-slate-700">Tipo de seguro (opcional)</p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {config.insurance_options.map((option) => {
                   const selected = insuranceOptionId === option.id;
@@ -304,11 +298,11 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
               aria-busy={isLoading}
             >
               <Calculator className="size-4" aria-hidden />
-              {isLoading ? "Calculando..." : copyUi.botonCalcular}
+              {isLoading ? "Calculando..." : "Calcular financiamiento"}
             </Button>
             <p className="flex items-center justify-center gap-1.5 text-xs text-slate-500">
               <Lock className="size-3.5" aria-hidden />
-              {confianzaTexto}
+              Tus datos están seguros con nosotros
             </p>
             {errorMessage ? (
               <p className="text-center text-sm text-red-600" role="alert">
@@ -322,12 +316,12 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
         <div className="flex flex-col gap-5 bg-slate-50/60 p-6 sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
-              {copyUi.tituloResultados}
+              2. Resultados de tu simulación
             </h2>
             {result ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
                 <CheckCircle2 className="size-3.5" aria-hidden />
-                {copyUi.badgeAprobacion}
+                ¡Aprobación estimada!
               </span>
             ) : null}
           </div>
@@ -336,7 +330,7 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
             <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white px-6 text-center">
               <Calculator className="mb-3 size-10 text-slate-300" aria-hidden />
               <p className="text-sm font-medium text-slate-600">
-                Ajusta los parámetros y pulsa &quot;{copyUi.botonCalcular}&quot; para ver
+                Ajusta los parámetros y pulsa &quot;Calcular financiamiento&quot; para ver
                 tus resultados.
               </p>
             </div>
@@ -435,7 +429,8 @@ export const SimulatorPanel = ({ copyUi, confianzaTexto }: SimulatorPanelProps) 
               <div className="flex gap-3 rounded-xl border border-blue-100 bg-blue-50/80 px-4 py-3">
                 <Info className="mt-0.5 size-4 shrink-0 text-blue-600" aria-hidden />
                 <p className="text-xs leading-relaxed text-slate-600">
-                  {copyUi.avisoReferencial}
+                  Esta simulación es referencial. Las condiciones finales pueden variar según
+                  el banco, tu perfil crediticio y los seguros aplicables.
                 </p>
               </div>
 

@@ -76,7 +76,7 @@ export const NavbarMobileMenu = () => {
           </nav>
 
           <div className="mt-auto border-t border-slate-200 px-6 py-4">
-            <NavbarPublishButton variant="mobile" />
+            <NavbarPublishButton />
           </div>
         </SheetContent>
       </Sheet>
