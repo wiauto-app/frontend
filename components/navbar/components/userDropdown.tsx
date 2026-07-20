@@ -29,7 +29,7 @@ export function UserDropdown() {
     return (
       <div className="flex items-center gap-2">
         <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="space-y-1">
+        <div className="hidden lg:block space-y-1">
           <Skeleton className="h-3 w-24" />
           <Skeleton className="h-2 w-20" />
         </div>
@@ -41,7 +41,7 @@ export function UserDropdown() {
     return (
       <Link
         href="/iniciar-sesion"
-        className="text-sm font-semibold  hover:text-primary hover:underline"
+        className="hidden lg:block text-sm font-semibold  hover:text-primary hover:underline"
       >
         Iniciar sesión
       </Link>

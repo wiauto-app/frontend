@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 import type { HomeHeroData } from "./types/home-page.types";
+import { HeroBackdrop } from "../ui/heroBackdrop";
 
 const AUTOPLAY_MS = 5000;
 
@@ -26,7 +27,6 @@ const buildSlides = (
   fallbackUrl: string | null,
   title: string,
 ): HeroSlide[] => {
-  console.log(images);
   const fromHero = images.filter((image) => image.image_url.trim().length > 0 && image.active);
 
   if (fromHero.length > 0) {
@@ -145,11 +145,7 @@ export const HeroBackgroundCarousel = ({
         );
       })}
 
-      {/* Oscuro a la izquierda → más claro a la derecha, para legibilidad del texto */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-linear-to-r from-[#0a193c]/82 via-[#0a193c]/10 to-[#0a193c]/0"
-        aria-hidden
-      />
+      <HeroBackdrop />
 
       {slides.length > 1 ? (
         <div

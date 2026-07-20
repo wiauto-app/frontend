@@ -4,9 +4,20 @@ import { getFooterData } from "../services/footerService";
 import type { FooterLinkItem, FooterSectionItem } from "../types/footer.types";
 
 import { Separator } from "../../ui/separator";
-import { FaFacebook, FaInstagram, FaLinkedin, FaTelegram, FaTelegramPlane, FaYoutube } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaLinkedin,
+  FaTelegram,
+  FaYoutube,
+} from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { FACEBOOK_COLOR, INSTAGRAM_COLOR, TELEGRAM_COLOR, YOUTUBE_COLOR } from "./footer.constants";
+import {
+  FACEBOOK_COLOR,
+  INSTAGRAM_COLOR,
+  TELEGRAM_COLOR,
+  YOUTUBE_COLOR,
+} from "./footer.constants";
 interface FooterSectionColumnProps {
   section: FooterSectionItem;
 }
@@ -29,11 +40,15 @@ const renderSocialIcon = (label: string) => {
   const normalized = normalizeSocialLabel(label);
 
   if (normalized.includes("facebook")) {
-    return <FaFacebook className="size-5 " color={FACEBOOK_COLOR} aria-hidden />;
+    return (
+      <FaFacebook className="size-5 " color={FACEBOOK_COLOR} aria-hidden />
+    );
   }
 
   if (normalized.includes("instagram")) {
-    return <FaInstagram className="size-5" color={INSTAGRAM_COLOR} aria-hidden />;
+    return (
+      <FaInstagram className="size-5" color={INSTAGRAM_COLOR} aria-hidden />
+    );
   }
 
   if (normalized.includes("twitter") || normalized === "x") {
@@ -58,7 +73,7 @@ const renderSocialIcon = (label: string) => {
 };
 
 const FooterSectionColumn = ({ section }: FooterSectionColumnProps) => (
-  <div className="text-left">
+  <div className="text-center lg:text-left">
     <h3 className="text-base font-bold">{section.title}</h3>
     {section.links.length > 0 ? (
       <ul className="mt-4 space-y-2.5 sm:mt-5">
@@ -118,7 +133,7 @@ const SocialLinkButton = ({ link }: SocialLinkButtonProps) => {
 export async function Footer() {
   const data = await getFooterData();
   return (
-      <footer className="bg-primary-dark py-10 text-white sm:py-12">
+    <footer className="bg-primary-dark py-10 text-white sm:py-12">
       <div className="container-custom flex flex-col gap-8 sm:gap-10">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
           <div className="flex flex-col items-center gap-5 text-center sm:items-start sm:text-left lg:max-w-xs lg:shrink-0 xl:max-w-sm">
@@ -129,7 +144,7 @@ export async function Footer() {
                   alt="WiAuto"
                   width={225}
                   height={75}
-                  className="h-auto w-[180px] object-contain sm:w-[200px] lg:w-[225px]"
+                  className="h-auto w-45 object-contain sm:w-52 lg:w-56"
                 />
               </Link>
             ) : null}

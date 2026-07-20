@@ -1,12 +1,17 @@
-import { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { IconType } from "react-icons";
+
 import { cn } from "@/lib/utils";
 
+export type AppIconComponent = LucideIcon | IconType;
+
 interface IconContainerProps {
-  Icon: LucideIcon;
+  Icon?: AppIconComponent | null;
   className?: string;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   backgroundColor?: string;
   iconColor?: string;
+  rounded?: boolean;
 }
 
 const sizes = {
@@ -38,6 +43,7 @@ export const IconContainer = ({
   size = "md",
   backgroundColor,
   iconColor,
+  rounded
 }: IconContainerProps) => {
   const hasCustomColors = Boolean(backgroundColor || iconColor);
 
@@ -47,6 +53,7 @@ export const IconContainer = ({
         "rounded-md flex items-center justify-center shrink-0",
         !hasCustomColors && "bg-primary/10 text-primary",
         sizes[size].container,
+        rounded && "rounded-full",
         className,
       )}
       style={
@@ -60,7 +67,7 @@ export const IconContainer = ({
           : undefined
       }
     >
-      <Icon className={sizes[size].icon} />
+      {Icon ? <Icon className={sizes[size].icon} /> : null}
     </div>
   );
 };

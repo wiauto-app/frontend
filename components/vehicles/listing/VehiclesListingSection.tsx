@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 
 import { VehiclesCarouselLayout } from "./VehiclesCarouselLayout";
 import { VehiclesGridLayout } from "./VehiclesGridLayout";
-import { VehiclesListingSectionTitle } from "./VehiclesListingSectionTitle";
 import { SectionHeading } from "@/components/home/SectionHeading";
 
 type VehiclesListingSectionProps = {

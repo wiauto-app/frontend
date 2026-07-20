@@ -81,17 +81,17 @@ export const VehicleDiscoverySection = async ({
       aria-labelledby="vehicle-discovery-title"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div className="gap-5 flex flex-col justify-center">
+        <div className="gap-5 flex flex-col justify-center items-center lg:items-start">
           <h2
             id="vehicle-discovery-title"
-            className="text-4xl font-bold text-foreground space-y-2"
+            className="text-2xl text-center lg:text-left lg:text-4xl font-bold text-foreground "
           >
             <span className="flex flex-wrap items-center gap-2">
               {renderHighlightedTitle(title)}
               <FaLeaf className="w-4 h-4 text-nature" aria-hidden />
             </span>
           </h2>
-          <p>{description}</p>
+          <p className="text-sm text-center lg:text-left text-muted-foreground">{description}</p>
         </div>
         {imageUrl ? (
           <div className="relative aspect-video overflow-hidden rounded-xl">

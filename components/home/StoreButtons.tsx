@@ -4,9 +4,7 @@ type StoreButtonsProps = {
   className?: string;
 };
 
-export function StoreButtons({
-  className,
-}: StoreButtonsProps) {
+export function StoreButtons({ className }: StoreButtonsProps) {
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
       <a
@@ -14,9 +12,11 @@ export function StoreButtons({
         className="inline-flex h-[52px] min-w-[155px] items-center gap-2.5 rounded-xl bg-black px-4 text-white transition-opacity hover:opacity-90"
         aria-label="App Store"
       >
-        <FaApple className="size-6"/>
+        <FaApple className="size-6" />
         <span className="flex flex-col leading-tight">
-          <span className="text-[10px] leading-none">Descarga la app</span>
+          <span className="text-[10px] leading-none hidden lg:block">
+            Descarga la app
+          </span>
           <span className="text-[15px] font-semibold leading-tight">
             En la App Store
           </span>
@@ -24,12 +24,17 @@ export function StoreButtons({
       </a>
       <a
         href="#"
-        className="inline-flex h-[52px] min-w-[155px] items-center gap-2.5 rounded-xl border  bg-white px-4 text-black transition-opacity hover:opacity-95 border"
+        className="inline-flex h-[52px] min-w-[155px] items-center gap-2.5 rounded-xl border-2  bg-white px-4 text-black transition-opacity hover:opacity-95 "
         aria-label="Google Play"
       >
-        <Image src="/icons/playStore.svg" alt="Google Play" width={24} height={24} />
+        <Image
+          src="/icons/playStore.svg"
+          alt="Google Play"
+          width={24}
+          height={24}
+        />
         <span className="flex flex-col leading-tight">
-          <span className="text-[9px] font-medium uppercase leading-none">
+          <span className="text-[9px] font-medium uppercase leading-none hidden lg:block">
             Descarga la app
           </span>
           <span className="text-[15px] font-semibold leading-tight">
@@ -40,4 +45,3 @@ export function StoreButtons({
     </div>
   );
 }
-

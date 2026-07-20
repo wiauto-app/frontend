@@ -40,13 +40,13 @@ export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
   {
     name: "Miles de anuncios",
     icon: Check,
-    href: "/anuncios-verificados",
+    href: "/vehiculos",
     description: "Compra con confianza.",
   },
   {
     name: "Vender tu coche",
     icon: Car,
-    href: "/vende-tu-vehiculo",
+    href: "/vender-vehiculo",
     description: "Publica tu anuncio gratis.",
   },
   {
@@ -58,7 +58,7 @@ export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
   {
     name: "Atención personalizada",
     icon: User,
-    href: "/atencion-personalizada",
+    href: "/soporte",
     description: "Te ayudaremos a encontrar el coche ideal.",
   },
 ];
