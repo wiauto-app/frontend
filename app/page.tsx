@@ -60,7 +60,7 @@ export default async function Home() {
       <div className="container-custom flex flex-col gap-12">
         <HeroSection data={home_data.hero} />
      
-        <StoreButtons className="hidden lg:grid grid-cols-2 gap-1 w-fit mx-auto" />
+        <StoreButtons className="grid lg:hidden grid-cols-2 gap-1 w-fit mx-auto" />
         <SearchForm />
 
         <VehicleExtraServices data={EXTRA_SERVICES_DATA} />

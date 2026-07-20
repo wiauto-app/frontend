@@ -7,7 +7,7 @@ type VehiclesGridLayoutProps = {
 
 export const VehiclesGridLayout = ({ vehicles }: VehiclesGridLayoutProps) => {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 pb-2">
       {vehicles.map((vehicle) => (
         <VehicleGridCard key={vehicle.id} vehicle={vehicle} />
       ))}
