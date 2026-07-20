@@ -12,10 +12,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { BRAND_BLUE, isNavLinkActive, NAV_LINKS } from "../constants/navLinks.constants";
+import {
+  BRAND_BLUE,
+  isNavLinkActive,
+  NAV_LINKS,
+} from "../constants/navLinks.constants";
 import { NavLinkItem } from "./NavLinkItem";
 import { NavbarPublishButton } from "./NavbarPublishButton";
 import { ServicesNavSection } from "./servicesDropdown";
+import { Button } from "@/components/ui/button";
 
 export const NavbarMobileMenu = () => {
   const [open, setOpen] = useState(false);
@@ -29,13 +34,17 @@ export const NavbarMobileMenu = () => {
     <div className="lg:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
-          className="inline-flex size-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-900 transition-colors duration-200 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0061F2] focus-visible:ring-offset-2"
-          aria-label="Abrir menú de navegación"
-        >
-          <Menu className="size-5" aria-hidden />
-        </SheetTrigger>
+          render={
+            <Button variant="outline" size="icon">
+              <Menu className="size-5" aria-hidden />
+            </Button>
+          }
+        ></SheetTrigger>
 
-        <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-sm">
+        <SheetContent
+          side="right"
+          className="flex w-full flex-col gap-0 p-0 sm:max-w-sm"
+        >
           <SheetHeader className="border-b border-slate-200 px-6 py-4 text-left">
             <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
             <Link
