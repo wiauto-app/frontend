@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import type { StrapiMedia, StrapiRichTextBlock } from "./strapi-home.types";
+import type { HeroFeature } from "@/interfaces/hero-feature.interface";
 
 export type StrapiLink = {
   id?: number;
@@ -8,13 +9,8 @@ export type StrapiLink = {
   destacado?: boolean | null;
 };
 
-export interface HomeHeroFeature {
-  id: string;
-  label: string;
-  description: string | null;
-  icon_url: string | null;
-  icon_alt: string | null;
-}
+/** Alias histórico; preferir `HeroFeature`. */
+export type HomeHeroFeature = HeroFeature;
 
 export interface HomeHeroData {
   title: string;
