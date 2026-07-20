@@ -2,12 +2,10 @@ import { useUser } from "@/app/contexts/auth/useUser";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown } from "lucide-react";
-import { FaStoreAlt } from "react-icons/fa";
 import { LuStore } from "react-icons/lu";
 
 export const NavbarDealership = () => {
   const { user } = useUser();
-  console.log(user);
   if (!user) return null;
 
   if (!user.dealership_membership) return null;

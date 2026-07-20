@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { IconContainer } from "../ui/iconContainer";
 import type { VehicleExtraServiceItem } from "./types/home-page.types";
 import { cn } from "@/lib/utils";
@@ -8,7 +9,8 @@ interface ServiceHomeItemProps {
 
 export const ServiceHomeItem = ({ item }: ServiceHomeItemProps) => {
   return (
-    <div
+    <Link
+      href={item.href}
       className={cn(
         "home-card-interactive flex items-center gap-2 rounded-xl p-1",
         "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
@@ -23,6 +25,6 @@ export const ServiceHomeItem = ({ item }: ServiceHomeItemProps) => {
           {item.description}
         </p>
       </div>
-    </div>
+    </Link>
   );
 };

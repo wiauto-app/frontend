@@ -6,13 +6,13 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
   {
     name: "Financiamiento",
     icon: Landmark,
-    href: "/financia-tu-vehiculo",
+    href: "/simulador-financiamiento",
     description: "Calcula tu cuota online.",
   },
   {
     name: "Vender vehículo",
     icon: Car,
-    href: "/vende-tu-vehiculo",
+    href: "/vender-vehiculo",
     description: "Publica tu anuncio gratis.",
   },
   {
@@ -24,7 +24,7 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
   {
     name: "Tasar vehículo",
     icon: Star,
-    href: "/valora-tu-vehiculo",
+    href: "/tasacion",
     description: "Obtén una valoración.",
   },
   {
