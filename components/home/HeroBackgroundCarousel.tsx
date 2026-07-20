@@ -153,7 +153,7 @@ export const HeroBackgroundCarousel = ({
 
       {slides.length > 1 ? (
         <div
-          className="absolute right-4 bottom-28 z-10 flex items-center gap-2 sm:right-6 sm:bottom-5"
+          className="absolute right-4 bottom-28 z-10 flex items-center gap-2 sm:right-40 sm:bottom-5"
           role="tablist"
           aria-label="Seleccionar imagen del hero"
         >

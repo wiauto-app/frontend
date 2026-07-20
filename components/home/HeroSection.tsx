@@ -98,7 +98,7 @@ const HeroFeaturesList = ({ features }: { features: HomeHeroFeature[] }) => {
 export function HeroSection({ data }: HeroSectionProps) {
   return (
     <section className="relative h-[560px]  rounded-lg py-12 ">
-      <div className="absolute top-5 right-0 bg-black/50 rounded-s-lg p-2 z-10 flex flex-col gap-1">
+      <div className="absolute top-0 right-0 bg-black/50 rounded-s-lg p-2 z-10 flex flex-col gap-1">
         {/* <p className="text-white text-sm font-bold">
           {data.download_app_label}
         </p> */}
@@ -122,7 +122,7 @@ export function HeroSection({ data }: HeroSectionProps) {
             <HeroFeaturesList features={data.features} />
           </div>
         </div>
-        <div className="flex flex-col justify-end items-end">
+        <div className="flex  justify-center items-end">
           <HeroSearchForm />
         </div>
       </div>
