@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 import {
   Sheet,
@@ -21,6 +21,7 @@ import { NavLinkItem } from "./NavLinkItem";
 import { NavbarPublishButton } from "./NavbarPublishButton";
 import { ServicesNavSection } from "./servicesDropdown";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/ui/brandLogo";
 
 export const NavbarMobileMenu = () => {
   const [open, setOpen] = useState(false);
@@ -43,32 +44,29 @@ export const NavbarMobileMenu = () => {
 
         <SheetContent
           side="right"
-          className="flex w-full flex-col gap-0 p-0 sm:max-w-sm"
+          className="flex w-full flex-col  sm:max-w-sm"
+          showCloseButton={false}
         >
-          <SheetHeader className="border-b border-slate-200 px-6 py-4 text-left">
-            <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
-            <Link
-              href="/"
-              onClick={handleNavigate}
-              aria-label="Ir al inicio"
-              className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
-            >
-              <span
-                className="inline-flex size-8 items-center justify-center rounded-lg text-base font-bold text-white"
-                style={{ backgroundColor: BRAND_BLUE }}
+          <SheetHeader className="flex flex-row items-center justify-between" >
+            <div>
+              <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+              <Link
+                href="/"
+                onClick={handleNavigate}
+                aria-label="Ir al inicio"
+                className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
               >
-                W
-              </span>
-              <span className="text-lg font-bold tracking-tight">
-                <span className="text-slate-900">Wi</span>
-                <span style={{ color: BRAND_BLUE }}>Auto</span>
-              </span>
-            </Link>
+                <BrandLogo className="h-10" />
+              </Link>
+            </div>
+            <Button variant="outline" size="icon" onClick={() => setOpen(false)}>
+              <X className="size-5" aria-hidden />
+            </Button>
           </SheetHeader>
 
           <nav
             aria-label="Navegación móvil"
-            className="flex flex-1 flex-col overflow-y-auto px-6 py-2"
+            className="flex flex-1 flex-col overflow-y-auto "
           >
             {NAV_LINKS.map((link) => (
               <NavLinkItem
