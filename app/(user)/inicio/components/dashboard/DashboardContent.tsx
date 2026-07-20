@@ -5,7 +5,6 @@ import { useState } from "react";
 import { LayoutGrid, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/app/contexts/auth/useUser";
-import type { OwnerDashboardPeriod } from "@/interfaces/owner-dashboard.interface";
 import { useOwnerDashboard } from "../../hooks/useOwnerDashboard";
 import { DashboardHeader } from "./DashboardHeader";
 import { DashboardKpiGrid } from "./DashboardKpiGrid";
@@ -15,16 +14,35 @@ import { DashboardOpportunitiesCard } from "./DashboardOpportunitiesCard";
 import { DashboardInventorySection } from "./DashboardInventorySection";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardSkeleton } from "./DashboardSkeleton";
+import {
+  getDateRangeError,
+  getDefaultDashboardDateRange,
+  isValidDateRange,
+} from "./dashboard.utils";
 
 export const DashboardContent = () => {
   const { user, isLoading: isUserLoading } = useUser();
-  const [period, setPeriod] = useState<OwnerDashboardPeriod>("30d");
+  const defaultDateRange = getDefaultDashboardDateRange();
+  const [startDate, setStartDate] = useState(defaultDateRange.startDate);
+  const [endDate, setEndDate] = useState(defaultDateRange.endDate);
+
+  const dateRangeError = getDateRangeError(startDate, endDate);
+  const isDateRangeValid = isValidDateRange(startDate, endDate);
 
   const isAuthenticated = Boolean(user);
   const { dashboard, isLoading, error, refetch, isFetching } = useOwnerDashboard({
-    period,
-    enabled: isAuthenticated,
+    startDate,
+    endDate,
+    enabled: isAuthenticated && isDateRangeValid,
   });
+
+  const headerProps = {
+    startDate,
+    endDate,
+    onStartDateChange: setStartDate,
+    onEndDateChange: setEndDate,
+    dateRangeError,
+  };
 
   if (isUserLoading) {
     return (
@@ -54,14 +72,27 @@ export const DashboardContent = () => {
     );
   }
 
+  if (!isDateRangeValid) {
+    return (
+      <div className="space-y-6 pb-20">
+        <DashboardHeader {...headerProps} />
+      </div>
+    );
+  }
+
   if (isLoading && !dashboard) {
-    return <DashboardSkeleton />;
+    return (
+      <div className="space-y-6 pb-20">
+        <DashboardHeader {...headerProps} />
+        <DashboardSkeleton />
+      </div>
+    );
   }
 
   if (error && !dashboard) {
     return (
       <div className="space-y-6 pb-20">
-        <DashboardHeader period={period} onPeriodChange={setPeriod} />
+        <DashboardHeader {...headerProps} />
         <div className="p-8 text-center bg-white rounded-xl border border-gray-100 shadow-sm">
           <p className="text-red-600">
             No se pudo cargar el dashboard. Intenta de nuevo más tarde.
@@ -81,12 +112,17 @@ export const DashboardContent = () => {
   }
 
   if (!dashboard) {
-    return <DashboardSkeleton />;
+    return (
+      <div className="space-y-6 pb-20">
+        <DashboardHeader {...headerProps} />
+        <DashboardSkeleton />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6 pb-20">
-      <DashboardHeader period={period} onPeriodChange={setPeriod} />
+      <DashboardHeader {...headerProps} />
 
       {isFetching && !isLoading ? (
         <p className="text-xs text-gray-400" aria-live="polite">
@@ -94,14 +130,18 @@ export const DashboardContent = () => {
         </p>
       ) : null}
 
-      <DashboardKpiGrid
+    
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
+        <div className="min-w-0 space-y-4">
+        <DashboardKpiGrid
         summary={dashboard.summary}
         viewsTimeSeries={dashboard.views_time_series}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
-        <div className="min-w-0 space-y-4">
-          <DashboardViewsChart data={dashboard.views_time_series} />
+          <DashboardViewsChart
+            data={dashboard.views_time_series}
+            granularity={dashboard.period.granularity}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DashboardWeeklyStatsCard

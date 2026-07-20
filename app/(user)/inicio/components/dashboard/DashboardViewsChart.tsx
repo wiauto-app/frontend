@@ -1,18 +1,26 @@
 "use client";
 
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import type { OwnerDashboardTimeSeriesPoint } from "@/interfaces/owner-dashboard.interface";
+import type {
+  OwnerDashboardGranularity,
+  OwnerDashboardTimeSeriesPoint,
+} from "@/interfaces/owner-dashboard.interface";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { formatBucketDate, formatNumber } from "./dashboard.utils";
+import {
+  formatBucketDate,
+  formatNumber,
+  getViewsChartSubtitle,
+} from "./dashboard.utils";
 
-type DashboardViewsChartProps = {
+interface DashboardViewsChartProps {
   data: OwnerDashboardTimeSeriesPoint[];
-};
+  granularity: OwnerDashboardGranularity;
+}
 
 const chartConfig = {
   count: {
@@ -21,10 +29,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const DashboardViewsChart = ({ data }: DashboardViewsChartProps) => {
+export const DashboardViewsChart = ({
+  data,
+  granularity,
+}: DashboardViewsChartProps) => {
   const chartData = data.map((point) => ({
     ...point,
-    label: formatBucketDate(point.bucket_start),
+    label: formatBucketDate(point.bucket_start, granularity),
   }));
 
   return (
@@ -34,7 +45,7 @@ export const DashboardViewsChart = ({ data }: DashboardViewsChartProps) => {
           Vistas de tus anuncios
         </h2>
         <p className="text-sm text-gray-500 mt-1">
-          Evolución semanal de visitas en el período seleccionado.
+          {getViewsChartSubtitle(granularity)}
         </p>
       </div>
 
@@ -88,7 +99,9 @@ export const DashboardViewsChart = ({ data }: DashboardViewsChartProps) => {
                           )
                         : "";
 
-                    return bucketStart ? formatBucketDate(bucketStart) : "";
+                    return bucketStart
+                      ? formatBucketDate(bucketStart, granularity)
+                      : "";
                   }}
                 />
               }

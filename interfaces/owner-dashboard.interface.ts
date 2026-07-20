@@ -1,4 +1,4 @@
-export type OwnerDashboardPeriod = "7d" | "30d" | "90d";
+export type OwnerDashboardGranularity = "day" | "week" | "month";
 
 export type OwnerDashboardMetric = {
   current: number;
@@ -51,6 +51,7 @@ export type OwnerDashboardResponse = {
     days: number;
     start: string;
     end: string;
+    granularity: OwnerDashboardGranularity;
   };
   summary: {
     active_stock: OwnerDashboardMetric;

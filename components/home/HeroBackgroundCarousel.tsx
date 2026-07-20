@@ -26,7 +26,8 @@ const buildSlides = (
   fallbackUrl: string | null,
   title: string,
 ): HeroSlide[] => {
-  const fromHero = images.filter((image) => image.image_url.trim().length > 0);
+  console.log(images);
+  const fromHero = images.filter((image) => image.image_url.trim().length > 0 && image.active);
 
   if (fromHero.length > 0) {
     return fromHero.map((image) => ({

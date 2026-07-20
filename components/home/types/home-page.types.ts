@@ -25,6 +25,7 @@ export interface HomeHeroData {
     id: string;
     image_url: string;
     image_alt: string;
+    active: boolean;
     order: number;
   }[];
   action_links: StrapiLink[];

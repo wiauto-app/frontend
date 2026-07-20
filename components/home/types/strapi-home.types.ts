@@ -42,6 +42,7 @@ export type StrapiHomepageResponse = {
         image: StrapiMedia;
         alt: string;
         order: number;
+        active: boolean;
       }[] | null;
       actionLinks?: { id: number; label: string; url: string }[] | null;
       caracteristicas?: {

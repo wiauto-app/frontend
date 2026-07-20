@@ -63,10 +63,12 @@ export function UserDropdown() {
             className="flex items-center gap-3 rounded-lg py-1 pr-1 transition-colors hover:bg-slate-50"
           >
             <UserAvatar />
-
-            <span className="hidden max-w-[160px] truncate text-sm font-bold text-slate-900 sm:inline">
-              {displayName}
-            </span>
+            <div className="flex flex-col items-start">
+              <p className="hidden max-w-[160px] truncate text-sm font-bold text-slate-900 sm:inline">
+                {displayName}
+              </p>
+              <span className="text-xs text-muted-foreground">{user.userType}</span>
+            </div>
           </button>
         }
       ></DropdownMenuTrigger>

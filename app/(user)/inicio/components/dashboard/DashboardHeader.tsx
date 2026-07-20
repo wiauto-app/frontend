@@ -2,24 +2,22 @@
 
 import { FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import type { OwnerDashboardPeriod } from "@/interfaces/owner-dashboard.interface";
-import { PERIOD_OPTIONS } from "./dashboard.utils";
+import { DateRangeSelector } from "@/components/date-range-selector/DateRangeSelector";
 
-type DashboardHeaderProps = {
-  period: OwnerDashboardPeriod;
-  onPeriodChange: (period: OwnerDashboardPeriod) => void;
-};
+interface DashboardHeaderProps {
+  startDate: string;
+  endDate: string;
+  onStartDateChange: (value: string) => void;
+  onEndDateChange: (value: string) => void;
+  dateRangeError?: string | null;
+}
 
 export const DashboardHeader = ({
-  period,
-  onPeriodChange,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
+  dateRangeError,
 }: DashboardHeaderProps) => {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -32,24 +30,13 @@ export const DashboardHeader = ({
       </div>
 
       <div className="flex flex-wrap items-center gap-2 shrink-0">
-        <Select
-          value={period}
-          onValueChange={(value) => onPeriodChange(value as OwnerDashboardPeriod)}
-        >
-          <SelectTrigger
-            className="min-w-[180px] border-gray-200 bg-white"
-            aria-label="Seleccionar período"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {PERIOD_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <DateRangeSelector
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={onStartDateChange}
+          onEndDateChange={onEndDateChange}
+          error={dateRangeError}
+        />
 
         <Button
           type="button"

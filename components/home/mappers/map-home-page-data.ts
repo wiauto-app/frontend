@@ -259,6 +259,7 @@ export const mapHomePageData = (
               image_url,
               image_alt: item.alt?.trim() || item.image?.alternativeText || "",
               order: item.order,
+              active: item.active,
             };
           })
           .filter((item): item is NonNullable<typeof item> => item !== null) ?? [],
