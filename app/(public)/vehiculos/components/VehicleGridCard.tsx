@@ -50,8 +50,10 @@ export const VehicleGridCard = ({
             className="object-cover"
           />
         </CardHeader>
-        <CardContent className="pointer-events-none relative z-[1] p-2">
-          <p className="text-base font-bold text-slate-900">{displayName}</p>
+        <CardContent className="pointer-events-none relative z-1 p-2">
+          <p className="text-base font-bold text-slate-900 truncate ">
+            {displayName}
+          </p>
           <p className="text-sm text-muted-foreground">{vehicle.mileage} km</p>
           <p className="text-base font-bold">{formatPrice(vehicle.price)}</p>
           <p className="text-sm text-muted-foreground">
@@ -82,7 +84,7 @@ export const VehicleGridCard = ({
       <CardContent className="p-2">
         <Link
           href={vehicleUrl}
-          className={cn("text-base font-bold text-slate-900")}
+          className={cn("text-base font-bold text-slate-900 truncate ")}
         >
           {displayName}
         </Link>

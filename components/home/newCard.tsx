@@ -55,7 +55,6 @@ export const NewCard = ({
           src={item.banner_url || ""}
           alt={item.title}
           fill
-          unoptimized
           // className="home-card-image object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
           className="object-cover rounded-lg overflow-hidden"
           sizes={

@@ -60,8 +60,8 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: #0153e8;
-  --primary-dark: #05132C;
-  --primary-soft: #397FF4;
+  --primary-dark: #05132c;
+  --primary-soft: #397ff4;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -97,9 +97,9 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary-dark: #05132C;
+  --primary-dark: #05132c;
   --primary: #0153e8;
-  --primary-soft: #3A80F5;
+  --primary-soft: #3a80f5;
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -165,9 +165,8 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    
   }
-  a{
+  a {
     text-decoration: none !important;
   }
   body {
@@ -199,4 +198,10 @@
     transition: none !important;
     transform: none !important;
   }
+}
+
+.dots-background {
+  background-color: var(--primary);
+  background-image: radial-gradient(var(--primary-soft) 1px, var(--primary) 1px);
+  background-size: 10px 10px;
 }
