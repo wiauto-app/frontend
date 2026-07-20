@@ -14,9 +14,9 @@ export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
   const firstWord = data.title.split(" ")[0];
   const restOfWords = data.title.split(" ").slice(1).join(" ");
   return (
-    <SectionContainer className=" h-[550px] flex items-end">
+    <SectionContainer className=" h-auto lg:h-[550px] flex items-end">
       <div
-        className="relative  rounded-[2rem] sm:rounded-[2.5rem]  "
+        className="relative  rounded-[2rem] sm:rounded-[2.5rem] w-full  "
         style={{ backgroundColor: BRAND_BLUE }}
       >
         <Image
@@ -48,7 +48,7 @@ export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
               {data.phrase}
             </p>
             <SectionHeading
-              className="lg:text-5xl max-w-sm text-start text-white"
+              className="text-2xl text-center lg:text-left lg:text-5xl max-w-full w-full lg:max-w-sm  text-white"
               highlightClassName="text-primary-soft font-bold"
               lead={firstWord}
               highlight={restOfWords}

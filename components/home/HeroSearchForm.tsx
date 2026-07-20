@@ -22,7 +22,7 @@ const HeroSearchFormContent = () => {
 
   return (
     <div className="min-w-xs space-y-2">
-      <div className="flex gap-1 p-1 bg-white rounded-xl w-fit">
+      <div className="grid grid-cols-2  gap-1 p-1 bg-white rounded-xl w-full lg:w-fit">
         <Button className="rounded-lg">Comprar</Button>
         <NavbarPublishButton variant="outline" className="rounded-lg"/>
       </div>

@@ -11,7 +11,7 @@ export const Hero = ({
   floatingContent?: React.ReactNode;
 }) => {
   return (
-    <section className="relative h-140  rounded-lg py-12  rounded-b-lg overflow-hidden ">
+    <section className="relative lg:h-140  rounded-lg py-12  rounded-b-lg overflow-hidden ">
       {image ? (
         <Image
           src={image}
@@ -25,7 +25,7 @@ export const Hero = ({
       {/* <div className="absolute top-0 right-0 bg-black/50 rounded-s-lg p-2 z-10 flex flex-col gap-1"></div> */}
       {floatingContent}
 
-      <div className="relative mx-auto  container-custom grid grid-cols-1 lg:grid-cols-2 gap-10  h-full">
+      <div className="relative mx-auto  container-custom flex flex-col lg:grid  lg:grid-cols-2 gap-4 lg:gap-10  h-full">
         {leftContent}
         {rightContent}
       </div>

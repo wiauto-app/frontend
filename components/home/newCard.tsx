@@ -39,7 +39,7 @@ export const NewCard = ({
       className={cn(
         "rounded-lg overflow-hidden",
         "hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(15,23,42,0.12)] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        isFeatured ? "col-span-2" : "col-span-1",
+        isFeatured ? "lg:col-span-2" : "col-span-1",
         className,
       )}
     >

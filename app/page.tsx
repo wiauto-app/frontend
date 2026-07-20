@@ -23,6 +23,7 @@ import {
 } from "@/components/discovery";
 import { mapLowEmissionsLinkToQuickLink } from "@/components/discovery/mappers/map-low-emissions-link-to-quick-link";
 import { SearchForm } from "@/components/home/searchForm";
+import { StoreButtons } from "@/components/home/StoreButtons";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
@@ -58,6 +59,8 @@ export default async function Home() {
     <>
       <div className="container-custom flex flex-col gap-12">
         <HeroSection data={home_data.hero} />
+     
+        <StoreButtons className="grid grid-cols-2 gap-1 w-fit mx-auto" />
         <SearchForm />
 
         <VehicleExtraServices data={EXTRA_SERVICES_DATA} />

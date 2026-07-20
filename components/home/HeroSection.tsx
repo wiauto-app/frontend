@@ -19,7 +19,7 @@ export function HeroSection({ data }: HeroSectionProps) {
     <Hero
       leftContent={
         <div className="flex flex-col ">
-          <div className="text-white space-y-5 px-14">
+          <div className="text-white flex flex-col lg:gap-5 px-4 2xl:px-14">
             <HeroTitle>{data.title}</HeroTitle>
             {data.subtitle ? (
               <HeroDescription>{data.subtitle}</HeroDescription>
@@ -35,7 +35,7 @@ export function HeroSection({ data }: HeroSectionProps) {
       }
       floatingContent={
         <>
-          <div className="absolute top-0 right-0 bg-black/50 rounded-s-lg p-2 z-10 flex flex-col gap-1">
+          <div className="absolute hidden lg:flex lg:top-0 lg:right-0 bg-black/50 rounded-s-lg p-2 z-10 flex-col gap-1">
             {/* <p className="text-white text-sm font-bold">
         {data.download_app_label}
       </p> */}
