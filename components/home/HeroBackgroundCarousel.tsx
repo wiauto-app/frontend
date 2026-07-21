@@ -100,9 +100,6 @@ export const HeroBackgroundCarousel = ({
     return null;
   }
 
-  const handleSelect = (index: number) => {
-    setActiveIndex(index);
-  };
 
   const handleMouseEnter = () => {
     setIsPaused(true);
@@ -140,7 +137,7 @@ export const HeroBackgroundCarousel = ({
               loading={index === 0 ? "eager" : "lazy"}
               fill
               quality={80}
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 960px, 1300px"
+              sizes="(max-width: 640px) 40vw, (max-width: 1024px) 960px, 1300px"
               className="object-cover"
               aria-live={isActive ? "polite" : undefined}
             />

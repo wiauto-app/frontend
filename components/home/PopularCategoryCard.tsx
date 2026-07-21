@@ -36,7 +36,7 @@ export const PopularCategoryCard = ({ category }: PopularCategoryCardProps) => {
             fill
             quality={80}
             className="home-card-image object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-            sizes="(max-width: 640px) 250px, 350px"
+            sizes="(max-width: 640px) 200px, 350px"
           />
         ) : (
           <div
