@@ -17,7 +17,7 @@ export const VehicleTypeSelector = ({
   onChange,
 }: VehicleTypeSelectorProps) => {
   return (
-    <div className="space-y-2 max-h-[300px] overflow-y-auto">
+    <div className="grid grid-cols-3 gap-1 max-h-68 overflow-y-auto">
       {vehicleTypes.map((vehicleType) => {
         const active = value === vehicleType.slug;
 
@@ -27,22 +27,22 @@ export const VehicleTypeSelector = ({
             type="button"
             onClick={() => onChange(active ? undefined : vehicleType.slug)}
             className={cn(
-              "group flex w-full items-center gap-3 rounded-xl border text-left transition-all",
+              "flex flex-col items-center justify-center gap-1 border p-0 rounded-sm overflow-hidden cursor-pointer hover:bg-muted/50 hover:border-primary",
               active
                 ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                : "border-border hover:border-primary/30 hover:bg-muted/50",
+                : "",
             )}
           >
             {vehicleType.image_url && (
               <div
                 className={cn(
-                  "flex h-16 w-16 items-center justify-center rounded-lg overflow-hidden relative",
+                  "flex h-16 w-full items-center justify-center  overflow-hidden relative",
                   active ? "bg-white/15" : "bg-muted group-hover:bg-primary/5",
                 )}
               >
                 <WiautoImage
                   sizes="100px"
-                  
+                  unoptimized={false}
                   src={vehicleType.image_url}
                   alt={vehicleType.name}
                   fill
@@ -51,11 +51,10 @@ export const VehicleTypeSelector = ({
               </div>
             )}
 
-            <div className="flex-1  px-3 py-2.5 flex items-center justify-between">
-              <p className="text-sm font-medium">{vehicleType.name}</p>
-            {active && <Check className="h-4 w-4 shrink-0" />}
+            <div className="flex-1   flex items-center justify-between">
+              <p className="text-xs font-medium max-w-full truncate">{vehicleType.name}</p>
+              {active && <Check className="h-4 w-4 shrink-0" />}
             </div>
-
           </button>
         );
       })}

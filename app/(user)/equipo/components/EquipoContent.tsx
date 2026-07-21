@@ -22,7 +22,7 @@ export const EquipoContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const { user, isLoading: isUserLoading } = useUser();
+  const { user, isLoading: isUserLoading, refreshUser } = useUser();
 
   const membership = user?.dealership_membership;
   const dealershipId = membership?.dealership_id;
@@ -79,8 +79,8 @@ export const EquipoContent = () => {
   const invalidateTeamQueries = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: ["dealership-team", dealershipId] });
     await queryClient.invalidateQueries({ queryKey: ["dealership-invitations", dealershipId] });
-    await queryClient.invalidateQueries({ queryKey: ["user"] });
-  }, [dealershipId, queryClient]);
+    await refreshUser();
+  }, [dealershipId, queryClient, refreshUser]);
 
   const handleUpdateRole = async (memberId: string, role: "admin" | "member") => {
     if (!dealershipId) {

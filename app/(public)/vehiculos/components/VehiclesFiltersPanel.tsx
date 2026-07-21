@@ -1,20 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  BatteryChargingIcon,
-  Building2Icon,
-  CalendarIcon,
-  Car,
-  CarIcon,
-  DollarSignIcon,
-  GaugeIcon,
-  Leaf,
-  MapPinIcon,
-  PaintRoller,
-  ShoppingCart,
-  UserIcon,
-} from "lucide-react";
+
 import { useParams, useSearchParams } from "next/navigation";
 
 import { PriceSelector } from "@/components/selectors/priceSelector";
@@ -33,56 +20,49 @@ import type {
 } from "@/components/selectors/types";
 import type { FiltersResponse } from "@/interfaces/filters.interface";
 import type { TransmissionType } from "@/interfaces/vehicle.interface";
-import { Accordion } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { LocationSelector } from "@/components/selectors/locationSelector";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import {
   FILTER_SECTION_IDS,
   getExpandedFilterSectionIds,
 } from "../utils/getExpandedFilterSectionIds";
-
-import { FilterAccordeon } from "./filterAccordeon";
+import { Separator } from "@/components/ui/separator";
+import { FilterItem } from "./filterItem";
 import { VehicleTypeSelector } from "./vehicleTypeSelector";
 import { FiltersMakeSelector } from "@/components/selectors/FilterMakeSelector/filtersMakeSelector";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { PUBLISHER_TYPE_KEY } from "../[[...slug]]/constants/filterKeys.constants";
-
+import {
+  HiOutlineCalendar,
+  HiOutlineHome,
+  HiOutlineCurrencyEuro,
+  HiOutlineShoppingCart,
+  HiOutlineUser,
+  HiOutlineMapPin,
+  
+} from "react-icons/hi2";
+import { FaGauge } from "react-icons/fa6";
+import { TbEngine } from "react-icons/tb";
+import {
+  LuBatteryCharging,
+  LuCar,
+  LuLeaf,
+  LuPaintRoller,
+} from "react-icons/lu";
 type VehiclesFiltersPanelProps = {
   catalog: FiltersResponse;
 };
 
-const resolveSlugArray = (slug: string | string[] | undefined): string[] => {
-  if (!slug) {
-    return [];
-  }
-  return Array.isArray(slug) ? slug : [slug];
-};
 
 export const VehiclesFiltersPanel = ({
   catalog,
 }: VehiclesFiltersPanelProps) => {
   const { filters, commitFilters } = useVehiclesListingFilters();
-  const searchParams = useSearchParams();
-  const routeParams = useParams();
-  const slugSegments = resolveSlugArray(routeParams.slug);
-  const urlKey = `${slugSegments.join("/")}?${searchParams.toString()}`;
-
   const { values, handleMultiChange } = useFiltersManager({
     keys: [PUBLISHER_TYPE_KEY],
   });
   const publisher_types = values[PUBLISHER_TYPE_KEY] as PublisherTypesValue;
-
-  const expandedFromFilters = useMemo(
-    () => getExpandedFilterSectionIds(filters),
-    [filters],
-  );
-  const [openSections, setOpenSections] = useState(expandedFromFilters);
-
-  useEffect(() => {
-    setOpenSections(expandedFromFilters);
-  }, [urlKey, expandedFromFilters]);
 
   const [type_slug, setTypeSlug] = useState<string | undefined>(
     filters.type_slug,
@@ -154,12 +134,15 @@ export const VehiclesFiltersPanel = ({
     });
   };
 
+
+  const iconSize = 24;
+
   return (
     <Card className="rounded-none" size="sm">
       <CardHeader>
         <CardTitle>Filtros</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col">
+      <CardContent className="flex flex-col gap-5  ">
         <VehicleTypeSelector
           vehicleTypes={catalog.vehicleTypes}
           value={type_slug}
@@ -172,220 +155,214 @@ export const VehiclesFiltersPanel = ({
             });
           }}
         />
-        <Accordion
-          multiple
-          value={openSections}
-          onValueChange={setOpenSections}
+
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.MAKE_MODEL}
+          title="Marca y Modelo"
+          Icon={<HiOutlineHome size={iconSize} />}
         >
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.MAKE_MODEL}
-            title="Marca y Modelo"
-            Icon={Building2Icon}
-          >
-            <FiltersMakeSelector />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.PRICE}
-            title="Precio"
-            Icon={DollarSignIcon}
-          >
-            <PriceSelector
-              cuotas={catalog.cuotas}
-              value={price_value}
-              onChange={handlePriceChange}
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.LOCATION}
-            title="Ubicación"
-            Icon={MapPinIcon}
-          >
-            <LocationSelector />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.SERVICES}
-            title="Servicios"
-            Icon={ShoppingCart}
-          >
-            <ServicesSelector
-              services={catalog.services}
-              value={filters.service_slugs ?? []}
-              onChange={(next) =>
-                commitFilters({
-                  ...filters,
-                  service_slugs: next.length > 0 ? next : undefined,
-                  page: 1,
-                })
-              }
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.SELLERS}
-            title="Vendedores"
-            Icon={UserIcon}
-          >
-            <SellersSelector
-              value={publisher_types}
-              onChange={(next) => {
-                handleMultiChange(
-                  PUBLISHER_TYPE_KEY,
-                  next as PublisherTypesValue,
-                );
-              }}
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.YEAR}
-            title="Año"
-            Icon={CalendarIcon}
-          >
-            <YearSelector
-              value={year_range}
-              onChange={(range) =>
-                commitFilters({
-                  ...filters,
-                  since_year: range.since,
-                  until_year: range.until,
-                  page: 1,
-                })
-              }
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.MILEAGE}
-            title="Kilometraje"
-            Icon={GaugeIcon}
-          >
-            <KmSelector
-              value={km_range}
-              onChange={(range) =>
-                commitFilters({
-                  ...filters,
-                  since_mileage: range.since,
-                  until_mileage: range.until,
-                  page: 1,
-                })
-              }
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.ENGINE}
-            title="Motor"
-            Icon={GaugeIcon}
-          >
-            <EngineSelector
-              fuelTypes={catalog.fuels}
-              tractions={catalog.tractions}
-              fuelTypeSlugs={filters.fuel_type_slugs ?? []}
-              onFuelTypeSlugsChange={(next) =>
-                commitFilters({
-                  ...filters,
-                  fuel_type_slugs: next.length > 0 ? next : undefined,
-                  page: 1,
-                })
-              }
-              tractionSlugs={filters.traction_slugs ?? []}
-              onTractionSlugsChange={(next) =>
-                commitFilters({
-                  ...filters,
-                  traction_slugs: next.length > 0 ? next : undefined,
-                  page: 1,
-                })
-              }
-              transmissionTypes={
-                (filters.transmission_types ?? []) as TransmissionType[]
-              }
-              onTransmissionTypesChange={(next) =>
-                commitFilters({
-                  ...filters,
-                  transmission_types: next.length > 0 ? next : undefined,
-                  page: 1,
-                })
-              }
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.DGT}
-            title="Etiquetas DGT"
-            Icon={Leaf}
-          >
-            <DgtLabelSelector
-              dgtLabels={catalog.dgtLabels}
-              value={filters.dgt_label_ids ?? []}
-              onChange={(next) =>
-                commitFilters({
-                  ...filters,
-                  dgt_label_ids: next.length > 0 ? next : undefined,
-                  page: 1,
-                })
-              }
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.ELECTRIC}
-            title="Eléctricos"
-            Icon={BatteryChargingIcon}
-          >
-            <ElectricSelector
-              autonomyValue={filters.autonomy_since}
-              onAutonomyChange={(value) =>
-                commitFilters({
-                  ...filters,
-                  autonomy_since: value,
-                  page: 1,
-                })
-              }
-              batteryValue={battery_range}
-              onBatteryChange={handleBatteryChange}
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.FEATURES}
-            title="Equipamiento"
-            Icon={Car}
-          >
-            <FeaturesSelector
-              features={catalog.features}
-              value={filters.features_slugs ?? []}
-              onChange={(next) =>
-                commitFilters({
-                  ...filters,
-                  features_slugs: next.length > 0 ? next : undefined,
-                  page: 1,
-                })
-              }
-            />
-          </FilterAccordeon>
-          <Separator />
-          <FilterAccordeon
-            sectionId={FILTER_SECTION_IDS.COLOR}
-            title="Color"
-            Icon={PaintRoller}
-          >
-            <ColorSelector
-              colors={catalog.colors}
-              value={filters.color_slugs ?? []}
-              onChange={(next) =>
-                commitFilters({
-                  ...filters,
-                  color_slugs: next.length > 0 ? next : undefined,
-                  page: 1,
-                })
-              }
-            />
-          </FilterAccordeon>
-        </Accordion>
+          <FiltersMakeSelector />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.PRICE}
+          title="Precio"
+          Icon={<HiOutlineCurrencyEuro size={iconSize} />}
+        >
+          <PriceSelector
+            cuotas={catalog.cuotas}
+            value={price_value}
+            onChange={handlePriceChange}
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.LOCATION}
+          title="Ubicación"
+          Icon={<HiOutlineMapPin size={iconSize} />}
+        >
+          <LocationSelector />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.SERVICES}
+          title="Servicios"
+          Icon={<HiOutlineShoppingCart size={iconSize} />}
+        >
+          <ServicesSelector
+            services={catalog.services}
+            value={filters.service_slugs ?? []}
+            onChange={(next) =>
+              commitFilters({
+                ...filters,
+                service_slugs: next.length > 0 ? next : undefined,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.SELLERS}
+          title="Vendedores"
+          Icon={<HiOutlineUser size={iconSize} />}
+        >
+          <SellersSelector
+            value={publisher_types}
+            onChange={(next) => {
+              handleMultiChange(
+                PUBLISHER_TYPE_KEY,
+                next as PublisherTypesValue,
+              );
+            }}
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.YEAR}
+          title="Año"
+          Icon={<HiOutlineCalendar size={iconSize} />}
+        >
+          <YearSelector
+            value={year_range}
+            onChange={(range) =>
+              commitFilters({
+                ...filters,
+                since_year: range.since,
+                until_year: range.until,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.MILEAGE}
+          title="Kilometraje"
+          Icon={<FaGauge size={iconSize} />}
+        >
+          <KmSelector
+            value={km_range}
+            onChange={(range) =>
+              commitFilters({
+                ...filters,
+                since_mileage: range.since,
+                until_mileage: range.until,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.ENGINE}
+          title="Motor"
+          Icon={<TbEngine size={iconSize} />}
+        >
+          <EngineSelector
+            fuelTypes={catalog.fuels}
+            tractions={catalog.tractions}
+            fuelTypeSlugs={filters.fuel_type_slugs ?? []}
+            onFuelTypeSlugsChange={(next) =>
+              commitFilters({
+                ...filters,
+                fuel_type_slugs: next.length > 0 ? next : undefined,
+                page: 1,
+              })
+            }
+            tractionSlugs={filters.traction_slugs ?? []}
+            onTractionSlugsChange={(next) =>
+              commitFilters({
+                ...filters,
+                traction_slugs: next.length > 0 ? next : undefined,
+                page: 1,
+              })
+            }
+            transmissionTypes={
+              (filters.transmission_types ?? []) as TransmissionType[]
+            }
+            onTransmissionTypesChange={(next) =>
+              commitFilters({
+                ...filters,
+                transmission_types: next.length > 0 ? next : undefined,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.DGT}
+          title="Etiquetas DGT"
+          Icon={<LuLeaf size={iconSize} />}
+        >
+          <DgtLabelSelector
+            dgtLabels={catalog.dgtLabels}
+            value={filters.dgt_label_ids ?? []}
+            onChange={(next) =>
+              commitFilters({
+                ...filters,
+                dgt_label_ids: next.length > 0 ? next : undefined,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.ELECTRIC}
+          title="Eléctricos"
+          Icon={<LuBatteryCharging size={iconSize} />}
+        >
+          <ElectricSelector
+            autonomyValue={filters.autonomy_since}
+            onAutonomyChange={(value) =>
+              commitFilters({
+                ...filters,
+                autonomy_since: value,
+                page: 1,
+              })
+            }
+            batteryValue={battery_range}
+            onBatteryChange={handleBatteryChange}
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.FEATURES}
+          title="Equipamiento"
+          Icon={<LuCar size={iconSize} />}
+        >
+          <FeaturesSelector
+            features={catalog.features}
+            value={filters.features_slugs ?? []}
+            onChange={(next) =>
+              commitFilters({
+                ...filters,
+                features_slugs: next.length > 0 ? next : undefined,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
+        <Separator />
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.COLOR}
+          title="Color"
+          Icon={<LuPaintRoller size={iconSize}  />}
+        >
+          <ColorSelector
+            colors={catalog.colors}
+            value={filters.color_slugs ?? []}
+            onChange={(next) =>
+              commitFilters({
+                ...filters,
+                color_slugs: next.length > 0 ? next : undefined,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
       </CardContent>
     </Card>
   );

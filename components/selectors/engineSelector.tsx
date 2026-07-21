@@ -4,7 +4,6 @@ import {
   TRANSMISSION_TYPE,
   type FuelType,
   type Traction,
-  type TransmissionType,
 } from "@/interfaces/vehicle.interface";
 import { MultiCheckboxFilter } from "./multiCheckboxFilter";
 import type { MultiSlugValue, TransmissionTypesValue } from "./types";

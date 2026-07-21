@@ -7,6 +7,7 @@ import type {
   VehicleListItem,
 } from "@/interfaces/vehicle.interface";
 import { buildVehiclesQueryString } from "@/lib/vehicles/build-vehicles-query-params";
+import { CACHE_ONE_HOUR, CACHE_TAGS } from "@/constants/cache.constants";
 
 export interface VehiclesListingServerResult {
   vehicles: VehicleListItem[];
@@ -25,17 +26,15 @@ export const findAllVehicles = async (
     limit: params.limit ?? 12,
   };
 
-  if (!API_URL) {
-    return empty;
-  }
 
-  const token = (await cookies()).get("access_token")?.value;
   const query = buildVehiclesQueryString(params);
 
   try {
     const response = await fetch(`${API_URL}/v1/vehicles${query}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      cache: "no-store",
+      next: {
+        revalidate: CACHE_ONE_HOUR,
+        tags: [CACHE_TAGS.VEHICLES],
+      }
     });
 
     if (!response.ok) {

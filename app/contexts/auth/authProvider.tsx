@@ -1,38 +1,43 @@
 "use client";
 
-import { authService } from "@/services/authService";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { authService, type MeResponseDto } from "@/services/authService";
 import { AuthContext } from "./authContext";
-import { useCallback, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = useQueryClient();
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const response = await authService.getMe();
-      if (!response.ok) {
-        return null;
-      }
-      return response.data;
-    },
-    placeholderData: (previous) => previous,
-    staleTime: 60_000,
-  });
+  const [user, setUser] = useState<MeResponseDto | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+
   const refreshUser = useCallback(async () => {
-    queryClient.invalidateQueries({ queryKey: ["user"] });
-  }, [queryClient]);
+    try {
+      const response = await authService.getMe();
+      if (!response.ok || !response.data?.id) {
+        setUser(undefined);
+        return;
+      }
+      setUser(response.data);
+    } catch {
+      setUser(undefined);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshUser();
+  }, [refreshUser]);
 
   const logout = useCallback(async () => {
     await authService.logout();
-    refreshUser();
-  }, [refreshUser]);
+    setUser(undefined);
+  }, []);
 
   const value = useMemo(
     () => ({
-      user: user?.id ? user : undefined,
+      user,
       isLoading,
-      isAuthenticated: !!user,
+      isAuthenticated: Boolean(user?.id),
       refreshUser,
       logout,
     }),
