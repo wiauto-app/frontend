@@ -22,7 +22,7 @@ const FEATURE_ICONS = [Shield, Clock, MapPinned, Globe];
 
 export function SegurosHeroSection() {
   return (
-    <section className='relative overflow-hidden rounded-2xl'>
+    <section className='relative overflow-hidden rounded-2xl px-10'>
       <div className='absolute inset-0'>
         <Image
           src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2000'
