@@ -14,7 +14,11 @@ type TopDealershipCardProps = {
 export const TopDealershipCard = ({ dealership }: TopDealershipCardProps) => {
   const image_path = dealership.banner_url ?? dealership.avatar_url ?? null;
   const image_src = image_path ? getImageUrl(image_path) : null;
-
+  const sizes = `
+   (max-width: 640px) 90vw,
+  (max-width: 1024px) 40vw,
+  250px
+  `;
   return (
     <Link
       href={`/concesionaria/${dealership.slug}`}
@@ -36,7 +40,7 @@ export const TopDealershipCard = ({ dealership }: TopDealershipCardProps) => {
             fill
             quality={80}
             className="home-card-image object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-            sizes="(max-width: 640px) 78vw, 25vw"
+            sizes={sizes}
           />
         ) : (
           <div

@@ -135,8 +135,12 @@ export const HeroBackgroundCarousel = ({
             <Image
               src={slide.image_url}
               alt={isActive ? slide.image_alt : ""}
+              fetchPriority={index === 0 ? "high" : "auto"}
+              priority={index === 0}
+              loading={index === 0 ? "eager" : "lazy"}
               fill
-              sizes="100vw"
+              quality={80}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 960px, 1300px"
               className="object-cover"
               aria-live={isActive ? "polite" : undefined}
             />

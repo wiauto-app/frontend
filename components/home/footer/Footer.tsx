@@ -121,6 +121,7 @@ const SocialLinkButton = ({ link }: SocialLinkButtonProps) => {
           width={40}
           height={40}
           className="size-full object-cover"
+          style={{ width: "100%", height: "100%" }}
           aria-hidden
         />
       ) : (
@@ -145,6 +146,7 @@ export async function Footer() {
                   width={225}
                   height={75}
                   className="h-auto w-45 object-contain sm:w-52 lg:w-56"
+                  style={{ height: "auto" }}
                 />
               </Link>
             ) : null}

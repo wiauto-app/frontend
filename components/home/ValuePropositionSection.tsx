@@ -11,7 +11,14 @@ function FeatureIcon({ icon_url, icon_alt }: { icon_url: string | null; icon_alt
   if (icon_url) {
     return (
       <span className="inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
-        <Image src={icon_url} alt={icon_alt} width={40} height={40} className="size-10 object-contain" />
+        <Image
+          src={icon_url}
+          alt={icon_alt}
+          width={40}
+          height={40}
+          className="object-contain"
+          style={{ width: 40, height: "auto" }}
+        />
       </span>
     );
   }
@@ -73,7 +80,8 @@ export function ValuePropositionSection({ data }: ValuePropositionSectionProps) 
               alt="Vehículo destacado"
               width={640}
               height={400}
-              className="h-auto w-full object-contain drop-shadow-2xl"
+              className="object-contain drop-shadow-2xl"
+              style={{ width: "100%", height: "auto" }}
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </div>

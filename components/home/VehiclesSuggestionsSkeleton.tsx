@@ -16,13 +16,19 @@ export const VehiclesSuggestionsSkeleton = () => (
             key={index}
             className="basis-full shrink-0 pl-3 sm:basis-1/2 sm:pl-4 lg:basis-1/4"
           >
-            <div className="flex flex-col gap-2 rounded-xl bg-muted-foreground/10 p-0 pt-0">
+            <div className="flex flex-col gap-2 overflow-hidden rounded-xl bg-muted-foreground/10 p-0 pt-0">
               <Skeleton className="aspect-square w-full rounded-xl" />
-              <div className="space-y-2 p-2">
+              <div className="space-y-2.5 px-2.5 pb-3">
+                <Skeleton className="h-3 w-1/3" />
                 <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-5 w-1/2" />
-                <Skeleton className="h-4 w-1/4" />
+                <Skeleton className="h-6 w-1/2" />
+                <div className="grid grid-cols-2 gap-1.5">
+                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-6 w-full" />
+                </div>
+                <Skeleton className="h-3 w-2/5" />
               </div>
             </div>
           </div>

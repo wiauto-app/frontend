@@ -26,8 +26,9 @@ export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
                 alt={data.title}
                 width={260}
                 height={520}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="hidden lg:block absolute bottom-16 object-cover "
+                sizes="260px"
+                className="absolute bottom-16 hidden object-contain lg:block"
+                style={{ width: 260, height: "auto" }}
               />
             ) : (
               <AppPhoneMockup />

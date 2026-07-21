@@ -18,6 +18,7 @@ export const provincesCatalogService = {
     const query_string = objectToQueryString(merged);
     const response = await apiGet<PaginatedResult<ProvinceCatalogItem>>(
       `${V1_PROVINCES}${query_string ? `?${query_string}` : ""}`,
+      undefined, 60
     );
     return response.data;
   },

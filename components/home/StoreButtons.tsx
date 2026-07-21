@@ -32,6 +32,7 @@ export function StoreButtons({ className }: StoreButtonsProps) {
           alt="Google Play"
           width={24}
           height={24}
+          style={{ width: "auto", height: "auto" }}
         />
         <span className="flex flex-col leading-tight">
           <span className="text-[9px] font-medium uppercase leading-none hidden lg:block">

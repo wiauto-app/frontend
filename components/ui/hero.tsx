@@ -18,7 +18,7 @@ export const Hero = ({
           alt="Hero Background"
           fill
           className="object-cover"
-          sizes="100vw 600px"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 960px, 1300px"
           priority
         />
       ) : null}

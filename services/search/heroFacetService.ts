@@ -22,6 +22,7 @@ const fetchFacets = async <T extends HeroCatalogFacetItem | HeroPriceRangeFacetI
   const response = await apiGet<HeroFacetsResponse>(
     `${V1_SEARCH_HERO_FACETS}`,
     params,
+    60
   );
   return (response.data?.items ?? []) as T[];
 };

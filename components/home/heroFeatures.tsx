@@ -7,20 +7,18 @@ interface HeroFeatureIconProps {
   icon_url: string | null;
   icon_alt: string;
   className?: string;
-  size?: number;
 }
 
 const HeroFeatureIcon = ({
   icon_url,
   icon_alt,
   className,
-  size = 8,
 }: HeroFeatureIconProps) => {
   if (icon_url) {
     return (
       <span
         className={cn(
-          "inline-flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/15 relative",
+          "relative inline-flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/15",
           className,
         )}
       >
@@ -28,8 +26,8 @@ const HeroFeatureIcon = ({
           src={icon_url}
           alt={icon_alt}
           unoptimized
-          width={size}
-          height={size}
+          fill
+          sizes="40px"
           className="object-contain"
         />
       </span>
@@ -64,7 +62,6 @@ export const HeroFeatures = ({ features }: { features: HeroFeature[] }) => {
       {features.map((feature) => (
         <li key={feature.id} className="flex items-center gap-3">
           <HeroFeatureIcon
-            size={20}
             className="bg-primary h-10 w-10 rounded-full"
             icon_url={feature.icon_url}
             icon_alt={feature.icon_alt ?? feature.label}

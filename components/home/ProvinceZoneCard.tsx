@@ -25,6 +25,13 @@ export const ProvinceZoneCard = ({ province }: ProvinceZoneCardProps) => {
     provinces_slugs: [province.slug],
   });
 
+  const sizes = `
+    (max-width: 640px) 90vw,
+    (max-width: 1024px) 40vw,
+    (max-width: 1536px) 250px,
+    250px
+  `
+
   return (
     <Link
       href={href}
@@ -46,7 +53,7 @@ export const ProvinceZoneCard = ({ province }: ProvinceZoneCardProps) => {
             fill
             quality={80}
             className="home-card-image object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-            sizes="(max-width: 640px) 50vw, 25vw"
+            sizes={sizes}
           />
         ) : (
           <div

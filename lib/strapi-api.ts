@@ -1,6 +1,6 @@
-import { ENVIRONMENT } from "@/constants";
 import { STRAPI_API_URL, STRAPI_TOKEN } from "@/constants/strapi.constants";
 
+const DEFAULT_STRAPI_REVALIDATE_SECONDS = 60;
 
 export interface StrapiResponse<T> {
   data: T;
@@ -39,8 +39,7 @@ export const getStrapiData = async <T>(
   endpoint: string,
   options?: GetStrapiDataOptions,
 ): Promise<T> => {
-  const defaultRevalidate = ENVIRONMENT === "development" ? 0 : 60;
-  const revalidate = options?.revalidate ?? defaultRevalidate;
+  const revalidate = options?.revalidate ?? DEFAULT_STRAPI_REVALIDATE_SECONDS;
   const url = buildStrapiUrl(endpoint);
   const response = await fetch(url, {
     headers: {

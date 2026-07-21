@@ -67,14 +67,14 @@ export const vehicleService = {
   vehicles: {
     findAll: (params?: FindAllVehiclesParams): Promise<ApiResponse<PaginatedResponse<VehicleListItem>>> => {
       const query = buildVehiclesQueryString(params);
-      return apiGet<PaginatedResponse<VehicleListItem>>(`/v1/vehicles${query}`);
+      return apiGet<PaginatedResponse<VehicleListItem>>(`/v1/vehicles${query}`, undefined, 60);
     },
     findSimilar: (
       id: string,
       params?: FindSimilarVehiclesParams,
     ): Promise<ApiResponse<SimilarVehiclesPaginatedResponse>> => {
       const query = buildVehiclesQueryString(params);
-      return apiGet<SimilarVehiclesPaginatedResponse>(`/v1/vehicles/${id}/similar${query}`);
+      return apiGet<SimilarVehiclesPaginatedResponse>(`/v1/vehicles/${id}/similar${query}`, undefined, 60);
     },
     findById: (id: string): Promise<ApiResponse<Vehicle>> =>
       apiGet<Vehicle>(`/v1/vehicles/${id}`),

@@ -87,7 +87,8 @@ export function ProcessSection({ data }: ProcessSectionProps) {
               alt={activeTab.image_alt ?? activeTab.heading}
               width={420}
               height={280}
-              className="h-auto w-full max-w-md object-contain"
+              className="max-w-md object-contain"
+              style={{ width: "100%", height: "auto" }}
               sizes="(max-width: 1024px) 100vw, 420px"
             />
           ) : (

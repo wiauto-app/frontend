@@ -1,4 +1,3 @@
-import { ENVIRONMENT } from "@/constants";
 import { getStrapiData } from "@/lib/strapi-api";
 import {
   createDefaultFooterData,
@@ -6,6 +5,8 @@ import {
 } from "../mappers/map-footer-data";
 import type { FooterData } from "../types/footer.types";
 import type { StrapiFooterResponse } from "../types/strapi-footer.types";
+
+const FOOTER_REVALIDATE_SECONDS = 86400;
 
 const FOOTER_POPULATE_QUERY = `
 /footer
@@ -18,7 +19,7 @@ export const getFooterData = async (): Promise<FooterData> => {
   try {
     const response = await getStrapiData<StrapiFooterResponse>(
       FOOTER_POPULATE_QUERY,
-      { revalidate: ENVIRONMENT === "development" ? 0 : 86400 },
+      { revalidate: FOOTER_REVALIDATE_SECONDS },
     );
     return mapFooterData(response);
   } catch (error) {

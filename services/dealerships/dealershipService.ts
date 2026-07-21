@@ -70,6 +70,7 @@ export const dealershipService = {
     const query_string = objectToQueryString(merged);
     const response = await apiGet<PaginatedResult<DealershipListItem>>(
       `${V1_DEALERSHIPS}${query_string ? `?${query_string}` : ""}`,
+      undefined, 60
     );
     return response.data;
   },

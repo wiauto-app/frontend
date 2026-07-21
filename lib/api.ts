@@ -318,13 +318,14 @@ export const fetchOptionalAuth = async <T>(
 export const apiGet = async <T>(
   path: string,
   queryParams?: Record<string, unknown>,
+  revalidate?: number,
 ): Promise<ApiResponse<T>> => {
   let query = "";
   if (queryParams) {
     query = qs.stringify(queryParams, { skipNulls: true, addQueryPrefix: true });
   }
 
-  return fetchWithAuth<T>(`${path}${query}`, { method: "GET" });
+  return fetchWithAuth<T>(`${path}${query}`, { method: "GET", next: { revalidate } });
 };
 
 export const apiPost = async <T>(

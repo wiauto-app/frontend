@@ -6,7 +6,7 @@ const CATEGORIES_URL = `/v1/categories`;
 
 export const categoriesService = {
   findAll: async (): Promise<PaginatedResponse<Category>> => {
-    const response = await apiGet<PaginatedResponse<Category>>(CATEGORIES_URL);
+    const response = await apiGet<PaginatedResponse<Category>>(CATEGORIES_URL, undefined, 60);
     return response.data ?? [];
   },
 };
