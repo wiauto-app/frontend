@@ -35,35 +35,26 @@ export const ToolCard = ({ item }: ToolCardProps) => {
 
   return (
     <Card
-      className={cn(
-        "home-card-interactive group/card h-full overflow-hidden border-0 py-0 text-white shadow-[0_4px_20px_rgba(15,23,42,0.12)]",
-        "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        "hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(0,97,242,0.22)]",
-        "active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100",
-      )}
+      size="sm"
       style={{ backgroundColor }}
     >
-      <CardContent className="relative flex h-full min-h-[180px] flex-col gap-4 p-0 sm:min-h-[200px] sm:flex-row sm:items-stretch sm:gap-0">
-        <div
-          className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/10 via-transparent to-black/10"
-          aria-hidden
-        />
-
-        <div className="relative z-10 flex flex-1 flex-col justify-center gap-4 p-5 sm:p-6 lg:p-7">
-          <div className="space-y-2">
-            <h3 className="text-lg font-bold leading-tight sm:text-xl lg:text-2xl" style={{ color: item.colorTexto }}>
+      <CardContent >
+       
+        <div className="relative z-10 flex flex-1 flex-col justify-center gap-4 ">
+          <div className="space-y-1">
+            <h3 className="font-bold leading-tight text-xl lg:text-2xl" style={{ color: item.colorTexto }}>
               {item.titulo}
             </h3>
             <p className="max-w-md text-sm leading-relaxed  sm:text-base" style={{ color: item.colorTexto }}>
               {item.descripcion}
             </p>
           </div>
-          <Link href={item.boton.url} aria-label={ctaAriaLabel}>
+          <Link href={item.boton.url} aria-label={ctaAriaLabel} className="w-full md:w-fit">
             <Button
               variant="secondary"
               size="sm"
               className={cn(
-                "mt-auto w-fit border-white/20 bg-white text-slate-900",
+                "w-full md:w-fit border-white/20 bg-white text-slate-900",
                 "hover:bg-white/90 focus-visible:ring-white/40",
                 "group-hover/card:shadow-md",
               )}
@@ -78,7 +69,7 @@ export const ToolCard = ({ item }: ToolCardProps) => {
         </div>
 
         {imageUrl ? (
-          <div className="relative z-10 flex shrink-0 items-end justify-center px-4 pb-2 sm:w-[140px] sm:px-2 sm:pb-0 lg:w-[180px]">
+          <div className="hidden relative z-10 lg:flex shrink-0 items-end justify-center px-4 pb-2 sm:w-[140px] sm:px-2 sm:pb-0 lg:w-[180px]">
             <div className="relative size-28 sm:size-32 lg:size-40">
               <Image
                 src={imageUrl}

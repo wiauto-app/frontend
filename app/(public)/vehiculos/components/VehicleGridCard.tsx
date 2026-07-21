@@ -42,7 +42,7 @@ interface VehicleGridCardBodyProps {
 }
 
 const VEHICLE_GRID_IMAGE_SIZES = `
-  (max-width: 640px) 100vw,
+  (max-width: 640px) 350px,
   (max-width: 1024px) 50vw,
   (max-width: 1536px) 25vw,
   350px
@@ -221,7 +221,7 @@ export const VehicleGridCard = ({
 
         <Image
           src={imageUrl}
-          alt=""
+          alt={`Imagen del vehículo ${displayName}`}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
           quality={80}

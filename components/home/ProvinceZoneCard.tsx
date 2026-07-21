@@ -26,7 +26,7 @@ export const ProvinceZoneCard = ({ province }: ProvinceZoneCardProps) => {
   });
 
   const sizes = `
-    (max-width: 640px) 90vw,
+    (max-width: 640px) 300px,
     (max-width: 1024px) 40vw,
     (max-width: 1536px) 250px,
     250px
