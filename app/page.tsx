@@ -3,7 +3,12 @@ import {
   AppDownloadBanner,
   HeroSection,
   PopularCategoriesGrid,
+  PopularCategoriesGridSkeleton,
   RelatedNewsSection,
+  RelatedNewsSectionSkeleton,
+  TopDealershipsSkeleton,
+  VehiclesSuggestionsSkeleton,
+  ZonesSkeleton,
 } from "@/components/home";
 import { getHomeData } from "@/components/home/services/homeService";
 import { Suspense } from "react";
@@ -59,16 +64,16 @@ export default async function Home() {
     <>
       <div className="container-custom flex flex-col gap-12">
         <HeroSection data={home_data.hero} />
-     
+
         <StoreButtons className="grid lg:hidden grid-cols-2 gap-1 w-fit mx-auto" />
         <SearchForm />
 
         <VehicleExtraServices data={EXTRA_SERVICES_DATA} />
         <AppDownloadBanner data={home_data.app_advertisement} />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<PopularCategoriesGridSkeleton />}>
           <PopularCategoriesGrid />
         </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<VehiclesSuggestionsSkeleton />}>
           <VehiclesSuggestions />
         </Suspense>
         <VehicleExtraServices
@@ -76,11 +81,17 @@ export default async function Home() {
           className="bg-muted-foreground/10 rounded-xl lg:grid-cols-4"
         />
         <ToolsAccess data={home_data.herramientas} />
-        <Zones />
+        <Suspense fallback={<ZonesSkeleton />}>
+          <Zones />
+        </Suspense>
 
-        <RelatedNewsSection />
+        <Suspense fallback={<RelatedNewsSectionSkeleton />}>
+          <RelatedNewsSection />
+        </Suspense>
         <ToolsShortcuts />
-        <TopDealerships />
+        <Suspense fallback={<TopDealershipsSkeleton />}>
+          <TopDealerships />
+        </Suspense>
         <Suspense fallback={<VehicleDiscoverySectionSkeleton />}>
           <VehicleDiscoverySection
             title={home_data.low_emissions.title}

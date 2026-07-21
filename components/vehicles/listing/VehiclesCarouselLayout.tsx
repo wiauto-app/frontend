@@ -157,14 +157,14 @@ export const VehiclesCarouselLayout = ({
 
   return (
     <Carousel className="w-full" opts={{ loop: false, align: "start" }} setApi={setApi}>
-      <div className="relative px-10 sm:px-12 pb-2">
+      <div className="relative px-10 sm:px-12 ">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
         >
-          <CarouselContent className="-ml-3 sm:-ml-4">
+          <CarouselContent className="-ml-3 sm:-ml-4  pb-2">
             {vehicles.map((vehicle) => (
               <CarouselItem
                 key={vehicle.id}

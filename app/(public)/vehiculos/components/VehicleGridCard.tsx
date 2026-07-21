@@ -28,7 +28,7 @@ export const VehicleGridCard = ({
 
   if (interactive) {
     return (
-      <Card className="relative gap-2 pt-0 transition-shadow hover:shadow-md">
+      <Card className="relative gap-2 pt-0 border-none bg-muted-foreground/10 shadow-none ring-0">
         <Link
           href={vehicleUrl}
           prefetch={false}
@@ -50,10 +50,10 @@ export const VehicleGridCard = ({
             className="object-cover"
           />
         </CardHeader>
-        <CardContent className="pointer-events-none relative z-1 p-2">
-          <p className="text-base font-bold text-slate-900 truncate ">
+        <CardContent className="pointer-events-none relative z-1 px-2">
+          <h3 className="text-base font-bold text-slate-900 truncate ">
             {displayName}
-          </p>
+          </h3>
           <p className="text-sm text-muted-foreground">{vehicle.mileage} km</p>
           <p className="text-base font-bold">{formatPrice(vehicle.price)}</p>
           <p className="text-sm text-muted-foreground">
@@ -65,7 +65,7 @@ export const VehicleGridCard = ({
   }
 
   return (
-    <Card className="gap-2 pt-0">
+    <Card className="gap-2 pt-0 border-none bg-muted-foreground/10 shadow-none ring-0">
       <CardHeader className="relative aspect-square pt-0">
         <div className="absolute top-2 right-2 z-10">
           <VehicleFavoriteButton
@@ -81,12 +81,13 @@ export const VehicleGridCard = ({
           className="object-cover"
         />
       </CardHeader>
-      <CardContent className="p-2">
+      <CardContent className="px-2">
         <Link
           href={vehicleUrl}
-          className={cn("text-base font-bold text-slate-900 truncate ")}
         >
+          <h3 title={displayName} className="text-base font-bold text-slate-900 truncate max-w-full">
           {displayName}
+          </h3>
         </Link>
         <p className="text-sm text-muted-foreground">{vehicle.mileage} km</p>
         <p className="text-base font-bold">{formatPrice(vehicle.price)}</p>

@@ -1,12 +1,11 @@
 import { cn } from "@/lib/utils";
 
-type SectionContainerProps = {
-  children: React.ReactNode;
-  className?: string;
+interface SectionContainerProps extends Omit<
+  React.ComponentPropsWithoutRef<"section">,
+  "as"
+> {
   as?: "section" | "div";
-  id?: string;
-  style?: React.CSSProperties;
-};
+}
 
 export function SectionContainer({
   children,
@@ -14,9 +13,15 @@ export function SectionContainer({
   as: Component = "section",
   id,
   style,
+  ...props
 }: SectionContainerProps) {
   return (
-    <Component id={id} className={cn("w-full", className)} style={style}>
+    <Component
+      id={id}
+      className={cn("w-full", className)}
+      style={style}
+      {...props}
+    >
       {children}
     </Component>
   );
