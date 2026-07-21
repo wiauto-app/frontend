@@ -19,10 +19,10 @@ const ICON_MAP: Record<(typeof BENEFITS)[number]['icon'], LucideIcon> = {
 
 export function SegurosBenefitsSection() {
   return (
-    <section className='bg-white py-10 sm:py-6 '>
+    <section className='bg-white  sm:py-6 '>
       <div className='container-custom mx-auto bg-gray-50 rounded-2xl pt-8 px-4 sm:px-6'>
         <div className='mx-auto max-w-2xl text-center'>
-          <h2 className='text-3xl font-extrabold text-slate-900 sm:text-4xl'>
+          <h2 className='text-2xl font-extrabold text-slate-900 sm:text-4xl'>
             Más que un seguro, tu tranquilidad
           </h2>
           <p className='mt-3 text-slate-500'>
@@ -39,7 +39,7 @@ export function SegurosBenefitsSection() {
                 key={benefit.title}
                 className='rounded-2xl border-0 bg-transparent shadow-none ring-0'
               >
-                <CardContent className='flex flex-col items-center p-6 text-center'>
+                <CardContent className='flex flex-col items-center md:p-6 text-center'>
                   <div
                     className='flex size-12 items-center justify-center rounded-full'
                     style={{

@@ -6,11 +6,11 @@ import { BRAND_BLUE, CONFIDENZA_WEBSITE, SECURITY_POINTS } from '../constants';
 
 export function SegurosSecuritySection() {
   return (
-    <section className='py-10 sm:py-6 bg-gray-50'>
-      <div className='container-custom mx-auto'>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8 items-center'>
-          <div>
-            <h2 className='text-3xl font-extrabold text-slate-900 sm:text-4xl '>
+    <section className=' bg-gray-50 rounded-2xl'>
+      <div>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8 items-center'>
+          <div className='py-10 sm:py-6 px-6 md:px-10 md:col-span-1'>
+            <h2 className='text-3xl font-extrabold text-slate-900 sm:text-2xl '>
               Tu seguridad es nuestra prioridad
             </h2>
             <p className='mt-3 text-base leading-relaxed text-slate-600 '>
@@ -18,7 +18,7 @@ export function SegurosSecuritySection() {
               protegiendo a miles de conductores en todo el país.
             </p>
 
-            <div className='mt-8 space-y-3'>
+            <div className='mt-8 space-y-1'>
               {SECURITY_POINTS.map((point) => (
                 <div key={point} className='flex items-center gap-3'>
                   <CheckCircle2
@@ -45,20 +45,24 @@ export function SegurosSecuritySection() {
               </Link>
             </Button>
           </div>
-          <div className='relative'>
-            <div className='aspect-[4/3] rounded-2xl overflow-hidden'>
+          <div className='md:col-span-2 relative py-10 sm:py-3 h-full'>
+            <div className='aspect-4/2 rounded-2xl overflow-hidden h-full'>
               <Image
-                src='https://images.unsplash.com/photo-1549399549-7997468684?auto=format&fit=crop&q=80&w=800'
+                src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2000'
                 alt='Family with car'
                 fill
-                className='object-cover'
+                className='object-cover rounded-2xl'
               />
             </div>
-            <div className='absolute bottom-4 right-4 bg-slate-900 text-white p-4 rounded-xl max-w-xs'>
-              <p className='font-semibold'>
-                Nuestro compromiso es simple: estar contigo en cada kilómetro.
+            <div className='hidden md:flex absolute flex-col items-start gap-3 top-1/2 -translate-y-1/2 right-16 bg-slate-900 text-white p-6 rounded-xl w-64'>
+              <ExternalLink className='size-4' />
+              <p className='font-semibold text-left text-sm leading-snug'>
+                "Nuestro compromiso es simple: estar contigo en cada kilómetro."
               </p>
-              <p className='text-sm opacity-90 mt-2'>Seguros Confianza</p>
+              <div className='w-full h-1 rounded-full bg-white/20'>
+                <div className='w-1/5 h-full rounded-full bg-white' />
+              </div>
+              <p className='text-xs opacity-90 text-left'>Seguros Confianza</p>
             </div>
           </div>
         </div>
