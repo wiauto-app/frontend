@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { useParams, useSearchParams } from "next/navigation";
-
+import { ConditionSelector } from "@/components/selectors/conditionSelector";
 import { PriceSelector } from "@/components/selectors/priceSelector";
 import { ServicesSelector } from "@/components/selectors/servicesSelector";
 import { SellersSelector } from "@/components/selectors/sellersSelector";
@@ -19,14 +18,14 @@ import type {
   PublisherTypesValue,
 } from "@/components/selectors/types";
 import type { FiltersResponse } from "@/interfaces/filters.interface";
-import type { TransmissionType } from "@/interfaces/vehicle.interface";
+import type {
+  ConditionVehicle,
+  TransmissionType,
+} from "@/interfaces/vehicle.interface";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LocationSelector } from "@/components/selectors/locationSelector";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
-import {
-  FILTER_SECTION_IDS,
-  getExpandedFilterSectionIds,
-} from "../utils/getExpandedFilterSectionIds";
+import { FILTER_SECTION_IDS } from "../utils/getExpandedFilterSectionIds";
 import { Separator } from "@/components/ui/separator";
 import { FilterItem } from "./filterItem";
 import { VehicleTypeSelector } from "./vehicleTypeSelector";
@@ -38,9 +37,9 @@ import {
   HiOutlineHome,
   HiOutlineCurrencyEuro,
   HiOutlineShoppingCart,
+  HiOutlineTag,
   HiOutlineUser,
   HiOutlineMapPin,
-  
 } from "react-icons/hi2";
 import { FaGauge } from "react-icons/fa6";
 import { TbEngine } from "react-icons/tb";
@@ -50,10 +49,12 @@ import {
   LuLeaf,
   LuPaintRoller,
 } from "react-icons/lu";
-type VehiclesFiltersPanelProps = {
-  catalog: FiltersResponse;
-};
+import { cn } from "@/lib/utils";
+import { VEHICLE_LIST_CLASS } from "../constants";
 
+interface VehiclesFiltersPanelProps {
+  catalog: FiltersResponse;
+}
 
 export const VehiclesFiltersPanel = ({
   catalog,
@@ -134,15 +135,14 @@ export const VehiclesFiltersPanel = ({
     });
   };
 
-
   const iconSize = 24;
 
   return (
-    <Card className="rounded-none" size="sm">
+    <Card className={cn("rounded-none", VEHICLE_LIST_CLASS)} size="sm">
       <CardHeader>
         <CardTitle>Filtros</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-5  ">
+      <CardContent className={cn("flex flex-col gap-5")}>
         <VehicleTypeSelector
           vehicleTypes={catalog.vehicleTypes}
           value={type_slug}
@@ -156,6 +156,23 @@ export const VehiclesFiltersPanel = ({
           }}
         />
 
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.CONDITION}
+          title="Estado"
+          Icon={<HiOutlineTag size={iconSize} />}
+        >
+          <ConditionSelector
+            value={filters.condition}
+            onChange={(next?: ConditionVehicle) =>
+              commitFilters({
+                ...filters,
+                condition: next,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
+        <Separator />
         <FilterItem
           sectionId={FILTER_SECTION_IDS.MAKE_MODEL}
           title="Marca y Modelo"
@@ -292,24 +309,6 @@ export const VehiclesFiltersPanel = ({
         </FilterItem>
         <Separator />
         <FilterItem
-          sectionId={FILTER_SECTION_IDS.DGT}
-          title="Etiquetas DGT"
-          Icon={<LuLeaf size={iconSize} />}
-        >
-          <DgtLabelSelector
-            dgtLabels={catalog.dgtLabels}
-            value={filters.dgt_label_ids ?? []}
-            onChange={(next) =>
-              commitFilters({
-                ...filters,
-                dgt_label_ids: next.length > 0 ? next : undefined,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
           sectionId={FILTER_SECTION_IDS.ELECTRIC}
           title="Eléctricos"
           Icon={<LuBatteryCharging size={iconSize} />}
@@ -327,6 +326,27 @@ export const VehiclesFiltersPanel = ({
             onBatteryChange={handleBatteryChange}
           />
         </FilterItem>
+        <Separator />
+
+        <FilterItem
+          sectionId={FILTER_SECTION_IDS.DGT}
+          title="Etiquetas DGT"
+          Icon={<LuLeaf size={iconSize} />}
+        >
+          <DgtLabelSelector
+            dgtLabels={catalog.dgtLabels}
+            value={filters.dgt_label_ids ?? []}
+            onChange={(next) =>
+              commitFilters({
+                ...filters,
+                dgt_label_ids: next.length > 0 ? next : undefined,
+                page: 1,
+              })
+            }
+          />
+        </FilterItem>
+        <Separator />
+
         <Separator />
         <FilterItem
           sectionId={FILTER_SECTION_IDS.FEATURES}
@@ -349,7 +369,7 @@ export const VehiclesFiltersPanel = ({
         <FilterItem
           sectionId={FILTER_SECTION_IDS.COLOR}
           title="Color"
-          Icon={<LuPaintRoller size={iconSize}  />}
+          Icon={<LuPaintRoller size={iconSize} />}
         >
           <ColorSelector
             colors={catalog.colors}

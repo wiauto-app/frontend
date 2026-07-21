@@ -17,7 +17,7 @@ export const VehicleTypeSelector = ({
   onChange,
 }: VehicleTypeSelectorProps) => {
   return (
-    <div className="grid grid-cols-3 gap-1 max-h-68 overflow-y-auto">
+    <div className="grid grid-cols-3 gap-1">
       {vehicleTypes.map((vehicleType) => {
         const active = value === vehicleType.slug;
 

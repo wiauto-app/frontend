@@ -5,10 +5,11 @@ import {
   type FuelType,
   type Traction,
 } from "@/interfaces/vehicle.interface";
+import { MultiButtonFilter } from "./multiButtonFilter";
 import { MultiCheckboxFilter } from "./multiCheckboxFilter";
 import type { MultiSlugValue, TransmissionTypesValue } from "./types";
 
-type EngineSelectorProps = {
+interface EngineSelectorProps {
   fuelTypes: FuelType[];
   tractions: Traction[];
   fuelTypeSlugs: MultiSlugValue;
@@ -17,7 +18,7 @@ type EngineSelectorProps = {
   onTractionSlugsChange: (value: MultiSlugValue) => void;
   transmissionTypes: TransmissionTypesValue;
   onTransmissionTypesChange: (value: TransmissionTypesValue) => void;
-};
+}
 
 const TRANSMISSION_OPTIONS = [
   { key: TRANSMISSION_TYPE.MANUAL, label: "Manual" },
@@ -36,7 +37,7 @@ export const EngineSelector = ({
 }: EngineSelectorProps) => {
   return (
     <div className="flex flex-col gap-8">
-      <MultiCheckboxFilter
+      <MultiButtonFilter
         title="Transmisión"
         items={TRANSMISSION_OPTIONS.map((option) => ({
           key: option.key,

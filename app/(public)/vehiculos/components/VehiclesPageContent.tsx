@@ -64,7 +64,7 @@ function VehiclesListingView({ vehicles, total }: VehiclesListingViewProps) {
   );
 }
 
-type VehiclesPageContentProps = {
+export interface VehiclesPageContentProps {
   vehicles: VehicleListItem[];
   total: number;
 };

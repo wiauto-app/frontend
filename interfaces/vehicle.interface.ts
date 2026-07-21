@@ -289,7 +289,7 @@ export interface FindAllVehiclesParams {
   query?: string;
   order_by?: string;
   order_direction?: "ASC" | "DESC";
-  condition?: string;
+  condition?: ConditionVehicle;
   type_slug?: string;
   makes_slugs?: string[];
   models_slugs?: string[];

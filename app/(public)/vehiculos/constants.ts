@@ -67,3 +67,6 @@ export const NEWSLETTER_FALLBACK = {
   description:
     "Mantente al día con las mejores oportunidades y novedades. ¡Suscríbete a nuestro newsletter!",
 };
+
+
+export const VEHICLE_LIST_CLASS = " max-h-[calc(100dvh-200px)] overflow-y-auto ";

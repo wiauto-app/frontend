@@ -28,7 +28,6 @@ export default async function RootLayout({
     <html
       lang="en"
       className={cn(
-        "h-full",
         "antialiased",
         geistSans.variable,
         geistMono.variable,
@@ -36,7 +35,7 @@ export default async function RootLayout({
         inter.variable,
       )}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex flex-col">
         <Providers>
           <Navbar />
           <main className="flex flex-1 flex-col">{children}</main>

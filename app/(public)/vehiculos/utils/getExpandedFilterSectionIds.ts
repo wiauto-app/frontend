@@ -2,6 +2,7 @@ import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 
 export const FILTER_SECTION_IDS = {
   VEHICLE_TYPE: "vehicle-type",
+  CONDITION: "condition",
   MAKE_MODEL: "make-model",
   PRICE: "price",
   LOCATION: "location",
@@ -32,6 +33,10 @@ export const getExpandedFilterSectionIds = (
 
   if (filters.type_slug?.trim()) {
     open.push(FILTER_SECTION_IDS.VEHICLE_TYPE);
+  }
+
+  if (filters.condition) {
+    open.push(FILTER_SECTION_IDS.CONDITION);
   }
 
   if (

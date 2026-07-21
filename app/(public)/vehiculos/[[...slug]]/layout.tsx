@@ -3,7 +3,7 @@ import { HeroSearchFiltersProvider } from "@/components/home/HeroSearchFiltersCo
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <HeroSearchFiltersProvider>
-      <section>{children}</section>
+      {children}
     </HeroSearchFiltersProvider>
   );
 }

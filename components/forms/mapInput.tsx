@@ -3,18 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AdvancedMarker,
-  APIProvider,
   Map,
   MapMouseEvent,
   useMapsLibrary,
 } from "@vis.gl/react-google-maps";
 import { LocateFixed, MapPin, Search } from "lucide-react";
-import { GOOGLE_MAPS_API_KEY } from "@/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { CustomMap } from "../customMap";
+import { DEFAULT_CENTER } from "@/constants/map.constants";
 
-const DEFAULT_CENTER = { lat: 40.4168, lng: -3.7038 };
+
 
 export type MapInputValue = {
   lat: number;
@@ -114,7 +114,7 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
           ariaInvalid && "border-destructive",
         )}
       >
-        <Map
+        <CustomMap
           mapId="vehicle-publish-map"
           gestureHandling="greedy"
           defaultCenter={hasCoords ? value : DEFAULT_CENTER}
@@ -127,7 +127,7 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
               <MapPin className="size-8 text-primary fill-primary/20" aria-hidden />
             </AdvancedMarker>
           ) : null}
-        </Map>
+        </CustomMap>
       </div>
 
       <p className="text-xs text-muted-foreground">
@@ -138,17 +138,11 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
 };
 
 export const MapInput = (props: MapInputProps) => {
-  if (!GOOGLE_MAPS_API_KEY) {
-    return (
-      <p className="text-sm text-destructive">
-        Falta configurar NEXT_PUBLIC_GOOGLE_MAPS_API_KEY para seleccionar ubicación.
-      </p>
-    );
-  }
+
 
   return (
-    <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
+
       <MapInputInner {...props} />
-    </APIProvider>
+
   );
 };

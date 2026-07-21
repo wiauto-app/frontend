@@ -126,6 +126,11 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.container-custom-full {
+  width: 100%;
+  margin-inline: auto;
+}
+
 .container-custom {
   width: 100%;
   margin-inline: auto;

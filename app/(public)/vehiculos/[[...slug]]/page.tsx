@@ -13,11 +13,15 @@ import {
   parseVehicleListingUrl,
 } from "@/lib/vehicles/listing-url";
 import { activeFiltersService } from "../services/activeFiltersService";
-import { LoadingComponent } from "@/components/ui/loadingComponent";
 import { FRONTEND_URL } from "@/constants";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FiltersTitle } from "./filtersTitle";
-import { FiltersLoading } from "./filtersLoading";
+import { FiltersTitle } from "../components/filtersTitle";
+import { FiltersLoading } from "../components/filtersLoading";
+import { MapButton } from "../components/mapButton";
+import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
+import { cn } from "@/lib/utils";
+import { VehiclesMap } from "../components/vehiclesMap";
+import { VEHICLE_LIST_CLASS } from "../constants";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
@@ -73,6 +77,7 @@ export default async function VehiclesListingPage(props: {
     activeFiltersService.getActiveFilters(filters),
   ]);
 
+  const isMapVisible = search_params[SHOW_MAP_KEY] === "true";
   return (
     <VehiclesListingShell>
       <div>
@@ -91,19 +96,36 @@ export default async function VehiclesListingPage(props: {
             </Suspense>
           }
         />
-        <div className="container-custom mx-auto flex min-h-screen gap-5">
-          <div className="hidden lg:block w-85 shrink-0">
+        <div
+          className={cn(
+            "mx-auto flex  gap-5",
+            !isMapVisible ? "container-custom" : "container-custom-full",
+          )}
+        >
+          <div className="hidden lg:block w-85">
             <Suspense fallback={<FiltersLoading />}>
               <VehiclesFilters />
             </Suspense>
           </div>
-          <div className="min-w-0 flex-1  py-2 flex flex-col gap-2">
-            <FiltersTitle title={activeFilters.title} />
-            <ActiveFilters activeFilters={activeFilters} />
-            <VehiclesPageContent
-              vehicles={listing.vehicles}
-              total={listing.total}
-            />
+          <div className="min-w-0 flex-1 py-2 ">
+            <div
+              className={cn(
+                isMapVisible && "grid grid-cols-1 lg:grid-cols-2 gap-5",
+              )}
+            >
+              <div className={cn("flex flex-col gap-2", VEHICLE_LIST_CLASS)}>
+                <div className="flex  items-center justify-between">
+                  <FiltersTitle title={activeFilters.title} />
+                  <MapButton />
+                </div>
+                <ActiveFilters activeFilters={activeFilters} />
+                <VehiclesPageContent
+                  vehicles={listing.vehicles}
+                  total={listing.total}
+                />
+              </div>
+              <VehiclesMap vehicles={listing.vehicles} total={listing.total} isMapVisible={isMapVisible} />
+            </div>
           </div>
         </div>
       </div>

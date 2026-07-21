@@ -31,6 +31,12 @@ describe("getExpandedFilterSectionIds", () => {
     ]);
   });
 
+  it("abre estado con condition", () => {
+    expect(getExpandedFilterSectionIds({ condition: "new" })).toEqual([
+      FILTER_SECTION_IDS.CONDITION,
+    ]);
+  });
+
   it("abre ubicación con coordenadas y radio", () => {
     expect(
       getExpandedFilterSectionIds({
