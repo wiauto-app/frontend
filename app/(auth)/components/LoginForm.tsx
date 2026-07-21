@@ -19,7 +19,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-4">
+    <div className="flex  w-full items-center justify-center p-4">
       <div className="flex w-full max-w-5xl overflow-hidden rounded-2xl shadow-xl">
         <div className="relative hidden flex-col items-center justify-center overflow-hidden bg-blue-700 lg:flex lg:w-[37.4%]">
           <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-blue-800" />

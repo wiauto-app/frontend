@@ -25,18 +25,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={cn(
-        "antialiased",
-        geistSans.variable,
-        geistMono.variable,
-        "font-sans",
-        inter.variable,
-      )}
-    >
-      <body className="flex flex-col relative">
-        <Providers>
+    <Providers>
+      <html
+        lang="en"
+        className={cn(
+          "antialiased",
+          geistSans.variable,
+          geistMono.variable,
+          "font-sans",
+          inter.variable,
+        )}
+      >
+        <body className="flex flex-col relative">
           <Navbar />
           <main className="flex flex-1 flex-col">{children}</main>
           <div className="mt-20">
@@ -44,9 +44,9 @@ export default async function RootLayout({
             <Footer />
           </div>
           <AssistantDialog />
-        </Providers>
-        <MobileNavbar />
-      </body>
-    </html>
+          <MobileNavbar />
+        </body>
+      </html>
+    </Providers>
   );
 }

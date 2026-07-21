@@ -8,12 +8,12 @@ const queryClient = new QueryClient();
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AuthReturnRedirect />
+    <AuthProvider>
+      <AuthReturnRedirect />
+      <QueryClientProvider client={queryClient}>
         {children}
-      </AuthProvider>
-      <Toaster richColors position="top-right" />
-    </QueryClientProvider>
-  )
+        <Toaster richColors position="top-right" />
+      </QueryClientProvider>
+    </AuthProvider>
+  );
 }

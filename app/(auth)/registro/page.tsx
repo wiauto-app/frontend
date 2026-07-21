@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-[#F4F7FB]">
+    <div className="min-h-screen ">
       <div className="container-custom mx-auto flex justify-center">
         <Suspense
           fallback={
