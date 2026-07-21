@@ -1,3 +1,5 @@
+import { Label } from "./label";
+
 export const CheckBoxContainer = ({
   children,
   title,
@@ -7,7 +9,7 @@ export const CheckBoxContainer = ({
 }) => {
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-medium text-slate-600">{title}</h3>
+      <Label className="text-sm font-medium text-slate-600">{title}</Label>
       {children}
     </div>
   );

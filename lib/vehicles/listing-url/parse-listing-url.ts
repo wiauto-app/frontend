@@ -16,11 +16,7 @@ import {
   orderDirectionFromUrlSegment,
 } from "./order-direction";
 
-const splitCommaList = (value: string): string[] =>
-  value
-    .split(",")
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
+
 
 const to_scalar_query_string = (value: unknown): string => {
   if (value === undefined || value === null) {
@@ -196,7 +192,6 @@ export const parseVehicleListingUrl = (
 ): FindAllVehiclesParams => {
   const path_filters = parsePathSegments(slug);
   const query_filters = parseQueryParams(search_params);
-
   const makes_slugs = mergeCatalogSlugLists(
     path_filters.makes_slugs,
     query_filters.makes_slugs,
@@ -227,6 +222,7 @@ export const parseVehicleListingUrl = (
     provinces_slugs,
     comunities_slugs,
     municipalities_slugs,
+    publisher_types: query_filters.publisher_types,
     page: query_filters.page ?? DEFAULT_LISTING_PARAMS.page,
     limit: query_filters.limit ?? DEFAULT_LISTING_PARAMS.limit,
     order_by: query_filters.order_by ?? DEFAULT_LISTING_PARAMS.order_by,

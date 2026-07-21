@@ -43,14 +43,17 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
           <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide" style={{ color: BRAND_BLUE }}>
+                <p
+                  className="text-xs font-bold uppercase tracking-wide"
+                  style={{ color: BRAND_BLUE }}
+                >
                   {getVehicleBadge(vehicle)}
                 </p>
                 <Link
                   href={vehicleHref}
                   className="mt-1 block text-xl font-bold text-slate-900 hover:text-[#0061F2]"
                 >
-                  {getVehicleModelName(vehicle)}
+                  <h3> {getVehicleModelName(vehicle)}</h3>
                 </Link>
               </div>
 
@@ -75,12 +78,18 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
             <div className="flex flex-wrap items-end gap-x-6 gap-y-2">
               <div>
                 <p className="text-xs font-medium text-red-500">Precio justo</p>
-                <p className="text-2xl font-bold text-slate-900">{formatPrice(vehicle.price)}</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {formatPrice(vehicle.price)}
+                </p>
               </div>
               {financedPrice && (
                 <div>
-                  <p className="text-xs font-medium text-slate-500">Precio financiado</p>
-                  <p className="text-lg font-bold text-slate-900">{financedPrice}</p>
+                  <p className="text-xs font-medium text-slate-500">
+                    Precio financiado
+                  </p>
+                  <p className="text-lg font-bold text-slate-900">
+                    {financedPrice}
+                  </p>
                 </div>
               )}
             </div>
@@ -96,7 +105,10 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
                 <li key={tag}>
                   <span
                     className="inline-block rounded-full px-3 py-1 text-xs font-semibold"
-                    style={{ backgroundColor: BRAND_BLUE_LIGHT, color: BRAND_BLUE }}
+                    style={{
+                      backgroundColor: BRAND_BLUE_LIGHT,
+                      color: BRAND_BLUE,
+                    }}
                   >
                     {tag}
                   </span>

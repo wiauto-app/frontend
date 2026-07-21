@@ -59,4 +59,5 @@ export interface ActiveFiltersResolved {
 export interface ActiveFiltersResponse {
   resolved: ActiveFiltersResolved;
   applied: ActiveFiltersApplied;
+  title: string;
 }

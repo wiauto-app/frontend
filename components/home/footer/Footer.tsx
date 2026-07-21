@@ -74,7 +74,7 @@ const renderSocialIcon = (label: string) => {
 
 const FooterSectionColumn = ({ section }: FooterSectionColumnProps) => (
   <div className="text-center lg:text-left">
-    <h3 className="text-base font-bold">{section.title}</h3>
+    <p className="text-base font-bold">{section.title}</p>
     {section.links.length > 0 ? (
       <ul className="mt-4 space-y-2.5 sm:mt-5">
         {section.links.map((link) => (

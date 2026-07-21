@@ -8,12 +8,12 @@ import type {
 } from "@/interfaces/vehicle.interface";
 import { buildVehiclesQueryString } from "@/lib/vehicles/build-vehicles-query-params";
 
-export type VehiclesListingServerResult = {
+export interface VehiclesListingServerResult {
   vehicles: VehicleListItem[];
   total: number;
   page: number;
   limit: number;
-};
+}
 
 export const findAllVehicles = async (
   params: FindAllVehiclesParams,

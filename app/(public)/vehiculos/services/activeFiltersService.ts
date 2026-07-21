@@ -1,5 +1,3 @@
-import { cookies } from "next/headers";
-
 import { API_URL } from "@/constants";
 import type { ActiveFiltersResponse } from "@/interfaces/active-filters.interface";
 import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
@@ -24,6 +22,7 @@ const empty_active_filters: ActiveFiltersResponse = {
     cuotas: [],
   },
   applied: {},
+  title: "",
 };
 
 export const activeFiltersService = {
@@ -34,12 +33,10 @@ export const activeFiltersService = {
       return empty_active_filters;
     }
 
-    const token = (await cookies()).get("access_token")?.value;
     const query = buildVehiclesQueryString(params);
 
     try {
       const response = await fetch(`${API_URL}/v1/filters/active${query}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
         cache: "no-store",
       });
 

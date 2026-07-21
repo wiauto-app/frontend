@@ -137,7 +137,6 @@ export const HeroBackgroundCarousel = ({
               alt={isActive ? slide.image_alt : ""}
               fill
               sizes="100vw"
-              priority={index === 0}
               className="object-cover"
               aria-live={isActive ? "polite" : undefined}
             />

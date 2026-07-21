@@ -21,9 +21,9 @@ export async function NewsletterSection() {
           >
             {data.subtitle}
           </p>
-          <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">
+          <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">
             {data.title}
-          </h2>
+          </p>
           <p className="mx-auto max-w-lg text-xs leading-relaxed text-slate-500 ">
             {data.description}
           </p>

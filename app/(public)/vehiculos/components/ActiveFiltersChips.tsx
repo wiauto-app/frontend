@@ -10,6 +10,7 @@ import {
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { useActiveFiltersStore } from "../stores/activeFiltersStore";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const ActiveFiltersChips = () => {
   const { activeFilters } = useActiveFiltersStore();
@@ -48,22 +49,22 @@ export const ActiveFiltersChips = () => {
       aria-label="Filtros activos"
     >
       {chips.map((chip) => (
-        <span
+        <Badge
           key={chip.key}
-          className="inline-flex items-center gap-1.5 rounded-full border border-[#C7D9F5] bg-[#EBF2FF] px-3 py-1.5 text-xs font-semibold text-[#0061F2]"
+          variant="outline"
+          className="border-primary bg-primary/10 text-primary"
+          // className="inline-flex items-center gap-1.5 rounded-full border border-[#C7D9F5] bg-[#EBF2FF] px-3 py-1.5 text-xs font-semibold text-[#0061F2]"
         >
           {chip.label}
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="icon"
             onClick={chip.onRemove}
             className="rounded-full p-0.5 h-auto w-auto hover:bg-[#0061F2]/10"
             aria-label={`Quitar filtro ${chip.label}`}
           >
             <X className="size-3.5" aria-hidden />
-          </Button>
-        </span>
+          </button>
+        </Badge>
       ))}
       {chips.length > 1 && (
         <Button

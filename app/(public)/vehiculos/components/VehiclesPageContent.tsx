@@ -17,22 +17,14 @@ type VehiclesListingViewProps = {
 function VehiclesListingView({ vehicles, total }: VehiclesListingViewProps) {
   const { filters, resetFilters, goToPage } = useVehiclesListingFilters();
 
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
-
   const totalPages = Math.ceil(total / (filters.limit || 12));
   const currentPage = filters.page || 1;
 
   return (
     <div>
-      <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6">
+      <div className="mx-auto max-w-[1400px]">
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="min-w-0 flex-1">
-            <div className="mb-4">
-              <p className="text-sm font-medium text-slate-600">
-                {total} resultados
-              </p>
-            </div>
-
             {vehicles.length === 0 ? (
               <div className="rounded-2xl border border-slate-100 bg-white p-12 text-center">
                 <Car className="mx-auto size-16 text-slate-300" />
@@ -52,20 +44,10 @@ function VehiclesListingView({ vehicles, total }: VehiclesListingViewProps) {
               </div>
             ) : (
               <>
-                <div
-                  className={
-                    viewMode === "grid"
-                      ? "grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-                      : "flex flex-col gap-4"
-                  }
-                >
-                  {vehicles.map((vehicle) =>
-                    viewMode === "grid" ? (
-                      <VehicleGridCard key={vehicle.id} vehicle={vehicle} />
-                    ) : (
-                      <VehicleListCard key={vehicle.id} vehicle={vehicle} />
-                    ),
-                  )}
+                <div className={"flex flex-col gap-4"}>
+                  {vehicles.map((vehicle) => (
+                    <VehicleListCard key={vehicle.id} vehicle={vehicle} />
+                  ))}
                 </div>
 
                 <VehiclesPagination
