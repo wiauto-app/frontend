@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Providers from "./providers";
 import { Footer, NewsletterSection } from "@/components/home";
 import { AssistantDialog } from "@/components/assistant/assistantDialog";
+import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -17,7 +18,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 
 export default async function RootLayout({
   children,
@@ -35,7 +35,7 @@ export default async function RootLayout({
         inter.variable,
       )}
     >
-      <body className="flex flex-col">
+      <body className="flex flex-col relative">
         <Providers>
           <Navbar />
           <main className="flex flex-1 flex-col">{children}</main>
@@ -45,6 +45,7 @@ export default async function RootLayout({
           </div>
           <AssistantDialog />
         </Providers>
+        <MobileNavbar />
       </body>
     </html>
   );
