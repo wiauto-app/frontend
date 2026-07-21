@@ -57,7 +57,7 @@ export function SegurosSecuritySection() {
             <div className='hidden md:flex absolute flex-col items-start gap-3 top-1/2 -translate-y-1/2 right-16 bg-slate-900 text-white p-6 rounded-xl w-64'>
               <ExternalLink className='size-4' />
               <p className='font-semibold text-left text-sm leading-snug'>
-                "Nuestro compromiso es simple: estar contigo en cada kilómetro."
+                &quot;Nuestro compromiso es simple: estar contigo en cada kilómetro.&quot;
               </p>
               <div className='w-full h-1 rounded-full bg-white/20'>
                 <div className='w-1/5 h-full rounded-full bg-white' />

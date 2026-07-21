@@ -84,7 +84,6 @@ export function SegurosHeroSection() {
             </div>
 
             <Button
-              asChild
               className='mt-6 px-8 py-4 rounded-md text-slate-900 inline-flex items-center gap-1.5 text-sm font-semibold bg-white hover:bg-blue-50'
             >
               <Link href={CONFIDENZA_WEBSITE} className='flex flex-row gap-1.5'>

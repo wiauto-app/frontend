@@ -20,7 +20,6 @@ export function SegurosCtaSection() {
               Hazlo fácil, hazlo online, hazlo seguro.
             </p>
             <Button
-              asChild
               size='lg'
               className='mt-6 sm:mt-8 rounded-xl bg-white px-6 md:px-8 py-3 sm:py-4 font-bold hover:bg-blue-50'
               style={{ color: BRAND_BLUE }}
