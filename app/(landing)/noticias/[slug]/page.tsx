@@ -160,7 +160,6 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
               src={primary_banner.url}
               alt={primary_banner.alternative_text ?? news.title}
               fill
-              unoptimized
               className="object-cover"
               priority
               sizes="(max-width: 768px) 100vw, 896px"
@@ -170,7 +169,6 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
               src={MOCK_BANNER}
               alt={news.title}
               fill
-              unoptimized
               className="object-cover"
               priority
               sizes="(max-width: 768px) 100vw, 896px"
@@ -218,7 +216,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 relative">
               {news.publisher?.image_url ? (
-                <Image src={news.publisher.image_url} alt={news.publisher.name} fill className="object-cover" unoptimized />
+                <Image src={news.publisher.image_url} alt={news.publisher.name} fill className="object-cover" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-slate-400 text-xs font-bold bg-slate-200">
                   {(news.publisher?.name ?? "A").charAt(0).toUpperCase()}
