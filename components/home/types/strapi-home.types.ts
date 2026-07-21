@@ -1,3 +1,5 @@
+import type { StrapiFeaturesSection } from "@/interfaces/strapi-components.interface";
+
 import { StrapiLink } from "./home-page.types";
 
 export type StrapiRichTextBlock = {
@@ -68,15 +70,8 @@ export type StrapiHomepageResponse = {
       appleLabel?: StrapiRichTextBlock[] | null;
       appMockup?: StrapiMedia | null;
     } | null;
-    homeFeatures?: {
-      title?: string | null;
-      description?: string | null;
-      feature?: {
-        id: number;
-        label: string;
-        icon?: StrapiMedia | null;
-      }[] | null;
-    } | null;
+    /** Componente Strapi `home.features-section` */
+    homeFeatures?: StrapiFeaturesSection | null;
     homeNewsletter?: {
       subtitle?: string | null;
       title?: string | null;
