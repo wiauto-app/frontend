@@ -22,7 +22,7 @@ const FEATURE_ICONS = [Shield, Clock, MapPinned, Globe];
 
 export function SegurosHeroSection() {
   return (
-    <section className='relative overflow-hidden rounded-2xl px-10'>
+    <section className='relative overflow-hidden rounded-2xl px-5 md:px-10'>
       <div className='absolute inset-0'>
         <Image
           src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2000'
@@ -44,7 +44,7 @@ export function SegurosHeroSection() {
         <div className='absolute -left-10 bottom-0 size-64 rounded-full bg-white blur-3xl' />
       </div>
 
-      <div className='container-custom relative z-10 mx-auto py-6 sm:py-8 px-6 sm:px-12 lg:px-16'>
+      <div className='container-custom relative z-10 mx-auto py-6 sm:py-8 px-3 sm:px-12 lg:px-16'>
         <div className='grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_340px] lg:gap-12'>
           <div className='max-w-2xl text-white'>
             <span className='inline-flex rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-100'>

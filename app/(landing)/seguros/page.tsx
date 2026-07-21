@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function SegurosPage() {
   return (
-    <div className='min-h-screen  max-w-8xl mx-auto  flex flex-col gap-6'>
+    <div className='min-h-screen  max-w-6xl mx-auto  flex flex-col gap-6  p-8 md:p-4'>
       <SegurosHeroSection />
       <SegurosBenefitsSection />
       <SegurosSecuritySection />

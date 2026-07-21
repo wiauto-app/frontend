@@ -4,10 +4,10 @@ import { BRAND_BLUE, COVERAGE_ITEMS } from '../constants';
 
 export function SegurosCoverageSection() {
   return (
-    <section className='bg-white py-10 sm:py-6'>
+    <section className='bg-white  sm:py-6'>
       <div className='container-custom mx-auto bg-gray-50 rounded-2xl pt-8 px-4 sm:px-6'>
         <div className='mx-auto max-w-2xl text-center'>
-          <h2 className='text-3xl font-extrabold text-slate-900 sm:text-4xl'>
+          <h2 className='text-2xl font-extrabold text-slate-900 sm:text-4xl'>
             ¿Qué cubre tu seguro?
           </h2>
           <p className='mt-3 text-slate-500'>

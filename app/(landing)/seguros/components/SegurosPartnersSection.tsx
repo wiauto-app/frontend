@@ -2,10 +2,10 @@ import { PARTNER_LOGOS } from '../constants';
 
 export function SegurosPartnersSection() {
   return (
-    <section className='bg-white py-10 sm:py-6'>
+    <section className='bg-white py-5 sm:py-6'>
       <div className='container-custom mx-auto'>
         <div className='text-center'>
-          <h2 className='text-3xl font-extrabold text-slate-900'>
+          <h2 className='text-xl font-extrabold text-slate-900'>
             Aliados para brindarte la mejor experiencia
           </h2>
           <p className='mt-3 text-slate-500'>
@@ -13,7 +13,7 @@ export function SegurosPartnersSection() {
           </p>
         </div>
 
-        <div className='mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6'>
+        <div className='mx-auto mt-8 md:mt-14 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6'>
           {PARTNER_LOGOS.map((name) => (
             <div
               key={name}
