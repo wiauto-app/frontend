@@ -13,7 +13,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
-  BRAND_BLUE,
   isNavLinkActive,
   NAV_LINKS,
 } from "../constants/navLinks.constants";
@@ -36,18 +35,22 @@ export const NavbarMobileMenu = () => {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
           render={
-            <Button variant="outline" size="icon">
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Abrir menú de navegación"
+            >
               <Menu className="size-5" aria-hidden />
             </Button>
           }
-        ></SheetTrigger>
+        />
 
         <SheetContent
           side="right"
-          className="flex w-full flex-col  sm:max-w-sm"
+          className="flex w-full flex-col sm:max-w-sm"
           showCloseButton={false}
         >
-          <SheetHeader className="flex flex-row items-center justify-between" >
+          <SheetHeader className="flex flex-row items-center justify-between">
             <div>
               <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
               <Link
@@ -59,7 +62,12 @@ export const NavbarMobileMenu = () => {
                 <BrandLogo className="h-10" />
               </Link>
             </div>
-            <Button variant="outline" size="icon" onClick={() => setOpen(false)}>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setOpen(false)}
+              aria-label="Cerrar menú de navegación"
+            >
               <X className="size-5" aria-hidden />
             </Button>
           </SheetHeader>
