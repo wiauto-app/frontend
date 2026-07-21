@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Camera } from "lucide-react";
+import { ArrowRight, Camera } from "lucide-react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
@@ -36,8 +37,16 @@ interface VehicleGridCardBadgesProps {
 interface VehicleGridCardBodyProps {
   vehicle: VehicleListItem;
   displayName: string;
+  vehicleUrl: string;
   interactive: boolean;
 }
+
+const VEHICLE_GRID_IMAGE_SIZES = `
+  (max-width: 640px) 100vw,
+  (max-width: 1024px) 50vw,
+  (max-width: 1536px) 25vw,
+  350px
+`;
 
 const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
   const conditionLabel = getConditionLabel(vehicle.condition);
@@ -80,6 +89,7 @@ const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
 const VehicleGridCardBody = ({
   vehicle,
   displayName,
+  vehicleUrl,
   interactive,
 }: VehicleGridCardBodyProps) => {
   const makeName = getVehicleMakeName(vehicle);
@@ -89,12 +99,12 @@ const VehicleGridCardBody = ({
   const financedLabel = vehicle.cuota?.value
     ? formatMonthlyPrice(vehicle.cuota.value)
     : null;
-
+  const detailLabel = `Ver detalle de ${displayName}`;
 
   return (
     <CardContent
       className={cn(
-        "relative z-1 flex flex-col gap-2 px-2.5 pb-3",
+        "relative z-1 flex flex-col gap-2 px-2.5 pb-0",
         interactive && "pointer-events-none",
       )}
     >
@@ -104,27 +114,12 @@ const VehicleGridCardBody = ({
         </p>
       ) : null}
 
-      {interactive ? (
-        <h3
-          title={displayName}
-          className="truncate text-base leading-snug font-bold text-slate-900"
-        >
-          {modelLine}
-        </h3>
-      ) : (
-        <Link
-          href={getVehicleUrl(vehicle.id)}
-          className="block outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1"
-          aria-label={`Ver detalle de ${displayName}`}
-        >
-          <h3
-            title={displayName}
-            className="truncate text-base leading-snug font-bold text-slate-900 transition-colors hover:text-primary"
-          >
-            {modelLine}
-          </h3>
-        </Link>
-      )}
+      <h3
+        title={displayName}
+        className="truncate text-base leading-snug font-bold text-slate-900"
+      >
+        {modelLine}
+      </h3>
 
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <p className="text-lg font-bold tracking-tight text-slate-900">
@@ -176,6 +171,21 @@ const VehicleGridCardBody = ({
           )}
         </div>
       )}
+
+      <Link
+        href={vehicleUrl}
+        prefetch={false}
+        aria-label={detailLabel}
+        title={detailLabel}
+        tabIndex={0}
+        className={cn(
+          buttonVariants({ variant: "default", size: "sm" }),
+          "pointer-events-auto relative z-10 mt-1 w-full justify-center gap-1.5",
+        )}
+      >
+        Ver detalle
+        <ArrowRight className="size-3.5" aria-hidden />
+      </Link>
     </CardContent>
   );
 };
@@ -188,35 +198,19 @@ export const VehicleGridCard = ({
   const displayName = getVehicleDisplayName(vehicle);
   const vehicleUrl = getVehicleUrl(vehicle.id);
 
-    const sizes = `
-              (max-width: 640px) 100vw,
-              (max-width: 1024px) 50vw,
-              (max-width: 1536px) 25vw,
-              350px
-    `
   return (
-    <Card
-      className={cn(
-        "relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md",
-        interactive && "group",
-      )}
-    >
-      {interactive && (
-        <Link
-          href={vehicleUrl}
-          prefetch={false}
-          className="absolute inset-0 z-0 rounded-xl"
-          aria-label={`Ver detalle de ${displayName}`}
-        />
-      )}
+    <Card className="group relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md pb-3">
+      {/* Enlace de ratón; el CTA "Ver detalle" es el único foco de teclado/lector. */}
+      <Link
+        href={vehicleUrl}
+        prefetch={false}
+        className="absolute inset-0 z-0 rounded-xl"
+        aria-hidden
+        tabIndex={-1}
+      />
 
-      <CardHeader className="relative aspect-square overflow-hidden p-0 pt-0">
-        <div
-          className={cn(
-            "absolute top-2 right-2 z-10",
-            interactive && "pointer-events-auto",
-          )}
-        >
+      <CardHeader className="pointer-events-none relative aspect-square overflow-hidden p-0 pt-0">
+        <div className="pointer-events-auto absolute top-2 right-2 z-10">
           <VehicleFavoriteButton
             vehicleId={vehicle.id}
             className="rounded-full bg-white shadow-sm"
@@ -225,36 +219,21 @@ export const VehicleGridCard = ({
 
         <VehicleGridCardBadges vehicle={vehicle} />
 
-        {!interactive ? (
-          <Link
-            href={vehicleUrl}
-            className="absolute inset-0 z-0"
-            aria-label={`Ver detalle de ${displayName}`}
-          >
-            <Image
-              src={imageUrl}
-              alt={displayName}
-              fill
-              className="object-cover transition-transform duration-300 hover:scale-[1.03]"
-              quality={80}
-              sizes={sizes}
-            />
-          </Link>
-        ) : (
-          <Image
-            src={imageUrl}
-            alt={displayName}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-            quality={80}
-            sizes={sizes}
-          />
-        )}
+        <Image
+          src={imageUrl}
+          alt=""
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          quality={80}
+          sizes={VEHICLE_GRID_IMAGE_SIZES}
+          aria-hidden
+        />
       </CardHeader>
 
       <VehicleGridCardBody
         vehicle={vehicle}
         displayName={displayName}
+        vehicleUrl={vehicleUrl}
         interactive={interactive}
       />
     </Card>

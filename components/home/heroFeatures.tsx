@@ -24,7 +24,7 @@ const HeroFeatureIcon = ({
       >
         <Image
           src={icon_url}
-          alt={icon_alt}
+          alt={`magen de ${icon_alt}`}
           sizes="20px"
           width={20}
           height={20}

@@ -73,7 +73,7 @@ export const HeroFiltersMakeSelector = () => {
     <Popover>
       <PopoverTrigger
         render={
-          <Button variant="outline" className="w-full justify-start text-base">
+          <Button variant="outline" className="w-full justify-start text-base" aria-label="Seleccionar marca">
             <div className="flex w-full items-center justify-between text-sm">
               <span className="truncate">{trigger_label}</span>
               <ChevronDown className="size-4 shrink-0 opacity-50" />
@@ -90,6 +90,7 @@ export const HeroFiltersMakeSelector = () => {
           value={search}
           onChange={setSearch}
           onClear={() => setSearch("")}
+          aria-label="Buscar marca"
         />
         {isLoading && (
           <div className="flex flex-col gap-2">

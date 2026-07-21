@@ -21,10 +21,10 @@ export async function NewsletterSection() {
           >
             {data.subtitle}
           </p>
-          <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">
+          <p className="text-lg md:text-xl lg:text-2xl font-bold ">
             {data.title}
           </p>
-          <p className="mx-auto max-w-lg text-xs leading-relaxed text-slate-500 ">
+          <p className="mx-auto max-w-lg text-xs leading-relaxed text-slate-800 ">
             {data.description}
           </p>
         </div>

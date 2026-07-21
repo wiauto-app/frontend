@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "../ui/skeleton";
 import { heroFacetService } from "@/services/search/heroFacetService";
 import { useHeroSearchFilters } from "../home/HeroSearchFiltersContext";
-import type { HeroPriceRangeFacetItem } from "@/interfaces/hero-facet.interface";
 import {
   Select,
   SelectContent,
@@ -40,6 +38,7 @@ export const PriceUntilSelector = () => {
   return (
   
       <Select
+        aria-label="Seleccionar precio hasta"
         items={price_ranges.map((item) => ({
           label: item.label,
           value: item.until_price.toString(),
@@ -47,7 +46,7 @@ export const PriceUntilSelector = () => {
         value={untilPrice?.toString()}
         onValueChange={(value) => setUntilPrice(value ? Number(value) : undefined)}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full" aria-label="Seleccionar precio hasta">
           <SelectValue placeholder="Precio hasta" />
         </SelectTrigger>
         <SelectContent>

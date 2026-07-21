@@ -36,7 +36,7 @@ export const VehicleDiscoveryAccordion = ({
                 {section.title}
               </AccordionTrigger>
               <AccordionContent>
-                <div className="flex flex-wrap gap-2 ">
+                <div className="flex flex-wrap gap-2 p-2">
                   {section.pills.map((pill) => (
                     <VehicleDiscoveryPillLink
                       key={`${section.id}-${pill.href}`}

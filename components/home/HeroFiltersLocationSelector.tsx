@@ -123,7 +123,7 @@ export const HeroFiltersLocationSelector = ({
       <Popover>
         <PopoverTrigger
           render={
-            <Button variant="outline" className="w-full justify-start text-base">
+            <Button variant="outline" className="w-full justify-start text-base" aria-label="Seleccionar ubicación">
               <div className="flex items-center justify-between w-full text-sm ">
                 {trigger_label}
                 <ChevronDown className="size-4 shrink-0 opacity-50" />
@@ -140,6 +140,7 @@ export const HeroFiltersLocationSelector = ({
             value={search}
             onChange={setSearch}
             onClear={() => setSearch("")}
+            aria-label="Buscar ubicación"
           />
           {isLoading && (
             <div className="flex flex-col gap-2">
