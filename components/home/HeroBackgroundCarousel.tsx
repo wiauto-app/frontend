@@ -150,42 +150,7 @@ export const HeroBackgroundCarousel = ({
 
       <HeroBackdrop />
 
-      {slides.length > 1 ? (
-        <div
-          className="absolute right-4 bottom-28 z-10 flex items-center gap-2 sm:right-40 sm:bottom-5"
-          role="tablist"
-          aria-label="Seleccionar imagen del hero"
-        >
-          {slides.map((slide, index) => {
-            const isActive = index === activeIndex;
 
-            return (
-              <button
-                key={slide.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                aria-current={isActive ? "true" : undefined}
-                aria-label={`Imagen ${index + 1} de ${slides.length}`}
-                tabIndex={0}
-                onClick={() => handleSelect(index)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    handleSelect(index);
-                  }
-                }}
-                className={cn(
-                  "h-2.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80",
-                  isActive
-                    ? "w-6 bg-white"
-                    : "w-2.5 bg-white/45 hover:bg-white/70",
-                )}
-              />
-            );
-          })}
-        </div>
-      ) : null}
     </div>
   );
 };
