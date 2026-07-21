@@ -25,9 +25,9 @@ const HeroFeatureIcon = ({
         <Image
           src={icon_url}
           alt={icon_alt}
-          unoptimized
-          fill
-          sizes="40px"
+          sizes="20px"
+          width={20}
+          height={20}
           className="object-contain"
         />
       </span>
