@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getImageUrl } from "../utils";
 
-type VehicleImageCarouselProps = {
+interface VehicleImageCarouselProps {
   images: VehicleImage[];
   alt: string;
   href: string;
-};
+  className?: string;
+}
 
 const resolveCarouselImageUrl = (image: VehicleImage | undefined): string => {
   if (!image?.url) {
@@ -25,6 +26,7 @@ export const VehicleImageCarousel = ({
   images,
   alt,
   href,
+  className,
 }: VehicleImageCarouselProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const hasMultipleImages = images.length > 1;
@@ -58,7 +60,12 @@ export const VehicleImageCarousel = ({
   };
 
   return (
-    <div className="relative w-full shrink-0 md:w-[320px] lg:w-[380px]">
+    <div
+      className={cn(
+        "relative w-full shrink-0 md:w-[320px] lg:w-[380px]",
+        className,
+      )}
+    >
       <Link
         href={href}
         className="group relative block aspect-[4/3] overflow-hidden bg-slate-100 md:aspect-auto md:h-full md:min-h-[220px]"

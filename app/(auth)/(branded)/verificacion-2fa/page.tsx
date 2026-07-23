@@ -9,7 +9,6 @@ import { useUser } from "@/app/contexts/auth/useUser";
 import { AUTH_ROUTES } from "@/constants/auth.constants";
 import { authService } from "@/services/authService";
 
-
 export default function Verificacion2faPage() {
   const router = useRouter();
   const { refreshUser } = useUser();
@@ -50,19 +49,17 @@ export default function Verificacion2faPage() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white p-6">
-        <p className="text-sm text-gray-600">Cargando verificación...</p>
-      </main>
+      <p className="text-center text-sm text-gray-600">
+        Cargando verificación...
+      </p>
     );
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-white p-6">
-      <TwoFactorLoginStep
-        email={email}
-        onSuccess={handleSuccess}
-        onBack={handleBack}
-      />
-    </main>
+    <TwoFactorLoginStep
+      email={email}
+      onSuccess={handleSuccess}
+      onBack={handleBack}
+    />
   );
 }

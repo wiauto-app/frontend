@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,11 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/authService";
 
-type RegisterFormProps = {
+interface RegisterFormProps {
   invitedEmail?: string;
-};
+}
 
-export default function RegisterForm({ invitedEmail: invitedEmailProp }: RegisterFormProps = {}) {
+export default function RegisterForm({
+  invitedEmail: invitedEmailProp,
+}: RegisterFormProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const invitationEmailFromQuery = searchParams.get("email")?.trim() ?? "";
@@ -30,8 +32,6 @@ export default function RegisterForm({ invitedEmail: invitedEmailProp }: Registe
     isInvitationFlow ? "empresa" : "particular",
   );
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [acceptNewsletter, setAcceptNewsletter] = useState(false);
-
   const form = useForm<RegisterDto>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -40,7 +40,7 @@ export default function RegisterForm({ invitedEmail: invitedEmailProp }: Registe
       name: "",
       last_name: "",
     },
-  })
+  });
 
   async function onSubmit(data: z.infer<typeof RegisterSchema>) {
     if (!acceptTerms) {
@@ -51,209 +51,209 @@ export default function RegisterForm({ invitedEmail: invitedEmailProp }: Registe
     setIsLoading(true);
     try {
       await authService.register(data);
-      toast.success("Revisa tu correo para verificar la cuenta e iniciar sesión.");
+      toast.success(
+        "Revisa tu correo para verificar la cuenta e iniciar sesión.",
+      );
       router.push("/confirmar-correo");
     } catch (error: Error | unknown) {
       console.error("Register error:", error);
-      toast.error((error as Error).message || "Hubo un error al crear tu cuenta. Por favor, intenta de nuevo.");
+      toast.error(
+        (error as Error).message ||
+          "Hubo un error al crear tu cuenta. Por favor, intenta de nuevo.",
+      );
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-  <div className="flex min-h-screen w-full items-center justify-center p-4">
-      <div className="flex w-full max-w-5xl overflow-hidden rounded-2xl shadow-xl">
-        <div className="relative hidden flex-col items-center justify-center overflow-hidden bg-blue-700 lg:flex lg:w-[37.4%]">
-          <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-blue-800" />
-          <div className="absolute top-20 left-10 h-64 w-64 rounded-full bg-white/5" />
-          <div className="absolute right-10 bottom-20 h-96 w-96 rounded-full bg-white/5" />
-          <div className="relative z-10 px-8 text-center">
-            <div className="mb-8 w-fit rounded-lg bg-blue-700 px-4 py-2 text-start">
-              <span className="text-7xl font-bold tracking-tighter text-white">
-                W
-              </span>
-            </div>
+    <>
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900">Regístrate</h2>
+        {isInvitationFlow ? (
+          <p className="mt-3 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            Te invitaron a unirte al equipo. Crea tu cuenta para continuar.
+          </p>
+        ) : null}
+      </div>
 
-            <h1 className="mb-4 text-start text-3xl leading-tight font-bold text-white">
-              Encuentra o vende
-              <br />
-              tu próximo coche
-              <br />
-              hoy!
-            </h1>
-          </div>
+      {!isInvitationFlow ? (
+        <div className="flex flex-wrap gap-2 ">
+          <Button
+            type="button"
+            onClick={() => setAccountType("particular")}
+            className={`flex-1 text-center ${
+              accountType === "particular"
+                ? " border-b-2 border-blue-600 "
+                : "bg-white text-black hover:text-white"
+            }`}
+          >
+            Particular
+          </Button>
+          <Button
+            type="button"
+            onClick={() => setAccountType("empresa")}
+            className={`flex-1 text-center ${
+              accountType === "empresa"
+                ? "border-b-2 border-blue-600"
+                : "bg-white text-black hover:text-white"
+            }`}
+          >
+            Empresa
+          </Button>
         </div>
+      ) : null}
 
-        <div className="w-full lg:flex-1 flex items-center justify-center p-8 bg-white">
-          <div className="w-full max-w-xl space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900">Regístrate</h2>
-              {isInvitationFlow ? (
-                <p className="mt-3 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                  Te invitaron a unirte al equipo. Crea tu cuenta para continuar.
-                </p>
-              ) : null}
-            </div>
+      <div className="flex flex-wrap gap-3">
+        <GoogleLogin disabled={isLoading} />
+        <AppleLogin disabled={isLoading} />
+      </div>
 
-            {!isInvitationFlow ? (
-            <div className="flex border-b border-gray-200 flex-wrap gap-2">
-              <Button
-                type="button"
-                onClick={() => setAccountType("particular")}
-                className={`flex-1 text-center  ${
-                  accountType === "particular"
-                    ? " border-b-2 border-blue-600 "
-                    : "text-black hover:text-white bg-white"
-                }`}
-              >
-                Particular
-              </Button>
-              <Button
-                type="button"
-                onClick={() => setAccountType("empresa")}
-                className={`flex-1 text-center ${
-                  accountType === "empresa"
-                    ? "border-b-2 border-blue-600"
-                    : "text-black hover:text-white bg-white"
-                }`}
-              >
-                Empresa
-              </Button>
-            </div>
-            ) : null}
-
-            <div className="flex gap-3 flex-wrap">
-              <GoogleLogin disabled={isLoading} />
-              <AppleLogin disabled={isLoading} />
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-400">o</span>
-              </div>
-            </div>
-
-            <form id="register-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <Label htmlFor="register-name" className="block text-gray-700 mb-1">
-                    Nombre *
-                  </Label>
-                  <Input
-                    id="register-name"
-                    type="text"
-                    placeholder="Nombre"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    {...form.register("name")}
-                    disabled={isLoading}
-                  />
-                  {form.formState.errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{form.formState.errors.name.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="register-last_name" className="block text-gray-700 mb-1">
-                    Apellido *
-                  </Label>
-                  <Input
-                    id="register-last_name"
-                    type="text"
-                    placeholder="Apellido"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    {...form.register("last_name")}
-                    disabled={isLoading}
-                  />
-                  {form.formState.errors.last_name && (
-                    <p className="mt-1 text-sm text-red-600">{form.formState.errors.last_name.message}</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="register-email" className="block text-gray-700 mb-1">
-                  Email *
-                </Label>
-                <Input
-                  id="register-email"
-                  type="email"
-                  placeholder="Email *"
-                  readOnly={isInvitationFlow}
-                  aria-readonly={isInvitationFlow}
-                  className={isInvitationFlow ? "bg-gray-50" : undefined}
-                  {...form.register("email")}
-                  disabled={isLoading}
-                />
-                {form.formState.errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{form.formState.errors.email.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="register-password" className="block text-gray-700 mb-1">
-                  Contraseña *
-                </Label>
-                <Input
-                  id="register-password"
-                  type="password"
-                  placeholder="Contraseña *"
-                  {...form.register("password")}
-                  disabled={isLoading}
-                />
-                {form.formState.errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{form.formState.errors.password.message}</p>
-                )}
-              </div>
-
-              <div className="flex items-start gap-2">
-                <Checkbox
-                  id="accept-terms"
-                  checked={acceptTerms}
-                  onCheckedChange={(checked) => setAcceptTerms(checked)}
-                  disabled={isLoading}
-                />
-                <Label htmlFor="accept-terms" className="text-gray-600">
-                  Acepto las condiciones de uso y la información básica de protección de datos.
-                </Label>
-              </div>
-              
-              <div className="flex items-start gap-2">
-                <Checkbox
-                  id="accept-newsletter"
-                  checked={acceptNewsletter}
-                  onCheckedChange={(checked) => setAcceptNewsletter(checked)}
-                  disabled={isLoading}
-                />
-                <Label htmlFor="accept-newsletter" className="text-gray-600">
-                  Suscríbete y recibe todas las novedades de nuestro blog
-                </Label>
-              </div>
-            </form>
-
-            <Button
-              type="submit"
-              form="register-form"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg"
-              disabled={isLoading}
-            >
-              {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
-            </Button>
-
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                ¿Ya tienes una cuenta?{" "}
-                <a href="/iniciar-sesion" className="text-blue-600 hover:text-blue-700 font-medium">
-                  Iniciar sesión
-                </a>
-              </p>
-            </div>
-          </div>
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-gray-200" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-white px-4 text-gray-400">o</span>
         </div>
       </div>
-    </div>
-  )
+
+      <form
+        id="register-form"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="register-name" className="mb-1 block text-gray-700">
+              Nombre *
+            </Label>
+            <Input
+              id="register-name"
+              type="text"
+              placeholder="Nombre"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              {...form.register("name")}
+              disabled={isLoading}
+            />
+            {form.formState.errors.name && (
+              <p className="mt-1 text-sm text-red-600">
+                {form.formState.errors.name.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Label
+              htmlFor="register-last_name"
+              className="mb-1 block text-gray-700"
+            >
+              Apellido *
+            </Label>
+            <Input
+              id="register-last_name"
+              type="text"
+              placeholder="Apellido"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              {...form.register("last_name")}
+              disabled={isLoading}
+            />
+            {form.formState.errors.last_name && (
+              <p className="mt-1 text-sm text-red-600">
+                {form.formState.errors.last_name.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="register-email" className="mb-1 block text-gray-700">
+            Email *
+          </Label>
+          <Input
+            id="register-email"
+            type="email"
+            placeholder="Email *"
+            readOnly={isInvitationFlow}
+            aria-readonly={isInvitationFlow}
+            className={isInvitationFlow ? "bg-gray-50" : undefined}
+            {...form.register("email")}
+            disabled={isLoading}
+          />
+          {form.formState.errors.email && (
+            <p className="mt-1 text-sm text-red-600">
+              {form.formState.errors.email.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <Label
+            htmlFor="register-password"
+            className="mb-1 block text-gray-700"
+          >
+            Contraseña *
+          </Label>
+          <Input
+            id="register-password"
+            type="password"
+            placeholder="Contraseña *"
+            {...form.register("password")}
+            disabled={isLoading}
+          />
+          {form.formState.errors.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {form.formState.errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-start gap-2">
+          <Checkbox
+            id="accept-terms"
+            checked={acceptTerms}
+            onCheckedChange={(checked) => setAcceptTerms(checked)}
+            disabled={isLoading}
+          />
+          <Label htmlFor="accept-terms" className="text-gray-600">
+            Acepto las condiciones de uso y la información básica de protección
+            de datos.
+          </Label>
+        </div>
+{/* 
+        <div className="flex items-start gap-2">
+          <Checkbox
+            id="accept-newsletter"
+            checked={acceptNewsletter}
+            onCheckedChange={(checked) => setAcceptNewsletter(checked)}
+            disabled={isLoading}
+          />
+          <Label htmlFor="accept-newsletter" className="text-gray-600">
+            Suscríbete y recibe todas las novedades de nuestro blog
+          </Label>
+        </div> */}
+      </form>
+
+      <Button
+        type="submit"
+        form="register-form"
+        className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+        disabled={isLoading}
+      >
+        {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
+      </Button>
+
+      <div className="text-center">
+        <p className="text-sm text-gray-600">
+          ¿Ya tienes una cuenta?{" "}
+          <a
+            href="/iniciar-sesion"
+            className="font-medium text-blue-600 hover:text-blue-700"
+          >
+            Iniciar sesión
+          </a>
+        </p>
+      </div>
+    </>
+  );
 }

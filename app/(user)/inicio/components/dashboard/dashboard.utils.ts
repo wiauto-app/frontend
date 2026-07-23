@@ -33,6 +33,18 @@ export const formatDateInputValue = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
+/** YYYY-MM-DD local calendar day → UTC ISO at local 00:00:00.000 */
+export const toLocalDayStartIso = (dateOnly: string): string => {
+  const [year, month, day] = dateOnly.split("-").map(Number);
+  return new Date(year, month - 1, day, 0, 0, 0, 0).toISOString();
+};
+
+/** YYYY-MM-DD local calendar day → UTC ISO at local 23:59:59.999 */
+export const toLocalDayEndIso = (dateOnly: string): string => {
+  const [year, month, day] = dateOnly.split("-").map(Number);
+  return new Date(year, month - 1, day, 23, 59, 59, 999).toISOString();
+};
+
 export const getDefaultDashboardDateRange = (): {
   startDate: string;
   endDate: string;

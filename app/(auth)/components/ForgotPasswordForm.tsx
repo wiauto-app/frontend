@@ -1,16 +1,17 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { ForgotPasswordSchema } from "@/validations/Schemas";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FRONTEND_URL } from "@/constants";
 import { authService } from "@/services/authService";
 
 export default function ForgotPasswordForm() {
@@ -23,23 +24,30 @@ export default function ForgotPasswordForm() {
     defaultValues: {
       email: "",
     },
-  })
+  });
 
   async function onSubmit(data: z.infer<typeof ForgotPasswordSchema>) {
     setIsLoading(true);
     try {
-      const response = await authService.forgotPassword(data.email);
+      const redirect_url = `${(FRONTEND_URL ?? "").replace(/\/$/, "")}/cambiar-contrasena`;
+      const response = await authService.forgotPassword(data.email, redirect_url);
       if (!response.ok) {
-        throw new Error(response.data?.message || "Error al solicitar recuperación");
+        throw new Error(
+          response.data?.message || "Error al solicitar recuperación",
+        );
       }
       toast.success(response.data.message);
       setSent(true);
       form.reset();
     } catch (error: unknown) {
       console.error("Olvide contraseña error:", error);
-      const genericMessage = "Error al enviar el correo electrónico. Por favor, intenta de nuevo.";
+      const genericMessage =
+        "Error al enviar el correo electrónico. Por favor, intenta de nuevo.";
       const message = error instanceof Error ? error.message : undefined;
-      if (message?.includes("No se encontró") || message?.includes("incorrectos")) {
+      if (
+        message?.includes("No se encontró") ||
+        message?.includes("incorrectos")
+      ) {
         toast.error(genericMessage);
       } else {
         toast.error(message || genericMessage);
@@ -50,91 +58,74 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 w-full">
-      <div className="flex w-full max-w-8xl overflow-hidden rounded-2xl shadow-xl">
-        <div className="hidden lg:flex lg:w-[37.4%] bg-blue-700 flex-col items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800" />
-          <div className="absolute top-20 left-10 w-64 h-64 bg-white/5 rounded-full" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-white/5 rounded-full" />
-          <div className="relative z-10 text-center px-8">
-            <div className="mb-8 text-start bg-blue-700 w-fit px-4 py-2 rounded-lg">
-              <span className="text-white text-7xl font-bold tracking-tighter">W</span>
-            </div>
-            <h1 className="text-white text-3xl font-bold mb-4 leading-tight text-start">
-              Encuentra o vende<br />
-              tu próximo coche<br />
-              hoy!
-            </h1>
-          </div>
-        </div>
-
-        <div className="w-full lg:flex-1 flex items-start justify-center pt-16 md:pt-24 p-8 bg-white">
-          <div className="w-full max-w-xl space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900">
-                {sent ? "Revisa tu email" : "Restablece tu contraseña"}
-              </h2>
-              <p className="mt-2 text-sm text-gray-500">
-                {sent
-                  ? "Si existe una cuenta con ese email, recibirás un enlace para restablecer tu contraseña."
-                  : "Introduce tu cuenta de email y te enviaremos un enlace con el que restablecer tu contraseña."
-                }
-              </p>
-            </div>
-
-            {!sent && (
-              <form id="forgot-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div>
-                  <Label htmlFor="email" className="block text-gray-700 mb-1">
-                    Email *
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Email *"
-                    {...form.register("email")}
-                    disabled={isLoading}
-                  />
-                  {form.formState.errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{form.formState.errors.email.message}</p>
-                  )}
-                </div>
-              </form>
-            )}
-
-            {!sent && (
-            <Button
-              type="submit"
-              form="forgot-form"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg"
-              disabled={isLoading}
-            >
-              {isLoading ? "Enviando..." : "Enviar enlace"}
-            </Button>
-            )}
-
-            {sent && (
-            <Button
-              type="button"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg"
-              onClick={() => router.push("/iniciar-sesion")}
-            >
-              Volver a iniciar sesión
-            </Button>
-            )}
-
-            <div className="text-center">
-              <Button
-                type="button"
-                className="text-sm font-medium"
-                onClick={() => router.push("/iniciar-sesion")}
-              >
-                Volver a inicio de sesión
-              </Button>
-            </div>
-          </div>
-        </div>
+    <>
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900">
+          {sent ? "Revisa tu email" : "Restablece tu contraseña"}
+        </h2>
+        <p className="mt-2 text-sm text-gray-500">
+          {sent
+            ? "Si existe una cuenta con ese email, recibirás un enlace para restablecer tu contraseña."
+            : "Introduce tu cuenta de email y te enviaremos un enlace con el que restablecer tu contraseña."}
+        </p>
       </div>
-    </div>
-  )
+
+      {!sent && (
+        <form
+          id="forgot-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6"
+        >
+          <div>
+            <Label htmlFor="email" className="mb-1 block text-gray-700">
+              Email *
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Email *"
+              {...form.register("email")}
+              disabled={isLoading}
+            />
+            {form.formState.errors.email && (
+              <p className="mt-1 text-sm text-red-600">
+                {form.formState.errors.email.message}
+              </p>
+            )}
+          </div>
+        </form>
+      )}
+
+      {!sent && (
+        <Button
+          type="submit"
+          form="forgot-form"
+          className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+          disabled={isLoading}
+        >
+          {isLoading ? "Enviando..." : "Enviar enlace"}
+        </Button>
+      )}
+
+      {sent && (
+        <Button
+          type="button"
+          className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+          onClick={() => router.push("/iniciar-sesion")}
+        >
+          Volver a iniciar sesión
+        </Button>
+      )}
+
+      <div className="text-center">
+        <Button
+          type="button"
+          className="text-sm font-medium"
+          onClick={() => router.push("/iniciar-sesion")}
+        >
+          Volver a inicio de sesión
+        </Button>
+      </div>
+    </>
+  );
 }

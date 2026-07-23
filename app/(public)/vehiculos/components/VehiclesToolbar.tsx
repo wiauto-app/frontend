@@ -25,7 +25,7 @@ export function VehiclesToolbar({
 }) {
   const router = useRouter();
   return (
-    <div className="sticky top-0 z-30 border-b border-slate-200 bg-[#EEF3FA]">
+    <div className="sticky top-20 z-30 border-b border-slate-200 bg-[#EEF3FA]">
       <div className="mx-auto flex container-custom  items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:py-4">
         <div className="flex gap-2 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
           <Button onClick={() => router.push("/vehiculos")}>Comprar</Button>

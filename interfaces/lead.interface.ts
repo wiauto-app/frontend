@@ -1,4 +1,6 @@
 export type LeadType = "contact" | "call_me";
+export type LeadSort = "asc" | "desc";
+export type LeadSortDirection = LeadSort;
 
 export interface Lead {
   id: string;
@@ -13,6 +15,27 @@ export interface Lead {
   profile_id: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface LeadVehicleSummary {
+  id: string;
+  title?: string | null;
+  display_name?: string | null;
+  image?: string | null;
+  image_url?: string | null;
+}
+
+export interface LeadListItem extends Lead {
+  vehicle: LeadVehicleSummary;
+  buyer_profile_id: string | null;
+}
+
+export interface FindLeadsParams {
+  from?: string;
+  to?: string;
+  sort?: LeadSort;
+  page?: number;
+  limit?: number;
 }
 
 export interface CreateLeadPayload {

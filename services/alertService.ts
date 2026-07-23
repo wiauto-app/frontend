@@ -14,11 +14,20 @@ import type {
   AlertNotificationPreferences,
   UpdateAlertNotificationPreferencesPayload,
 } from "@/interfaces/alert-notification-preferences.interface";
+import type {
+  FindNotificationsParams,
+  InAppNotification,
+} from "@/interfaces/notification.interface";
+import type { PaginatedResult } from "@/types/general.types";
 
 export const ALERTS_QUERY_KEY = ["alerts"] as const;
 export const ALERT_NOTIFICATION_PREFERENCES_QUERY_KEY = [
   "alert-notification-preferences",
 ] as const;
+export const ALERT_NOTIFICATIONS_INBOX_QUERY_KEY = [
+  "alerts-notifications-inbox",
+] as const;
+export const ALERT_NOTIFICATIONS_QUERY_KEY = ALERT_NOTIFICATIONS_INBOX_QUERY_KEY;
 
 export const alertService = {
   findAll: (): Promise<ApiResponse<Alert[]>> => apiGet<Alert[]>("/v1/alerts"),
@@ -40,7 +49,10 @@ export const alertService = {
 
   getNotificationPreferences: (): Promise<
     ApiResponse<AlertNotificationPreferences>
-  > => apiGet<AlertNotificationPreferences>("/v1/alerts/notification-preferences"),
+  > =>
+    apiGet<AlertNotificationPreferences>(
+      "/v1/alerts/notification-preferences",
+    ),
 
   updateNotificationPreferences: (
     payload: UpdateAlertNotificationPreferencesPayload,
@@ -49,6 +61,25 @@ export const alertService = {
       "/v1/alerts/notification-preferences",
       payload,
     ),
+
+  findNotifications: (
+    params?: FindNotificationsParams,
+  ): Promise<ApiResponse<PaginatedResult<InAppNotification>>> =>
+    apiGet<PaginatedResult<InAppNotification>>("/v1/alerts/notifications", {
+      page: params?.page ?? 1,
+      limit: params?.limit ?? 30,
+    }),
+
+  markNotificationRead: (
+    notificationId: string,
+  ): Promise<ApiResponse<InAppNotification>> =>
+    apiPatch<InAppNotification>(
+      `/v1/alerts/notifications/${notificationId}/read`,
+      {},
+    ),
+
+  markAllNotificationsRead: (): Promise<ApiResponse<{ updated: number }>> =>
+    apiPost<{ updated: number }>("/v1/alerts/notifications/read-all", {}),
 
   createFromVehicle: (
     vehicleId: string,

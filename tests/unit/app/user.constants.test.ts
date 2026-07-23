@@ -4,6 +4,15 @@ import { getUserSidebarLinks } from "@/app/(user)/constants/user.constants";
 import { PUBLISHER_TYPE } from "@/interfaces/vehicle.interface";
 
 describe("getUserSidebarLinks", () => {
+  it("incluye Contactos / Leads en la navegación", () => {
+    const links = getUserSidebarLinks({
+      userType: PUBLISHER_TYPE.PARTICULAR,
+      dealershipMembership: null,
+    });
+
+    expect(links.some((link) => link.href === "/contactos")).toBe(true);
+  });
+
   it("muestra Perfil de concesionaria en la navegación", () => {
     const links = getUserSidebarLinks({
       userType: PUBLISHER_TYPE.PARTICULAR,

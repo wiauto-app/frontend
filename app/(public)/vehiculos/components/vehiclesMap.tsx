@@ -1,17 +1,23 @@
 "use client";
+
 import { CustomMap } from "@/components/customMap";
 import { DEFAULT_CENTER } from "@/constants/map.constants";
-import { VehiclesPageContentProps } from "./VehiclesPageContent";
 import { VehiclesMarker } from "@/components/ui/vehiclesMarker";
-import { VEHICLE_LIST_CLASS } from "../constants";
+import { VehiclesPageContentProps } from "./VehiclesPageContent";
+import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
+import { VehicleMapCard } from "./VehicleMapCard";
 
 export interface VehiclesMapProps extends VehiclesPageContentProps {
   isMapVisible: boolean;
 }
 
-export const VehiclesMap = ({ vehicles, total }: VehiclesMapProps) => {
+export const VehiclesMap = ({ vehicles }: VehiclesMapProps) => {
+  const setSelectedVehicle = useSelectedVehicleStore(
+    (state) => state.setSelectedVehicle,
+  );
+
   return (
-    <div className={"w-full " + VEHICLE_LIST_CLASS}>
+    <div className="sticky top-39.5 h-[calc(100dvh-160px)] w-full">
       <CustomMap
         mapId="vehicle-publish-map"
         gestureHandling="greedy"
@@ -26,9 +32,11 @@ export const VehiclesMap = ({ vehicles, total }: VehiclesMapProps) => {
               lng: vehicle.lng,
             }}
             variant={!vehicle.is_featured ? "default" : "dot"}
+            onClick={() => setSelectedVehicle(vehicle)}
           />
         ))}
       </CustomMap>
+      <VehicleMapCard />
     </div>
   );
 };

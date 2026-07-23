@@ -22,10 +22,18 @@ import type {
   ConditionVehicle,
   TransmissionType,
 } from "@/interfaces/vehicle.interface";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LocationSelector } from "@/components/selectors/locationSelector";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { FILTER_SECTION_IDS } from "../utils/getExpandedFilterSectionIds";
+import {
+  Popover,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { FilterItem } from "./filterItem";
 import { VehicleTypeSelector } from "./vehicleTypeSelector";
@@ -50,7 +58,6 @@ import {
   LuPaintRoller,
 } from "react-icons/lu";
 import { cn } from "@/lib/utils";
-import { VEHICLE_LIST_CLASS } from "../constants";
 
 interface VehiclesFiltersPanelProps {
   catalog: FiltersResponse;
@@ -138,7 +145,7 @@ export const VehiclesFiltersPanel = ({
   const iconSize = 24;
 
   return (
-    <Card className={cn("rounded-none", VEHICLE_LIST_CLASS)} size="sm">
+    <Card size="sm" className="min-w-85 rounded-t-none">
       <CardHeader>
         <CardTitle>Filtros</CardTitle>
       </CardHeader>

@@ -21,7 +21,6 @@ import { MapButton } from "../components/mapButton";
 import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
 import { cn } from "@/lib/utils";
 import { VehiclesMap } from "../components/vehiclesMap";
-import { VEHICLE_LIST_CLASS } from "../constants";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
@@ -102,31 +101,26 @@ export default async function VehiclesListingPage(props: {
             !isMapVisible ? "container-custom" : "container-custom-full",
           )}
         >
-          <div className="hidden lg:block w-85">
-            <Suspense fallback={<FiltersLoading />}>
-              <VehiclesFilters />
-            </Suspense>
-          </div>
-          <div className="min-w-0 flex-1 py-2 ">
-            <div
-              className={cn(
-                isMapVisible && "grid grid-cols-1 lg:grid-cols-2 gap-5",
-              )}
-            >
-              <div className={cn("flex flex-col gap-2", VEHICLE_LIST_CLASS)}>
-                <div className="flex  items-center justify-between">
-                  <FiltersTitle title={activeFilters.title} />
-                  <MapButton />
-                </div>
-                <ActiveFilters activeFilters={activeFilters} />
-                <VehiclesPageContent
-                  vehicles={listing.vehicles}
-                  total={listing.total}
-                />
-              </div>
-              <VehiclesMap vehicles={listing.vehicles} total={listing.total} isMapVisible={isMapVisible} />
+          <Suspense fallback={<FiltersLoading />}>
+            <VehiclesFilters />
+          </Suspense>
+
+          <div className="flex-1 py-2 mx-auto min-w-4xl max-w-4xl">
+            <div className="flex  items-center justify-between">
+              <FiltersTitle title={activeFilters.title} />
+              <MapButton />
             </div>
+            <ActiveFilters activeFilters={activeFilters} />
+            <VehiclesPageContent
+              vehicles={listing.vehicles}
+              total={listing.total}
+            />
           </div>
+          <VehiclesMap
+            vehicles={listing.vehicles}
+            total={listing.total}
+            isMapVisible={isMapVisible}
+          />
         </div>
       </div>
     </VehiclesListingShell>

@@ -84,10 +84,11 @@ export const authService = {
 
   forgotPassword: (
     email: string,
+    redirect_url: string,
   ): Promise<ApiResponse<ResendEmailVerificationResponseDto>> =>
     apiPost<ResendEmailVerificationResponseDto>(
       `/auth/password-recovery/request`,
-      { email },
+      { email, redirect_url },
     ),
 
   changePassword: (

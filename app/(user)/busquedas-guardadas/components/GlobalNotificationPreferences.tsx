@@ -6,11 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 
-type GlobalNotificationPreferencesProps = {
+interface GlobalNotificationPreferencesProps {
   preferences: AlertNotificationPreferences;
   onUpdate: (payload: UpdateAlertNotificationPreferencesPayload) => Promise<void>;
   isUpdating?: boolean;
-};
+}
 
 const GLOBAL_TOGGLE_ITEMS = [
   {
@@ -43,6 +43,11 @@ const GLOBAL_TOGGLE_ITEMS = [
     label: "Recordatorios de vehículos guardados",
     description: "Te recordamos revisar favoritos sin actividad reciente",
   },
+  {
+    field: "notify_new_leads" as const,
+    label: "Nuevos contactos / leads",
+    description: "Cuando alguien consulta o pide llamada en tus anuncios",
+  },
 ] as const;
 
 const FREQUENCY_OPTIONS = [
@@ -54,7 +59,9 @@ const FREQUENCY_OPTIONS = [
 const CHANNEL_ITEMS = [
   { field: "channel_email" as const, label: "Correo electrónico" },
   { field: "channel_push" as const, label: "Notificaciones push" },
+  { field: "channel_in_app" as const, label: "In-app" },
   { field: "channel_sms" as const, label: "SMS" },
+  { field: "channel_whatsapp" as const, label: "WhatsApp" },
 ] as const;
 
 export const GlobalNotificationPreferences = ({

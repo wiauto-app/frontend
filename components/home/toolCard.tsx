@@ -38,7 +38,7 @@ export const ToolCard = ({ item }: ToolCardProps) => {
       size="sm"
       style={{ backgroundColor }}
     >
-      <CardContent >
+      <CardContent className="flex  justify-between">
        
         <div className="relative z-10 flex flex-1 flex-col justify-center gap-4 ">
           <div className="space-y-1">
