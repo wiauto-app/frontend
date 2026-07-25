@@ -5,7 +5,6 @@ import { VehicleDetailGallery } from "./VehicleDetailGallery";
 import { VehicleDetailFeatures } from "./VehicleDetailFeatures";
 import { VehicleDetailLocationSection } from "./VehicleDetailLocationSection";
 import { VehicleDetailMobileActions } from "./VehicleDetailMobileActions";
-import { VehicleDetailPriceAnalysisSection } from "./VehicleDetailPriceAnalysisSection";
 import { VehicleDetailReviewsSection } from "./VehicleDetailReviewsSection";
 import { VehicleDetailSaveSearchSection } from "./VehicleDetailSaveSearchSection";
 import { VehicleDetailDescription } from "./VehicleDetailDescription";

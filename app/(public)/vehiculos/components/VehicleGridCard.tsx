@@ -5,7 +5,12 @@ import Link from "next/link";
 import { ArrowRight, Camera } from "lucide-react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   getVehicleMakeName,
@@ -24,10 +29,12 @@ import {
   getPublisherTypeLabel,
 } from "../utils/build-vehicle-grid-specs";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
+import { Separator } from "@/components/ui/separator";
 
 interface VehicleGridCardProps {
   vehicle: VehicleListItem;
   interactive?: boolean;
+  footer?: React.ReactNode;
 }
 
 interface VehicleGridCardBadgesProps {
@@ -193,6 +200,7 @@ const VehicleGridCardBody = ({
 export const VehicleGridCard = ({
   vehicle,
   interactive = false,
+  footer,
 }: VehicleGridCardProps) => {
   const imageUrl = getImageUrl(vehicle.images[0]?.url ?? "");
   const displayName = getVehicleDisplayName(vehicle);
@@ -236,6 +244,14 @@ export const VehicleGridCard = ({
         vehicleUrl={vehicleUrl}
         interactive={interactive}
       />
+      {footer ? (
+        <>
+          <Separator />
+          <CardFooter className="relative z-10 pointer-events-auto px-2.5 pb-0">
+            {footer}
+          </CardFooter>
+        </>
+      ) : null}
     </Card>
   );
 };

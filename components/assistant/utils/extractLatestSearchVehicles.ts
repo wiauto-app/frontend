@@ -1,24 +1,11 @@
-import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { getToolName, isToolUIPart, type UIMessage } from "ai";
+import {
+  isSearchVehiclesOutput,
+  type SearchVehiclesToolOutput,
+} from "../types/assistant-tool-outputs";
 
-export interface SearchVehiclesToolOutput {
-  total: number;
-  vehicles: VehicleListItem[];
-  appliedFilters: Record<string, unknown>;
-}
-
-export const isSearchVehiclesOutput = (
-  output: unknown,
-): output is SearchVehiclesToolOutput => {
-  if (!output || typeof output !== "object") {
-    return false;
-  }
-
-  const candidate = output as SearchVehiclesToolOutput;
-  return (
-    Array.isArray(candidate.vehicles) && typeof candidate.total === "number"
-  );
-};
+export type { SearchVehiclesToolOutput } from "../types/assistant-tool-outputs";
+export { isSearchVehiclesOutput } from "../types/assistant-tool-outputs";
 
 export const extractLatestSearchVehicles = (
   messages: UIMessage[],

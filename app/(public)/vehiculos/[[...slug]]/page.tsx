@@ -21,6 +21,11 @@ import { MapButton } from "../components/mapButton";
 import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
 import { cn } from "@/lib/utils";
 import { VehiclesMap } from "../components/vehiclesMap";
+import { Button } from "@/components/ui/button";
+import { MdAssistant } from "react-icons/md";
+import { SaveSearchButton } from "../components/SaveSearchButton";
+import Link from "next/link";
+import { BuyAssistantButton } from "../components/buyAssistantButton";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
@@ -97,14 +102,17 @@ export default async function VehiclesListingPage(props: {
         />
         <div
           className={cn(
-            "mx-auto flex  gap-5",
+            "mx-auto flex  gap-5 mt-5",
             !isMapVisible ? "container-custom" : "container-custom-full",
           )}
         >
-          <Suspense fallback={<FiltersLoading />}>
-            <VehiclesFilters />
-          </Suspense>
-
+          <aside className="w-85 flex flex-col gap-2">
+            <Suspense fallback={<FiltersLoading />}>
+              <SaveSearchButton />
+              <BuyAssistantButton />
+              <VehiclesFilters />
+            </Suspense>
+          </aside>
           <div className="flex-1 py-2 mx-auto min-w-4xl max-w-4xl">
             <div className="flex  items-center justify-between">
               <FiltersTitle title={activeFilters.title} />
@@ -116,11 +124,13 @@ export default async function VehiclesListingPage(props: {
               total={listing.total}
             />
           </div>
-          <VehiclesMap
-            vehicles={listing.vehicles}
-            total={listing.total}
-            isMapVisible={isMapVisible}
-          />
+          {isMapVisible && (
+            <VehiclesMap
+              vehicles={listing.vehicles}
+              total={listing.total}
+              isMapVisible={isMapVisible}
+            />
+          )}
         </div>
       </div>
     </VehiclesListingShell>

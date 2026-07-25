@@ -8,6 +8,7 @@ import {
 import type {
   Alert,
   CreateAlertFromVehiclePayload,
+  CreateAlertPayload,
   UpdateAlertPayload,
 } from "@/interfaces/alert.interface";
 import type {
@@ -34,6 +35,9 @@ export const alertService = {
 
   findOne: (alertId: string): Promise<ApiResponse<Alert>> =>
     apiGet<Alert>(`/v1/alerts/${alertId}`),
+
+  create: (payload: CreateAlertPayload): Promise<ApiResponse<Alert>> =>
+    apiPost<Alert>("/v1/alerts", payload),
 
   update: (
     alertId: string,

@@ -12,7 +12,13 @@ import { useActiveFiltersStore } from "../stores/activeFiltersStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export const ActiveFiltersChips = () => {
+interface ActiveFiltersChipsProps {
+  readOnly?: boolean;
+}
+
+export const ActiveFiltersChips = ({
+  readOnly = false,
+}: ActiveFiltersChipsProps) => {
   const { activeFilters } = useActiveFiltersStore();
   const {
     filters,
@@ -53,20 +59,21 @@ export const ActiveFiltersChips = () => {
           key={chip.key}
           variant="outline"
           className="border-primary bg-primary/10 text-primary"
-          // className="inline-flex items-center gap-1.5 rounded-full border border-[#C7D9F5] bg-[#EBF2FF] px-3 py-1.5 text-xs font-semibold text-[#0061F2]"
         >
           {chip.label}
-          <button
-            type="button"
-            onClick={chip.onRemove}
-            className="rounded-full p-0.5 h-auto w-auto hover:bg-[#0061F2]/10"
-            aria-label={`Quitar filtro ${chip.label}`}
-          >
-            <X className="size-3.5" aria-hidden />
-          </button>
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={chip.onRemove}
+              className="h-auto w-auto rounded-full p-0.5 hover:bg-[#0061F2]/10"
+              aria-label={`Quitar filtro ${chip.label}`}
+            >
+              <X className="size-3.5" aria-hidden />
+            </button>
+          )}
         </Badge>
       ))}
-      {chips.length > 1 && (
+      {!readOnly && chips.length > 1 && (
         <Button
           type="button"
           variant="link"

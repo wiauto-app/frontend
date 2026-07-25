@@ -15,21 +15,105 @@ import { Spinner } from "@/components/ui/spinner";
 import { getToolName, isToolUIPart } from "ai";
 import { BotIcon } from "lucide-react";
 import { useMemo } from "react";
+import { AssistantAnalyzeListing } from "./assistantAnalyzeListing";
+import { AssistantClarifyingQuestions } from "./assistantClarifyingQuestions";
+import { AssistantCompareVehicles } from "./assistantCompareVehicles";
+import { AssistantNegotiation } from "./assistantNegotiation";
+import { AssistantSellerContact } from "./assistantSellerContact";
 import { AssistantVehicleResults } from "./assistantVehicleResults";
 import { useAssistantChat } from "./assistantChatProvider";
-import { isSearchVehiclesOutput } from "./utils/extractLatestSearchVehicles";
+import {
+  isAnalyzeListingOutput,
+  isAskClarifyingQuestionsOutput,
+  isCompareVehiclesOutput,
+  isPrepareNegotiationOutput,
+  isPrepareSellerContactOutput,
+  isSearchVehiclesOutput,
+} from "./types/assistant-tool-outputs";
 
-const renderSearchVehiclesPart = (
-  part: Extract<Parameters<typeof isToolUIPart>[0], { state: string }>,
-  key: string,
-) => {
+type ToolUiPart = Extract<Parameters<typeof isToolUIPart>[0], { state: string }>;
+
+const ASSISTANT_TOOL_NAMES = new Set([
+  "askClarifyingQuestions",
+  "searchVehicles",
+  "compareVehicles",
+  "analyzeListing",
+  "prepareSellerContact",
+  "prepareNegotiation",
+]);
+
+interface AssistantPendingIndicatorProps {
+  label: string;
+}
+
+const AssistantPendingIndicator = ({
+  label,
+}: AssistantPendingIndicatorProps) => (
+  <Message from="assistant">
+    <MessageContent>
+      <div
+        aria-live="polite"
+        className="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <Spinner className="size-4" />
+        <span>{label}</span>
+      </div>
+    </MessageContent>
+  </Message>
+);
+
+const getToolCallId = (part: ToolUiPart): string | undefined => {
+  if ("toolCallId" in part && typeof part.toolCallId === "string") {
+    return part.toolCallId;
+  }
+
+  return undefined;
+};
+
+const renderToolPending = (key: string, label: string) => (
+  <div
+    className="flex items-center gap-2 text-sm text-muted-foreground"
+    key={key}
+  >
+    <Spinner className="size-4" />
+    <span>{label}</span>
+  </div>
+);
+
+const renderToolError = (part: ToolUiPart, key: string, fallback: string) => (
+  <p className="text-sm text-destructive" key={key}>
+    {"errorText" in part && typeof part.errorText === "string"
+      ? part.errorText
+      : fallback}
+  </p>
+);
+
+const renderAskClarifyingQuestionsPart = (part: ToolUiPart, key: string) => {
   if (part.state === "output-error") {
-    return (
-      <p className="text-sm text-destructive" key={key}>
-        {"errorText" in part && typeof part.errorText === "string"
-          ? part.errorText
-          : "No se pudo completar la búsqueda de vehículos."}
-      </p>
+    return renderToolError(
+      part,
+      key,
+      "No se pudieron cargar las preguntas de aclaración.",
+    );
+  }
+
+  if (
+    part.state === "output-available" &&
+    "output" in part &&
+    isAskClarifyingQuestionsOutput(part.output)
+  ) {
+    return <AssistantClarifyingQuestions key={key} output={part.output} />;
+  }
+
+  return renderToolPending(key, "Preparando preguntas...");
+};
+
+const renderSearchVehiclesPart = (part: ToolUiPart, key: string) => {
+  if (part.state === "output-error") {
+    return renderToolError(
+      part,
+      key,
+      "No se pudo completar la búsqueda de vehículos.",
     );
   }
 
@@ -47,44 +131,101 @@ const renderSearchVehiclesPart = (
     );
   }
 
-  return (
-    <div
-      className="flex items-center gap-2 text-sm text-muted-foreground"
-      key={key}
-    >
-      <Spinner className="size-4" />
-      <span>Buscando vehículos...</span>
-    </div>
-  );
+  return renderToolPending(key, "Buscando vehículos...");
 };
 
-const getSearchVehiclesToolCallId = (
-  part: Extract<Parameters<typeof isToolUIPart>[0], { state: string }>,
-): string | undefined => {
-  if ("toolCallId" in part && typeof part.toolCallId === "string") {
-    return part.toolCallId;
+const renderCompareVehiclesPart = (part: ToolUiPart, key: string) => {
+  if (part.state === "output-error") {
+    return renderToolError(part, key, "No se pudo comparar los vehículos.");
   }
 
-  return undefined;
+  if (
+    part.state === "output-available" &&
+    "output" in part &&
+    isCompareVehiclesOutput(part.output)
+  ) {
+    return <AssistantCompareVehicles key={key} output={part.output} />;
+  }
+
+  return renderToolPending(key, "Comparando vehículos...");
 };
 
-interface AssistantPendingIndicatorProps {
-  label: string;
-}
+const renderAnalyzeListingPart = (part: ToolUiPart, key: string) => {
+  if (part.state === "output-error") {
+    return renderToolError(part, key, "No se pudo analizar el anuncio.");
+  }
 
-const AssistantPendingIndicator = ({ label }: AssistantPendingIndicatorProps) => (
-  <Message from="assistant">
-    <MessageContent>
-      <div
-        aria-live="polite"
-        className="flex items-center gap-2 text-sm text-muted-foreground"
-      >
-        <Spinner className="size-4" />
-        <span>{label}</span>
-      </div>
-    </MessageContent>
-  </Message>
-);
+  if (
+    part.state === "output-available" &&
+    "output" in part &&
+    isAnalyzeListingOutput(part.output)
+  ) {
+    return <AssistantAnalyzeListing key={key} output={part.output} />;
+  }
+
+  return renderToolPending(key, "Analizando anuncio...");
+};
+
+const renderPrepareSellerContactPart = (part: ToolUiPart, key: string) => {
+  if (part.state === "output-error") {
+    return renderToolError(
+      part,
+      key,
+      "No se pudo preparar el contacto con el vendedor.",
+    );
+  }
+
+  if (
+    part.state === "output-available" &&
+    "output" in part &&
+    isPrepareSellerContactOutput(part.output)
+  ) {
+    return <AssistantSellerContact key={key} output={part.output} />;
+  }
+
+  return renderToolPending(key, "Preparando contacto...");
+};
+
+const renderPrepareNegotiationPart = (part: ToolUiPart, key: string) => {
+  if (part.state === "output-error") {
+    return renderToolError(
+      part,
+      key,
+      "No se pudo preparar la negociación.",
+    );
+  }
+
+  if (
+    part.state === "output-available" &&
+    "output" in part &&
+    isPrepareNegotiationOutput(part.output)
+  ) {
+    return <AssistantNegotiation key={key} output={part.output} />;
+  }
+
+  return renderToolPending(key, "Preparando negociación...");
+};
+
+const renderAssistantToolPart = (part: ToolUiPart, key: string) => {
+  const toolName = getToolName(part);
+
+  switch (toolName) {
+    case "askClarifyingQuestions":
+      return renderAskClarifyingQuestionsPart(part, key);
+    case "searchVehicles":
+      return renderSearchVehiclesPart(part, key);
+    case "compareVehicles":
+      return renderCompareVehiclesPart(part, key);
+    case "analyzeListing":
+      return renderAnalyzeListingPart(part, key);
+    case "prepareSellerContact":
+      return renderPrepareSellerContactPart(part, key);
+    case "prepareNegotiation":
+      return renderPrepareNegotiationPart(part, key);
+    default:
+      return null;
+  }
+};
 
 const hasAssistantVisibleContent = (
   message: ReturnType<typeof useAssistantChat>["messages"][number],
@@ -94,7 +235,7 @@ const hasAssistantVisibleContent = (
       return true;
     }
 
-    if (isToolUIPart(part) && getToolName(part) === "searchVehicles") {
+    if (isToolUIPart(part) && ASSISTANT_TOOL_NAMES.has(getToolName(part))) {
       return true;
     }
 
@@ -171,27 +312,30 @@ export const AssistantMessages = () => {
                       );
                     }
 
-                    if (
-                      isToolUIPart(part) &&
-                      getToolName(part) === "searchVehicles"
-                    ) {
-                      const toolCallId = getSearchVehiclesToolCallId(part);
-
-                      if (toolCallId) {
-                        if (seenToolCallIds.has(toolCallId)) {
-                          return null;
-                        }
-
-                        seenToolCallIds.add(toolCallId);
-                      }
-
-                      return renderSearchVehiclesPart(
-                        part,
-                        `${message.id}-tool-${toolCallId ?? index}`,
-                      );
+                    if (!isToolUIPart(part)) {
+                      return null;
                     }
 
-                    return null;
+                    const toolName = getToolName(part);
+
+                    if (!ASSISTANT_TOOL_NAMES.has(toolName)) {
+                      return null;
+                    }
+
+                    const toolCallId = getToolCallId(part);
+
+                    if (toolCallId) {
+                      if (seenToolCallIds.has(toolCallId)) {
+                        return null;
+                      }
+
+                      seenToolCallIds.add(toolCallId);
+                    }
+
+                    return renderAssistantToolPart(
+                      part,
+                      `${message.id}-tool-${toolName}-${toolCallId ?? index}`,
+                    );
                   })}
                 </MessageContent>
               </Message>

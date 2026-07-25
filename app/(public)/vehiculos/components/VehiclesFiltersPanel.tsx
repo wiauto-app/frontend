@@ -145,11 +145,8 @@ export const VehiclesFiltersPanel = ({
   const iconSize = 24;
 
   return (
-    <Card size="sm" className="min-w-85 rounded-t-none">
-      <CardHeader>
-        <CardTitle>Filtros</CardTitle>
-      </CardHeader>
-      <CardContent className={cn("flex flex-col gap-5")}>
+  
+      <>
         <VehicleTypeSelector
           vehicleTypes={catalog.vehicleTypes}
           value={type_slug}
@@ -390,7 +387,7 @@ export const VehiclesFiltersPanel = ({
             }
           />
         </FilterItem>
-      </CardContent>
-    </Card>
+      </>
+       
   );
 };
