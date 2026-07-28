@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 import {
   LayoutGrid,
+  BarChart3,
+  Calculator,
   Car,
   Heart,
   Search,
@@ -27,7 +29,9 @@ export type UserSidebarLink = {
 
 export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
   { href: "/inicio", label: "Inicio", icon: LayoutGrid },
+  { href: "/estadisticas", label: "Estadísticas", icon: BarChart3 },
   { href: "/mis-anuncios", label: "Mis anuncios", icon: Car },
+  { href: "/mi-tasador", label: "Tasador", icon: Calculator },
   { href: "/favoritos", label: "Favoritos", icon: Heart },
   {
     href: "/busquedas-guardadas",

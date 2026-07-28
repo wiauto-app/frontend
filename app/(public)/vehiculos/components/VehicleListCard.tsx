@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MoreVertical } from "lucide-react";
 import { useState } from "react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
+import { useVehicleImpressionTracker } from "@/components/vehicles/hooks/useVehicleImpressionTracker";
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "../constants";
 import {
   formatPrice,
@@ -29,9 +30,13 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
   const financedPrice = getFinancedPrice(vehicle);
   const vehicleHref = `/vehiculo/${vehicle.id}`;
   const displayName = getVehicleDisplayName(vehicle);
+  const impressionRef = useVehicleImpressionTracker<HTMLElement>(vehicle.id);
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+    <article
+      ref={impressionRef}
+      className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm"
+    >
       <div className="flex flex-col md:flex-row">
         <VehicleImageCarousel
           images={vehicle.images ?? []}

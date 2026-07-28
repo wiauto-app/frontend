@@ -1,19 +1,42 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import type { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
 import { myListingsService } from "@/services/myListings/myListingsService";
 import { billingService } from "@/services/billingService";
 import { absoluteUrl } from "@/lib/seo/absolute-url";
+import {
+  DEFAULT_MY_LISTINGS_ORDER_VALUE,
+  getMyListingsOrderOption,
+} from "../constants/my-listings-order.constants";
 
 export const MY_LISTINGS_QUERY_KEY = ["my-listings"] as const;
 export const BILLING_ME_QUERY_KEY = ["billing-me"] as const;
 export const BILLING_CATALOG_QUERY_KEY = ["billing-catalog"] as const;
 
 const FEATURE_PLAN_SLUG = "destacar-vehiculo";
+const MY_LISTINGS_PAGE_LIMIT = 20;
+
+export interface MyListingsFilters {
+  status: VehicleStatus | null;
+  makeId: number | null;
+  modelId: number | null;
+  sinceCreatedAt: string;
+  untilCreatedAt: string;
+  order: string;
+}
+
+const DEFAULT_FILTERS: MyListingsFilters = {
+  status: null,
+  makeId: null,
+  modelId: null,
+  sinceCreatedAt: "",
+  untilCreatedAt: "",
+  order: DEFAULT_MY_LISTINGS_ORDER_VALUE,
+};
 
 type UseMyListingsPageOptions = {
   audience?: string;
@@ -25,11 +48,25 @@ export const useMyListingsPage = ({
   enabled = true,
 }: UseMyListingsPageOptions = {}) => {
   const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<MyListingsFilters>(DEFAULT_FILTERS);
+  const [page, setPage] = useState(1);
+
+  const orderOption = getMyListingsOrderOption(filters.order);
 
   const listingsQuery = useQuery({
-    queryKey: MY_LISTINGS_QUERY_KEY,
+    queryKey: [...MY_LISTINGS_QUERY_KEY, filters, page],
     queryFn: async () => {
-      const response = await myListingsService.findMine({ page: 1, limit: 50 });
+      const response = await myListingsService.findMine({
+        page,
+        limit: MY_LISTINGS_PAGE_LIMIT,
+        status: filters.status ?? undefined,
+        make_id: filters.makeId ?? undefined,
+        model_id: filters.modelId ?? undefined,
+        since_created_at: filters.sinceCreatedAt || undefined,
+        until_created_at: filters.untilCreatedAt || undefined,
+        order_by: orderOption.order_by,
+        order_direction: orderOption.order_direction,
+      });
       if (!response.ok || !response.data) {
         throw new Error(response.message || "No se pudieron cargar tus anuncios");
       }
@@ -37,6 +74,20 @@ export const useMyListingsPage = ({
     },
     enabled,
   });
+
+  const updateFilters = useCallback((patch: Partial<MyListingsFilters>) => {
+    setFilters((previous) => ({ ...previous, ...patch }));
+    setPage(1);
+  }, []);
+
+  const resetFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
+    setPage(1);
+  }, []);
+
+  const total = listingsQuery.data?.total ?? 0;
+  const limit = listingsQuery.data?.limit ?? MY_LISTINGS_PAGE_LIMIT;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
 
   const billingMeQuery = useQuery({
     queryKey: BILLING_ME_QUERY_KEY,
@@ -164,7 +215,13 @@ export const useMyListingsPage = ({
 
   return {
     listings,
-    total: listingsQuery.data?.total ?? 0,
+    total,
+    page,
+    totalPages,
+    onPageChange: setPage,
+    filters,
+    updateFilters,
+    resetFilters,
     billingMe: billingMeQuery.data ?? null,
     featurePlan,
     featurePrice,

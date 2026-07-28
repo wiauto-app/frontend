@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { VehiclesCarouselLayout } from "./VehiclesCarouselLayout";
 import { VehiclesGridLayout } from "./VehiclesGridLayout";
 import { SectionHeading } from "@/components/home/SectionHeading";
+import { Button } from "@/components/ui/button";
 
 type VehiclesListingSectionProps = {
   title: {
@@ -43,10 +44,7 @@ export const VehiclesListingSection = ({
 
   return (
     <SectionContainer className={cn("", className)}>
-      <SectionHeading
-        lead={title.lead}
-        highlight={title.highlight ?? ""}
-      />
+      <SectionHeading lead={title.lead} highlight={title.highlight ?? ""} />
       {variant === "grid" ? (
         <VehiclesGridLayout vehicles={vehicles} />
       ) : (
@@ -60,12 +58,8 @@ export const VehiclesListingSection = ({
 
       {seeMoreHref ? (
         <div className="mt-10 flex justify-center sm:mt-12">
-          <Link
-            href={seeMoreHref}
-            className="inline-flex h-12 min-w-[200px] items-center justify-center rounded-xl px-12 text-base font-bold text-white transition-opacity hover:opacity-90 sm:min-w-[240px] sm:px-16"
-            style={{ backgroundColor: BRAND_BLUE }}
-          >
-            {seeMoreLabel}
+          <Link href={seeMoreHref}>
+            <Button>{seeMoreLabel}</Button>
           </Link>
         </div>
       ) : null}

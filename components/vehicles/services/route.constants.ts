@@ -1,6 +1,7 @@
 
 
 export const V1_VEHICLES = "/v1/vehicles";
+export const V1_VEHICLES_IMPRESSIONS = "/v1/vehicles/impressions";
 export const V1_MY_VEHICLES = "/v1/vehicles/mine";
 export const V1_ADMIN_VEHICLES = "/v1/admin/vehicles";
 export const V1_FEATURES = "/v1/features";

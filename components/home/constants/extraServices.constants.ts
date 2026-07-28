@@ -24,7 +24,7 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
   {
     name: "Tasar vehículo",
     icon: Star,
-    href: "/tasacion",
+    href: "/tasador",
     description: "Obtén una valoración.",
   },
   {

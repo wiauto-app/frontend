@@ -18,9 +18,7 @@ import { VehicleDetailViewTracker } from "./VehicleDetailViewTracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
-import type {
-  VehicleDetailReview,
-} from "../types/vehicle-detail.types";
+import type { VehicleDetailReview } from "../types/vehicle-detail.types";
 
 interface VehicleDetailBodyProps {
   vehicle: Vehicle;
@@ -46,7 +44,7 @@ export const VehicleDetailBody = ({
         vehicle={vehicle}
         breadcrumbItems={breadcrumbItems}
       />
-      <div className="mx-auto container-custom py-6">
+      <div className="mx-auto container-custom py-6 space-y-6">
         <div className="relative grid grid-cols-1 gap-6 lg:grid-cols-4">
           <div className="space-y-6 lg:col-span-3">
             <VehicleDetailGallery
@@ -82,16 +80,13 @@ export const VehicleDetailBody = ({
               />
               <VehicleDetailContactTabs
                 vehicleId={vehicle.id}
-                publisherProfileId={
-                  vehicle.profile_id ?? vehicle.publisher.id
-                }
+                publisherProfileId={vehicle.profile_id ?? vehicle.publisher.id}
               />
             </CardContent>
           </Card>
         </div>
+        <VehicleSimilarVehiclesSection vehicleId={vehicle.id} />
       </div>
-
-      <VehicleSimilarVehiclesSection vehicleId={vehicle.id} />
 
       <VehicleDetailMobileActions
         vehicleId={vehicle.id}

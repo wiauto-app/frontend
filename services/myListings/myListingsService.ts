@@ -11,11 +11,17 @@ import type { PaginatedResult } from "@/types/general.types";
 import type { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 import { V1_MY_VEHICLES, V1_VEHICLES } from "@/components/vehicles/services/route.constants";
 
-type FindMineParams = {
+interface FindMineParams {
   page?: number;
   limit?: number;
   status?: VehicleStatus;
-};
+  make_id?: number;
+  model_id?: number;
+  since_created_at?: string;
+  until_created_at?: string;
+  order_by?: string;
+  order_direction?: "ASC" | "DESC";
+}
 
 export const myListingsService = {
   findMine(

@@ -12,6 +12,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useVehicleImpressionTracker } from "@/components/vehicles/hooks/useVehicleImpressionTracker";
 import {
   getVehicleMakeName,
   getVehicleModelLine,
@@ -205,9 +206,15 @@ export const VehicleGridCard = ({
   const imageUrl = getImageUrl(vehicle.images[0]?.url ?? "");
   const displayName = getVehicleDisplayName(vehicle);
   const vehicleUrl = getVehicleUrl(vehicle.id);
+  const impressionRef = useVehicleImpressionTracker<HTMLDivElement>(
+    vehicle.id,
+  );
 
   return (
-    <Card className="group relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md pb-3">
+    <Card
+      ref={impressionRef}
+      className="group relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md pb-3"
+    >
       {/* Enlace de ratón; el CTA "Ver detalle" es el único foco de teclado/lector. */}
       <Link
         href={vehicleUrl}

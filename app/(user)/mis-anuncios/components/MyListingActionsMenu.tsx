@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   CalendarClock,
   Copy,
+  FileText,
   MoreVertical,
   Pencil,
   Power,
@@ -100,6 +101,18 @@ export const MyListingActionsMenu = ({
           <DropdownMenuItem onClick={handleDuplicate}>
             <Copy className="size-4" aria-hidden />
             Duplicar
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            render={
+              <Link
+                href={`/mis-anuncios/${listing.id}/informe`}
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            }
+          >
+            <FileText className="size-4" aria-hidden />
+            Exportar informe
           </DropdownMenuItem>
           {listing.can_schedule ? (
             <DropdownMenuItem onClick={handleSchedule}>

@@ -44,28 +44,28 @@ export const authService = {
     apiPost<AuthResponseDto>(`/2fa/enable`, data),
 
   getMe: async (accessToken?: string): Promise<ApiResponse<MeResponseDto | null>> => {
-    if (!accessToken) {
-      const isLoggedIn = await authService.isLoggedIn();
-      if (!isLoggedIn) {
-        return {
-          ok: false,
-          message: "No estás autenticado",
-          status: 401,
-          data: null,
-        };
-      }
+    // if (!accessToken) {
+    //   const isLoggedIn = await authService.isLoggedIn();
+    //   if (!isLoggedIn) {
+    //     return {
+    //       ok: false,
+    //       message: "No estás autenticado",
+    //       status: 401,
+    //       data: null,
+    //     };
+    //   }
 
-      return fetchWithAuth<MeResponseDto>("/auth/me", {
-        method: "GET",
-        credentials: "include",
-      });
-    }
+    //   return fetchWithAuth<MeResponseDto>("/auth/me", {
+    //     method: "GET",
+    //     credentials: "include",
+    //   });
+    // }
 
     return fetchWithAuth<MeResponseDto>("/auth/me", {
       method: "GET",
       skipAuthRefresh: true,
       credentials: "include",
-      headers: { Authorization: `Bearer ${accessToken}` },
+      // headers: { Authorization: `Bearer ${accessToken}` },
     });
   },
 

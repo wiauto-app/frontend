@@ -31,7 +31,7 @@ interface TryRefreshSessionResult {
   unauthorized: boolean;
 }
 
-const buildApiUrl = (path: string): string => {
+export const buildApiUrl = (path: string): string => {
   const base = (API_URL ?? "").replace(/\/$/, "");
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 

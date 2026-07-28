@@ -11,6 +11,8 @@ import { MyListingsSummaryCards } from "./MyListingsSummaryCards";
 import { MyListingsTable } from "./MyListingsTable";
 import { MyListingsPromoSidebar } from "./MyListingsPromoSidebar";
 import { MyListingsHelpSection } from "./MyListingsHelpSection";
+import { MyListingsFiltersBar } from "./MyListingsFiltersBar";
+import { MyListingsPagination } from "./MyListingsPagination";
 import { ScheduleListingDialog } from "./ScheduleListingDialog";
 import { useMyListingsPage } from "../hooks/useMyListingsPage";
 import { aggregateListingStats } from "../utils/aggregateListingStats";
@@ -35,6 +37,13 @@ export const MyListing = () => {
 
   const {
     listings,
+    total,
+    page,
+    totalPages,
+    onPageChange,
+    filters,
+    updateFilters,
+    resetFilters,
     billingMe,
     featurePlan,
     featurePrice,
@@ -63,6 +72,14 @@ export const MyListing = () => {
   const aggregatedStats = useMemo(
     () => aggregateListingStats(listings),
     [listings],
+  );
+
+  const hasActiveFilters = Boolean(
+    filters.status ||
+      filters.makeId ||
+      filters.modelId ||
+      filters.sinceCreatedAt ||
+      filters.untilCreatedAt,
   );
 
   const featurePriceLabel = featurePrice ? formatEuros(featurePrice.amount_cents) : null;
@@ -187,6 +204,12 @@ export const MyListing = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         <div className="min-w-0 space-y-4">
+          <MyListingsFiltersBar
+            filters={filters}
+            onChange={updateFilters}
+            onReset={resetFilters}
+          />
+
           {isLoading || isBillingLoading ? (
             <div className="flex items-center justify-center py-16 bg-white rounded-xl border border-gray-100 shadow-sm">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" aria-hidden />
@@ -198,26 +221,53 @@ export const MyListing = () => {
           ) : listings.length === 0 ? (
             <div className="p-12 text-center bg-white rounded-xl border border-gray-100 shadow-sm">
               <Car className="mx-auto h-12 w-12 text-gray-300" aria-hidden />
-              <p className="mt-4 text-gray-600">Aún no tienes anuncios publicados</p>
-              <Link
-                href="/crear-vehiculo"
-                className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80"
-              >
-                Nuevo anuncio
-              </Link>
+              {hasActiveFilters ? (
+                <>
+                  <p className="mt-4 text-gray-600">
+                    No hay anuncios que coincidan con los filtros aplicados
+                  </p>
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80"
+                  >
+                    Limpiar filtros
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="mt-4 text-gray-600">Aún no tienes anuncios publicados</p>
+                  <Link
+                    href="/crear-vehiculo"
+                    className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80"
+                  >
+                    Nuevo anuncio
+                  </Link>
+                </>
+              )}
             </div>
           ) : (
-            <MyListingsTable
-              listings={listings}
-              onRenew={handleRenew}
-              onFeature={handleFeature}
-              onDuplicate={handleDuplicate}
-              onSchedule={setScheduleListing}
-              onRemove={handleRemove}
-              onToggleStatus={handleToggleStatus}
-              isMutating={isMutating}
-              featurePriceLabel={featurePriceLabel}
-            />
+            <>
+              <p className="text-sm text-gray-500">
+                {total} anuncio{total === 1 ? "" : "s"}
+              </p>
+              <MyListingsTable
+                listings={listings}
+                onRenew={handleRenew}
+                onFeature={handleFeature}
+                onDuplicate={handleDuplicate}
+                onSchedule={setScheduleListing}
+                onRemove={handleRemove}
+                onToggleStatus={handleToggleStatus}
+                isMutating={isMutating}
+                featurePriceLabel={featurePriceLabel}
+              />
+              <MyListingsPagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+              />
+            </>
           )}
         </div>
 
