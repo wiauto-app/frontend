@@ -2,12 +2,12 @@ export const BRAND_BLUE = "#0061F2";
 export const BRAND_BLUE_LIGHT = "#EBF2FF";
 
 export const SORT_OPTIONS = [
-  { value: "price-desc", label: "Precio: mayor a menor" },
-  { value: "price-asc", label: "Precio: menor a mayor" },
-  { value: "created_at-desc", label: "Más nuevos primero" },
-  { value: "created_at-asc", label: "Más antiguos primero" },
+  { value: "created_at-desc", label: "Más recientes" },
+  { value: "rating-desc", label: "Más valorados" },
+  { value: "price-asc", label: "Más baratos" },
+  { value: "price-desc", label: "Más caros" },
   { value: "mileage-asc", label: "Menor kilometraje" },
-  { value: "mileage-desc", label: "Mayor kilometraje" },
+  { value: "views-desc", label: "Más vistos" },
 ] as const;
 
 export const BRAND_OPTIONS = [

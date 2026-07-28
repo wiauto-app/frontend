@@ -46,6 +46,7 @@ import {
   CreateColorDto,
   UpdateColorDto,
 } from "@/interfaces/vehicle.interface";
+import type { VehicleByRefResponse } from "@/interfaces/hero-facet.interface";
 
 import { buildVehiclesQueryString } from "@/lib/vehicles/build-vehicles-query-params";
 
@@ -78,6 +79,8 @@ export const vehicleService = {
     },
     findById: (id: string): Promise<ApiResponse<Vehicle>> =>
       apiGet<Vehicle>(`/v1/vehicles/${id}`),
+    findByRef: (ref: number): Promise<ApiResponse<VehicleByRefResponse>> =>
+      apiGet<VehicleByRefResponse>(`/v1/vehicles/by-ref/${ref}`),
     create: (data: CreateVehicleDto, files?: File[]): Promise<ApiResponse<Vehicle>> => {
       if (files && files.length > 0) {
         const formData = new FormData();

@@ -17,16 +17,20 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { SORT_OPTIONS } from "../constants";
+import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 
-export function VehiclesToolbar({
-  filtersNode,
-}: {
+interface VehiclesToolbarProps {
   filtersNode?: React.ReactNode;
-}) {
+}
+
+export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
   const router = useRouter();
+  const { sortValue, handleSortChange } = useVehiclesListingFilters();
+
   return (
     <div className="sticky top-20 z-30 border-b border-slate-200 bg-[#EEF3FA]">
-      <div className="mx-auto flex container-custom  items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:py-4">
+      <div className="mx-auto flex container-custom items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:py-4">
         <div className="flex gap-2 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
           <Button onClick={() => router.push("/vehiculos")}>Comprar</Button>
           <Button
@@ -63,21 +67,32 @@ export function VehiclesToolbar({
             </div>
           )}
 
-          <div className="relative hidden sm:block">
-            <ArrowDownWideNarrow className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500 z-10" />
-            <Select>
+          <div className="relative">
+            <ArrowDownWideNarrow className="pointer-events-none absolute left-3 top-1/2 z-10 size-4 -translate-y-1/2 text-slate-500" />
+            <Select
+              value={sortValue}
+              onValueChange={(value) => {
+                if (value) {
+                  handleSortChange(value);
+                }
+              }}
+              items={SORT_OPTIONS.map((option) => ({
+                label: option.label,
+                value: option.value,
+              }))}
+            >
               <SelectTrigger
-                className="h-11 pl-10 pr-8 w-full rounded-lg bg-white border border-slate-200 font-medium text-slate-700"
-                aria-label="Ordenar"
+                className="h-11 w-full min-w-44 rounded-lg border border-slate-200 bg-white pl-10 pr-8 font-medium text-slate-700"
+                aria-label="Ordenar resultados"
               >
                 <SelectValue placeholder="Ordenar" />
               </SelectTrigger>
               <SelectContent className="w-full">
-                <SelectItem value="recent">Más recientes</SelectItem>
-                <SelectItem value="price-asc">Precio: menor a mayor</SelectItem>
-                <SelectItem value="price-desc">
-                  Precio: mayor a menor
-                </SelectItem>
+                {SORT_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

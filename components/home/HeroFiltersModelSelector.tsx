@@ -16,12 +16,7 @@ import { useHeroSearchFilters } from "./HeroSearchFiltersContext";
 
 const buildModelTriggerLabel = (
   selectedModels: HeroCatalogFacetItem[],
-  hasSelectedMakes: boolean,
 ): string => {
-  if (!hasSelectedMakes) {
-    return "Selecciona una marca";
-  }
-
   if (!selectedModels.length) {
     return "Modelo";
   }
@@ -39,7 +34,6 @@ export const HeroFiltersModelSelector = () => {
   const [search, setSearch] = useState("");
   const debounced_search = useDebouncedValue(search, 300);
 
-  const has_selected_makes = selectedMakes.length > 0;
   const make_slugs = useMemo(
     () => selectedMakes.map((make) => make.slug),
     [selectedMakes],
@@ -68,11 +62,10 @@ export const HeroFiltersModelSelector = () => {
     ],
     queryFn: () =>
       heroFacetService.getModels(
-        make_slugs,
+        make_slugs.length > 0 ? make_slugs : undefined,
         model_cascade_filters,
         debounced_search.trim() || undefined,
       ),
-    enabled: has_selected_makes,
   });
 
   const selected_model_ids = useMemo(
@@ -81,8 +74,8 @@ export const HeroFiltersModelSelector = () => {
   );
 
   const trigger_label = useMemo(
-    () => buildModelTriggerLabel(selectedModels, has_selected_makes),
-    [has_selected_makes, selectedModels],
+    () => buildModelTriggerLabel(selectedModels),
+    [selectedModels],
   );
 
   const handleModelCheckedChange = (
@@ -95,18 +88,11 @@ export const HeroFiltersModelSelector = () => {
   return (
     <Popover>
       <PopoverTrigger
-        disabled={!has_selected_makes}
         render={
           <Button
             variant="outline"
             className="w-full justify-start text-base"
-            disabled={!has_selected_makes}
-            aria-disabled={!has_selected_makes}
-            aria-label={
-              has_selected_makes
-                ? "Seleccionar modelo"
-                : "Selecciona una marca primero"
-            }
+            aria-label="Seleccionar modelo"
           >
             <div className="flex w-full items-center justify-between text-sm">
               <span className="truncate">{trigger_label}</span>
@@ -149,9 +135,16 @@ export const HeroFiltersModelSelector = () => {
                 handleModelCheckedChange(model, event.target.checked)
               }
               label={
-                <div className="flex w-full items-center justify-between">
-                  <p>{model.name}</p>
-                  <span className="text-xs text-muted-foreground">
+                <div className="flex w-full items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate">{model.name}</p>
+                    {model.make_name ? (
+                      <p className="truncate text-xs text-muted-foreground">
+                        {model.make_name}
+                      </p>
+                    ) : null}
+                  </div>
+                  <span className="shrink-0 text-xs text-muted-foreground">
                     {model.vehicle_count}
                   </span>
                 </div>

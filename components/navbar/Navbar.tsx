@@ -1,5 +1,6 @@
 import { BrandLogo } from "../ui/brandLogo";
 import { NavbarActions } from "./components/NavbarActions";
+import { NavbarLinks } from "./components/NavbarLinks";
 import { NavbarMobileMenu } from "./components/NavbarMobileMenu";
 
 export const Navbar = () => {
@@ -11,11 +12,9 @@ export const Navbar = () => {
       >
         <BrandLogo />
 
-        <div className="flex items-center gap-3 sm:gap-4">
-          {/* <NavbarLinks /> */}
-          <NavbarActions />
-          <NavbarMobileMenu />
-        </div>
+        <NavbarLinks />
+        <NavbarActions />
+        <NavbarMobileMenu />
       </nav>
     </header>
   );

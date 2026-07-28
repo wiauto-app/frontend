@@ -2,25 +2,34 @@
 
 import { usePathname } from "next/navigation";
 
-import { isNavLinkActive, NAV_LINKS } from "../constants/navLinks.constants";
+import {
+  isNavEntryActive,
+  NAV_LINKS,
+} from "../constants/navLinks.constants";
 import { NavLinkItem } from "./NavLinkItem";
+import {
+  NavigationMenu,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
 
 export function NavbarLinks() {
   const pathname = usePathname();
 
   return (
-    <ul className="hidden items-center gap-5 lg:flex">
-      {NAV_LINKS.map((link) => (
-        <li key={link.href}>
+    <NavigationMenu className="hidden max-w-none lg:flex" align="start">
+      <NavigationMenuList className="gap-5">
+        {NAV_LINKS.map((link) => (
           <NavLinkItem
+            key={link.href ?? link.label}
             href={link.href}
             label={link.label}
-            isActive={isNavLinkActive(pathname, link.href)}
+            items={link.items}
+            itemsGroups={link.itemsGroups}
+            isActive={isNavEntryActive(pathname, link)}
             variant="desktop"
           />
-        </li>
-      ))}
-      {/* <ServicesDropdown /> */}
-    </ul>
+        ))}
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 }

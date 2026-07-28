@@ -75,6 +75,7 @@ export interface Card {
   descripcion: string;
   colorFondo: string | null;
   colorTexto: string | null;
+  iconName: string | null;
   boton: Boton | null;
   imagen: Media | null;
 }

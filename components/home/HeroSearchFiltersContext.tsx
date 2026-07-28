@@ -121,15 +121,28 @@ export const HeroSearchFiltersProvider = ({
         return [...prev, model];
       });
 
-      if (model.make_id === undefined) {
+      const { make_id, make_slug, make_name } = model;
+      if (
+        make_id === undefined ||
+        !make_slug ||
+        !make_name
+      ) {
         return;
       }
 
       setSelectedMakes((prev) => {
-        if (prev.some((item) => item.id === model.make_id)) {
+        if (prev.some((item) => item.id === make_id)) {
           return prev;
         }
-        return prev;
+        return [
+          ...prev,
+          {
+            id: make_id,
+            slug: make_slug,
+            name: make_name,
+            vehicle_count: 0,
+          },
+        ];
       });
     },
     [],

@@ -1,6 +1,8 @@
 export type {
   HeroFacetKind,
   HeroCatalogFacetItem,
+  HeroCountResponse,
+  VehicleByRefResponse,
   HeroPriceRangeFacetItem,
   HeroFacetItem,
   HeroFacetsResponse,

@@ -23,7 +23,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { isServicesNavActive } from "../constants/navLinks.constants";
-import { getNavLinkItemClassName } from "./NavLinkItem";
+import { getNavLinkItemClassName } from "./getNavLinkItemClassName";
 
 type ServicesDropdownProps = {
   variant?: "dropdown" | "inline";

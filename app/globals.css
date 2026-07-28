@@ -196,12 +196,27 @@
   }
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home-card-interactive,
   .home-card-image,
   .home-pressable {
     transition: none !important;
     transform: none !important;
+  }
+
+  [class*="animate-[fade-up"] {
+    animation: none !important;
   }
 }
 

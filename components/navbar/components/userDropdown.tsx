@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { ChevronDown, LogOut, User } from "lucide-react";
 
 import { useUser } from "@/app/contexts/auth/useUser";
 import { UserAvatar } from "./userAvatar";
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getUserSidebarLinks } from "@/app/(user)/constants/user.constants";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GoPerson } from "react-icons/go";
+import { LuStore } from "react-icons/lu";
 
 function getDisplayName(name?: string, lastName?: string, email?: string) {
   const fullName = [name, lastName].filter(Boolean).join(" ").trim();
@@ -41,8 +43,9 @@ export function UserDropdown() {
     return (
       <Link
         href="/iniciar-sesion"
-        className="hidden lg:block text-sm font-semibold  hover:text-primary hover:underline"
+        className="hidden lg:flex items-center gap-2 text-sm font-semibold  hover:text-primary hover:underline"
       >
+        <User className="size-4" />
         Iniciar sesión
       </Link>
     );
@@ -67,18 +70,32 @@ export function UserDropdown() {
               <p className="hidden max-w-[160px] truncate text-sm font-bold text-slate-900 sm:inline">
                 {displayName}
               </p>
-              <span className="text-xs text-muted-foreground">{user.userType}</span>
+              <span className="text-xs text-muted-foreground">
+                {user.userType}
+              </span>
             </div>
           </button>
         }
       ></DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-64">
-        <div className="border-b px-3 py-3">
-          <p className="truncate text-sm font-semibold">{displayName}</p>
-          <p className="truncate text-xs text-muted-foreground">{user.email}</p>
-        </div>
-
+        {user.dealership_membership && (
+          <div className="flex items-center gap-2 justify-start p-2">
+            <LuStore className="size-5" />
+            <div className="flex flex-col items-start">
+              <p className="text-sm font-medium">
+                {user.dealership_membership.dealership_name}
+              </p>
+              <div className="flex items-center gap-1">
+                <div className="size-2 rounded-full bg-green-500" />
+                <p className="text-xs text-muted-foreground">
+                  {user.dealership_membership.role}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        <DropdownMenuSeparator />
         {sidebarLinks.map((item) => {
           const Icon = item.icon;
 

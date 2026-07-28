@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
-  isNavLinkActive,
+  isNavEntryActive,
   NAV_LINKS,
 } from "../constants/navLinks.constants";
 import { NavLinkItem } from "./NavLinkItem";
@@ -78,10 +78,12 @@ export const NavbarMobileMenu = () => {
           >
             {NAV_LINKS.map((link) => (
               <NavLinkItem
-                key={link.href}
+                key={link.href ?? link.label}
                 href={link.href}
                 label={link.label}
-                isActive={isNavLinkActive(pathname, link.href)}
+                items={link.items}
+                itemsGroups={link.itemsGroups}
+                isActive={isNavEntryActive(pathname, link)}
                 variant="mobile"
                 onNavigate={handleNavigate}
               />

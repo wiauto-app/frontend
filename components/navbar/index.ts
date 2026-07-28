@@ -9,6 +9,9 @@ export { UserDropdown } from "./components/userDropdown";
 export {
   BRAND_BLUE,
   NAV_LINKS,
+  getNavLinkChildItems,
+  isNavEntryActive,
   isNavLinkActive,
+  isNavLinkGroupActive,
   isServicesNavActive,
 } from "./constants/navLinks.constants";

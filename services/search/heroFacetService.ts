@@ -1,6 +1,7 @@
 
 import type {
   HeroCatalogFacetItem,
+  HeroCountResponse,
   HeroFacetCascadeFilters,
   HeroFacetKind,
   HeroFacetsResponse,
@@ -9,6 +10,7 @@ import type {
 import { apiGet } from "@/lib/api";
 
 export const V1_SEARCH_HERO_FACETS = "/v1/search/hero-facets";
+export const V1_SEARCH_HERO_COUNT = "/v1/search/hero-count";
 
 export type HeroFacetQueryParams = HeroFacetCascadeFilters & {
   facet: HeroFacetKind;
@@ -39,14 +41,14 @@ export const heroFacetService = {
     }),
 
   getModels: (
-    make_slugs: string[],
+    make_slugs?: string[],
     filters?: HeroFacetCascadeFilters,
     search?: string,
   ): Promise<HeroCatalogFacetItem[]> =>
     fetchFacets<HeroCatalogFacetItem>({
       facet: "models",
       ...filters,
-      make_slugs,
+      ...(make_slugs?.length ? { make_slugs } : {}),
       search,
     }),
 
@@ -79,4 +81,15 @@ export const heroFacetService = {
       facet: "price_ranges",
       ...filters,
     }),
+
+  getCount: async (
+    filters?: HeroFacetCascadeFilters,
+  ): Promise<HeroCountResponse> => {
+    const response = await apiGet<HeroCountResponse>(
+      V1_SEARCH_HERO_COUNT,
+      filters,
+      0,
+    );
+    return response.data ?? { count: 0 };
+  },
 };

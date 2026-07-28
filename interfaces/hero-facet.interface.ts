@@ -5,16 +5,28 @@ export type HeroFacetKind =
   | "municipalities"
   | "price_ranges";
 
-export type HeroCatalogFacetItem = {
+export interface HeroCatalogFacetItem {
   id: number;
   slug: string;
   name: string;
   vehicle_count: number;
   /** Presente solo cuando facet=models */
   make_id?: number;
+  /** Presente solo cuando facet=models (para autocompletar marca) */
+  make_slug?: string;
+  /** Presente solo cuando facet=models (para autocompletar marca) */
+  make_name?: string;
   /** Asignado en el cliente cuando facet=municipalities (por provincia expandida) */
   province_id?: number;
-};
+}
+
+export interface HeroCountResponse {
+  count: number;
+}
+
+export interface VehicleByRefResponse {
+  id: string;
+}
 
 export type HeroPriceRangeFacetItem = {
   until_price: number;
