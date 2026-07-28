@@ -34,7 +34,7 @@ export function ProcessSection({ data }: ProcessSectionProps) {
         <div
           className="inline-flex rounded-xl bg-white p-1.5 shadow-[0_4px_24px_rgba(15,23,42,0.08)]"
           role="tablist"
-          aria-label="Proceso automotriz"
+          aria-label="Proceso de automoción"
         >
           {data.tabs.map((tab) => (
             <button

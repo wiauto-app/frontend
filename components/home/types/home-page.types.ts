@@ -123,6 +123,7 @@ export type HomePageData = {
 
 export type VehicleExtraServiceItem = {
   name: string;
+  color?: string;
   description: string;
   icon: LucideIcon;
   href: string;

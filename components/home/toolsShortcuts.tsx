@@ -43,8 +43,8 @@ export const ToolsShortcuts = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {TOOLS_SHORTCUTS_DATA.map((item) => (
           <Card key={item.title} size="sm">
-            <CardContent className="flex items-start gap-3">
-              <IconContainer Icon={item.icon} />
+            <CardContent className="flex flex-col gap-4 items-center">
+              <IconContainer className="bg-white/10 shadow-md " Icon={item.icon} />
               <div>
                 <h3 className="text-base font-bold">
                   {item.title}

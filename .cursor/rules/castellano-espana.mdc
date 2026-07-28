@@ -1,0 +1,46 @@
+---
+description: Textos UI en castellano de España (no latinoamericano); preferir vehículo/coche
+alwaysApply: true
+---
+
+# Castellano de España (WiAuto)
+
+Todos los textos visibles al usuario (UI, SEO, aria-labels, placeholders, mensajes de error, defaults de Strapi) deben estar en **castellano de España**, no en español latinoamericano.
+
+## Preferencia de léxico vehicular
+
+1. Preferir **vehículo / vehículos** y **coche / coches**.
+2. Evitar **auto / autos**, **carro / carros** (salvo el nombre de marca WiAuto o código técnico).
+3. En sector: preferir **automoción** frente a **automotriz**.
+
+```tsx
+// ❌ Evitar
+"Buscar 12 autos"
+"Encuentra el auto ideal"
+"sector automotriz"
+
+// ✅ Preferir
+"Buscar 12 coches"
+"Encuentra el vehículo ideal"
+"sector de la automoción"
+```
+
+## Latinismos frecuentes → España
+
+| Evitar (LatAm) | Preferir (España) |
+| --- | --- |
+| auto / autos | coche / vehículo |
+| carro | coche |
+| financiamiento | financiación |
+| celular | móvil |
+| computadora | ordenador |
+| estacionamiento | aparcamiento |
+| chequear | comprobar / revisar |
+| agarrar | coger / tomar |
+| platicar | hablar / conversar |
+
+## Criterios
+
+- Tono natural de España; formalidad de producto (tú/usted coherente en la misma pantalla).
+- No cambiar nombres de variables, rutas API ni identificadores de código por esta regla.
+- Sí adaptar copy, labels y textos por defecto aunque la clave interna diga `auto` o `financiamiento`.

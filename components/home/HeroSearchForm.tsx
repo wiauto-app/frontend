@@ -37,10 +37,10 @@ const buildSearchButtonLabel = (
   }
 
   if (count === 1) {
-    return "Buscar 1 auto";
+    return "Buscar 1 coche";
   }
 
-  return `Buscar ${count ?? 0} autos`;
+  return `Buscar ${count ?? 0} coches`;
 };
 
 const HeroModeToggle = ({ mode, onModeChange }: HeroModeToggleProps) => {

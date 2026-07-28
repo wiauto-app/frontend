@@ -1,30 +1,71 @@
 import Link from "next/link";
 import { IconContainer } from "../ui/iconContainer";
 import type { VehicleExtraServiceItem } from "./types/home-page.types";
+import { Card, CardContent, CardFooter } from "../ui/card";
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { ArrowRight } from "lucide-react";
 
 interface ServiceHomeItemProps {
   item: VehicleExtraServiceItem;
 }
 
+const buildServiceGradient = (color: string): string =>
+  `linear-gradient(
+    to bottom,
+    color-mix(in srgb, ${color} 18%, transparent) 0%,
+    color-mix(in srgb, ${color} 6%, transparent) 45%,
+    transparent 100%
+  )`;
+
 export const ServiceHomeItem = ({ item }: ServiceHomeItemProps) => {
+  const accentColor = item.color;
+
   return (
     <Link
       href={item.href}
-      className={cn(
-        "home-card-interactive flex items-center gap-2 rounded-xl p-1",
-        "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        "hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)]",
-        "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
-      )}
+      aria-label={item.name}
+      className="block h-full transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <IconContainer Icon={item.icon} />
-      <div>
-        <h3 className="text-sm font-bold">{item.name}</h3>
-        <p className="text-xs leading-relaxed text-slate-500">
-          {item.description}
-        </p>
-      </div>
+      <Card
+        size="sm"
+        className={cn("h-full", accentColor && "border-0 shadow-sm")}
+        style={
+          accentColor
+            ? {
+                backgroundImage: buildServiceGradient(accentColor),
+                backgroundColor: "var(--card)",
+              }
+            : undefined
+        }
+      >
+        <CardContent className="flex-1 flex flex-col items-center gap-4">
+          <IconContainer
+            iconColor={accentColor}
+            className="bg-white/10 shadow-md"
+            Icon={item.icon}
+          />
+          <h3 className="text-center text-lg font-bold">{item.name}</h3>
+          {accentColor ? (
+            <div
+              style={{ backgroundColor: accentColor }}
+              className="h-1 w-8 rounded-full"
+            />
+          ) : null}
+          <p className="text-center text-sm text-muted-foreground">
+            {item.description}
+          </p>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <Button
+            className="rounded-full"
+            variant="outline"
+            style={{ borderColor: accentColor, color: accentColor }}
+          >
+            <ArrowRight className="size-4" />
+          </Button>
+        </CardFooter>
+      </Card>
     </Link>
   );
 };

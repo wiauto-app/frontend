@@ -12,16 +12,16 @@ import type {
 } from "../types/strapi-home.types";
 
 const DEFAULT_HERO_TITLE =
-  "En WiAuto encuentra el auto ideal para tu próximo destino";
+  "En WiAuto encuentra el coche ideal para tu próximo destino";
 const DEFAULT_HERO_ACTION = {
-  label: "Publicar Vehículo",
+  label: "Publicar vehículo",
   url: "/crear-vehiculo",
 };
 const DEFAULT_NEWSLETTER = {
-  subtitle: "Suscríbete al Newsletter",
-  title: "Obtenga noticias actualizadas",
+  subtitle: "Suscríbete al boletín",
+  title: "Recibe noticias actualizadas",
   description:
-    "Mantente al día con las mejores oportunidades y novedades del sector automotriz.",
+    "Mantente al día con las mejores oportunidades y novedades del sector de la automoción.",
 };
 const DEFAULT_APP = {
   title: "Descarga nuestra app",
@@ -50,7 +50,7 @@ const DEFAULT_PROCESS_TITLE: StrapiRichTextBlock[] = [
     type: "paragraph",
     children: [
       { type: "text", text: "Te acompañamos de tu " },
-      { type: "text", text: "experiencia automotriz", bold: true },
+      { type: "text", text: "experiencia en automoción", bold: true },
     ],
   },
 ];
@@ -91,7 +91,7 @@ const DEFAULT_PROCESS_TABS: HomeProcessTab[] = [
     label: "Guías y consejos",
     heading: "Guías y consejos",
     description: plainTextToBlocks(
-      "Accede a artículos, guías y recomendaciones del sector automotriz para tomar decisiones informadas en cada etapa del proceso.",
+      "Accede a artículos, guías y recomendaciones del sector de la automoción para tomar decisiones informadas en cada etapa del proceso.",
     ),
     image_url: null,
     image_alt: null,

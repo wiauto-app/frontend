@@ -4,34 +4,39 @@ import { VehicleExtraServiceItem } from "../types/home-page.types";
 
 export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
   {
-    name: "Financiamiento",
+    name: "Financiación",
+    color:"#0F45CA",
     icon: Landmark,
     href: "/simulador-financiamiento",
-    description: "Calcula tu cuota online.",
+    description: "Calcula tu cuota online en segundos y ofrece las mejores opciones a tus clientes.",
   },
   {
     name: "Vender vehículo",
+    color:"#117751",
     icon: Car,
     href: "/vender-vehiculo",
-    description: "Publica tu anuncio gratis.",
+    description: "Publica tu anuncio gratis y llega a miles de compradores potenciales.",
   },
   {
     name: "Seguros",
+    color:"#5A44A6",
     icon: Shield,
     href: "/seguros",
-    description: "Protege tu inversión.",
+    description: "Protege tu inversión con las mejores compañías y al mejor precio.",
   },
   {
     name: "Tasar vehículo",
     icon: Star,
+    color:"#D89E4C",
     href: "/tasador",
-    description: "Obtén una valoración.",
+    description: "Obtén una valoración justa y al instante de cualquier vehículo.",
   },
   {
-    name: "Buscar Con IA",
+    name: "Buscar con IA",
+    color:"#0F45CA",
     icon: Brain,
     href: "/asistente/chat",
-    description: "Tu asistente virtual para comprar y vender coches.",
+    description: "Tu asistente inteligente para encontrar el coche perfecto en segundos.",
   },
 ];
 
@@ -50,10 +55,10 @@ export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
     description: "Publica tu anuncio gratis.",
   },
   {
-    name: "Financiamiento",
+    name: "Financiación",
     icon: CreditCard,
     href: "/financiamiento",
-    description: "Encuentra la mejor opción de financiamiento.",
+    description: "Encuentra la mejor opción de financiación.",
   },
   {
     name: "Atención personalizada",
