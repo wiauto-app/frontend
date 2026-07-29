@@ -50,10 +50,10 @@ interface VehicleGridCardBodyProps {
 }
 
 const VEHICLE_GRID_IMAGE_SIZES = `
-  (max-width: 640px) 350px,
+  (max-width: 640px) 100vw,
   (max-width: 1024px) 50vw,
-  (max-width: 1536px) 25vw,
-  350px
+  (max-width: 1536px) 33vw,
+  25vw
 `;
 
 const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
