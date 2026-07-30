@@ -19,7 +19,7 @@ import { RenewListingButton } from "./RenewListingButton";
 import { FeatureListingButton } from "./FeatureListingButton";
 import { MyListingActionsMenu } from "./MyListingActionsMenu";
 
-type MyListingTableRowProps = {
+interface MyListingTableRowProps {
   listing: OwnerVehicleListItem;
   onRenew: (id: string) => Promise<void>;
   onFeature: (id: string) => Promise<void>;
@@ -31,8 +31,9 @@ type MyListingTableRowProps = {
     nextStatus: "active" | "inactive",
   ) => Promise<void>;
   isMutating?: boolean;
+  isProfessional?: boolean;
   featurePriceLabel?: string | null;
-};
+}
 
 const formatPrice = (price: number): string =>
   new Intl.NumberFormat("es-ES", {
@@ -113,6 +114,7 @@ export const MyListingTableRow = ({
   onRemove,
   onToggleStatus,
   isMutating = false,
+  isProfessional = false,
   featurePriceLabel,
 }: MyListingTableRowProps) => {
   const imageUrl = listing.image?.url ? getImageUrl(listing.image.url) : null;
@@ -252,6 +254,7 @@ export const MyListingTableRow = ({
             onSchedule={onSchedule}
             onRemove={onRemove}
             onToggleStatus={onToggleStatus}
+            isProfessional={isProfessional}
             disabled={isMutating}
           />
         </div>

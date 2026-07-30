@@ -1,3 +1,4 @@
+import { DealershipScheduleDay } from "@/services/dealerships/types/dealership.types";
 import { VehiclePriceHistoryItem } from "./vehicle-price.interface";
 
 export const PUBLISHER_TYPE = {
@@ -98,6 +99,7 @@ export interface VehicleAddressDetails {
 
 export interface VehicleListItem {
   id: string;
+  ref?: number;
   price: number;
   mileage: number;
   lat: number;
@@ -137,10 +139,12 @@ export interface VehicleDetailDealership {
   website_url?: string;
   email: string;
   phone_code: string;
+  schedules: DealershipScheduleDay[];
 }
 
 export interface Vehicle {
   id: string;
+  ref?: number;
   price: number;
   prices?: VehiclePriceHistoryItem[];
   vehicle_prices?: VehiclePriceHistoryItem[];

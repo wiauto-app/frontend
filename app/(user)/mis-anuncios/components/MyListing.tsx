@@ -1,11 +1,10 @@
 "use client";
 
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Car, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { AuthContext } from "@/app/contexts/auth/authContext";
 import { MyListingsHeader } from "./MyListingsHeader";
 import { MyListingsSummaryCards } from "./MyListingsSummaryCards";
 import { MyListingsTable } from "./MyListingsTable";
@@ -34,6 +33,7 @@ export const MyListing = () => {
 
   const audience = user?.userType ?? "particular";
   const isAuthenticated = Boolean(user);
+  const isProfessional = user?.userType === "professional";
 
   const {
     listings,
@@ -260,6 +260,7 @@ export const MyListing = () => {
                 onRemove={handleRemove}
                 onToggleStatus={handleToggleStatus}
                 isMutating={isMutating}
+                isProfessional={isProfessional}
                 featurePriceLabel={featurePriceLabel}
               />
               <MyListingsPagination

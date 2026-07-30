@@ -1,19 +1,26 @@
-
-
-
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import { PublisherCard } from "./publisherCard";
 import { DealershipCard } from "./dealershipCard";
 
-type VehicleDetailVerifiedSellerCardProps = {
+interface VehicleDetailAdvertiserSectionProps {
   vehicle: Vehicle;
-};
+}
 
 export const VehicleDetailAdvertiserSection = ({
   vehicle,
-}: VehicleDetailVerifiedSellerCardProps) => {
+}: VehicleDetailAdvertiserSectionProps) => {
   if (vehicle.publisher_type === "particular") {
-    return <PublisherCard publisher={vehicle.publisher} />
+    return <PublisherCard publisher={vehicle.publisher} />;
   }
-  return <DealershipCard dealership={vehicle.dealership!} />
-}
+
+  if (!vehicle.dealership) {
+    return null;
+  }
+
+  return (
+    <DealershipCard
+      dealership={vehicle.dealership}
+      vehicleRef={vehicle.ref}
+    />
+  );
+};

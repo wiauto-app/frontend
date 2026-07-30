@@ -13,7 +13,7 @@ import { MyListingStatsRow } from "./MyListingStatsRow";
 import { RenewListingButton } from "./RenewListingButton";
 import { MyListingActionsMenu } from "./MyListingActionsMenu";
 
-type MyListingCardProps = {
+interface MyListingCardProps {
   listing: OwnerVehicleListItem;
   onRenew: (id: string) => Promise<void>;
   onDuplicate: (id: string) => Promise<void>;
@@ -24,7 +24,8 @@ type MyListingCardProps = {
     nextStatus: "active" | "inactive",
   ) => Promise<void>;
   isMutating?: boolean;
-};
+  isProfessional?: boolean;
+}
 
 const formatPrice = (price: number): string =>
   new Intl.NumberFormat("es-ES", {
@@ -64,6 +65,7 @@ export const MyListingCard = ({
   onRemove,
   onToggleStatus,
   isMutating = false,
+  isProfessional = false,
 }: MyListingCardProps) => {
   const imageUrl = listing.image?.url ? getImageUrl(listing.image.url) : null;
   const expiryBadge = getExpiryBadge(listing);
@@ -140,6 +142,7 @@ export const MyListingCard = ({
             onSchedule={onSchedule}
             onRemove={onRemove}
             onToggleStatus={onToggleStatus}
+            isProfessional={isProfessional}
             disabled={isMutating}
           />
         </div>

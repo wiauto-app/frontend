@@ -4,7 +4,6 @@ import type { AlertNotificationPreferences } from "@/interfaces/alert-notificati
 import type { UpdateAlertNotificationPreferencesPayload } from "@/interfaces/alert-notification-preferences.interface";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
 
 interface GlobalNotificationPreferencesProps {
   preferences: AlertNotificationPreferences;
@@ -37,11 +36,6 @@ const GLOBAL_TOGGLE_ITEMS = [
     field: "notify_seller_replies" as const,
     label: "Respuestas de vendedores",
     description: "Cuando un vendedor responde a tu consulta",
-  },
-  {
-    field: "notify_saved_vehicle_reminders" as const,
-    label: "Recordatorios de vehículos guardados",
-    description: "Te recordamos revisar favoritos sin actividad reciente",
   },
   {
     field: "notify_new_leads" as const,
@@ -87,14 +81,6 @@ export const GlobalNotificationPreferences = ({
     frequency: (typeof FREQUENCY_OPTIONS)[number]["value"],
   ) => {
     await onUpdate({ frequency });
-  };
-
-  const handleReminderDaysChange = async (value: string) => {
-    const parsed = Number.parseInt(value, 10);
-    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 365) {
-      return;
-    }
-    await onUpdate({ saved_vehicle_reminder_days: parsed });
   };
 
   return (
@@ -169,34 +155,16 @@ export const GlobalNotificationPreferences = ({
           ))}
         </div>
       </div>
-
-      <div className="rounded-lg border border-gray-100 p-4">
-        <Label htmlFor="saved-vehicle-reminder-days" className="text-sm font-semibold text-gray-900">
-          Recordar vehículos guardados después de (días)
-        </Label>
-        <Input
-          id="saved-vehicle-reminder-days"
-          type="number"
-          min={1}
-          max={365}
-          className="mt-2 max-w-[160px]"
-          defaultValue={preferences.saved_vehicle_reminder_days}
-          disabled={isUpdating}
-          onBlur={(event) => {
-            void handleReminderDaysChange(event.target.value);
-          }}
-        />
-      </div>
     </div>
   );
 };
 
-type ButtonFrequencyProps = {
+interface ButtonFrequencyProps {
   label: string;
   isActive: boolean;
   disabled?: boolean;
   onSelect: () => void;
-};
+}
 
 const ButtonFrequency = ({
   label,

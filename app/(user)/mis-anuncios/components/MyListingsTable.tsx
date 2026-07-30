@@ -3,7 +3,7 @@
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import { MyListingTableRow } from "./MyListingTableRow";
 
-type MyListingsTableProps = {
+interface MyListingsTableProps {
   listings: OwnerVehicleListItem[];
   onRenew: (id: string) => Promise<void>;
   onFeature: (id: string) => Promise<void>;
@@ -15,8 +15,9 @@ type MyListingsTableProps = {
     nextStatus: "active" | "inactive",
   ) => Promise<void>;
   isMutating?: boolean;
+  isProfessional?: boolean;
   featurePriceLabel?: string | null;
-};
+}
 
 export const MyListingsTable = ({
   listings,
@@ -27,6 +28,7 @@ export const MyListingsTable = ({
   onRemove,
   onToggleStatus,
   isMutating = false,
+  isProfessional = false,
   featurePriceLabel,
 }: MyListingsTableProps) => {
   return (
@@ -79,6 +81,7 @@ export const MyListingsTable = ({
                 onRemove={onRemove}
                 onToggleStatus={onToggleStatus}
                 isMutating={isMutating}
+                isProfessional={isProfessional}
                 featurePriceLabel={featurePriceLabel}
               />
             ))}

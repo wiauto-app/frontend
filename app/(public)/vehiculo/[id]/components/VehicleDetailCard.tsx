@@ -9,7 +9,7 @@ export const VehicleDetailCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Card>
+    <Card size="sm">
       <CardContent className="space-y-5">
         <h2 className=" text-lg font-semibold text-gray-900 flex items-center gap-2">{title}</h2>
         <CustomSeparator />

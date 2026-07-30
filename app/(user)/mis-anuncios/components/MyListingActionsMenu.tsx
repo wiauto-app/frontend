@@ -6,6 +6,7 @@ import {
   CalendarClock,
   Copy,
   FileText,
+  FormInput,
   MoreVertical,
   Pencil,
   Power,
@@ -28,7 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 
-type MyListingActionsMenuProps = {
+interface MyListingActionsMenuProps {
   listing: OwnerVehicleListItem;
   onDuplicate: (id: string) => Promise<void>;
   onSchedule: (listing: OwnerVehicleListItem) => void;
@@ -37,8 +38,9 @@ type MyListingActionsMenuProps = {
     id: string,
     nextStatus: "active" | "inactive",
   ) => Promise<void>;
+  isProfessional?: boolean;
   disabled?: boolean;
-};
+}
 
 export const MyListingActionsMenu = ({
   listing,
@@ -46,6 +48,7 @@ export const MyListingActionsMenu = ({
   onSchedule,
   onRemove,
   onToggleStatus,
+  isProfessional = false,
   disabled = false,
 }: MyListingActionsMenuProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -98,6 +101,16 @@ export const MyListingActionsMenu = ({
             <Pencil className="size-4" aria-hidden />
             Editar
           </DropdownMenuItem>
+          {isProfessional ? (
+            <DropdownMenuItem
+              render={
+                <Link href={`/editar-vehiculo-profesional/${listing.id}`} />
+              }
+            >
+              <FormInput className="size-4" aria-hidden />
+              Edición completa
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuItem onClick={handleDuplicate}>
             <Copy className="size-4" aria-hidden />
             Duplicar
