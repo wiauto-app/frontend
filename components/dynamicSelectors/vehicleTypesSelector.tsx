@@ -1,5 +1,5 @@
 import { vehicleTypesService } from "@/components/vehicles/services/vehicleTypesService";
-import type { CatalogItemWithSlug } from "@/components/vehicles/types/catalog.types";
+import type { VehicleType } from "@/interfaces/vehicle.interface";
 import { CatalogResourceSelector } from "./catalogResourceSelector";
 
 export const VehicleTypesSelector = ({
@@ -13,7 +13,7 @@ export const VehicleTypesSelector = ({
   ariaInvalid?: boolean;
   disabled?: boolean;
 }) => (
-  <CatalogResourceSelector<CatalogItemWithSlug>
+  <CatalogResourceSelector<VehicleType>
     queryKey={["vehicle-types"]}
     fetchItems={() => vehicleTypesService.findAll({ page: 1, limit: 100 })}
     value={value}
