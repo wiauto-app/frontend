@@ -8,7 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PhoneInput } from "@/components/forms/phoneInput";
+import { PLAN_LEAD_CARS_QUANTITY_OPTIONS } from "@/app/(public)/planes/constants/cars-quantity.constants";
 import { planLeadService } from "@/services/planLead/planLeadService";
 import {
   planesLeadSchema,
@@ -22,6 +30,7 @@ const defaultValues: PlanesLeadFormValues = {
     phone_code: "+34",
     phone: "",
   },
+  cars_quantity: undefined as unknown as PlanesLeadFormValues["cars_quantity"],
   message: "",
 };
 
@@ -37,6 +46,7 @@ export const PlansLeadForm = () => {
         name: data.name.trim(),
         email: data.email.trim(),
         phone: `${data.phone.phone_code} ${data.phone.phone}`.trim(),
+        cars_quantity: data.cars_quantity,
         message: data.message?.trim() || undefined,
       });
 
@@ -107,6 +117,45 @@ export const PlansLeadForm = () => {
             <p className="text-sm text-red-600">
               {form.formState.errors.phone?.phone?.message ??
                 form.formState.errors.phone?.phone_code?.message}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="planes-lead-cars-quantity">Cantidad de vehículos</Label>
+          <Controller
+            control={form.control}
+            name="cars_quantity"
+            render={({ field }) => (
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                items={PLAN_LEAD_CARS_QUANTITY_OPTIONS.map((option) => ({
+                  label: option.label,
+                  value: option.value,
+                }))}
+              >
+                <SelectTrigger
+                  id="planes-lead-cars-quantity"
+                  className="w-full"
+                  aria-label="Cantidad de vehículos"
+                  aria-invalid={Boolean(form.formState.errors.cars_quantity)}
+                >
+                  <SelectValue placeholder="Selecciona un rango" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PLAN_LEAD_CARS_QUANTITY_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {form.formState.errors.cars_quantity ? (
+            <p className="text-sm text-red-600">
+              {form.formState.errors.cars_quantity.message}
             </p>
           ) : null}
         </div>
