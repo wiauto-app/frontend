@@ -30,7 +30,7 @@ export const PlansPricingSection = ({
   const sortedPlans = [...plans].sort((left, right) => left.sort_order - right.sort_order);
 
   return (
-    <section className="relative overflow-hidden bg-[#001B3D] ">
+    <section className="relative overflow-hidden bg-[#001B3D] py-20 rounded-3xl ">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.35]"
         aria-hidden
@@ -53,7 +53,7 @@ export const PlansPricingSection = ({
           <p className="mb-3 text-xs font-semibold tracking-[0.22em] text-blue-300 uppercase">
             Planes profesionales
           </p>
-          <h2 className="text-3xl font-bold tracking-tight text-balance md:text-4xl lg:text-[2.75rem] lg:leading-tight">
+          <h2 className="text-3xl font-bold tracking-tight text-balance md:text-4xl lg:text-[2.75rem] lg:leading-tight text-white">
             Elige el pack que impulsa tu negocio
           </h2>
           <p className="mt-4 text-sm text-slate-300 md:text-base">
