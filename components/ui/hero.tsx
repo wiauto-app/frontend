@@ -26,7 +26,7 @@ export const Hero = ({
       {floatingContent}
 
       <div className="relative mx-auto   flex flex-col lg:grid  lg:grid-cols-2 gap-4 lg:gap-10  h-full">
-        <div className="w-full flex flex-col gap-4">{leftContent}</div>
+        <div className="w-full flex flex-col gap-4 items-center lg:items-start">{leftContent}</div>
         <div className="w-full flex flex-col gap-4 ">{rightContent}</div>
       </div>
     </section>
