@@ -13,6 +13,7 @@ type PlansMobileSectionProps = {
 };
 
 export const PlansMobileSection = ({ data }: PlansMobileSectionProps) => {
+  const caracteristicas = data.caracteristicas ?? [];
   const image_url =
     getStrapiMediaUrl(data.imagen?.formats?.medium?.url) ??
     getStrapiMediaUrl(data.imagen?.url);
@@ -24,7 +25,7 @@ export const PlansMobileSection = ({ data }: PlansMobileSectionProps) => {
           <div className="flex justify-center">
             <Image
               src={image_url ?? ""}
-              alt={data.imagen?.alternativeText ?? data.header.titulo}
+              alt={data.imagen?.alternativeText ?? data.header?.titulo ?? "WiAuto"}
               width={260}
               height={520}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -34,18 +35,18 @@ export const PlansMobileSection = ({ data }: PlansMobileSectionProps) => {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-                {data.header.titulo}
+                {data.header?.titulo}
               </h2>
-              {data.header.descripcion ? (
+              {data.header?.descripcion ? (
                 <p className="text-base text-slate-600 md:text-lg">
                   {data.header.descripcion}
                 </p>
               ) : null}
             </div>
 
-            {data.caracteristicas?.length > 0 ? (
+            {caracteristicas.length > 0 ? (
               <ul className="flex flex-col gap-3">
-                {data.caracteristicas.map((item) => (
+                {caracteristicas.map((item) => (
                   <li
                     key={item.id}
                     className="flex items-start gap-3 text-slate-700"

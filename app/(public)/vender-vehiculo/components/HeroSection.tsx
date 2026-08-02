@@ -51,8 +51,8 @@ export function HeroSection({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-8xl">
               {/* Card Profesional */}
               <HeroCard
-                title={profesional.titulo}
-                description={profesional.descripcion}
+                title={profesional.titulo ?? ""}
+                description={profesional.descripcion ?? ""}
                 content={
                   <Link href={profesional.boton?.url || ""}>
                     <Button
@@ -66,8 +66,8 @@ export function HeroSection({
                 iconName="FaAward"
               />
               <HeroCard
-                title={particular.titulo}
-                description={particular.descripcion}
+                title={particular.titulo ?? ""}
+                description={particular.descripcion ?? ""}
                 content={
                   <Link href={particular.boton?.url || ""}>
                     <Button

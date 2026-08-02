@@ -1,0 +1,45 @@
+---
+description: Contratos canónicos de componentes Strapi en el frontend
+alwaysApply: true
+---
+
+# Componentes Strapi (CMS → TypeScript)
+
+Fuente de verdad de shapes: `strapi/src/components/**/*.json` + content-types. UID = `carpeta.archivo` (ej. `shared.hero`).
+
+## Dónde tipar
+
+1. **Componentes CMS** → solo en `interfaces/strapi-components.interface.ts` (comentario con UID encima de cada interface).
+2. **Páginas / singleTypes** → interfaces en la carpeta del feature; **importan** componentes shared, no los redefinen.
+3. **Media** → `StrapiMedia` de `lib/strapi.types.ts` (nunca un `Media` local).
+4. Nuevo componente en Strapi ⇒ añadir interface canónica **antes** del servicio.
+5. Objetos → `interface` (no `type`); ver `prefer-interfaces.mdc`.
+
+## Servicios
+
+Patrón: `getStrapiData` + `qs.stringify` populate anidado. Referencia: `app/(landing)/seguros/services/getSegurosPageData.ts`.
+
+## Ejemplos
+
+```typescript
+// ✅ BIEN — componente canónico
+// shared.hero
+export interface StrapiHero {
+  id: number;
+  titulo: string;
+  // ...
+}
+
+// ✅ BIEN — página importa shared
+import type { StrapiHero, StrapiEstadistica } from "@/interfaces/strapi-components.interface";
+import type { StrapiMedia } from "@/lib/strapi.types";
+
+export interface FinanciacionPageData {
+  hero: StrapiHero | null;
+  estadisticas: StrapiEstadistica[] | null;
+}
+
+// ❌ EVITAR — redefinir Media / Link / Hero / IconFeature / Estadistica en el feature
+interface Media { url: string; alternativeText?: string }
+interface PlanesHero { titulo: string; imagen: Media | null }
+```

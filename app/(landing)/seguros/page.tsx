@@ -3,8 +3,6 @@ import type { Metadata } from "next";
 import { SegurosHeroSection } from "./components/SegurosHeroSection";
 import { SegurosBenefitsSection } from "./components/SegurosBenefitsSection";
 import { SegurosSecuritySection } from "./components/SegurosSecuritySection";
-import { SegurosCoverageSection } from "./components/SegurosCoverageSection";
-import { SegurosCtaSection } from "./components/SegurosCtaSection";
 import { SegurosPartnersSection } from "./components/SegurosPartnersSection";
 import { getSegurosPageData } from "./services/getSegurosPageData";
 

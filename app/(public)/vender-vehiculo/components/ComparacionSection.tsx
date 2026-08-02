@@ -6,8 +6,10 @@ interface Props {
 }
 
 export function   ComparacionSection({ data }: Props) {
+  const planes = data.planes ?? [];
   // Asumimos que el primer plan tiene todas las características listadas para armar las filas
-  const features = data.planes[0]?.caracteristicas.map((c) => c.titulo) || [];
+  const features =
+    planes[0]?.caracteristicas?.map((c) => c.titulo) ?? [];
 
   return (
     <section className="py-5 bg-white ">
@@ -21,7 +23,7 @@ export function   ComparacionSection({ data }: Props) {
             <thead>
               <tr>
                 <th className="pb-6 border-b border-slate-200 font-medium text-slate-500 w-1/2"></th>
-                {data.planes.map((plan) => (
+                {planes.map((plan) => (
                   <th key={plan.id} className="pb-6 border-b border-slate-200 font-semibold text-center text-blue-600">
                     {plan.nombre}
                   </th>
@@ -34,8 +36,10 @@ export function   ComparacionSection({ data }: Props) {
                   <td className="py-4 border-b border-slate-100 text-slate-700 font-medium">
                     {featureTitle}
                   </td>
-                  {data.planes.map((plan) => {
-                    const feature = plan.caracteristicas.find((c) => c.titulo === featureTitle);
+                  {planes.map((plan) => {
+                    const feature = plan.caracteristicas?.find(
+                      (c) => c.titulo === featureTitle,
+                    );
                     const included = feature?.incluido;
 
                     return (

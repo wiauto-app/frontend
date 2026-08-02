@@ -13,19 +13,11 @@ export type StrapiMedia = {
   } | null;
 };
 
-export type StrapiSeoComponent = {
-  metaTitle?: string | null;
-  metaDescription?: string | null;
-  keywords?: string | null;
-  canonicalURL?: string | null;
-  noIndex?: boolean | null;
-  shareImage?: StrapiMedia | null;
-};
+/** Alias de `StrapiSeo` (`shared.seo`) para compatibilidad. */
+export type { StrapiSeo as StrapiSeoComponent } from "@/interfaces/strapi-components.interface";
 
-export type StrapiUserComponent = {
-  nombre: string;
-  imagen?: StrapiMedia | null;
-};
+/** Alias de `StrapiUser` (`shared.user`) para compatibilidad. */
+export type { StrapiUser as StrapiUserComponent } from "@/interfaces/strapi-components.interface";
 
 export type StrapiPaginationMeta = {
   page: number;

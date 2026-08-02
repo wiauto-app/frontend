@@ -1,9 +1,11 @@
+import type { StrapiLink } from "@/interfaces/strapi-components.interface";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
 import type {
   HomeLowEmissionsData,
   HomePageData,
   HomeProcessSectionData,
   HomeProcessTab,
+  StrapiCard,
 } from "../types/home-page.types";
 import type {
   StrapiHomepageResponse,
@@ -13,9 +15,12 @@ import type {
 
 const DEFAULT_HERO_TITLE =
   "En WiAuto encuentra el coche ideal para tu próximo destino";
-const DEFAULT_HERO_ACTION = {
+const DEFAULT_HERO_ACTION: StrapiLink = {
+  id: 0,
   label: "Publicar vehículo",
   url: "/crear-vehiculo",
+  destacado: null,
+  imagen: null,
 };
 const DEFAULT_NEWSLETTER = {
   subtitle: "Suscríbete al boletín",
@@ -192,17 +197,50 @@ const mapLowEmissions = (
       DEFAULT_LOW_EMISSIONS.description,
     image_url: pickMediaUrl(low_emissions.imagen),
     links:
-      low_emissions.links
-        ?.filter((item) => item.titulo?.trim() && item.boton?.url?.trim())
-        .map((item) => ({
-          title: item.titulo.trim(),
-          description: item.descripcion?.trim() ?? "",
-          href: item.boton.url.trim(),
-          image_url: pickMediaUrl(item.imagen),
-          border_color: item.colorFondo?.trim() ?? "",
-          title_color: item.colorTexto?.trim() ?? "",
-        })) ?? [],
+      low_emissions.links?.flatMap((item) => {
+        const title = item.titulo?.trim();
+        const href = item.boton?.url?.trim();
+        if (!title || !href) {
+          return [];
+        }
+
+        return [
+          {
+            title,
+            description: item.descripcion?.trim() ?? "",
+            href,
+            image_url: pickMediaUrl(item.imagen),
+            border_color: item.colorFondo?.trim() ?? "",
+            title_color: item.colorTexto?.trim() ?? "",
+          },
+        ];
+      }) ?? [],
   };
+};
+
+const mapHerramientas = (
+  herramientas?: NonNullable<StrapiHomepageResponse["data"]>["herramientas"],
+): StrapiCard[] => {
+  if (!herramientas?.length) {
+    return [];
+  }
+
+  return herramientas.flatMap((item) => {
+    if (!item.titulo?.trim() || !item.imagen || !item.boton || !item.colorFondo) {
+      return [];
+    }
+
+    return [
+      {
+        titulo: item.titulo,
+        descripcion: item.descripcion ?? "",
+        imagen: item.imagen,
+        colorFondo: item.colorFondo,
+        colorTexto: item.colorTexto ?? undefined,
+        boton: item.boton,
+      },
+    ];
+  });
 };
 
 const pickBackgroundImageUrl = (hero?: StrapiHomeHero): string | null => {
@@ -230,14 +268,7 @@ export const mapHomePageData = (
   const herramientas = data?.herramientas;
   const low_emissions = data?.bajas_emisiones;
   return {
-    herramientas: herramientas?.map((item) => ({
-      titulo: item.titulo,
-      descripcion: item.descripcion,
-      imagen: item.imagen,
-      colorFondo: item.colorFondo,
-      colorTexto: item.colorTexto,
-      boton: item.boton,
-    })) ?? [],
+    herramientas: mapHerramientas(herramientas ?? undefined),
     low_emissions: mapLowEmissions(low_emissions ?? undefined),
     hero: {
       title: hero?.title?.trim() || DEFAULT_HERO_TITLE,
@@ -264,10 +295,7 @@ export const mapHomePageData = (
           })
           .filter((item): item is NonNullable<typeof item> => item !== null) ?? [],
       action_links:
-        hero?.actionLinks?.map((link) => ({
-          label: link.label,
-          url: link.url,
-        })) ?? [DEFAULT_HERO_ACTION],
+        hero?.actionLinks?.length ? hero.actionLinks : [DEFAULT_HERO_ACTION],
       features:
         hero?.caracteristicas
           ?.filter((item) => item.label?.trim())

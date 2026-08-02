@@ -1,30 +1,22 @@
-import type { StrapiFeaturesSection } from "@/interfaces/strapi-components.interface";
+import type {
+  StrapiCard,
+  StrapiFeaturesSection,
+  StrapiLink,
+} from "@/interfaces/strapi-components.interface";
+import type { StrapiMedia } from "@/lib/strapi.types";
 
-import { StrapiLink } from "./home-page.types";
+export type { StrapiMedia };
 
-export type StrapiRichTextBlock = {
+export interface StrapiRichTextBlock {
   type: string;
   children?: {
     type: string;
     text: string;
     bold?: boolean;
   }[];
-};
+}
 
-export type StrapiMedia = {
-  url: string;
-  alternativeText?: string | null;
-  width?: number;
-  height?: number;
-  formats?: {
-    large?: { url: string };
-    medium?: { url: string };
-    small?: { url: string };
-    thumbnail?: { url: string };
-  } | null;
-};
-
-export type StrapiHomepageResponse = {
+export interface StrapiHomepageResponse {
   data: {
     homeSeo?: {
       metaTitle?: string | null;
@@ -46,7 +38,7 @@ export type StrapiHomepageResponse = {
         order: number;
         active: boolean;
       }[] | null;
-      actionLinks?: { id: number; label: string; url: string }[] | null;
+      actionLinks?: StrapiLink[] | null;
       caracteristicas?: {
         id: number;
         label: string;
@@ -54,14 +46,7 @@ export type StrapiHomepageResponse = {
         icon?: StrapiMedia | null;
       }[] | null;
     } | null;
-    herramientas?: {
-      titulo: string;
-      descripcion: string;
-      imagen: StrapiMedia;
-      colorFondo: string;
-      colorTexto: string;
-      boton: StrapiLink;
-    }[] | null;
+    herramientas?: StrapiCard[] | null;
     homeAppAdvertisment?: {
       title?: string | null;
       phrase?: string | null;
@@ -93,15 +78,7 @@ export type StrapiHomepageResponse = {
         descripcion?: string | null;
       } | null;
       imagen?: StrapiMedia | null;
-      links?: {
-        id?: number;
-        titulo: string;
-        descripcion: string;
-        imagen?: StrapiMedia | null;
-        colorFondo: string;
-        colorTexto: string;
-        boton: StrapiLink;
-      }[] | null;
+      links?: StrapiCard[] | null;
     } | null;
   } | null;
-};
+}

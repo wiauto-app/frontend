@@ -21,7 +21,7 @@ export function PreguntasSection({ data }: Props) {
         </h2>
 
         <Accordion className="w-full space-y-4">
-          {data.pregunta.map((item) => (
+          {(data.pregunta ?? []).map((item) => (
             <AccordionItem
               key={item.id}
               value={`item-${item.id}`}

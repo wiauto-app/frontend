@@ -1,13 +1,12 @@
-import { LucideIcon } from "lucide-react";
-import type { StrapiMedia, StrapiRichTextBlock } from "./strapi-home.types";
-import type { HeroFeature } from "@/interfaces/hero-feature.interface";
+import type { LucideIcon } from "lucide-react";
 
-export type StrapiLink = {
-  id?: number;
-  label: string;
-  url: string;
-  destacado?: boolean | null;
-};
+import type { StrapiLink } from "@/interfaces/strapi-components.interface";
+import type { HeroFeature } from "@/interfaces/hero-feature.interface";
+import type { StrapiMedia } from "@/lib/strapi.types";
+
+import type { StrapiRichTextBlock } from "./strapi-home.types";
+
+export type { StrapiLink };
 
 /** Alias histórico; preferir `HeroFeature`. */
 export type HomeHeroFeature = HeroFeature;
@@ -28,88 +27,89 @@ export interface HomeHeroData {
   features: HomeHeroFeature[];
 }
 
-export type HomeNewsletterData = {
+export interface HomeNewsletterData {
   subtitle: string;
   title: string;
   description: string;
-};
+}
 
-export type StoreButtonLabels = {
+export interface StoreButtonLabels {
   line1: string;
   line2: string;
-};
+}
 
-export type HomeAppAdvertisementData = {
+export interface HomeAppAdvertisementData {
   title: string;
   phrase: string;
   description: string;
   app_mockup_url: string | null;
   google_store_labels: StoreButtonLabels;
   apple_store_labels: StoreButtonLabels;
-};
+}
 
-export type HomeFeatureItem = {
+export interface HomeFeatureItem {
   id: string;
   label: string;
   icon_url: string | null;
   icon_alt: string | null;
-};
+}
 
-export type HomeFeaturesData = {
+export interface HomeFeaturesData {
   title: string;
   description: string;
   features: HomeFeatureItem[];
-};
+}
 
-export type HomeSeoData = {
+export interface HomeSeoData {
   meta_title: string;
   meta_description: string;
   keywords: string | null;
   canonical_url: string | null;
   no_index: boolean;
   share_image_url: string | null;
-};
+}
 
-export type HomeProcessTab = {
+export interface HomeProcessTab {
   id: string;
   label: string;
   heading: string;
   description: StrapiRichTextBlock[];
   image_url: string | null;
   image_alt: string | null;
-};
+}
 
-export type HomeProcessSectionData = {
+export interface HomeProcessSectionData {
   title: StrapiRichTextBlock[];
   tabs: HomeProcessTab[];
-};
+}
 
-export type StrapiCard = {
+/** View-model de tarjeta de herramientas en home (no es el componente CMS). */
+export interface StrapiCard {
   titulo: string;
   descripcion: string;
   imagen: StrapiMedia;
   colorFondo: string;
   colorTexto?: string;
   boton: StrapiLink;
-};
+}
 
-export type HomeLowEmissionsLink = {
+export interface HomeLowEmissionsLink {
   title: string;
   description: string;
   href: string;
   image_url: string | null;
   border_color: string;
   title_color: string;
-};
+}
 
-export type HomeLowEmissionsData = {
+export interface HomeLowEmissionsData {
   title: string;
   description: string;
   image_url: string | null;
   links: HomeLowEmissionsLink[];
-};
+}
 
-export type HomePageData = {
+export interface HomePageData {
   herramientas: StrapiCard[];
   low_emissions: HomeLowEmissionsData;
   hero: HomeHeroData;
@@ -118,13 +118,12 @@ export type HomePageData = {
   features: HomeFeaturesData;
   seo: HomeSeoData;
   process_section: HomeProcessSectionData;
-};
+}
 
-
-export type VehicleExtraServiceItem = {
+export interface VehicleExtraServiceItem {
   name: string;
   color?: string;
   description: string;
   icon: LucideIcon;
   href: string;
-};
+}

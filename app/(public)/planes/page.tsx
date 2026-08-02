@@ -52,7 +52,7 @@ export default async function Page() {
       {cms?.hero ? <PlansHeroSection hero={cms.hero} /> : null}
 
       {cms?.estadisticas && cms.estadisticas.length > 0 ? (
-        <PlansStatsSection items={cms.estadisticas} />
+        <PlansStatsSection items={cms.estadisticas ?? []} />
       ) : null}
 
       {cms?.caracteristicas ? <PlansFeaturesSection data={cms.caracteristicas} /> : null}

@@ -43,7 +43,7 @@ export interface SoportePageData {
   updatedAt: string;
   publishedAt: string;
   hero: SoporteHero | null;
-  caracteristicas: SoporteIconFeature[] | null;
+  caracteristicas: StrapiIconFeature[] | null;
   canales: SoporteCanales | null;
   preguntas: SoportePreguntas | null;
 }

@@ -31,7 +31,7 @@ export const PlansHeroSection = ({ hero }: PlansHeroSectionProps) => {
                 {hero.descripcion}
               </p>
             </div>
-            {hero.acciones?.length > 0 ? (
+            {hero.acciones && hero.acciones.length > 0 ? (
               <div className="flex flex-wrap gap-3 z-10">
                 {hero.acciones.map((accion) => (
                   <Link
@@ -59,7 +59,7 @@ export const PlansHeroSection = ({ hero }: PlansHeroSectionProps) => {
         {hero_image_url ? (
           <Image
             src={hero_image_url}
-            alt={hero.imagen?.alternativeText ?? hero.titulo}
+            alt={hero.imagen?.alternativeText ?? hero.titulo ?? "WiAuto"}
             fill
             className="object-contain "
             sizes="(max-width: 1024px) 100vw, 50vw"

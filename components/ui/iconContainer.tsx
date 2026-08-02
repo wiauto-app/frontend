@@ -12,6 +12,7 @@ interface IconContainerProps {
   backgroundColor?: string;
   iconColor?: string;
   rounded?: boolean;
+  justIcon?: boolean;
 }
 
 const sizes = {
@@ -43,7 +44,8 @@ export const IconContainer = ({
   size = "md",
   backgroundColor,
   iconColor,
-  rounded
+  rounded,
+  justIcon = false,
 }: IconContainerProps) => {
   const hasCustomColors = Boolean(backgroundColor || iconColor);
 
@@ -52,7 +54,7 @@ export const IconContainer = ({
       className={cn(
         "rounded-md flex items-center justify-center shrink-0",
         !hasCustomColors && "bg-primary/10 text-primary",
-        sizes[size].container,
+       justIcon ? "" : sizes[size].container,
         rounded && "rounded-full",
         className,
       )}

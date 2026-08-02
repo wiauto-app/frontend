@@ -20,14 +20,14 @@ export function ConsejosSection({ data }: Props) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {data.consejo.map((item) => (
+          {(data.consejo ?? []).map((item) => (
             <div key={item.id} className=" bg-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-slate-100 flex flex-col sm:flex-row h-full">
               {/* Imagen */}
               <div className="w-full sm:w-2/5 shrink-0 h-48 sm:h-64 overflow-hidden bg-slate-100 relative">
                 {item.imagen ? (
                   <Image
                     src={item.imagen.url}
-                    alt={item.titulo}
+                    alt={item.titulo ?? "Consejo"}
                     fill
                     sizes="300px"
                     className="object-cover"

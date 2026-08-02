@@ -1,108 +1,25 @@
-export interface Media {
-  id: number;
-  documentId: string;
-  name: string;
-  alternativeText: string | null;
-  caption: string | null;
-  focalPoint: unknown | null;
-  width: number | null;
-  height: number | null;
-  formats: MediaFormats | null;
-  hash: string;
-  ext: string;
-  mime: string;
-  size: number;
-  url: string;
-  previewUrl: string | null;
-  provider: string;
-  provider_metadata: unknown | null;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-}
+import type {
+  StrapiEstadistica,
+  StrapiHero,
+  StrapiLink,
+  StrapiMobileAdvertisment,
+  StrapiPlanesCaracteristicas,
+  StrapiPlanesTechAdd,
+} from "@/interfaces/strapi-components.interface";
 
-export interface MediaFormats {
-  thumbnail?: MediaFormat;
-  small?: MediaFormat;
-  medium?: MediaFormat;
-  large?: MediaFormat;
-}
+/** Alias histórico acoplado a la UI de planes. */
+export interface PlanesLinkAction extends StrapiLink {}
 
-export interface MediaFormat {
-  ext: string;
-  url: string;
-  etag: string;
-  hash: string;
-  mime: string;
-  name: string;
-  path: string | null;
-  size: number;
-  width: number;
-  height: number;
-  sizeInBytes: number;
-}
+/** Hero de la página planes (`shared.hero` en CMS). */
+export interface PlanesHero extends StrapiHero {}
 
-export interface Boton {
-  id: number;
-  label: string;
-  url: string;
-}
+export interface PlanesEstadistica extends StrapiEstadistica {}
 
-export interface PlanesLinkAction {
-  id: number;
-  label: string;
-  url: string;
-  destacado: boolean | null;
-}
+export interface PlanesCaracteristicasBlock extends StrapiPlanesCaracteristicas {}
 
-export interface PlanesHero {
-  id: number;
-  titulo: string;
-  descripcion: string;
-  acciones: PlanesLinkAction[];
-  imagen: Media | null;
-}
+export interface PlanesTechBlock extends StrapiPlanesTechAdd {}
 
-export interface PlanesEstadistica {
-  id: number;
-  estadistica: string;
-  descripcion: string;
-}
-
-export interface PlanesSectionHeader {
-  id: number;
-  titulo: string;
-  descripcion: string;
-}
-
-export interface PlanesCaracteristicaItem {
-  id: number;
-  label: string;
-  descripcion: string | null;
-  icon: Media;
-}
-
-export interface PlanesCaracteristicasBlock {
-  id: number;
-  header: PlanesSectionHeader;
-  caracteristicas: PlanesCaracteristicaItem[];
-}
-
-export interface PlanesTechBlock {
-  id: number;
-  header: PlanesSectionHeader;
-  caracteristicas: PlanesCaracteristicaItem[];
-  imagen: Media | null;
-}
-
-export interface PlanesMobileBlock {
-  id: number;
-  header: PlanesSectionHeader;
-  imagen: Media | null;
-  apple: Boton | null;
-  google: Boton | null;
-  caracteristicas: PlanesCaracteristicaItem[];
-}
+export interface PlanesMobileBlock extends StrapiMobileAdvertisment {}
 
 export interface PlanesPageResponse {
   id: number;
@@ -111,12 +28,12 @@ export interface PlanesPageResponse {
   updatedAt: string;
   publishedAt: string;
   hero: PlanesHero | null;
-  estadisticas: PlanesEstadistica[];
+  estadisticas: PlanesEstadistica[] | null;
   caracteristicas: PlanesCaracteristicasBlock | null;
   tech_add: PlanesTechBlock | null;
   mobile_advertisment: PlanesMobileBlock | null;
 }
 
-export type StrapiPlanesResponse = {
+export interface StrapiPlanesResponse {
   data: PlanesPageResponse;
-};
+}

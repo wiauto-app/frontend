@@ -9,6 +9,7 @@ type PlansTechSectionProps = {
 };
 
 export const PlansTechSection = ({ data }: PlansTechSectionProps) => {
+  const caracteristicas = data.caracteristicas ?? [];
   const image_url =
     getStrapiMediaUrl(data.imagen?.formats?.large?.url) ??
     getStrapiMediaUrl(data.imagen?.formats?.medium?.url) ??
@@ -21,15 +22,15 @@ export const PlansTechSection = ({ data }: PlansTechSectionProps) => {
           <div className="flex flex-col gap-8 bg-slate-50 rounded-xl p-6">
             <div className="flex flex-col gap-3">
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-                {data.header.titulo}
+                {data.header?.titulo}
               </h2>
-              {data.header.descripcion ? (
+              {data.header?.descripcion ? (
                 <p className="text-base text-slate-600 md:text-lg">{data.header.descripcion}</p>
               ) : null}
             </div>
 
             <ul className="flex flex-col gap-4">
-              {data.caracteristicas.map((item) => {
+              {caracteristicas.map((item) => {
                 const icon_url =
                   getStrapiMediaUrl(item.icon?.formats?.small?.url) ??
                   getStrapiMediaUrl(item.icon?.url);
@@ -65,7 +66,7 @@ export const PlansTechSection = ({ data }: PlansTechSectionProps) => {
             {image_url ? (
               <Image
                 src={image_url}
-                alt={data.imagen?.alternativeText ?? data.header.titulo}
+                alt={data.imagen?.alternativeText ?? data.header?.titulo ?? "WiAuto"}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
