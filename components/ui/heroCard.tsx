@@ -32,7 +32,7 @@ export const HeroCard = ({ card }: { card?: StrapiCard | null }) => {
         </CardDescription>
       </CardContent>
       {card?.boton && (
-        <CardFooter>
+        <CardFooter className="flex justify-center">
           <StrapiButton button={card.boton} />
         </CardFooter>
       )}

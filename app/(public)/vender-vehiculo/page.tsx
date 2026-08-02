@@ -1,7 +1,6 @@
 import { getPageData } from "./services/getPageData";
 import { HeroSection } from "./components/HeroSection";
 import { VentajasSection } from "./components/VentajasSection";
-import { ComparacionSection } from "./components/ComparacionSection";
 import { MarketingSection } from "./components/MarketingSection";
 import { ConsejosSection } from "./components/ConsejosSection";
 import { PreguntasSection } from "./components/PreguntasSection";
