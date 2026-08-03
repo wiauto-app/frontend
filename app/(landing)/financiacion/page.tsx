@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
-import { FinanciacionHeroSection } from "./components/FinanciacionHeroSection";
-import { FinanciacionPasosSection } from "./components/FinanciacionPasosSection";
-import { FinanciacionSoporteSection } from "./components/FinanciacionSoporteSection";
-import { FinanciacionStatsSection } from "./components/FinanciacionStatsSection";
-import { FinanciacionVentajasSection } from "./components/FinanciacionVentajasSection";
-import { getFinanciacionPageData } from "./services/getFinanciacionPageData";
+import { FinanciacionHeroSection } from './components/FinanciacionHeroSection';
+import { FinanciacionPasosSection } from './components/FinanciacionPasosSection';
+import { FinanciacionSoporteSection } from './components/FinanciacionSoporteSection';
+import { FinanciacionStatsSection } from './components/FinanciacionStatsSection';
+import { FinanciacionVentajasSection } from './components/FinanciacionVentajasSection';
+import { FinanciacionCTASection } from './components/FinanciacionCTASection';
+import { getFinanciacionPageData } from './services/getFinanciacionPageData';
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -13,16 +14,16 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: content?.hero?.titulo
         ? `${content.hero.titulo} | WiAuto`
-        : "Financiación | WiAuto",
+        : 'Financiación | WiAuto',
       description:
         content?.hero?.descripcion ??
-        "Financia tu próximo vehículo con WiAuto. Condiciones claras, cuotas a tu medida y acompañamiento en cada paso.",
+        'Financia tu próximo vehículo con WiAuto. Condiciones claras, cuotas a tu medida y acompañamiento en cada paso.',
     };
   } catch {
     return {
-      title: "Financiación | WiAuto",
+      title: 'Financiación | WiAuto',
       description:
-        "Financia tu próximo vehículo con WiAuto. Condiciones claras, cuotas a tu medida y acompañamiento en cada paso.",
+        'Financia tu próximo vehículo con WiAuto. Condiciones claras, cuotas a tu medida y acompañamiento en cada paso.',
     };
   }
 }
@@ -35,10 +36,9 @@ export default async function FinanciacionPage() {
   } catch {
     content = null;
   }
-
   if (!content) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center p-20 text-center text-slate-600">
+      <div className='flex min-h-[50vh] items-center justify-center p-20 text-center text-slate-600'>
         No se pudo cargar la información de financiación. Inténtalo de nuevo más
         tarde.
       </div>
@@ -46,22 +46,23 @@ export default async function FinanciacionPage() {
   }
 
   return (
-    <div className="container-custom mx-auto flex flex-col gap-16 pb-16">
+    <div className='container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col gap-14 py-8'>
       {content.hero ? <FinanciacionHeroSection hero={content.hero} /> : null}
-
-      {content.estadisticas && content.estadisticas.length > 0 ? (
-        <FinanciacionStatsSection items={content.estadisticas} />
-      ) : null}
 
       {content.ventajas ? (
         <FinanciacionVentajasSection data={content.ventajas} />
       ) : null}
-
       {content.pasos ? <FinanciacionPasosSection data={content.pasos} /> : null}
 
       {content.soporte ? (
         <FinanciacionSoporteSection hero={content.soporte} />
       ) : null}
+      {content.estadisticas && content.estadisticas.length > 0 ? (
+        <FinanciacionStatsSection items={content.estadisticas} />
+      ) : null}
+
+      {/* 6. Call to Action final */}
+      <FinanciacionCTASection />
     </div>
   );
 }

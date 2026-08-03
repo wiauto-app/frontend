@@ -1,29 +1,49 @@
-import type { StrapiEstadistica } from "@/interfaces/strapi-components.interface";
+import React from 'react';
+import type { StrapiEstadistica } from '@/interfaces/strapi-components.interface';
 
 interface FinanciacionStatsSectionProps {
   items: StrapiEstadistica[];
 }
 
+const FALLBACK_STATS = [
+  { estadistica: '+10 años', descripcion: 'de experiencia' },
+  { estadistica: '+25.000', descripcion: 'clientes satisfechos' },
+  { estadistica: '100%', descripcion: 'proceso digital' },
+  { estadistica: '24h', descripcion: 'respuesta promedio' },
+  { estadistica: '98%', descripcion: 'de aprobaciones' },
+];
+
 export const FinanciacionStatsSection = ({
   items,
-}: FinanciacionStatsSectionProps) => (
-  <section className="border-y border-slate-200 bg-white py-8">
-    <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
-      {items.map((item) => (
-        <div
-          key={item.id}
-          className="flex flex-col items-center gap-1 text-center"
-        >
-          {item.estadistica ? (
-            <p className="text-2xl font-bold text-blue-600 md:text-3xl">
+}: FinanciacionStatsSectionProps) => {
+  const displayItems = items && items.length > 0 ? items : FALLBACK_STATS;
+
+  return (
+    <section className='bg-[#00388d] text-white rounded-2xl p-6 sm:p-8 shadow-md'>
+      <div className='mb-6'>
+        <h3 className='text-start text-xs sm:text-sm font-bold text-white tracking-wide'>
+          CrediAuto en números
+        </h3>
+        <div className='w-8 h-[2px] bg-white/60 mt-1.5 rounded-full' />
+      </div>
+
+      <div className='grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-white/20'>
+        {displayItems.map((item, idx) => (
+          <div
+            key={idx}
+            className='flex flex-col items-center text-center gap-1 py-4 md:py-0 md:px-4'
+          >
+            <span className='text-2xl sm:text-3xl font-extrabold text-white tracking-tight'>
               {item.estadistica}
-            </p>
-          ) : null}
-          {item.descripcion ? (
-            <p className="text-sm text-slate-600">{item.descripcion}</p>
-          ) : null}
-        </div>
-      ))}
-    </div>
-  </section>
-);
+            </span>
+            {item.descripcion && (
+              <span className='text-[11px] text-blue-100 font-normal'>
+                {item.descripcion}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
