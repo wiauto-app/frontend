@@ -32,7 +32,6 @@ import { StoreButtons } from "@/components/home/StoreButtons";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
-
   return {
     title: home_data.seo.meta_title,
     description: home_data.seo.meta_description,

@@ -3,6 +3,8 @@ import Image from "next/image";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
 import type { PlanesTechBlock } from "../interfaces/planes.interface";
+import { IconContainer } from "@/components/ui/iconContainer";
+import { resolveStrapiIconName } from "../../simulador-financiamiento/utils/resolveStrapiIconName";
 
 type PlansTechSectionProps = {
   data: PlanesTechBlock;
@@ -31,25 +33,12 @@ export const PlansTechSection = ({ data }: PlansTechSectionProps) => {
 
             <ul className="flex flex-col gap-4">
               {caracteristicas.map((item) => {
-                const icon_url =
-                  getStrapiMediaUrl(item.icon?.formats?.small?.url) ??
-                  getStrapiMediaUrl(item.icon?.url);
 
                 return (
                   <li key={item.id} className="flex items-center gap-4">
-                    {icon_url ? (
-                      <div className="relative mt-0.5 h-8 w-8 shrink-0">
-                        <Image
-                          src={icon_url}
-                          alt={item.icon?.alternativeText ?? item.label}
-                          fill
-                          className="object-contain"
-                          sizes="32px"
-                        />
-                      </div>
-                    ) : (
-                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-blue-600" />
-                    )}
+                    {item.iconName ? (
+                      <IconContainer Icon={resolveStrapiIconName(item.iconName)} justIcon />
+                    ) : null}
                     <div className="flex flex-col gap-1">
                       <p className="font-semibold text-slate-900">{item.label}</p>
                       {item.descripcion ? (

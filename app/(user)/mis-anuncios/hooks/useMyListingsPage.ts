@@ -17,7 +17,6 @@ export const MY_LISTINGS_QUERY_KEY = ["my-listings"] as const;
 export const BILLING_ME_QUERY_KEY = ["billing-me"] as const;
 export const BILLING_CATALOG_QUERY_KEY = ["billing-catalog"] as const;
 
-const FEATURE_PLAN_SLUG = "destacar-vehiculo";
 const MY_LISTINGS_PAGE_LIMIT = 20;
 
 export interface MyListingsFilters {
@@ -103,7 +102,9 @@ export const useMyListingsPage = ({
 
   const featurePlan = useMemo((): BillingCatalogPlan | null => {
     return (
-      billingCatalogQuery.data?.find((plan) => plan.slug === FEATURE_PLAN_SLUG) ?? null
+      billingCatalogQuery.data?.find(
+        (plan) => plan.effect_config?.type === "feature_vehicle",
+      ) ?? null
     );
   }, [billingCatalogQuery.data]);
 

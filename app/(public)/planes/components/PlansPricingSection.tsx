@@ -27,7 +27,9 @@ export const PlansPricingSection = ({
   catalogError = false,
 }: PlansPricingSectionProps) => {
   const prefersReducedMotion = useReducedMotion();
-  const sortedPlans = [...plans].sort((left, right) => left.sort_order - right.sort_order);
+  const sortedPlans = [...plans]
+    .filter((plan) => plan.is_custom !== true)
+    .sort((left, right) => left.sort_order - right.sort_order);
 
   return (
     <section className="relative overflow-hidden bg-[#001B3D] py-20 rounded-3xl ">

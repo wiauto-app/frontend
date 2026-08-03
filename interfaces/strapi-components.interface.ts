@@ -20,7 +20,7 @@ export interface StrapiIconFeature {
   id: number;
   label: string;
   descripcion: string | null;
-  icon_url: StrapiMedia | null;
+  icon?: StrapiMedia | null;
   iconName: string | null;
 }
 

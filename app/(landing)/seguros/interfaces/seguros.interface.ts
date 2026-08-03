@@ -4,8 +4,8 @@ import type {
 } from "@/interfaces/strapi-components.interface";
 
 /** Alias del componente Strapi `home.features-section` (mismo que homeFeatures). */
-export interface SegurosFeaturesSection extends StrapiFeaturesSection {}
-export interface SegurosHero extends StrapiHero {}
+export type SegurosFeaturesSection = StrapiFeaturesSection;
+export type SegurosHero = StrapiHero;
 
 /** Single type `seguro` */
 export interface SegurosPageData {

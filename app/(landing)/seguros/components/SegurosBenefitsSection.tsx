@@ -7,6 +7,7 @@ import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/u
 
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "../constants";
 import type { SegurosFeaturesSection } from "../interfaces/seguros.interface";
+import { IconContainer } from "@/components/ui/iconContainer";
 
 interface SegurosBenefitsSectionProps {
   data: SegurosFeaturesSection | null;
@@ -22,7 +23,7 @@ export const SegurosBenefitsSection = ({
   const features = data.feature?.filter((item) => item.label?.trim()) ?? [];
 
   return (
-    <section >
+    <section>
       <div className="container-custom mx-auto bg-gray-50 rounded-2xl pt-8 px-4 sm:px-6">
         <div className="mx-auto max-w-2xl text-center">
           {data.title ? (
@@ -38,9 +39,6 @@ export const SegurosBenefitsSection = ({
         {features.length > 0 ? (
           <div className="mx-auto mt-2 grid grid-cols-2 gap-4 md:grid-cols-5">
             {features.map((benefit) => {
-              const icon_url =
-                getStrapiMediaUrl(benefit.icon?.formats?.small?.url) ??
-                getStrapiMediaUrl(benefit.icon?.url);
               const BenefitIcon = resolveStrapiIconName(benefit.iconName);
 
               return (
@@ -56,21 +54,11 @@ export const SegurosBenefitsSection = ({
                         color: BRAND_BLUE,
                       }}
                     >
-                      {icon_url ? (
-                        <div className="relative size-7">
-                          <Image
-                            src={icon_url}
-                            alt={benefit.icon?.alternativeText ?? benefit.label}
-                            fill
-                            className="object-contain"
-                            sizes="28px"
-                          />
-                        </div>
-                      ) : BenefitIcon ? (
-                        BenefitIcon({ className: "size-7" })
-                      ) : (
-                        <Shield className="size-7" />
-                      )}
+                      {benefit.iconName ? (
+                        <IconContainer
+                          Icon={resolveStrapiIconName(benefit.iconName)}
+                        />
+                      ) : null}
                     </div>
                     <h3 className="mt-4 text-md font-bold text-slate-900">
                       {benefit.label}

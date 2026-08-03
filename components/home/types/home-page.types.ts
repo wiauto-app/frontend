@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 
-import type { StrapiLink } from "@/interfaces/strapi-components.interface";
+import type { StrapiIconFeature, StrapiLink } from "@/interfaces/strapi-components.interface";
 import type { HeroFeature } from "@/interfaces/hero-feature.interface";
 import type { StrapiMedia } from "@/lib/strapi.types";
 
@@ -24,7 +24,7 @@ export interface HomeHeroData {
     order: number;
   }[];
   action_links: StrapiLink[];
-  features: HomeHeroFeature[];
+  features: StrapiIconFeature[];
 }
 
 export interface HomeNewsletterData {
@@ -57,7 +57,7 @@ export interface HomeFeatureItem {
 export interface HomeFeaturesData {
   title: string;
   description: string;
-  features: HomeFeatureItem[];
+  features: StrapiIconFeature[];
 }
 
 export interface HomeSeoData {

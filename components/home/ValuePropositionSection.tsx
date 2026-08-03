@@ -2,12 +2,23 @@ import Image from "next/image";
 import type { HomeFeaturesData } from "./types/home-page.types";
 import { SectionContainer } from "./SectionContainer";
 import { BRAND_BLUE } from "./data/home-data";
+import { getStrapiMediaUrl } from "@/lib/strapi-media";
+import { IconContainer } from "../ui/iconContainer";
+import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 
 type ValuePropositionSectionProps = {
   data: HomeFeaturesData;
 };
 
-function FeatureIcon({ icon_url, icon_alt }: { icon_url: string | null; icon_alt: string }) {
+function FeatureIcon({
+  icon_url,
+  icon_alt,
+  icon_name,
+}: {
+  icon_url: string | null;
+  icon_alt: string;
+  icon_name: string | null;
+}) {
   if (icon_url) {
     return (
       <span className="inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -20,6 +31,16 @@ function FeatureIcon({ icon_url, icon_alt }: { icon_url: string | null; icon_alt
           style={{ width: 40, height: "auto" }}
         />
       </span>
+    );
+  }
+
+  if (icon_name) {
+    return (
+      <IconContainer
+        Icon={resolveStrapiIconName(icon_name)}
+        justIcon
+        className="size-10 shrink-0"
+      />
     );
   }
 
@@ -50,7 +71,11 @@ export function ValuePropositionSection({ data }: ValuePropositionSectionProps) 
             <ul className="mt-8 space-y-5">
               {data.features.map((feature) => (
                 <li key={feature.id} className="flex items-center gap-4">
-                  <FeatureIcon icon_url={feature.icon_url} icon_alt={feature.icon_alt ?? feature.label} />
+                  <FeatureIcon
+                    icon_url={getStrapiMediaUrl(feature.icon?.url)}
+                    icon_alt={feature.icon?.alternativeText?.trim() || feature.label}
+                    icon_name={feature.iconName}
+                  />
                   <span className="text-base text-slate-500">{feature.label}</span>
                 </li>
               ))}

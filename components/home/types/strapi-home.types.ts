@@ -1,6 +1,7 @@
 import type {
   StrapiCard,
   StrapiFeaturesSection,
+  StrapiIconFeature,
   StrapiLink,
 } from "@/interfaces/strapi-components.interface";
 import type { StrapiMedia } from "@/lib/strapi.types";
@@ -39,12 +40,7 @@ export interface StrapiHomepageResponse {
         active: boolean;
       }[] | null;
       actionLinks?: StrapiLink[] | null;
-      caracteristicas?: {
-        id: number;
-        label: string;
-        descripcion?: string | null;
-        icon?: StrapiMedia | null;
-      }[] | null;
+      caracteristicas?: StrapiIconFeature[] | null;
     } | null;
     herramientas?: StrapiCard[] | null;
     homeAppAdvertisment?: {

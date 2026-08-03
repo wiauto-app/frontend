@@ -148,7 +148,7 @@ const mapProcessSection = (
         description:
           tab.descripcion?.length ?
             tab.descripcion
-          : plainTextToBlocks(""),
+            : plainTextToBlocks(""),
         image_url: pickMediaUrl(tab.image),
         image_alt: tab.image?.alternativeText ?? tab.titulo!.trim(),
       })) ?? [];
@@ -297,15 +297,7 @@ export const mapHomePageData = (
       action_links:
         hero?.actionLinks?.length ? hero.actionLinks : [DEFAULT_HERO_ACTION],
       features:
-        hero?.caracteristicas
-          ?.filter((item) => item.label?.trim())
-          .map((item) => ({
-            id: String(item.id),
-            label: item.label.trim(),
-            description: item.descripcion?.trim() ?? null,
-            icon_url: getStrapiMediaUrl(item.icon?.url),
-            icon_alt: item.icon?.alternativeText ?? item.label.trim(),
-          })) ?? [],
+        data?.homeHero?.caracteristicas ?? [],
     },
     newsletter: {
       subtitle: newsletter?.subtitle?.trim() || DEFAULT_NEWSLETTER.subtitle,
@@ -331,13 +323,8 @@ export const mapHomePageData = (
       title: features_block?.title?.trim() || DEFAULT_FEATURES.title,
       description:
         features_block?.description?.trim() || DEFAULT_FEATURES.description,
-      features:
-        features_block?.feature?.map((item) => ({
-          id: String(item.id),
-          label: item.label,
-          icon_url: getStrapiMediaUrl(item.icon?.url),
-          icon_alt: item.icon?.alternativeText ?? item.label,
-        })) ?? DEFAULT_FEATURES.features,
+      features: features_block?.feature ?? [],
+
     },
     seo: {
       meta_title: seo?.metaTitle?.trim() || "WiAuto",

@@ -63,7 +63,6 @@ export type CreateDealershipMemberInput = {
 
 export type CreateDealershipPayload = {
   name: string;
-  slug: string;
   avatar_url: string;
   banner_url: string;
   description: string;

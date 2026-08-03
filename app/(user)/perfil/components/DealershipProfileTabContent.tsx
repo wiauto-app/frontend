@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +26,6 @@ import {
   mapDealershipDetailToFormValues,
   mapDealershipFormToCreatePayload,
   mapDealershipFormToUpdatePayload,
-  slugifyDealershipName,
   type DealershipProfileFormValues,
 } from "../schemas/dealership-profile.schema";
 import { DealershipScheduleSection } from "./DealershipScheduleSection";
@@ -37,8 +36,6 @@ export const DealershipProfileTabContent = () => {
   const dealershipId = user?.dealership_membership?.dealership_id;
   const isCreateMode = !dealershipId;
   const canEditSchedule = canManageTeam(user?.dealership_membership?.role);
-  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
-
   const {
     data: dealership,
     isLoading: isDealershipLoading,
@@ -67,13 +64,11 @@ export const DealershipProfileTabContent = () => {
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors, isSubmitting },
   } = form;
 
   const avatarUrl = useWatch({ control, name: "avatar_url" });
   const bannerUrl = useWatch({ control, name: "banner_url" });
-  const dealershipName = useWatch({ control, name: "name" });
   const lng = useWatch({ control, name: "lng" });
 
   useEffect(() => {
@@ -83,7 +78,6 @@ export const DealershipProfileTabContent = () => {
 
     if (dealership) {
       reset(mapDealershipDetailToFormValues(dealership));
-      setSlugManuallyEdited(true);
       return;
     }
 
@@ -96,20 +90,9 @@ export const DealershipProfileTabContent = () => {
           phone: user?.phone ?? "",
         },
       });
-      setSlugManuallyEdited(false);
     }
   }, [dealership, isCreateMode, isUserLoading, reset, user]);
 
-  useEffect(() => {
-    if (slugManuallyEdited || !dealershipName?.trim()) {
-      return;
-    }
-
-    setValue("slug", slugifyDealershipName(dealershipName), {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-  }, [dealershipName, setValue, slugManuallyEdited]);
 
   const onSubmit = async (data: DealershipProfileFormValues) => {
     if (!user?.id) {
@@ -273,7 +256,10 @@ export const DealershipProfileTabContent = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
-            <Field data-invalid={Boolean(errors.name)}>
+            <Field
+              className="md:col-span-2"
+              data-invalid={Boolean(errors.name)}
+            >
               <FieldLabel htmlFor="dealership-name">Nombre</FieldLabel>
               <Input
                 id="dealership-name"
@@ -284,18 +270,6 @@ export const DealershipProfileTabContent = () => {
               {errors.name ? <FieldError errors={[errors.name]} /> : null}
             </Field>
 
-            <Field data-invalid={Boolean(errors.slug)}>
-              <FieldLabel htmlFor="dealership-slug">Slug</FieldLabel>
-              <Input
-                id="dealership-slug"
-                placeholder="auto-norte-madrid"
-                aria-invalid={Boolean(errors.slug)}
-                {...register("slug", {
-                  onChange: () => setSlugManuallyEdited(true),
-                })}
-              />
-              {errors.slug ? <FieldError errors={[errors.slug]} /> : null}
-            </Field>
 
             <Field
               className="md:col-span-2"

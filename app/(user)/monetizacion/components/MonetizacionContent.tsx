@@ -64,12 +64,19 @@ export const MonetizacionContent = () => {
   const handleSubscriptionCheckout = async (plan: BillingCatalogPlan, price_id: string) => {
     set_is_checkout_loading(true);
     try {
-      const url = await billingService.createSubscriptionCheckout(price_id);
-      if (!url) {
-        toast.error("No se pudo iniciar el checkout");
+      const result = await billingService.createSubscriptionCheckout(price_id);
+      if (!result.checkoutUrl) {
+        if (result.status === 403) {
+          toast.error(
+            result.message ??
+              "Este plan personalizado no está disponible en el catálogo público.",
+          );
+          return;
+        }
+        toast.error(result.message ?? "No se pudo iniciar el checkout");
         return;
       }
-      window.location.href = url;
+      window.location.href = result.checkoutUrl;
     } finally {
       set_is_checkout_loading(false);
     }
@@ -118,9 +125,10 @@ export const MonetizacionContent = () => {
             Rol actual: <strong>{billing_me.effective_role?.name ?? "Sin rol"}</strong>
           </p>
           <p>
-            Anuncios activos: {billing_me.vehicle_listings_used}
-            {billing_me.vehicle_listings_max != null
-              ? ` / ${billing_me.vehicle_listings_max}`
+            Anuncios activos:{" "}
+            {billing_me.usage?.listings_used ?? billing_me.vehicle_listings_used}
+            {(billing_me.quotas?.max_listings ?? billing_me.vehicle_listings_max) != null
+              ? ` / ${billing_me.quotas?.max_listings ?? billing_me.vehicle_listings_max}`
               : ""}
           </p>
           {billing_me.subscription ? (

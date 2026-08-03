@@ -8,18 +8,18 @@ import type {
 } from "@/interfaces/strapi-components.interface";
 
 /** Alias histórico acoplado a la UI de planes. */
-export interface PlanesLinkAction extends StrapiLink {}
+export type PlanesLinkAction = StrapiLink;
 
 /** Hero de la página planes (`shared.hero` en CMS). */
-export interface PlanesHero extends StrapiHero {}
+export type PlanesHero = StrapiHero;
 
-export interface PlanesEstadistica extends StrapiEstadistica {}
+export type PlanesEstadistica = StrapiEstadistica;
 
-export interface PlanesCaracteristicasBlock extends StrapiPlanesCaracteristicas {}
+export type PlanesCaracteristicasBlock = StrapiPlanesCaracteristicas;
 
-export interface PlanesTechBlock extends StrapiPlanesTechAdd {}
+export type PlanesTechBlock = StrapiPlanesTechAdd;
 
-export interface PlanesMobileBlock extends StrapiMobileAdvertisment {}
+export type PlanesMobileBlock = StrapiMobileAdvertisment;
 
 export interface PlanesPageResponse {
   id: number;

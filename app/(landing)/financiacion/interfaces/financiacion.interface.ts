@@ -6,7 +6,7 @@ import type {
 } from "@/interfaces/strapi-components.interface";
 
 /** Alias del componente Strapi `shared.hero`. */
-export interface FinanciacionHero extends StrapiHero {}
+export type FinanciacionHero = StrapiHero;
 
 /** Single type `financiacion` */
 export interface FinanciacionPageData {

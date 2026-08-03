@@ -28,14 +28,24 @@ export const PlansPricingCta = ({
 
     setIsLoading(true);
     try {
-      const checkoutUrl = await billingService.createPublicSubscriptionCheckout(planPriceId);
+      const result = await billingService.createPublicSubscriptionCheckout(planPriceId);
 
-      if (!checkoutUrl) {
-        toast.error("No se pudo iniciar el checkout. Inténtalo de nuevo.");
+      if (!result.checkoutUrl) {
+        if (result.status === 403) {
+          toast.error(
+            result.message ??
+              "Este plan personalizado no está disponible en el catálogo público.",
+          );
+          return;
+        }
+
+        toast.error(
+          result.message ?? "No se pudo iniciar el checkout. Inténtalo de nuevo.",
+        );
         return;
       }
 
-      window.location.href = checkoutUrl;
+      window.location.href = result.checkoutUrl;
     } catch {
       toast.error("No se pudo iniciar el checkout. Inténtalo de nuevo.");
     } finally {

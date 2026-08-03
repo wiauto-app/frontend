@@ -29,7 +29,7 @@ export function HeroSection({ data }: HeroSectionProps) {
         </div>
       }
       rightContent={
-        <div className="flex  justify-center items-end">
+        <div className="flex  justify-center items-end h-full">
           <HeroSearchForm />
         </div>
       }

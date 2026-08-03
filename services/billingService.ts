@@ -4,6 +4,7 @@ import type {
   BillingInvoice,
   BillingMeResponse,
   CheckoutResponse,
+  CreateCheckoutResult,
   PortalResponse,
 } from "@/interfaces/billing.interface";
 import {
@@ -15,13 +16,44 @@ import {
   V1_PUBLIC_BILLING_CHECKOUT_SUBSCRIPTION,
 } from "@/services/billing/route.constants";
 
+const resolveCheckoutMessage = (message: unknown, fallback: string): string => {
+  if (typeof message === "string" && message.trim()) {
+    return message;
+  }
+
+  if (Array.isArray(message) && message.length > 0) {
+    return String(message[0]);
+  }
+
+  return fallback;
+};
+
+const isPublicCatalogPlan = (plan: BillingCatalogPlan): boolean =>
+  plan.is_custom !== true;
+
 const createPublicSubscriptionCheckout = async (
   plan_price_id: string,
-): Promise<string | null> => {
+): Promise<CreateCheckoutResult> => {
   const response = await apiPost<CheckoutResponse>(V1_PUBLIC_BILLING_CHECKOUT_SUBSCRIPTION, {
     plan_price_id,
   });
-  return response.ok ? response.data.checkout_url : null;
+
+  if (response.ok && response.data?.checkout_url) {
+    return {
+      checkoutUrl: response.data.checkout_url,
+      message: null,
+      status: response.status,
+    };
+  }
+
+  return {
+    checkoutUrl: null,
+    message: resolveCheckoutMessage(
+      response.message,
+      "No se pudo iniciar el checkout. Inténtalo de nuevo.",
+    ),
+    status: response.status,
+  };
 };
 
 export const billingService = {
@@ -30,7 +62,7 @@ export const billingService = {
     const response = await apiGet<BillingCatalogPlan[]>(
       `${V1_BILLING_PLANS_CATALOG}${query}`,
     );
-    return response.data ?? [];
+    return (response.data ?? []).filter(isPublicCatalogPlan);
   },
 
   getMe: async (): Promise<BillingMeResponse | null> => {

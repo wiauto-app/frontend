@@ -4,10 +4,10 @@ import { V1_PUBLIC_BILLING_PLANS_CATALOG } from "@/services/billing/route.consta
 
 const PROFESSIONAL_AUDIENCE = "professional";
 
-type PublicCatalogResponse = {
+interface PublicCatalogResponse {
   ok: boolean;
   data: BillingCatalogPlan[];
-};
+}
 
 export const getPublicPlansCatalog = async (): Promise<BillingCatalogPlan[]> => {
   if (!API_URL) {
@@ -33,5 +33,7 @@ export const getPublicPlansCatalog = async (): Promise<BillingCatalogPlan[]> => 
 
   return plans
     .filter((plan) => plan.billing_type === "recurring")
+    // Seguridad: la API ya excluye custom; filtramos por si el shape lo incluye.
+    .filter((plan) => plan.is_custom !== true)
     .sort((left, right) => left.sort_order - right.sort_order);
 };

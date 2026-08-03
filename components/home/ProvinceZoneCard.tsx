@@ -36,7 +36,7 @@ export const ProvinceZoneCard = ({ province }: ProvinceZoneCardProps) => {
       aria-label={`Explorar vehículos en ${province.name}`}
       className={cn(
         "home-card-interactive group relative block h-full overflow-hidden rounded-2xl",
-        "bg-white shadow-[0_4px_20px_rgba(15,23,42,0.08)]",
+        " shadow-[0_4px_20px_rgba(15,23,42,0.08)]",
         "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
         "hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(0,97,242,0.18)]",
         "active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100",

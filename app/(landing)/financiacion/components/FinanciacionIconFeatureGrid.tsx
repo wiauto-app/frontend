@@ -1,7 +1,8 @@
 import Image from "next/image";
 
 import type { StrapiIconFeature } from "@/interfaces/strapi-components.interface";
-import { getStrapiMediaUrl } from "@/lib/strapi-media";
+import { IconContainer } from "@/components/ui/iconContainer";
+import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 
 interface FinanciacionIconFeatureGridProps {
   items: StrapiIconFeature[];
@@ -14,9 +15,7 @@ export const FinanciacionIconFeatureGrid = ({
 }: FinanciacionIconFeatureGridProps) => (
   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
     {items.map((item, index) => {
-      const icon_url =
-        getStrapiMediaUrl(item.icon?.formats?.medium?.url) ??
-        getStrapiMediaUrl(item.icon?.url);
+
 
       return (
         <article
@@ -28,17 +27,7 @@ export const FinanciacionIconFeatureGrid = ({
               {index + 1}
             </span>
           ) : null}
-          {icon_url ? (
-            <div className="relative h-12 w-12">
-              <Image
-                src={icon_url}
-                alt={item.icon?.alternativeText ?? item.label}
-                fill
-                className="object-contain"
-                sizes="48px"
-              />
-            </div>
-          ) : null}
+          {item.iconName && <IconContainer Icon={resolveStrapiIconName(item.iconName)} justIcon />}
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-semibold text-slate-900">{item.label}</h3>
             {item.descripcion ? (

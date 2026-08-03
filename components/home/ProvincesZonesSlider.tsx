@@ -11,7 +11,7 @@ import { motion } from "motion/react";
 import type { ProvinceZoneItem } from "@/lib/locations/buildProvinceZones";
 
 import { ProvinceZoneCard } from "./ProvinceZoneCard";
-import { getVariant, staggerContainer, staggerItem } from "./motion";
+import { getVariant, staggerContainer } from "./motion";
 import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 
 interface ProvincesZonesSliderProps {
@@ -23,7 +23,6 @@ export const ProvincesZonesSlider = ({
 }: ProvincesZonesSliderProps) => {
   const prefersReducedMotion = usePrefersReducedMotion();
   const containerVariants = getVariant(staggerContainer, prefersReducedMotion);
-  const itemVariants = getVariant(staggerItem, prefersReducedMotion);
 
   return (
     <Carousel
@@ -43,9 +42,7 @@ export const ProvincesZonesSlider = ({
                 key={province.id}
                 className="basis-[78%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
               >
-                <motion.div variants={itemVariants}>
                   <ProvinceZoneCard province={province} />
-                </motion.div>
               </CarouselItem>
             ))}
           </CarouselContent>

@@ -106,16 +106,7 @@ export const AiSearchForm = ({ className }: AiSearchFormProps) => {
 
   return (
     <div className={cn(className)}>
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={cardVariants}
-        transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : { delay: HERO_DELAYS.aiCard, duration: 0.3 }
-        }
-      >
+      
         <div className="space-y-4">
           <p className="text-white">
             Cuéntanos qué buscas y nuestra IA encontrará el coche ideal para tí.
@@ -212,7 +203,6 @@ export const AiSearchForm = ({ className }: AiSearchFormProps) => {
             ))}
           </motion.div>
         </div>
-      </motion.div>
     </div>
   );
 };

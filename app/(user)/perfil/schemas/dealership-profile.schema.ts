@@ -6,25 +6,8 @@ import type {
   UpdateDealershipPayload,
 } from "@/services/dealerships/types/dealership.types";
 
-export const slugifyDealershipName = (name: string): string =>
-  name
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
 export const dealershipProfileFormSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres"),
-  slug: z
-    .string()
-    .trim()
-    .min(3, "El slug debe tener al menos 3 caracteres")
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Usa solo minúsculas, números y guiones",
-    ),
   avatar_url: z
     .string()
     .trim()
@@ -55,7 +38,6 @@ export type DealershipProfileFormValues = z.infer<
 
 export const EMPTY_DEALERSHIP_PROFILE_FORM: DealershipProfileFormValues = {
   name: "",
-  slug: "",
   avatar_url: "",
   banner_url: "",
   description: "",
@@ -72,7 +54,6 @@ export const mapDealershipDetailToFormValues = (
   dealership: DealershipDetail,
 ): DealershipProfileFormValues => ({
   name: dealership.name,
-  slug: dealership.slug,
   avatar_url: dealership.avatar_url ?? "",
   banner_url: dealership.banner_url ?? "",
   description: dealership.description,
@@ -92,7 +73,6 @@ export const mapDealershipFormToCreatePayload = (
   values: DealershipProfileFormValues,
 ): CreateMyDealershipPayload => ({
   name: values.name.trim(),
-  slug: values.slug.trim(),
   avatar_url: values.avatar_url.trim(),
   banner_url: values.banner_url.trim(),
   description: values.description.trim(),
@@ -110,7 +90,6 @@ export const mapDealershipFormToUpdatePayload = (
   values: DealershipProfileFormValues,
 ): UpdateDealershipPayload => ({
   name: values.name.trim(),
-  slug: values.slug.trim(),
   avatar_url: values.avatar_url.trim(),
   banner_url: values.banner_url.trim(),
   description: values.description.trim(),

@@ -198,8 +198,8 @@ export const MyListing = () => {
 
       <MyListingsSummaryCards
         stats={aggregatedStats}
-        listingsUsed={billingMe?.vehicle_listings_used}
-        listingsMax={billingMe?.vehicle_listings_max}
+        listingsUsed={billingMe?.usage?.listings_used ?? billingMe?.vehicle_listings_used}
+        listingsMax={billingMe?.quotas?.max_listings ?? billingMe?.vehicle_listings_max}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">

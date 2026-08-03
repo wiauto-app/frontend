@@ -15,24 +15,24 @@ import type { StrapiMedia } from "@/lib/strapi.types";
 export type { StrapiMedia as Media };
 
 /** Alias histórico; link canónico `shared.link`. */
-export interface Boton extends StrapiLink {}
+export type Boton = StrapiLink;
 
 /** Alias histórico; card canónica `shared.carta-ventaja`. */
-export interface Card extends StrapiCard {}
+export type Card = StrapiCard;
 
-export interface VentajasSection extends StrapiVenderVentajas {}
+export type VentajasSection = StrapiVenderVentajas;
 
-export interface ComparacionSection extends StrapiVenderComparacion {}
+export type ComparacionSection = StrapiVenderComparacion;
 
-export interface Plan extends StrapiVenderPlan {}
+export type Plan = StrapiVenderPlan;
 
-export interface CaracteristicaPlan extends StrapiVenderFeature {}
+export type CaracteristicaPlan = StrapiVenderFeature;
 
-export interface ConsejosSection extends StrapiVenderConsejos {}
+export type ConsejosSection = StrapiVenderConsejos;
 
-export interface PreguntasSection extends StrapiVenderFaqs {}
+export type PreguntasSection = StrapiVenderFaqs;
 
-export interface Pregunta extends StrapiDesplegable {}
+export type Pregunta = StrapiDesplegable;
 
 export interface VenderVehiculoResponse {
   id: number;

@@ -8,13 +8,13 @@ import type { StrapiMedia } from "@/lib/strapi.types";
 export type { StrapiMedia };
 
 /** Alias histórico; componente `shared.header`. */
-export interface SimuladorHeaderStrapi extends StrapiHeader {}
+export type SimuladorHeaderStrapi = StrapiHeader;
 
 /** Alias histórico; componente `simulador.reasons`. */
-export interface SimuladorReasonsStrapi extends StrapiSimuladorReasons {}
+export type SimuladorReasonsStrapi = StrapiSimuladorReasons;
 
 /** Alias histórico; componente `simulador.comments`. */
-export interface SimuladorCommentsStrapi extends StrapiSimuladorComments {}
+export type SimuladorCommentsStrapi = StrapiSimuladorComments;
 
 /** Single type `simulador` */
 export interface SimuladorPageStrapiData {

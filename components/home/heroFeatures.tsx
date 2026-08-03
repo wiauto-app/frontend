@@ -56,6 +56,7 @@ const HeroFeatureIcon = ({
 };
 
 export const HeroFeatures = ({ features }: { features: StrapiIconFeature[] }) => {
+  console.log(features);
   if (features.length === 0) {
     return null;
   }

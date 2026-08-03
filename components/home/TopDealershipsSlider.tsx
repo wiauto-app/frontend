@@ -11,7 +11,7 @@ import { motion } from "motion/react";
 import type { DealershipListItem } from "@/services/dealerships/types/dealership.types";
 
 import { TopDealershipCard } from "./TopDealershipCard";
-import { getVariant, staggerContainer, staggerItem } from "./motion";
+import { getVariant, staggerContainer } from "./motion";
 import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 
 interface TopDealershipsSliderProps {
@@ -23,7 +23,6 @@ export const TopDealershipsSlider = ({
 }: TopDealershipsSliderProps) => {
   const prefersReducedMotion = usePrefersReducedMotion();
   const containerVariants = getVariant(staggerContainer, prefersReducedMotion);
-  const itemVariants = getVariant(staggerItem, prefersReducedMotion);
 
   return (
     <Carousel
@@ -43,9 +42,7 @@ export const TopDealershipsSlider = ({
                 key={dealership.id}
                 className="basis-[78%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
               >
-                <motion.div variants={itemVariants}>
                   <TopDealershipCard dealership={dealership} />
-                </motion.div>
               </CarouselItem>
             ))}
           </CarouselContent>
