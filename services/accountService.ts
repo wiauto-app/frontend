@@ -1,7 +1,7 @@
 import type { AccountSettings } from "@/interfaces/account.interface";
 import type { UpdateEmailFormValues } from "@/app/(user)/perfil/schemas/update-email.schema";
 import type { UpdatePasswordFormValues } from "@/app/(user)/perfil/schemas/update-password.schema";
-import { ApiResponse, apiGet, apiPatch } from "@/lib/api";
+import { ApiResponse, apiGet, apiPatch, fetchWithAuth } from "@/lib/api";
 
 type ApiMessageResponse = {
   message: string;
@@ -34,6 +34,12 @@ export const accountService = {
     payload: UpdatePasswordFormValues,
   ): Promise<ApiResponse<ApiMessageResponse>> {
     return apiPatch<ApiMessageResponse>("/auth/me/password", payload);
+  },
+
+  deleteAccount(): Promise<ApiResponse<ApiMessageResponse>> {
+    return fetchWithAuth<ApiMessageResponse>("/auth/me", {
+      method: "DELETE",
+    });
   },
 
   getResponseMessage,

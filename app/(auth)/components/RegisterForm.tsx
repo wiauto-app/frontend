@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/authService";
+import { PasswordInput } from "@/components/ui/passwordInput";
 
 interface RegisterFormProps {
   invitedEmail?: string;
@@ -28,9 +29,7 @@ export default function RegisterForm({
   const invitedEmail = invitedEmailProp ?? invitationEmailFromQuery;
   const isInvitationFlow = invitedEmail.length > 0;
   const [isLoading, setIsLoading] = useState(false);
-  const [accountType, setAccountType] = useState<"particular" | "empresa">(
-    isInvitationFlow ? "empresa" : "particular",
-  );
+
   const [acceptTerms, setAcceptTerms] = useState(false);
   const form = useForm<RegisterDto>({
     resolver: zodResolver(RegisterSchema),
@@ -50,11 +49,17 @@ export default function RegisterForm({
 
     setIsLoading(true);
     try {
-      await authService.register(data);
-      toast.success(
-        "Revisa tu correo para verificar la cuenta e iniciar sesión.",
-      );
-      router.push("/confirmar-correo");
+      const response = await authService.register(data);
+
+      if (response.ok) {
+        toast.success(
+          "Revisa tu correo para verificar la cuenta e iniciar sesión.",
+        );
+        router.push("/confirmar-correo");
+      } else {
+        toast.error(response.message);
+      }
+
     } catch (error: Error | unknown) {
       console.error("Register error:", error);
       toast.error(
@@ -76,33 +81,6 @@ export default function RegisterForm({
           </p>
         ) : null}
       </div>
-
-      {!isInvitationFlow ? (
-        <div className="flex flex-wrap gap-2 ">
-          <Button
-            type="button"
-            onClick={() => setAccountType("particular")}
-            className={`flex-1 text-center ${
-              accountType === "particular"
-                ? " border-b-2 border-blue-600 "
-                : "bg-white text-black hover:text-white"
-            }`}
-          >
-            Particular
-          </Button>
-          <Button
-            type="button"
-            onClick={() => setAccountType("empresa")}
-            className={`flex-1 text-center ${
-              accountType === "empresa"
-                ? "border-b-2 border-blue-600"
-                : "bg-white text-black hover:text-white"
-            }`}
-          >
-            Empresa
-          </Button>
-        </div>
-      ) : null}
 
       <div className="flex flex-wrap gap-3">
         <GoogleLogin disabled={isLoading} />
@@ -194,13 +172,12 @@ export default function RegisterForm({
           >
             Contraseña *
           </Label>
-          <Input
+          <PasswordInput
             id="register-password"
-            type="password"
             placeholder="Contraseña *"
             {...form.register("password")}
             disabled={isLoading}
-          />
+            />
           {form.formState.errors.password && (
             <p className="mt-1 text-sm text-red-600">
               {form.formState.errors.password.message}
@@ -220,7 +197,7 @@ export default function RegisterForm({
             de datos.
           </Label>
         </div>
-{/* 
+        {/* 
         <div className="flex items-start gap-2">
           <Checkbox
             id="accept-newsletter"
