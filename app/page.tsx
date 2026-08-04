@@ -79,7 +79,7 @@ export default async function Home() {
           data={EXTRA_SERVICES_DATA_2}
           className=" rounded-xl lg:grid-cols-4"
         />
-        <ToolsAccess data={home_data.herramientas} />
+        {/* <ToolsAccess data={home_data.herramientas} /> */}
         <Suspense fallback={<ZonesSkeleton />}>
           <Zones />
         </Suspense>
