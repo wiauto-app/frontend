@@ -229,7 +229,7 @@ export const HeroFiltersMakeSelector = () => {
           )}
           {!isLoading && makes.length > 0 && (
             <Accordion
-              multiple
+              multiple={false}
               value={open_values}
               onValueChange={handleAccordionValueChange}
               className="w-full flex flex-col gap-2"
