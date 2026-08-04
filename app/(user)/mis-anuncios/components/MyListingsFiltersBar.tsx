@@ -18,8 +18,6 @@ import { MY_LISTINGS_ORDER_OPTIONS } from "../constants/my-listings-order.consta
 import { MyListingsMakeModelFilter } from "./MyListingsMakeModelFilter";
 import type { MyListingsFilters } from "../hooks/useMyListingsPage";
 
-const ALL_STATUS_VALUE = "all";
-
 interface MyListingsFiltersBarProps {
   filters: MyListingsFilters;
   onChange: (patch: Partial<MyListingsFilters>) => void;
@@ -29,10 +27,10 @@ interface MyListingsFiltersBarProps {
 const hasActiveFilters = (filters: MyListingsFilters): boolean =>
   Boolean(
     filters.status ||
-    filters.makeId ||
-    filters.modelId ||
-    filters.sinceCreatedAt ||
-    filters.untilCreatedAt,
+      filters.makeId ||
+      filters.modelId ||
+      filters.sinceCreatedAt ||
+      filters.untilCreatedAt,
   );
 
 export const MyListingsFiltersBar = ({
@@ -44,38 +42,52 @@ export const MyListingsFiltersBar = ({
     <div className="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
       <div className="flex flex-wrap items-center gap-2">
         <MyListingsMakeModelFilter
+          makeId={filters.makeId}
+          modelId={filters.modelId}
           onMakeChange={(makeId) => onChange({ makeId, modelId: null })}
           onModelChange={(modelId) => onChange({ modelId })}
         />
 
-        <Select
-          value={filters.status ?? ALL_STATUS_VALUE}
-          onValueChange={(value) =>
-            onChange({
-              status:
-                value === ALL_STATUS_VALUE ? null : (value as VehicleStatus),
-            })
-          }
-          items={VEHICLE_STATUS_OPTIONS.map((option) => ({
-            label: option.label,
-            value: option.value,
-          }))}
-        >
-          <SelectTrigger
-            className="w-full sm:w-40 border-gray-200 bg-white"
-            aria-label="Filtrar por estado"
+        <div className="flex items-center gap-1">
+          <Select
+            value={filters.status}
+            onValueChange={(value) =>
+              onChange({
+                status: value ? (value as VehicleStatus) : null,
+              })
+            }
+            items={VEHICLE_STATUS_OPTIONS.map((option) => ({
+              label: option.label,
+              value: option.value,
+            }))}
           >
-            <SelectValue placeholder="Estado" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_STATUS_VALUE}>Todos los estados</SelectItem>
-            {VEHICLE_STATUS_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <SelectTrigger
+              className="w-full sm:w-40 border-gray-200 bg-white"
+              aria-label="Filtrar por estado"
+            >
+              <SelectValue placeholder="Estado" />
+            </SelectTrigger>
+            <SelectContent>
+              {VEHICLE_STATUS_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {filters.status ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              className="shrink-0 text-muted-foreground hover:text-foreground"
+              aria-label="Quitar filtro de estado"
+              onClick={() => onChange({ status: null })}
+            >
+              <X className="size-4" aria-hidden />
+            </Button>
+          ) : null}
+        </div>
 
         <Select
           value={filters.order}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -8,106 +9,130 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
+import { Button } from "@/components/ui/button";
 import { useMakeSelectorData } from "@/components/selectors/FilterMakeSelector/hooks/useMakeSelectorData";
 
-const ALL_VALUE = "all";
-
 interface MyListingsMakeModelFilterProps {
+  makeId: number | null;
+  modelId: number | null;
   onMakeChange: (makeId: number | null) => void;
   onModelChange: (modelId: number | null) => void;
 }
 
 export const MyListingsMakeModelFilter = ({
+  makeId,
+  modelId,
   onMakeChange,
   onModelChange,
 }: MyListingsMakeModelFilterProps) => {
-  const [selectedMake, setSelectedMake] = useState<HeroCatalogFacetItem | null>(null);
-  const [selectedModel, setSelectedModel] = useState<HeroCatalogFacetItem | null>(null);
+  const { makes } = useMakeSelectorData([]);
+
+  const selectedMake = useMemo(
+    () => makes.find((item) => item.id === makeId) ?? null,
+    [makes, makeId],
+  );
 
   const selectedMakes = useMemo(
     () => (selectedMake ? [selectedMake] : []),
     [selectedMake],
   );
-  const { makes, models, isLoadingModels } = useMakeSelectorData(selectedMakes);
+
+  const { models, isLoadingModels } = useMakeSelectorData(selectedMakes);
 
   const handleMakeChange = (value: string | null) => {
-    setSelectedModel(null);
-    onModelChange(null);
-
-    if (!value || value === ALL_VALUE) {
-      setSelectedMake(null);
+    if (!value) {
       onMakeChange(null);
       return;
     }
-
-    const make = makes.find((item) => String(item.id) === value) ?? null;
-    setSelectedMake(make);
-    onMakeChange(make?.id ?? null);
+    const parsed = Number(value);
+    onMakeChange(Number.isFinite(parsed) ? parsed : null);
   };
 
   const handleModelChange = (value: string | null) => {
-    if (!value || value === ALL_VALUE) {
-      setSelectedModel(null);
+    if (!value) {
       onModelChange(null);
       return;
     }
-
-    const model = models.find((item) => String(item.id) === value) ?? null;
-    setSelectedModel(model);
-    onModelChange(model?.id ?? null);
+    const parsed = Number(value);
+    onModelChange(Number.isFinite(parsed) ? parsed : null);
   };
 
   return (
     <>
-      <Select
-        value={selectedMake ? String(selectedMake.id) : ALL_VALUE}
-        onValueChange={handleMakeChange}
-        items={makes.map((make) => ({
-          label: make.name,
-          value: String(make.id),
-        }))}
-      >
-        <SelectTrigger
-          className="w-full sm:w-40 border-gray-200 bg-white"
-          aria-label="Filtrar por marca"
+      <div className="flex items-center gap-1">
+        <Select
+          value={makeId != null ? String(makeId) : null}
+          onValueChange={handleMakeChange}
+          items={makes.map((make) => ({
+            label: make.name,
+            value: String(make.id),
+          }))}
         >
-          <SelectValue placeholder="Marca" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_VALUE}>Todas las marcas</SelectItem>
-          {makes.map((make) => (
-            <SelectItem key={make.id} value={String(make.id)}>
-              {make.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+          <SelectTrigger
+            className="w-full sm:w-40 border-gray-200 bg-white"
+            aria-label="Filtrar por marca"
+          >
+            <SelectValue placeholder="Marca" />
+          </SelectTrigger>
+          <SelectContent>
+            {makes.map((make) => (
+              <SelectItem key={make.id} value={String(make.id)}>
+                {make.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {makeId != null ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+            aria-label="Quitar filtro de marca"
+            onClick={() => onMakeChange(null)}
+          >
+            <X className="size-4" aria-hidden />
+          </Button>
+        ) : null}
+      </div>
 
-      <Select
-        value={selectedModel ? String(selectedModel.id) : ALL_VALUE}
-        onValueChange={handleModelChange}
-        disabled={!selectedMake || isLoadingModels}
-        items={models.map((model) => ({
-          label: model.name,
-          value: String(model.id),
-        }))}
-      >
-        <SelectTrigger
-          className="w-full sm:w-40 border-gray-200 bg-white"
-          aria-label="Filtrar por modelo"
+      <div className="flex items-center gap-1">
+        <Select
+          value={modelId != null ? String(modelId) : null}
+          onValueChange={handleModelChange}
+          disabled={makeId == null || isLoadingModels}
+          items={models.map((model) => ({
+            label: model.name,
+            value: String(model.id),
+          }))}
         >
-          <SelectValue placeholder="Modelo" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_VALUE}>Todos los modelos</SelectItem>
-          {models.map((model) => (
-            <SelectItem key={model.id} value={String(model.id)}>
-              {model.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+          <SelectTrigger
+            className="w-full sm:w-40 border-gray-200 bg-white"
+            aria-label="Filtrar por modelo"
+          >
+            <SelectValue placeholder="Modelo" />
+          </SelectTrigger>
+          <SelectContent>
+            {models.map((model) => (
+              <SelectItem key={model.id} value={String(model.id)}>
+                {model.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {modelId != null ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+            aria-label="Quitar filtro de modelo"
+            onClick={() => onModelChange(null)}
+          >
+            <X className="size-4" aria-hidden />
+          </Button>
+        ) : null}
+      </div>
     </>
   );
 };

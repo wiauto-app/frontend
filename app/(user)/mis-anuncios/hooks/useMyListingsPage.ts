@@ -1,17 +1,22 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import type { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
 import { myListingsService } from "@/services/myListings/myListingsService";
 import { billingService } from "@/services/billingService";
 import { absoluteUrl } from "@/lib/seo/absolute-url";
+import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
   DEFAULT_MY_LISTINGS_ORDER_VALUE,
   getMyListingsOrderOption,
 } from "../constants/my-listings-order.constants";
+import {
+  MY_LISTINGS_FILTER_KEYS,
+  MY_LISTINGS_FILTER_KEYS_LIST,
+} from "../constants/my-listings-filter-keys.constants";
 
 export const MY_LISTINGS_QUERY_KEY = ["my-listings"] as const;
 export const BILLING_ME_QUERY_KEY = ["billing-me"] as const;
@@ -28,27 +33,74 @@ export interface MyListingsFilters {
   order: string;
 }
 
-const DEFAULT_FILTERS: MyListingsFilters = {
-  status: null,
-  makeId: null,
-  modelId: null,
-  sinceCreatedAt: "",
-  untilCreatedAt: "",
-  order: DEFAULT_MY_LISTINGS_ORDER_VALUE,
+const toSingleString = (
+  value: string | string[] | undefined,
+): string | undefined => {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return undefined;
 };
 
-type UseMyListingsPageOptions = {
+const parsePositiveInt = (value: string | undefined): number | null => {
+  if (!value) {
+    return null;
+  }
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return null;
+  }
+  return Math.trunc(parsed);
+};
+
+interface UseMyListingsPageOptions {
   audience?: string;
   enabled?: boolean;
-};
+}
 
 export const useMyListingsPage = ({
   audience = "particular",
   enabled = true,
 }: UseMyListingsPageOptions = {}) => {
   const queryClient = useQueryClient();
-  const [filters, setFilters] = useState<MyListingsFilters>(DEFAULT_FILTERS);
-  const [page, setPage] = useState(1);
+  const {
+    values,
+    applyUrlUpdates,
+    handleClearAll,
+  } = useFiltersManager({
+    keys: MY_LISTINGS_FILTER_KEYS_LIST,
+  });
+
+  const filters = useMemo((): MyListingsFilters => {
+    const status = toSingleString(values[MY_LISTINGS_FILTER_KEYS.STATUS]);
+    const order =
+      toSingleString(values[MY_LISTINGS_FILTER_KEYS.ORDER]) ??
+      DEFAULT_MY_LISTINGS_ORDER_VALUE;
+
+    return {
+      status: (status as VehicleStatus | undefined) ?? null,
+      makeId: parsePositiveInt(
+        toSingleString(values[MY_LISTINGS_FILTER_KEYS.MAKE_ID]),
+      ),
+      modelId: parsePositiveInt(
+        toSingleString(values[MY_LISTINGS_FILTER_KEYS.MODEL_ID]),
+      ),
+      sinceCreatedAt:
+        toSingleString(values[MY_LISTINGS_FILTER_KEYS.SINCE_CREATED_AT]) ?? "",
+      untilCreatedAt:
+        toSingleString(values[MY_LISTINGS_FILTER_KEYS.UNTIL_CREATED_AT]) ?? "",
+      order,
+    };
+  }, [values]);
+
+  const page = useMemo(() => {
+    const raw = toSingleString(values[MY_LISTINGS_FILTER_KEYS.PAGE]);
+    const parsed = parsePositiveInt(raw);
+    return parsed ?? 1;
+  }, [values]);
 
   const orderOption = getMyListingsOrderOption(filters.order);
 
@@ -74,15 +126,56 @@ export const useMyListingsPage = ({
     enabled,
   });
 
-  const updateFilters = useCallback((patch: Partial<MyListingsFilters>) => {
-    setFilters((previous) => ({ ...previous, ...patch }));
-    setPage(1);
-  }, []);
+  const updateFilters = useCallback(
+    (patch: Partial<MyListingsFilters>) => {
+      const updates: Record<string, string | undefined> = {
+        [MY_LISTINGS_FILTER_KEYS.PAGE]: undefined,
+      };
+
+      if ("status" in patch) {
+        updates[MY_LISTINGS_FILTER_KEYS.STATUS] = patch.status ?? undefined;
+      }
+      if ("makeId" in patch) {
+        updates[MY_LISTINGS_FILTER_KEYS.MAKE_ID] =
+          patch.makeId != null ? String(patch.makeId) : undefined;
+      }
+      if ("modelId" in patch) {
+        updates[MY_LISTINGS_FILTER_KEYS.MODEL_ID] =
+          patch.modelId != null ? String(patch.modelId) : undefined;
+      }
+      if ("sinceCreatedAt" in patch) {
+        updates[MY_LISTINGS_FILTER_KEYS.SINCE_CREATED_AT] =
+          patch.sinceCreatedAt || undefined;
+      }
+      if ("untilCreatedAt" in patch) {
+        updates[MY_LISTINGS_FILTER_KEYS.UNTIL_CREATED_AT] =
+          patch.untilCreatedAt || undefined;
+      }
+      if ("order" in patch) {
+        updates[MY_LISTINGS_FILTER_KEYS.ORDER] =
+          patch.order && patch.order !== DEFAULT_MY_LISTINGS_ORDER_VALUE
+            ? patch.order
+            : undefined;
+      }
+
+      applyUrlUpdates(updates);
+    },
+    [applyUrlUpdates],
+  );
 
   const resetFilters = useCallback(() => {
-    setFilters(DEFAULT_FILTERS);
-    setPage(1);
-  }, []);
+    handleClearAll();
+  }, [handleClearAll]);
+
+  const onPageChange = useCallback(
+    (nextPage: number) => {
+      applyUrlUpdates({
+        [MY_LISTINGS_FILTER_KEYS.PAGE]:
+          nextPage > 1 ? String(nextPage) : undefined,
+      });
+    },
+    [applyUrlUpdates],
+  );
 
   const total = listingsQuery.data?.total ?? 0;
   const limit = listingsQuery.data?.limit ?? MY_LISTINGS_PAGE_LIMIT;
@@ -219,7 +312,7 @@ export const useMyListingsPage = ({
     total,
     page,
     totalPages,
-    onPageChange: setPage,
+    onPageChange,
     filters,
     updateFilters,
     resetFilters,
