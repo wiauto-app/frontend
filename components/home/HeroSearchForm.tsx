@@ -108,7 +108,7 @@ const HeroFiltersSearchForm = () => {
       }}
     >
       <HeroFiltersMakeSelector />
-      <HeroFiltersModelSelector />
+      {/* <HeroFiltersModelSelector /> */}
       <HeroFiltersLocationSelector />
       <PriceUntilSelector />
       <Button type="submit" aria-label={search_label}>

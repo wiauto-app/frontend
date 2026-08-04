@@ -5,7 +5,6 @@ import { FinanciacionPasosSection } from './components/FinanciacionPasosSection'
 import { FinanciacionSoporteSection } from './components/FinanciacionSoporteSection';
 import { FinanciacionStatsSection } from './components/FinanciacionStatsSection';
 import { FinanciacionVentajasSection } from './components/FinanciacionVentajasSection';
-import { FinanciacionCTASection } from './components/FinanciacionCTASection';
 import { getFinanciacionPageData } from './services/getFinanciacionPageData';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -61,8 +60,6 @@ export default async function FinanciacionPage() {
         <FinanciacionStatsSection items={content.estadisticas} />
       ) : null}
 
-      {/* 6. Call to Action final */}
-      <FinanciacionCTASection />
     </div>
   );
 }

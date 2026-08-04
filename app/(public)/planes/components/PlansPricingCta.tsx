@@ -34,7 +34,7 @@ export const PlansPricingCta = ({
         if (result.status === 403) {
           toast.error(
             result.message ??
-              "Este plan personalizado no está disponible en el catálogo público.",
+              "No tienes permiso para contratar este plan.",
           );
           return;
         }

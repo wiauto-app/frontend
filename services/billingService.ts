@@ -28,9 +28,6 @@ const resolveCheckoutMessage = (message: unknown, fallback: string): string => {
   return fallback;
 };
 
-const isPublicCatalogPlan = (plan: BillingCatalogPlan): boolean =>
-  plan.is_custom !== true;
-
 const createPublicSubscriptionCheckout = async (
   plan_price_id: string,
 ): Promise<CreateCheckoutResult> => {
@@ -62,7 +59,7 @@ export const billingService = {
     const response = await apiGet<BillingCatalogPlan[]>(
       `${V1_BILLING_PLANS_CATALOG}${query}`,
     );
-    return (response.data ?? []).filter(isPublicCatalogPlan);
+    return response.data ?? [];
   },
 
   getMe: async (): Promise<BillingMeResponse | null> => {

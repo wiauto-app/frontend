@@ -28,7 +28,6 @@ export const PlansPricingSection = ({
 }: PlansPricingSectionProps) => {
   const prefersReducedMotion = useReducedMotion();
   const sortedPlans = [...plans]
-    .filter((plan) => plan.is_custom !== true)
     .sort((left, right) => left.sort_order - right.sort_order);
 
   return (

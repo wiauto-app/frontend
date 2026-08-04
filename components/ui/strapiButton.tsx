@@ -1,11 +1,28 @@
 import { StrapiLink } from "@/interfaces/strapi-components.interface";
 import Link from "next/link";
 import { Button } from "./button";
+import { cn } from "@/lib/utils";
 
-export const StrapiButton = ({ button }: { button: StrapiLink }) => {
+export const StrapiButton = ({
+  button,
+  className,
+}: {
+  button: StrapiLink;
+  className?: string;
+}) => {
   return (
     <Link href={button.url}>
-      <Button variant={button.destacado ? "default" : "outline"} size="lg">
+      <Button
+        className={cn(
+          className,
+
+          button.destacado
+            ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition-all text-xs sm:text-sm"
+            : "bg-white/90 backdrop-blur-xs border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium px-6 py-3 rounded-xl transition-all text-xs sm:text-sm shadow-2xs",
+        )}
+        variant={button.destacado ? "default" : "outline"}
+        size="lg"
+      >
         {button.label}
       </Button>
     </Link>

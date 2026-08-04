@@ -1,6 +1,5 @@
 "use client";
 
-import { HeroSearchForm } from "./HeroSearchForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { AiSearchForm } from "./aiSearchForm";
 import { Card, CardContent } from "../ui/card";

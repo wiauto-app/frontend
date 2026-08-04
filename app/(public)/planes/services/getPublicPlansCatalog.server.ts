@@ -33,7 +33,5 @@ export const getPublicPlansCatalog = async (): Promise<BillingCatalogPlan[]> => 
 
   return plans
     .filter((plan) => plan.billing_type === "recurring")
-    // Seguridad: la API ya excluye custom; filtramos por si el shape lo incluye.
-    .filter((plan) => plan.is_custom !== true)
     .sort((left, right) => left.sort_order - right.sort_order);
 };

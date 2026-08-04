@@ -8,11 +8,10 @@ interface ImageProps extends NextImageProps {
   unoptimized?: boolean;
 }
 
-export function WiautoImage({ src, alt, className, unoptimized = true, ...props }: ImageProps) {
+export function WiautoImage({ src, alt, className, ...props }: ImageProps) {
   const imageUrl = getImageUrl(src);
   return (
     <NextImage
-      unoptimized={unoptimized}
       src={imageUrl}
       alt={alt}
       className={className}

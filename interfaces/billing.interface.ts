@@ -31,9 +31,6 @@ export interface BillingCatalogPlan {
   audience: string;
   billing_type: "recurring" | "one_time";
   is_featured: boolean;
-  /** Plan personalizado: no debe mostrarse en catálogo público. */
-  is_custom?: boolean;
-  quotas?: PlanQuotas;
   sort_order: number;
   effect_config?: BillingPlanEffectConfig;
   prices: BillingPlanPrice[];
@@ -72,7 +69,7 @@ export interface BillingMeResponse {
   vehicle_listings_max: number | null;
   quotas?: PlanQuotas;
   usage?: BillingMeUsage;
-  source?: "dealership_plan" | "own_subscription" | "free";
+  source?: "dealership" | "free";
   plan_id?: string | null;
   stripe_customer_id: string | null;
 }
