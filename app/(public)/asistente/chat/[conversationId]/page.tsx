@@ -1,3 +1,4 @@
+import { AssistantSuggestions } from "@/components/assistant/assistantSuggestions";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AssistantConversationPage() {
-  return null;
+  return <AssistantSuggestions />;
 }

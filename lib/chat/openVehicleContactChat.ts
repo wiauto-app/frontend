@@ -7,10 +7,11 @@ import { chatService } from "@/services/chatService";
 
 const DEFAULT_CONTACT_MESSAGE = "Hola, me interesa este vehículo.";
 
-type OpenVehicleContactChatParams = {
+interface OpenVehicleContactChatParams {
   vehicleId: string;
   publisherId: string;
-};
+  message?: string;
+}
 
 const findExistingChat = (
   chats: ChatListItem[],
@@ -34,6 +35,7 @@ const fetchAllChats = async (): Promise<ChatListItem[]> => {
 export const openVehicleContactChat = async ({
   vehicleId,
   publisherId,
+  message,
 }: OpenVehicleContactChatParams): Promise<{ chat_id: string }> => {
   let chats = await fetchAllChats();
   let existingChat = findExistingChat(chats, vehicleId, publisherId);
@@ -70,8 +72,10 @@ export const openVehicleContactChat = async ({
     throw new Error("No se encontró el chat del vehículo");
   }
 
+  const content = message?.trim() || DEFAULT_CONTACT_MESSAGE;
+
   const messageResponse = await chatService.sendMessage(existingChat.id, {
-    content: DEFAULT_CONTACT_MESSAGE,
+    content,
     type: CHAT_MESSAGE_TYPE.TEXT,
   });
 

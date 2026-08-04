@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { CompareVehiclesOutput } from "./types/assistant-tool-outputs";
 import { useAssistantChat } from "./assistantChatProvider";
@@ -23,14 +24,26 @@ export const AssistantCompareVehicles = ({
   const { sendMessage, ensureConversationId, status } = useAssistantChat();
   const isBusy = status === "submitted" || status === "streaming";
 
-  const handleSelectVehicle = async (vehicleId: string, title: string) => {
+  const handleSelectVehicle = async (
+    vehicleId: string,
+    title: string,
+    ref?: number,
+  ) => {
     if (isBusy) {
       return;
     }
 
     await ensureConversationId();
+
+    if (typeof ref === "number") {
+      sendMessage({
+        text: `Analiza en detalle el anuncio Ref. ${ref} (${title})`,
+      });
+      return;
+    }
+
     sendMessage({
-      text: `Analiza en detalle el anuncio del vehículo ${vehicleId} (${title}). Ya lo elegí; no busques otros vehículos.`,
+      text: `Analiza en detalle el anuncio del vehículo ${vehicleId} (${title})`,
     });
   };
 
@@ -51,12 +64,23 @@ export const AssistantCompareVehicles = ({
               <th className="p-2 font-medium text-muted-foreground">Criterio</th>
               {output.vehicles.map((vehicle) => (
                 <th key={vehicle.id} className="p-2 font-medium">
-                  <Link
-                    href={`/vehiculo/${vehicle.id}`}
-                    className="text-primary hover:underline"
-                  >
-                    {vehicle.title}
-                  </Link>
+                  <div className="flex flex-col gap-1">
+                    {typeof vehicle.ref === "number" ? (
+                      <Badge
+                        variant="secondary"
+                        className="w-fit"
+                        aria-label={`Referencia ${vehicle.ref}`}
+                      >
+                        Ref. {vehicle.ref}
+                      </Badge>
+                    ) : null}
+                    <Link
+                      href={`/vehiculo/${vehicle.id}`}
+                      className="text-primary hover:underline"
+                    >
+                      {vehicle.title}
+                    </Link>
+                  </div>
                 </th>
               ))}
             </tr>
@@ -80,12 +104,22 @@ export const AssistantCompareVehicles = ({
                     type="button"
                     size="sm"
                     disabled={isBusy}
-                    aria-label={`Elegir este vehículo: ${vehicle.title}`}
+                    aria-label={
+                      typeof vehicle.ref === "number"
+                        ? `Elegir Ref. ${vehicle.ref}: ${vehicle.title}`
+                        : `Elegir este vehículo: ${vehicle.title}`
+                    }
                     onClick={() => {
-                      void handleSelectVehicle(vehicle.id, vehicle.title);
+                      void handleSelectVehicle(
+                        vehicle.id,
+                        vehicle.title,
+                        vehicle.ref,
+                      );
                     }}
                   >
-                    Elegir este vehículo
+                    {typeof vehicle.ref === "number"
+                      ? `Elegir Ref. ${vehicle.ref}`
+                      : "Elegir este vehículo"}
                   </Button>
                 </td>
               ))}

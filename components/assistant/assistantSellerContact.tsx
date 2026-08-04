@@ -1,11 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, Copy, Mail, MessageCircle, Phone } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Mail,
+  MessageCircle,
+  MessagesSquare,
+  Phone,
+} from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { openVehicleContactChat } from "@/lib/chat/openVehicleContactChat";
 import type {
   PrepareSellerContactOutput,
   SellerContactChannel,
@@ -95,7 +104,9 @@ const buildEmailHref = (
 export const AssistantSellerContact = ({
   output,
 }: AssistantSellerContactProps) => {
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
+  const [isOpeningChat, setIsOpeningChat] = useState(false);
   const [selectedQuestionIndexes, setSelectedQuestionIndexes] = useState<
     number[]
   >([]);
@@ -107,7 +118,10 @@ export const AssistantSellerContact = ({
   );
 
   const summary = output.vehicle_summary;
+  const refLabel =
+    typeof summary.ref === "number" ? `Ref. ${summary.ref}` : null;
   const summaryLine = [
+    refLabel,
     summary.title,
     formatPrice(summary.price),
     formatMileage(summary.mileage),
@@ -134,6 +148,31 @@ export const AssistantSellerContact = ({
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("No se pudo copiar el mensaje");
+    }
+  };
+
+  const handleOpenWiautoChat = async (channel: SellerContactChannel) => {
+    const vehicleId = channel.vehicle_id || channel.value;
+    const publisherId = channel.publisher_profile_id;
+
+    if (!vehicleId || !publisherId || isOpeningChat) {
+      toast.error("No se pudo abrir el chat WiAuto");
+      return;
+    }
+
+    setIsOpeningChat(true);
+    try {
+      const { chat_id } = await openVehicleContactChat({
+        vehicleId,
+        publisherId,
+        message: composedMessage,
+      });
+      toast.success("Chat iniciado correctamente");
+      router.push(`/mensajes?chat_id=${chat_id}`);
+    } catch {
+      toast.error("No se pudo iniciar el chat");
+    } finally {
+      setIsOpeningChat(false);
     }
   };
 
@@ -202,6 +241,26 @@ export const AssistantSellerContact = ({
         {output.channels.map((channel, index) => {
           const key = `${channel.type}-${index}`;
 
+          if (channel.type === "wiauto_chat") {
+            return (
+              <Button
+                key={key}
+                type="button"
+                className="gap-1.5"
+                disabled={isOpeningChat}
+                aria-label={channel.label || "Abrir Chat WiAuto"}
+                onClick={() => {
+                  void handleOpenWiautoChat(channel);
+                }}
+              >
+                <MessagesSquare className="size-4" aria-hidden />
+                {isOpeningChat
+                  ? "Abriendo chat…"
+                  : channel.label || "Chat WiAuto"}
+              </Button>
+            );
+          }
+
           if (channel.type === "whatsapp") {
             const href = buildWhatsAppHref(channel, composedMessage);
 
@@ -216,7 +275,10 @@ export const AssistantSellerContact = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={channel.label || "Abrir WhatsApp"}
-                className={cn(buttonVariants(), "gap-1.5")}
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "gap-1.5",
+                )}
               >
                 <MessageCircle className="size-4" aria-hidden />
                 {channel.label || "WhatsApp"}
@@ -260,7 +322,10 @@ export const AssistantSellerContact = ({
                 key={key}
                 href={href}
                 aria-label={channel.label || "Enviar email"}
-                className={cn(buttonVariants({ variant: "secondary" }), "gap-1.5")}
+                className={cn(
+                  buttonVariants({ variant: "secondary" }),
+                  "gap-1.5",
+                )}
               >
                 <Mail className="size-4" aria-hidden />
                 {channel.label || "Email"}

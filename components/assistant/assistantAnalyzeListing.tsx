@@ -36,13 +36,23 @@ export const AssistantAnalyzeListing = ({
   const { sendMessage, ensureConversationId, status } = useAssistantChat();
   const isBusy = status === "submitted" || status === "streaming";
   const isRecommended = output.verdict === "recomendable";
+  const hasRef = typeof output.ref === "number";
+  const canContact = hasRef || Boolean(output.vehicle_id);
 
   const handleContactSeller = async () => {
-    if (isBusy || !output.vehicle_id) {
+    if (isBusy || !canContact) {
       return;
     }
 
     await ensureConversationId();
+
+    if (hasRef) {
+      sendMessage({
+        text: `Prepara el contacto del vendedor del anuncio Ref. ${output.ref} con prepareSellerContact (vehicle_ref=${output.ref}). No busques otros vehículos.`,
+      });
+      return;
+    }
+
     sendMessage({
       text: `Prepara el contacto del vendedor del vehículo ${output.vehicle_id} con prepareSellerContact (vehicle_id=${output.vehicle_id}). No busques otros vehículos.`,
     });
@@ -51,6 +61,11 @@ export const AssistantAnalyzeListing = ({
   return (
     <div className="flex w-full flex-col gap-4 rounded-xl border border-border bg-muted/20 p-4">
       <div className="flex flex-wrap items-center gap-2">
+        {hasRef ? (
+          <Badge variant="secondary" aria-label={`Referencia ${output.ref}`}>
+            Ref. {output.ref}
+          </Badge>
+        ) : null}
         <Badge
           variant={isRecommended ? "default" : "destructive"}
           aria-label={`Veredicto: ${output.verdict}`}
@@ -104,7 +119,7 @@ export const AssistantAnalyzeListing = ({
       <Button
         type="button"
         className="w-full gap-1.5 sm:w-auto"
-        disabled={isBusy || !output.vehicle_id}
+        disabled={isBusy || !canContact}
         aria-label="Contactar al vendedor de este vehículo"
         onClick={() => {
           void handleContactSeller();

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Heart, Loader2, Plus } from "lucide-react";
+import { Bookmark, Heart, List, Loader2, Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
+  PopoverDescription,
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
@@ -30,6 +31,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useVehicleListMembership } from "../hooks/useVehicleListMembership";
+import { IconContainer } from "@/components/ui/iconContainer";
+import { Separator } from "@/components/ui/separator";
 
 const createListSchema = z.object({
   name: z.string().trim().min(1, "El nombre es obligatorio"),
@@ -171,23 +174,28 @@ export const VehicleFavoriteButton = ({
           onClick={(event) => {
             event.stopPropagation();
           }}
-          render={() => (
-            <Heart
-              className={cn("size-4", isFavorited && "fill-current")}
-              aria-hidden
-            />
-          )}
-        ></PopoverTrigger>
+        >
+          <Heart
+            className={cn("size-4", isFavorited && "fill-current")}
+            aria-hidden
+          />
+        </PopoverTrigger>
 
         <PopoverContent
           align="end"
-          className="w-80"
+          className="w-96"
           onClick={(event) => {
             event.stopPropagation();
           }}
         >
-          <PopoverHeader>
-            <PopoverTitle>Guardar en listas</PopoverTitle>
+          <PopoverHeader className="flex flex-row items-center justify-between">
+            <div className="flex flex-col gap-1">
+              <PopoverTitle>Guardar en listas</PopoverTitle>
+              <PopoverDescription>
+                Organiza tus vehículos favoritos en listas
+              </PopoverDescription>
+            </div>
+            <IconContainer rounded Icon={Bookmark} size="md" />
           </PopoverHeader>
 
           {isLoading ? (
@@ -203,8 +211,17 @@ export const VehicleFavoriteButton = ({
                   const isPending = pendingListIds.has(list.id);
 
                   return (
-                    <li key={list.id}>
-                      <Field orientation="horizontal">
+                    <li
+                      className={cn(
+                        isChecked &&
+                          "bg-primary/10 border-primary p-2 rounded-md",
+                      )}
+                      key={list.id}
+                    >
+                      <Field
+                        className="flex flex-row items-center has-[>[data-slot=field-content]]:items-center"
+                        orientation="horizontal"
+                      >
                         <Checkbox
                           checked={isChecked}
                           disabled={isPending}
@@ -215,6 +232,11 @@ export const VehicleFavoriteButton = ({
                         />
                         <FieldContent>
                           <FieldLabel className="font-normal">
+                            {list.name === "Favoritos" ? (
+                              <IconContainer rounded Icon={Heart} size="xs" />
+                            ) : (
+                              <IconContainer rounded Icon={List} size="xs" />
+                            )}
                             {list.name}
                           </FieldLabel>
                         </FieldContent>
@@ -230,6 +252,7 @@ export const VehicleFavoriteButton = ({
                 })}
               </ul>
 
+              <Separator />
               {showCreateForm ? (
                 <form
                   onSubmit={handleCreateList}
@@ -294,7 +317,7 @@ export const VehicleFavoriteButton = ({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full border-dashed border-primary text-primary hover:text-primary hover:bg-primary/10"
                   onClick={() => setShowCreateForm(true)}
                 >
                   <Plus className="size-4" aria-hidden />

@@ -27,6 +27,7 @@ export interface SearchVehiclesToolOutput {
 
 export interface CompareVehicleRow {
   id: string;
+  ref?: number;
   title: string;
   price?: number;
   year?: number | null;
@@ -71,23 +72,33 @@ export interface AnalyzeListingRiskItem {
 
 export interface AnalyzeListingOutput {
   vehicle_id: string;
+  ref?: number;
   verdict: AnalyzeListingVerdict;
   checklist: AnalyzeChecklistItem[];
   risks: Array<string | AnalyzeListingRiskItem>;
   summary: string;
 }
 
-export type SellerContactChannelType = "whatsapp" | "phone" | "email" | string;
+export type SellerContactChannelType =
+  | "wiauto_chat"
+  | "whatsapp"
+  | "phone"
+  | "email"
+  | string;
 
 export interface SellerContactChannel {
   type: SellerContactChannelType;
   label: string;
   value: string;
   href?: string;
+  publisher_profile_id?: string;
+  vehicle_id?: string;
+  vehicle_ref?: number;
 }
 
 export interface SellerContactVehicleSummary {
   id: string;
+  ref?: number;
   title: string;
   price: number;
   mileage: number;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { VehicleGridCard } from "@/app/(public)/vehiculos/components/VehicleGridCard";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SearchCheck } from "lucide-react";
@@ -15,6 +16,9 @@ interface AssistantVehicleResultsProps {
   total: number;
   vehicles: VehicleListItem[];
 }
+
+const formatRefLabel = (ref: number | undefined): string | null =>
+  typeof ref === "number" && Number.isFinite(ref) ? `Ref. ${ref}` : null;
 
 export const AssistantVehicleResults = ({
   total,
@@ -59,10 +63,13 @@ export const AssistantVehicleResults = ({
     }
 
     const title = getVehicleDisplayName(vehicle);
+    const refLabel = formatRefLabel(vehicle.ref);
     setHasActed(true);
     await ensureConversationId();
     sendMessage({
-      text: `Analiza en detalle el anuncio del vehículo ${vehicle.id} (${title}). Ya lo elegí; no busques otros vehículos.`,
+      text: refLabel
+        ? `Analiza en detalle el anuncio ${refLabel} (${title}). `
+        : `Analiza en detalle el anuncio del vehículo ${vehicle.id} (${title}). `,
     });
   };
 
@@ -71,8 +78,25 @@ export const AssistantVehicleResults = ({
       return;
     }
 
+    const selectedVehicles = vehicles.filter((vehicle) =>
+      selectedIds.includes(vehicle.id),
+    );
+    const refs = selectedVehicles
+      .map((vehicle) => vehicle.ref)
+      .filter((ref): ref is number => typeof ref === "number");
+
     setHasActed(true);
     await ensureConversationId();
+
+    if (refs.length >= 2) {
+      sendMessage({
+        text: `Compara lado a lado estos vehículos por sus referencias (no busques de nuevo): ${refs
+          .map((ref) => `Ref. ${ref}`)
+          .join(", ")}.`,
+      });
+      return;
+    }
+
     sendMessage({
       text: `Compara lado a lado estos vehículos por sus ids (no busques de nuevo): ${selectedIds.join(", ")}.`,
     });
@@ -83,9 +107,23 @@ export const AssistantVehicleResults = ({
       return;
     }
 
+    const refs = vehicles
+      .map((vehicle) => vehicle.ref)
+      .filter((ref): ref is number => typeof ref === "number");
     const seenIds = vehicles.map((vehicle) => vehicle.id);
+
     setHasActed(true);
     await ensureConversationId();
+
+    if (refs.length > 0) {
+      sendMessage({
+        text: `Ninguno me convence. Busca otras opciones y excluye estas referencias: ${refs
+          .map((ref) => `Ref. ${ref}`)
+          .join(", ")}.`,
+      });
+      return;
+    }
+
     sendMessage({
       text: `Ninguno me convence. Busca otras opciones y excluye estos ids: ${seenIds.join(", ")}.`,
     });
@@ -132,6 +170,7 @@ export const AssistantVehicleResults = ({
         {vehicles.map((vehicle) => {
           const isSelected = selectedIds.includes(vehicle.id);
           const title = getVehicleDisplayName(vehicle);
+          const refLabel = formatRefLabel(vehicle.ref);
           const compareDisabled =
             hasActed || isBusy || (!isSelected && selectedIds.length >= 4);
 
@@ -148,6 +187,15 @@ export const AssistantVehicleResults = ({
                 interactive
                 footer={
                   <div className="flex w-full flex-col gap-2">
+                    {refLabel ? (
+                      <Badge
+                        variant="secondary"
+                        className="w-fit"
+                        aria-label={refLabel}
+                      >
+                        {refLabel}
+                      </Badge>
+                    ) : null}
                     <label
                       className={cn(
                         "flex cursor-pointer items-center gap-2 text-sm",

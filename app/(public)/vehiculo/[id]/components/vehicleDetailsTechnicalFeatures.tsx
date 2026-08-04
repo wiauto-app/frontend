@@ -1,3 +1,4 @@
+"use client"; 
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import { buildVehicleTechnicalSpecs } from "../utils/build-vehicle-technical-specs";
 import { getTechnicalSpecIcon } from "../utils/technical-spec-icons";
