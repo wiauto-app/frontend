@@ -215,6 +215,7 @@ export const ImagesForm = ({
           paths: [object_key],
         });
         if (!result.ok) {
+          console.error(result.message);
           toast.error("No se pudo eliminar el archivo del almacén.");
           return;
         }
