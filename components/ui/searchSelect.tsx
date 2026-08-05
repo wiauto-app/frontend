@@ -1,4 +1,6 @@
-import { useEffect, useId, useMemo, useState } from "react";
+"use client";
+
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronDown, Loader2 } from "lucide-react";
 
@@ -17,12 +19,13 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
-export type SelectOption = {
+export interface SelectOption {
   label: string;
   value: string;
-};
+}
 
-type SearchSelectProps = {
+interface SearchSelectProps {
+  id?: string;
   value?: string;
   placeholder?: string;
   searchPlaceholder?: string;
@@ -33,9 +36,32 @@ type SearchSelectProps = {
   searchFn: (query: string) => Promise<SelectOption[]>;
   /** Resuelve label cuando `value` viene del exterior (edición, defaultValues). */
   resolveOption?: (value: string) => Promise<SelectOption | undefined>;
+}
+
+/**
+ * cmdk llama scrollIntoView en el item seleccionado; dentro de un popover
+ * eso también hace scroll del documento. Neutralizamos solo esos casos.
+ */
+const suppressCmdkDocumentScroll = () => {
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+
+  Element.prototype.scrollIntoView = function scrollIntoViewPatched(
+    this: Element,
+    ...args: Parameters<Element["scrollIntoView"]>
+  ) {
+    if (this.closest("[cmdk-list], [cmdk-group-heading]")) {
+      return;
+    }
+    return originalScrollIntoView.apply(this, args as never);
+  };
+
+  return () => {
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+  };
 };
 
 export const SearchSelect = ({
+  id,
   value,
   placeholder = "Seleccionar opción",
   searchPlaceholder = "Buscar...",
@@ -46,11 +72,14 @@ export const SearchSelect = ({
   searchFn,
   resolveOption,
 }: SearchSelectProps) => {
-  const instance_id = useId();
+  const instanceId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
+  const [selectedOption, setSelectedOption] = useState<SelectOption | null>(
+    null,
+  );
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -60,22 +89,24 @@ export const SearchSelect = ({
     return () => clearTimeout(timeout);
   }, [query, debounceMs]);
 
-  const needs_resolve =
+  useEffect(() => {
+    if (!open) return;
+    return suppressCmdkDocumentScroll();
+  }, [open]);
+
+  const needsResolve =
     Boolean(value) &&
     Boolean(resolveOption) &&
     selectedOption?.value !== value;
 
   const { data: resolvedOption, isLoading: isResolvingLabel } = useQuery({
-    queryKey: ["search-select-resolve", instance_id, value],
+    queryKey: ["search-select-resolve", instanceId, value],
     queryFn: () => resolveOption!(value!),
-    enabled: needs_resolve,
+    enabled: needsResolve,
   });
 
-  const {
-    data: options = [],
-    isLoading,
-  } = useQuery({
-    queryKey: ["async-search-select", instance_id, debouncedQuery],
+  const { data: options = [], isLoading } = useQuery({
+    queryKey: ["async-search-select", instanceId, debouncedQuery],
     queryFn: () => searchFn(debouncedQuery),
     enabled: open,
   });
@@ -87,13 +118,32 @@ export const SearchSelect = ({
     setQuery("");
   };
 
+  const handleInitialFocus = (interactionType: string) => {
+    // Touch: evita teclado virtual automático (comportamiento Base UI).
+    if (interactionType === "touch") {
+      return false;
+    }
+
+    // Base UI hace focus del primer tabbable sin preventScroll → salta la página.
+    queueMicrotask(() => {
+      inputRef.current?.focus({ preventScroll: true });
+    });
+    return false;
+  };
+
   const displayLabel = useMemo(() => {
     if (!value) return placeholder;
     if (selectedOption?.value === value) return selectedOption.label;
     if (resolvedOption?.value === value) return resolvedOption.label;
     if (isResolvingLabel) return "Cargando...";
     return placeholder;
-  }, [value, selectedOption, resolvedOption, isResolvingLabel, placeholder]);
+  }, [
+    value,
+    selectedOption,
+    resolvedOption,
+    isResolvingLabel,
+    placeholder,
+  ]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -102,6 +152,7 @@ export const SearchSelect = ({
         disabled={disabled}
         render={
           <Button
+            id={id}
             type="button"
             variant="outline"
             role="combobox"
@@ -126,10 +177,14 @@ export const SearchSelect = ({
         }
       />
 
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-[280px] p-0">
+      <PopoverContent
+        className="w-(--anchor-width) min-w-70 p-0"
+        initialFocus={handleInitialFocus}
+      >
         <Command shouldFilter={false}>
           <div className="border-b p-2">
             <Input
+              ref={inputRef}
               value={query}
               placeholder={searchPlaceholder}
               onChange={(event) => setQuery(event.target.value)}

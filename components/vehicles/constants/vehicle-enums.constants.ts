@@ -42,7 +42,7 @@ export const VEHICLE_TRANSMISSION_TYPE_OPTIONS: {
   label: string;
 }[] = [
   { value: "manual", label: "Manual" },
-  { value: "automatic", label: "Automática" },
+  { value: "automatic", label: "Automático" },
 ];
 
 export const VEHICLE_PUBLISHER_TYPE_OPTIONS: {
