@@ -1,5 +1,7 @@
 import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
 import { SavedSearchesContent } from "./components/SavedSearchesContent";
+import { Suspense } from "react";
+import { LoadingComponent } from "@/components/ui/loadingComponent";
 
 export const metadata = createUserAreaMetadata(
   "Búsquedas guardadas",
@@ -7,5 +9,9 @@ export const metadata = createUserAreaMetadata(
 );
 
 export default function SavedSearchesPage() {
-  return <SavedSearchesContent />;
+  return (
+    <Suspense fallback={<LoadingComponent />}>
+      <SavedSearchesContent />
+    </Suspense>
+  );
 }

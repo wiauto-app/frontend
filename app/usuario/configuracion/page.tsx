@@ -1,5 +1,7 @@
 import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
 import { ConfiguracionContent } from "./components/ConfiguracionContent";
+import { Suspense } from "react";
+import { LoadingComponent } from "@/components/ui/loadingComponent";
 
 export const metadata = createUserAreaMetadata(
   "Configuración",
@@ -7,5 +9,9 @@ export const metadata = createUserAreaMetadata(
 );
 
 export default function ConfiguracionPage() {
-  return <ConfiguracionContent />;
+  return (
+    <Suspense fallback={<LoadingComponent />}>
+      <ConfiguracionContent />
+    </Suspense>
+  );
 }

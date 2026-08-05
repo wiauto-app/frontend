@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
@@ -41,7 +42,9 @@ export default async function RootLayout({
       >
         <body className="flex flex-col relative">
           <SidebarProvider>
-            <ProfessionalSidebar />
+            <Suspense fallback={null}>
+              <ProfessionalSidebar />
+            </Suspense>
             <SidebarInset>
               <Navbar />
               <main className="flex flex-1 flex-col">{children}</main>

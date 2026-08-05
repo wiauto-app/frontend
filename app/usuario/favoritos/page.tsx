@@ -1,5 +1,7 @@
 import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
 import { FavoritosContent } from "./components/FavoritosContent";
+import { Suspense } from "react";
+import { LoadingComponent } from "@/components/ui/loadingComponent";
 
 export const metadata = createUserAreaMetadata(
   "Favoritos",
@@ -7,5 +9,9 @@ export const metadata = createUserAreaMetadata(
 );
 
 export default function FavoritosPage() {
-  return <FavoritosContent />;
+  return (
+    <Suspense fallback={<LoadingComponent />}>
+      <FavoritosContent />
+    </Suspense>
+  );
 }

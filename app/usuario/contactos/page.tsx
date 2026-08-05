@@ -1,5 +1,7 @@
 import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
 import { ContactosContent } from "./components/ContactosContent";
+import { Suspense } from "react";
+import { LoadingComponent } from "@/components/ui/loadingComponent";
 
 export const metadata = createUserAreaMetadata(
   "Contactos / Leads",
@@ -7,5 +9,9 @@ export const metadata = createUserAreaMetadata(
 );
 
 export default function ContactosPage() {
-  return <ContactosContent />;
+  return (
+    <Suspense fallback={<LoadingComponent />}>
+      <ContactosContent />
+    </Suspense>
+  );
 }
