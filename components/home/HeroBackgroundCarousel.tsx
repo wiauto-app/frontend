@@ -1,14 +1,20 @@
 "use client";
 
+import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
-import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion } from "@/components/home/motion/usePrefersReducedMotion";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import { HeroBackdrop } from "@/components/ui/heroBackdrop";
 
 import type { HomeHeroData } from "./types/home-page.types";
-import { HeroBackdrop } from "../ui/heroBackdrop";
 
-const AUTOPLAY_MS = 5000;
+const AUTOPLAY_MS = 100;
 
 interface HeroBackgroundCarouselProps {
   images: HomeHeroData["hero_images"];
@@ -27,10 +33,16 @@ const buildSlides = (
   fallbackUrl: string | null,
   title: string,
 ): HeroSlide[] => {
-  const fromHero = images.filter((image) => image.image_url.trim().length > 0 && image.active);
+  const withUrl = images
+    .filter((image) => image.image_url.trim().length > 0)
+    .slice()
+    .sort((a, b) => a.order - b.order);
 
-  if (fromHero.length > 0) {
-    return fromHero.map((image) => ({
+  const activeImages = withUrl.filter((image) => image.active);
+  const source = activeImages.length > 0 ? activeImages : withUrl;
+
+  if (source.length > 0) {
+    return source.map((image) => ({
       id: image.id,
       image_url: image.image_url,
       image_alt: image.image_alt || title,
@@ -55,99 +67,58 @@ export const HeroBackgroundCarousel = ({
   fallbackUrl,
   title,
 }: HeroBackgroundCarouselProps) => {
-  const slides = buildSlides(images, fallbackUrl, title);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const slides = useMemo(
+    () => buildSlides(images, fallbackUrl, title),
+    [images, fallbackUrl, title],
+  );
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  const canAutoplay = slides.length > 1 && !prefersReducedMotion && !isPaused;
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const handleChange = () => {
-      setPrefersReducedMotion(mediaQuery.matches);
-    };
-
-    handleChange();
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!canAutoplay) {
-      return;
+  const autoplayPlugin = useMemo(() => {
+    if (slides.length <= 1 || prefersReducedMotion) {
+      return undefined;
     }
 
-    const timerId = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % slides.length);
-    }, AUTOPLAY_MS);
-
-    return () => {
-      window.clearInterval(timerId);
-    };
-  }, [canAutoplay, slides.length]);
-
-  useEffect(() => {
-    if (activeIndex >= slides.length) {
-      setActiveIndex(0);
-    }
-  }, [activeIndex, slides.length]);
+    return Autoplay({
+      delay: AUTOPLAY_MS,
+      stopOnInteraction: false,
+      stopOnMouseEnter: false,
+    });
+  }, [prefersReducedMotion, slides.length]);
 
   if (slides.length === 0) {
     return null;
   }
 
-
-  const handleMouseEnter = () => {
-    setIsPaused(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsPaused(false);
-  };
-
   return (
-    <div
-      className="absolute inset-0 overflow-hidden rounded-b-lg"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      aria-roledescription="carousel"
+    <Carousel
+      opts={{
+        loop: slides.length > 1,
+        align: "start",
+        duration: prefersReducedMotion ? 0 : 25,
+      }}
+      plugins={autoplayPlugin ? [autoplayPlugin] : undefined}
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden rounded-b-lg [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-content]>div]:h-full"
       aria-label="Imágenes del hero"
     >
-      {slides.map((slide, index) => {
-        const isActive = index === activeIndex;
-
-        return (
-          <div
-            key={slide.id}
-            className={cn(
-              "absolute inset-0 transition-opacity duration-700 ease-in-out",
-              isActive ? "opacity-100" : "opacity-0",
-            )}
-            aria-hidden={!isActive}
-          >
+      <CarouselContent className="ml-0 h-full">
+        {slides.map((slide, index) => (
+          <CarouselItem key={slide.id} className="relative h-full basis-full pl-0">
             <Image
               src={slide.image_url}
-              alt={isActive ? slide.image_alt : ""}
+              alt={slide.image_alt}
               fetchPriority={index === 0 ? "high" : "auto"}
               priority={index === 0}
               loading={index === 0 ? "eager" : "lazy"}
               fill
               quality={80}
-              sizes="(max-width: 640px) 40vw, (max-width: 1024px) 960px, 1300px"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 960px, 1300px"
               className="object-cover"
-              aria-live={isActive ? "polite" : undefined}
             />
-          </div>
-        );
-      })}
+          </CarouselItem>
+        ))}
+      </CarouselContent>
 
       <HeroBackdrop />
-
-
-    </div>
+    </Carousel>
   );
 };

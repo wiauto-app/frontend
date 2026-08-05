@@ -6,6 +6,7 @@ import { Hero } from "../ui/hero";
 import { HeroTitle } from "../ui/heroTitle";
 import { HeroDescription } from "../ui/heroDescription";
 import { HeroFeatures } from "./heroFeatures";
+import { HeroBackdrop } from "../ui/heroBackdrop";
 
 interface HeroSectionProps {
   data: HomeHeroData;
@@ -41,6 +42,7 @@ export function HeroSection({ data }: HeroSectionProps) {
       </p> */}
             <StoreButtons className="flex flex-col gap-1" />
           </div>
+          <HeroBackdrop/>
           <HeroBackgroundCarousel
             images={data.hero_images}
             fallbackUrl={data.background_image_url}

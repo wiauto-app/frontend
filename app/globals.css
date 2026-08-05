@@ -9,6 +9,7 @@
   --color-foreground: var(--foreground);
   --color-nature: var(--color-nature);
   --color-purple: var(--color-purple);
+  --color-purple-dark: var(--color-purple-dark);
   --color-primary-soft: var(--primary-soft);
   --color-primary-dark: var(--primary-dark);
   --font-sans: var(--font-sans);
@@ -57,6 +58,7 @@
   --foreground: oklch(0.145 0 0);
   --color-nature: #679775;
   --color-purple: #5E3CE6;
+  --color-purple-dark: #0A1238;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);

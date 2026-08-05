@@ -8,8 +8,10 @@ import { isSidebarLinkActive } from "./UserSidebar";
 
 export const ProfessionalSidebarItem = ({
   item,
+  className,
 }: {
   item: UserSidebarLink;
+  className?: string;
 }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -23,8 +25,7 @@ export const ProfessionalSidebarItem = ({
         tooltip={item.label}
         isActive={isActive}
         className={cn(
-          "text-primary-foreground hover:bg-white/10 hover:text-primary-foreground active:bg-white/15 active:text-primary-foreground",
-          "data-active:bg-white/15 data-active:text-primary-foreground data-active:hover:bg-white/20 data-active:hover:text-primary-foreground",
+          className,
         )}
         render={
           <Link

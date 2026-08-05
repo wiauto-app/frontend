@@ -7,7 +7,7 @@ import Providers from "./providers";
 import { Footer, NewsletterSection } from "@/components/home";
 import { AssistantDialog } from "@/components/assistant/assistantDialog";
 import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
-import { FooterWrapper } from "@/components/ui/footerWrapper";
+import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ProfessionalSidebar } from "./usuario/components/professionalSidebar";
 
@@ -48,10 +48,10 @@ export default async function RootLayout({
             <SidebarInset>
               <Navbar />
               <main className="flex flex-1 flex-col">{children}</main>
-              <FooterWrapper>
+              <ConditionalWrapper paths={["/usuario"]}>
                 <NewsletterSection />
                 <Footer />
-              </FooterWrapper>
+              </ConditionalWrapper>
               <AssistantDialog />
               <MobileNavbar />
             </SidebarInset>

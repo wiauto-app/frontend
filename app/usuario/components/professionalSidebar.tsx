@@ -32,18 +32,22 @@ export function ProfessionalSidebar({
 
   if (!pathname.includes("usuario")) return null;
   return (
-    <Sidebar
-      className={cn("bg-primary text-primary-foreground", className)}
-      {...props}
-    >
+    <Sidebar className={cn("bg-linear-to-b from-purple-dark via-purple-dark to-primary text-primary-foreground", className)} {...props}>
       <SidebarHeader>
-        <BrandLogo variant="pro-white" />
+        <BrandLogo variant="pro-base" />
       </SidebarHeader>
       <Separator />
       <SidebarContent className="p-2">
         <SidebarMenu className="gap-2">
           {sidebarLinks.map((item) => (
-            <ProfessionalSidebarItem key={item.href} item={item} />
+            <ProfessionalSidebarItem
+              className={cn(
+                "text-primary-foreground hover:bg-white/10 hover:text-primary-foreground active:bg-white/15 active:text-primary-foreground",
+                "data-active:bg-white/15 data-active:text-primary-foreground data-active:hover:bg-white/20 data-active:hover:text-primary-foreground",
+              )}
+              key={item.href}
+              item={item}
+            />
           ))}
         </SidebarMenu>
       </SidebarContent>
@@ -51,7 +55,7 @@ export function ProfessionalSidebar({
         <SidebarMenuItem>
           <SidebarMenuButton
             onClick={logout}
-            className="text-primary-foreground/90 hover:bg-white/10 hover:text-primary-foreground active:bg-white/15 active:text-primary-foreground"
+            // className="text-primary-foreground/90 hover:bg-white/10 hover:text-primary-foreground active:bg-white/15 active:text-primary-foreground"
           >
             <LogOut className="size-4" />
             Cerrar sesión

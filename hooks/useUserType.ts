@@ -6,7 +6,7 @@ export const useUserType = () => {
   const {user} = useUser();
 
   return {
-    isParticular: user?.userType === "particular",
+    isParticular: user?.userType === "particular" || !user,
     isProfessional: user?.userType === "professional",
     userType: user?.userType,
   };
