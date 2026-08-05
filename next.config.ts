@@ -15,9 +15,9 @@ const strapiRemote = strapiUrl
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  // experimental:{
-  //   optimizePackageImports: ['package-name'],
-  // },
+  experimental:{
+    optimizePackageImports: ['package-name'],
+  },
   images: {
     qualities: [70,80, 90, 100],
     remotePatterns: [

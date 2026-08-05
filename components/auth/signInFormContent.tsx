@@ -71,9 +71,13 @@ export const SignInFormContent = ({
     setIsLoading(true);
 
     try {
-      const result = await loginAction(data);
-
-      if (result.type === "2fa_challenge") {
+      const response = await authService.login(data);
+      console.log(response,returnTo);
+      if (!response.ok) {
+        toast.error(response.message || "Error al iniciar sesión");
+        return;
+      }
+      if (response.data.type === "2fa_challenge") {
         setPendingEmail(data.email);
         setStep("two_factor");
         return;
