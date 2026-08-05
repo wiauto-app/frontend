@@ -14,7 +14,7 @@ import { HeroBackdrop } from "@/components/ui/heroBackdrop";
 
 import type { HomeHeroData } from "./types/home-page.types";
 
-const AUTOPLAY_MS = 100;
+const AUTOPLAY_MS = 5000;
 
 interface HeroBackgroundCarouselProps {
   images: HomeHeroData["hero_images"];
@@ -73,17 +73,6 @@ export const HeroBackgroundCarousel = ({
   );
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  const autoplayPlugin = useMemo(() => {
-    if (slides.length <= 1 || prefersReducedMotion) {
-      return undefined;
-    }
-
-    return Autoplay({
-      delay: AUTOPLAY_MS,
-      stopOnInteraction: false,
-      stopOnMouseEnter: false,
-    });
-  }, [prefersReducedMotion, slides.length]);
 
   if (slides.length === 0) {
     return null;
@@ -96,7 +85,13 @@ export const HeroBackgroundCarousel = ({
         align: "start",
         duration: prefersReducedMotion ? 0 : 25,
       }}
-      plugins={autoplayPlugin ? [autoplayPlugin] : undefined}
+      plugins={[
+        Autoplay({
+          delay: AUTOPLAY_MS,
+          stopOnInteraction: false,
+          stopOnMouseEnter: false,
+        }),
+      ]}
       className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden rounded-b-lg [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-content]>div]:h-full"
       aria-label="Imágenes del hero"
     >
