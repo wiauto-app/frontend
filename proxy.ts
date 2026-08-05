@@ -7,18 +7,6 @@ import {
   clearSessionCookiesOnResponse,
 } from "@/lib/ensure-session.server";
 
-const PUBLIC_PATHS = [
-  "/",
-  "/iniciar-sesion",
-  "/registro",
-  "/cambiar-contrasena",
-  "/crear-vehiculo",
-  "/confirmar-correo",
-  "/olvide-contrasena",
-  "/verificacion-2fa",
-  "/oauth-popup-complete",
-  "/api",
-];
 
 const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
 
@@ -29,17 +17,16 @@ const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
  */
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
+  const isPrivatePath = pathname.startsWith("/usuario");
+  if (!isPrivatePath) {
     return NextResponse.next();
   }
 
-  const access_token =
-    req.cookies.get(cookiesConfig.accessToken.name)?.value ?? null;
-  const refresh_token =
-    req.cookies.get(cookiesConfig.refreshToken.name)?.value ?? null;
+  const access_token = req.cookies.get(cookiesConfig.accessToken.name)?.value ?? null;
+  const refresh_token = req.cookies.get(cookiesConfig.refreshToken.name)?.value ?? null;
 
-  if (!refresh_token) {
-    return NextResponse.next();
+  if (!access_token || !refresh_token) {
+    return NextResponse.redirect(new URL("/iniciar-sesion", req.url));
   }
 
   const result = await ensureValidSession({ refresh_token, access_token });
