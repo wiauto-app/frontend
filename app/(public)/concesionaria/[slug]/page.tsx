@@ -118,6 +118,7 @@ export default async function DealerProfilePage({
                     <VehiclesPageContent
                       vehicles={listing.vehicles}
                       total={listing.total}
+                       
                     />
                   </Suspense>
                 </div>

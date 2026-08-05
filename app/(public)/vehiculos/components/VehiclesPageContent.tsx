@@ -80,8 +80,8 @@ export interface VehiclesPageContentProps {
   vehicles: VehicleListItem[];
   total: number;
   isMapVisible?: boolean;
-  titleNode: ReactNode;
-  activeFiltersNode: ReactNode;
+  titleNode?: ReactNode;
+  activeFiltersNode?: ReactNode;
 }
 
 export const VehiclesPageContent = ({
