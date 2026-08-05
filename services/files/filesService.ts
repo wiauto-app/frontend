@@ -5,6 +5,7 @@ import {
   GENERATE_FILE_SIGNED_URL,
   GENERATE_READ_FILE_SIGNED_URL,
   REMOVE_FILES,
+  UPLOAD_TEMP_VEHICLE_IMAGE,
 } from "./route.constants";
 import { toast } from "sonner";
 
@@ -89,6 +90,11 @@ interface GenerateReadFileSignedUrlResponse {
 interface ConfirmVideoUploadResponse {
   file_key: string;
   file_key_en_storage: string;
+}
+
+interface UploadTempVehicleImageResponse {
+  path: string;
+  preview_url: string;
 }
 
 interface UploadFileDto {
@@ -212,6 +218,32 @@ export const filesService = {
     }
     await filesService.uploadImage(signedUrl, uploadFileDto.file);
     return { path: `${uploadFileDto.bucket_name}/${uploadFileDto.file_key}` };
+  },
+
+  /**
+   * Sube una imagen de galería al backend: convierte a WebP y guarda en temp.
+   * Devuelve `path` (compound) y `preview_url` pública.
+   */
+  async uploadTempVehicleImage(
+    file: File,
+  ): Promise<UploadTempVehicleImageResponse | null> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await apiPost<UploadTempVehicleImageResponse>(
+      UPLOAD_TEMP_VEHICLE_IMAGE,
+      formData,
+    );
+
+    if (!response.ok || !response.data?.path) {
+      toast.error(
+        response.message?.trim() ||
+          `No se pudo subir la imagen (${file.name}). Comprueba el formato e inténtalo de nuevo.`,
+      );
+      return null;
+    }
+
+    return response.data;
   },
 
   async confirm_vehicle_video_upload(

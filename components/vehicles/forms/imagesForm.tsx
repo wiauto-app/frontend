@@ -10,25 +10,16 @@ import {
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn, getImageUrl } from "@/lib/utils";
 import { filesService, split_storage_compound_path } from "@/services/files/filesService";
-import { VEHICLE_GALLERY_TEMP_PREFIX } from "@/services/files/temp-storage-path";
 
 import type { VehicleFormImage } from "../schemas/vehicle.schema";
 
-const accepted_mime_types = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-  "image/heic",
-  "image/heif",
-  "image/heic-sequence",
-  "image/heif-sequence",
-] as const;
+/** El backend es la fuente de verdad; aquí solo filtramos lo claramente no-imagen. */
+const file_input_accept = "image/*,.heic,.heif,.avif";
 
-const accepted_file_extensions = [
+const known_image_extensions = [
   ".jpg",
   ".jpeg",
   ".png",
@@ -36,32 +27,45 @@ const accepted_file_extensions = [
   ".avif",
   ".heic",
   ".heif",
+  ".gif",
+  ".bmp",
+  ".tif",
+  ".tiff",
 ] as const;
 
-const normalize_vehicle_image_content_type = (
-  file: File,
-): (typeof accepted_mime_types)[number] | null => {
-  const mime = file.type.trim().toLowerCase();
-  if (
-    mime &&
-    (accepted_mime_types as readonly string[]).includes(mime)
-  ) {
-    return mime as (typeof accepted_mime_types)[number];
-  }
+const blocked_non_image_extensions = [
+  ".pdf",
+  ".exe",
+  ".zip",
+  ".rar",
+  ".7z",
+  ".doc",
+  ".docx",
+  ".xls",
+  ".xlsx",
+  ".ppt",
+  ".pptx",
+  ".mp4",
+  ".mov",
+  ".avi",
+  ".mkv",
+  ".webm",
+  ".mp3",
+  ".wav",
+  ".txt",
+  ".csv",
+  ".json",
+  ".html",
+  ".js",
+  ".dmg",
+  ".apk",
+] as const;
 
-  const extension = file.name.includes(".")
-    ? `.${file.name.split(".").pop()?.toLowerCase() ?? ""}`
-    : "";
-  const EXT_TO_MIME: Record<string, (typeof accepted_mime_types)[number]> = {
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".png": "image/png",
-    ".webp": "image/webp",
-    ".avif": "image/avif",
-    ".heic": "image/heic",
-    ".heif": "image/heif",
-  };
-  return EXT_TO_MIME[extension] ?? null;
+const get_file_extension = (file_name: string): string => {
+  const lower = file_name.toLowerCase();
+  const dot = lower.lastIndexOf(".");
+  if (dot < 0) return "";
+  return lower.slice(dot);
 };
 
 const VEHICLE_IMAGE_DRAG_TYPE = "application/x-vehicle-image-order";
@@ -76,18 +80,42 @@ export const normalize_vehicle_images = (
       order: index,
     }));
 
-type PendingItem = {
+interface PendingItem {
   temp_key: string;
   file: File;
-  blob_preview: string;
-};
+}
 
 const is_valid_image_file = (file: File) => {
-  const ok = normalize_vehicle_image_content_type(file) !== null;
-  if (!ok) {
-    toast.error(`${file.name}: usa JPG, PNG, WEBP, AVIF o HEIC.`);
+  const extension = get_file_extension(file.name);
+  if (
+    (blocked_non_image_extensions as readonly string[]).includes(extension)
+  ) {
+    toast.error(`${file.name}: solo se admiten imágenes.`);
+    return false;
   }
-  return ok;
+
+  const mime = file.type.trim().toLowerCase();
+  if (mime.startsWith("image/")) {
+    return true;
+  }
+
+  // HEIC en Safari/Chrome a menudo llega con type vacío u octet-stream.
+  if (
+    (!mime || mime === "application/octet-stream") &&
+    (known_image_extensions as readonly string[]).includes(extension)
+  ) {
+    return true;
+  }
+
+  if (mime && !mime.startsWith("image/") && mime !== "application/octet-stream") {
+    toast.error(`${file.name}: solo se admiten imágenes.`);
+    return false;
+  }
+
+  toast.error(
+    `${file.name}: formato no reconocido. Prueba JPG, PNG, WebP, AVIF o HEIC.`,
+  );
+  return false;
 };
 
 export type ImagesFormProps = {
@@ -105,7 +133,6 @@ export type ImagesFormProps = {
 export const ImagesForm = ({
   value: value_prop,
   onChange,
-  reference_id: reference_id_prop,
 }: ImagesFormProps) => {
   const committed_sorted = useMemo(
     () => normalize_vehicle_images(value_prop ?? []),
@@ -116,11 +143,6 @@ export const ImagesForm = ({
   useEffect(() => {
     value_ref.current = normalize_vehicle_images(value_prop ?? []);
   }, [value_prop]);
-
-  const session_reference_id = useRef(
-    reference_id_prop ?? crypto.randomUUID(),
-  );
-  const reference_id = reference_id_prop ?? session_reference_id.current;
 
   const [pending_items, setPendingItems] = useState<PendingItem[]>([]);
   const [is_dragging, setIsDragging] = useState(false);
@@ -133,32 +155,11 @@ export const ImagesForm = ({
   const drag_depth_ref = useRef(0);
   const form_field_id = useId();
   const cancelled_upload_keys_ref = useRef(new Set<string>());
-  const pending_items_ref = useRef<PendingItem[]>([]);
   const locked_remove_paths_ref = useRef(new Set<string>());
-
-  useEffect(() => {
-    pending_items_ref.current = pending_items;
-  }, [pending_items]);
-
-  useEffect(() => {
-    return () => {
-      pending_items_ref.current.forEach((item) => {
-        if (item.blob_preview.startsWith("blob:")) {
-          URL.revokeObjectURL(item.blob_preview);
-        }
-      });
-    };
-  }, []);
 
   const handle_remove_pending = useCallback((temp_key: string) => {
     cancelled_upload_keys_ref.current.add(temp_key);
-    setPendingItems((prev) => {
-      const target = prev.find((p) => p.temp_key === temp_key);
-      if (target?.blob_preview.startsWith("blob:")) {
-        URL.revokeObjectURL(target.blob_preview);
-      }
-      return prev.filter((p) => p.temp_key !== temp_key);
-    });
+    setPendingItems((prev) => prev.filter((p) => p.temp_key !== temp_key));
   }, []);
 
   const append_committed_path = useCallback(
@@ -257,24 +258,28 @@ export const ImagesForm = ({
     [onChange],
   );
 
+  const clear_pending_item = useCallback((temp_key: string) => {
+    setPendingItems((prev) => prev.filter((p) => p.temp_key !== temp_key));
+  }, []);
+
   const run_upload = useCallback(
     async (temp_key: string, file: File) => {
-      try {
-        const content_type = normalize_vehicle_image_content_type(file);
-        if (!content_type) {
-          throw new Error("Tipo de imagen no admitido");
+      const discard_pending_after_failure = () => {
+        if (!cancelled_upload_keys_ref.current.has(temp_key)) {
+          clear_pending_item(temp_key);
+          return;
         }
+        cancelled_upload_keys_ref.current.delete(temp_key);
+      };
 
-        const { path } = await filesService.uploadFile({
-          file,
-          bucket_name: "vehicles-images",
-          file_key: filesService.generateFileKey(VEHICLE_GALLERY_TEMP_PREFIX, file),
-          content_type,
-          reference_id,
-        });
+      try {
+        // Sin chequeo estricto de MIME: el backend valida, convierte y optimiza.
+        const result = await filesService.uploadTempVehicleImage(file);
 
-        if (!path) {
-          throw new Error("Sin ruta de archivo");
+        if (!result?.path) {
+          // El servicio ya mostró el toast de error.
+          discard_pending_after_failure();
+          return;
         }
 
         if (cancelled_upload_keys_ref.current.has(temp_key)) {
@@ -282,31 +287,14 @@ export const ImagesForm = ({
           return;
         }
 
-        setPendingItems((prev) => {
-          const item = prev.find((p) => p.temp_key === temp_key);
-          if (item?.blob_preview.startsWith("blob:")) {
-            URL.revokeObjectURL(item.blob_preview);
-          }
-          return prev.filter((p) => p.temp_key !== temp_key);
-        });
-
-        append_committed_path(path);
+        clear_pending_item(temp_key);
+        append_committed_path(result.path);
       } catch {
         toast.error(`No se pudo subir ${file.name}`);
-        if (!cancelled_upload_keys_ref.current.has(temp_key)) {
-          setPendingItems((prev) => {
-            const item = prev.find((p) => p.temp_key === temp_key);
-            if (item?.blob_preview.startsWith("blob:")) {
-              URL.revokeObjectURL(item.blob_preview);
-            }
-            return prev.filter((p) => p.temp_key !== temp_key);
-          });
-        } else {
-          cancelled_upload_keys_ref.current.delete(temp_key);
-        }
+        discard_pending_after_failure();
       }
     },
-    [append_committed_path, reference_id],
+    [append_committed_path, clear_pending_item],
   );
 
   const handle_files_added = useCallback(
@@ -319,7 +307,6 @@ export const ImagesForm = ({
       const new_pending: PendingItem[] = files.map((file) => ({
         temp_key: crypto.randomUUID(),
         file,
-        blob_preview: URL.createObjectURL(file),
       }));
 
       setPendingItems((prev) => [...prev, ...new_pending]);
@@ -454,7 +441,7 @@ export const ImagesForm = ({
           ref={file_input_ref}
           type="file"
           multiple
-          accept={[...accepted_mime_types, ...accepted_file_extensions].join(",")}
+          accept={file_input_accept}
           onChange={(e) => {
             handle_files_added(e.target.files);
             e.target.value = "";
@@ -488,7 +475,7 @@ export const ImagesForm = ({
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
-            {["JPG", "PNG", "WEBP", "AVIF", "HEIC"].map((label) => (
+            {["JPG", "PNG", "WEBP", "AVIF", "HEIC", "GIF"].map((label) => (
               <span
                 key={label}
                 className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground"
@@ -575,25 +562,15 @@ export const ImagesForm = ({
             <li
               key={item.temp_key}
               className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted"
+              aria-busy="true"
+              aria-label={`Subiendo ${item.file.name}`}
             >
-              {item.blob_preview ? (
-                <img
-                  src={item.blob_preview}
-                  alt=""
-                  className="size-full object-cover opacity-70"
-                />
-              ) : null}
-              <div className="absolute inset-0 flex items-center justify-center bg-background/65">
-                <Loader2
-                  className="size-8 animate-spin text-primary"
-                  aria-label="Subiendo imagen"
-                />
-              </div>
+              <Skeleton className="absolute inset-0 size-full rounded-none bg-muted-foreground/15" />
               <Button
                 type="button"
                 size="icon-sm"
                 variant="destructive"
-                className="absolute top-2 right-2 rounded-full shadow-md"
+                className="absolute top-2 right-2 z-10 rounded-full shadow-md"
                 onClick={(e) => {
                   e.stopPropagation();
                   handle_remove_pending(item.temp_key);
