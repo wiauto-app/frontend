@@ -73,7 +73,6 @@ export const HeroBackgroundCarousel = ({
   );
   const prefersReducedMotion = usePrefersReducedMotion();
 
-
   if (slides.length === 0) {
     return null;
   }
@@ -90,6 +89,7 @@ export const HeroBackgroundCarousel = ({
           delay: AUTOPLAY_MS,
           stopOnInteraction: false,
           stopOnMouseEnter: false,
+          
         }),
       ]}
       className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden rounded-b-lg [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-content]>div]:h-full"
@@ -97,7 +97,10 @@ export const HeroBackgroundCarousel = ({
     >
       <CarouselContent className="ml-0 h-full">
         {slides.map((slide, index) => (
-          <CarouselItem key={slide.id} className="relative h-full basis-full pl-0">
+          <CarouselItem
+            key={slide.id}
+            className="relative h-full basis-full pl-0"
+          >
             <Image
               src={slide.image_url}
               alt={slide.image_alt}
@@ -106,7 +109,7 @@ export const HeroBackgroundCarousel = ({
               loading={index === 0 ? "eager" : "lazy"}
               fill
               quality={80}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 960px, 1300px"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 960px, 1400px"
               className="object-cover"
             />
           </CarouselItem>
