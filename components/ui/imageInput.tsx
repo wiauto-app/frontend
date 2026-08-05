@@ -30,7 +30,7 @@ export const ImageInput = ({
   bucketName,
   path,
   referenceId,
-  accept = "image/png,image/jpeg,image/jpg,image/webp,image/avif",
+  accept = "image/png,image/jpeg,image/jpg,image/webp,image/avif,image/heic,image/heif,.heic,.heif",
 }: ImageInputProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -56,15 +56,22 @@ export const ImageInput = ({
 
       setPreview(localPreview);
 
+      const content_type =
+        filesService.normalize_chat_attachment_content_type(file) ??
+        (file.type as
+          | "image/jpeg"
+          | "image/png"
+          | "image/jpg"
+          | "image/webp"
+          | "image/avif"
+          | "image/heic"
+          | "image/heif");
+
       const { path: uploadedPath } = await filesService.uploadFile({
         file,
         bucket_name: bucketName,
         file_key: filesService.generateFileKey(path, file),
-        content_type: file.type as
-          | "image/jpeg"
-          | "image/png"
-          | "image/jpg"
-          | "image/webp",
+        content_type,
         reference_id: referenceId ?? "",
       });
       if (!uploadedPath) {

@@ -49,6 +49,11 @@ export type UploadContentType =
   | "image/png"
   | "image/jpg"
   | "image/webp"
+  | "image/avif"
+  | "image/heic"
+  | "image/heif"
+  | "image/heic-sequence"
+  | "image/heif-sequence"
   | "video/mp4"
   | "video/mov"
   | "video/avi"
@@ -184,11 +189,21 @@ export const filesService = {
   async uploadFile(
     uploadFileDto: UploadFileDto,
   ): Promise<{ path: string | null }> {
+    const content_type =
+      uploadFileDto.content_type ??
+      filesService.normalize_chat_attachment_content_type(uploadFileDto.file) ??
+      (uploadFileDto.file.type as UploadContentType | undefined);
+
+    if (!content_type) {
+      toast.error(
+        `${uploadFileDto.file.name}: no se pudo determinar el tipo de archivo`,
+      );
+      return { path: null };
+    }
+
     const signedUrl = await filesService.generateFileSignedUrl({
       file_key: uploadFileDto.file_key,
-      content_type:
-        uploadFileDto.content_type ??
-        (uploadFileDto.file.type as UploadContentType),
+      content_type,
       bucket_name: uploadFileDto.bucket_name,
     });
     if (!signedUrl) {
@@ -269,6 +284,11 @@ export const filesService = {
       "image/jpg": "image/jpg",
       "image/png": "image/png",
       "image/webp": "image/webp",
+      "image/avif": "image/avif",
+      "image/heic": "image/heic",
+      "image/heif": "image/heif",
+      "image/heic-sequence": "image/heic-sequence",
+      "image/heif-sequence": "image/heif-sequence",
       "audio/webm": "audio/webm",
       "audio/ogg": "audio/ogg",
       "audio/wav": "audio/wav",
@@ -291,6 +311,9 @@ export const filesService = {
       jpeg: "image/jpeg",
       png: "image/png",
       webp: "image/webp",
+      avif: "image/avif",
+      heic: "image/heic",
+      heif: "image/heif",
       webm: "audio/webm",
       ogg: "audio/ogg",
       wav: "audio/wav",

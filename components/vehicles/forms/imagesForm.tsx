@@ -21,7 +21,48 @@ const accepted_mime_types = [
   "image/jpg",
   "image/png",
   "image/webp",
+  "image/avif",
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
 ] as const;
+
+const accepted_file_extensions = [
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".avif",
+  ".heic",
+  ".heif",
+] as const;
+
+const normalize_vehicle_image_content_type = (
+  file: File,
+): (typeof accepted_mime_types)[number] | null => {
+  const mime = file.type.trim().toLowerCase();
+  if (
+    mime &&
+    (accepted_mime_types as readonly string[]).includes(mime)
+  ) {
+    return mime as (typeof accepted_mime_types)[number];
+  }
+
+  const extension = file.name.includes(".")
+    ? `.${file.name.split(".").pop()?.toLowerCase() ?? ""}`
+    : "";
+  const EXT_TO_MIME: Record<string, (typeof accepted_mime_types)[number]> = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".avif": "image/avif",
+    ".heic": "image/heic",
+    ".heif": "image/heif",
+  };
+  return EXT_TO_MIME[extension] ?? null;
+};
 
 const VEHICLE_IMAGE_DRAG_TYPE = "application/x-vehicle-image-order";
 
@@ -42,11 +83,9 @@ type PendingItem = {
 };
 
 const is_valid_image_file = (file: File) => {
-  const ok = accepted_mime_types.includes(
-    file.type as (typeof accepted_mime_types)[number],
-  );
+  const ok = normalize_vehicle_image_content_type(file) !== null;
   if (!ok) {
-    toast.error(`${file.name}: usa JPG, PNG o WEBP.`);
+    toast.error(`${file.name}: usa JPG, PNG, WEBP, AVIF o HEIC.`);
   }
   return ok;
 };
@@ -220,15 +259,16 @@ export const ImagesForm = ({
   const run_upload = useCallback(
     async (temp_key: string, file: File) => {
       try {
+        const content_type = normalize_vehicle_image_content_type(file);
+        if (!content_type) {
+          throw new Error("Tipo de imagen no admitido");
+        }
+
         const { path } = await filesService.uploadFile({
           file,
           bucket_name: "vehicles-images",
           file_key: filesService.generateFileKey(VEHICLE_GALLERY_TEMP_PREFIX, file),
-          content_type: file.type as
-            | "image/jpeg"
-            | "image/png"
-            | "image/jpg"
-            | "image/webp",
+          content_type,
           reference_id,
         });
 
@@ -413,7 +453,7 @@ export const ImagesForm = ({
           ref={file_input_ref}
           type="file"
           multiple
-          accept={accepted_mime_types.join(",")}
+          accept={[...accepted_mime_types, ...accepted_file_extensions].join(",")}
           onChange={(e) => {
             handle_files_added(e.target.files);
             e.target.value = "";
@@ -447,15 +487,14 @@ export const ImagesForm = ({
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
-            <span className="px-3 py-1 bg-muted text-foreground text-xs rounded-full border border-border">
-              JPG
-            </span>
-            <span className="px-3 py-1 bg-muted text-foreground text-xs rounded-full border border-border">
-              PNG
-            </span>
-            <span className="px-3 py-1 bg-muted text-foreground text-xs rounded-full border border-border">
-              WEBP
-            </span>
+            {["JPG", "PNG", "WEBP", "AVIF", "HEIC"].map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground"
+              >
+                {label}
+              </span>
+            ))}
           </div>
         </div>
       </div>
