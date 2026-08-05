@@ -47,7 +47,7 @@ export const AssistantDialog = () => {
     <>
       <Card
         className={cn(
-          "fixed bottom-4 right-4 bg-white z-10 w-sm pt-0",
+          "fixed bottom-4 right-4 bg-white z-10 w-sm pt-0 hidden md:block",
           !isOpen && "pb-0",
         )}
       >

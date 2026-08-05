@@ -42,10 +42,10 @@ export function UserDropdown() {
     return (
       <Link
         href="/iniciar-sesion"
-        className="hidden lg:flex items-center gap-2 text-sm font-semibold  hover:text-primary hover:underline"
+        className="flex items-center gap-1 text-sm font-semibold  hover:text-primary hover:underline"
       >
-        <User className="size-4" />
-        Iniciar sesión
+        <User className="hidden lg:block size-4" />
+        Ingresar
       </Link>
     );
   }

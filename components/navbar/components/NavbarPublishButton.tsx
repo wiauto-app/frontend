@@ -13,7 +13,7 @@ export function NavbarPublishButton({ ...props }: NavbarPublishButtonProps) {
   if (user) {
     return (
       <Link href="/crear-vehiculo">
-        <Button {...props}>Publicar</Button>
+        <Button {...props} size="sm">Publicar</Button>
       </Link>
     );
   }
@@ -21,7 +21,7 @@ export function NavbarPublishButton({ ...props }: NavbarPublishButtonProps) {
   return (
     <SignInDialog
       returnTo="/crear-vehiculo"
-      trigger={<Button {...props}>Publicar</Button>}
+      trigger={<Button {...props} size="sm">Publicar</Button>}
     />
   );
 }

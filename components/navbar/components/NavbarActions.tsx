@@ -6,7 +6,7 @@ import { UserDropdown } from "./userDropdown";
 
 export const NavbarActions = () => {
   return (
-    <div className="flex items-center gap-4 ">
+    <div className="flex items-center lg:gap-4 gap-2 ">
       <NavbarPublishButton />
       <NotificationsDropdown />
       <UserDropdown />

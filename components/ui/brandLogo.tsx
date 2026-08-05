@@ -75,7 +75,6 @@ export const BrandLogo = ({
   const canonicalVariant = resolveCanonicalVariant(variant);
   const logoUrl = LOGO_URL_BY_VARIANT[canonicalVariant];
   const sizes = isCompactVariant(canonicalVariant) ? "80px" : "176px";
-
   return (
     <Link
       href="/"

@@ -18,7 +18,6 @@ import {
 } from "../constants/navLinks.constants";
 import { NavLinkItem } from "./NavLinkItem";
 import { NavbarPublishButton } from "./NavbarPublishButton";
-import { ServicesNavSection } from "./servicesDropdown";
 import { Button } from "@/components/ui/button";
 import { BrandLogo } from "@/components/ui/brandLogo";
 
@@ -35,13 +34,12 @@ export const NavbarMobileMenu = () => {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
           render={
-            <Button
-              variant="outline"
-              size="icon"
+            <button
               aria-label="Abrir menú de navegación"
+              className="mt-2"
             >
               <Menu className="size-5" aria-hidden />
-            </Button>
+            </button>
           }
         />
 
@@ -89,7 +87,6 @@ export const NavbarMobileMenu = () => {
               />
             ))}
 
-            <ServicesNavSection onNavigate={handleNavigate} />
           </nav>
 
           <div className="mt-auto border-t border-slate-200 px-6 py-4">

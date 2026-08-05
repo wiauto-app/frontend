@@ -33,8 +33,8 @@ export function ProfessionalSidebar({
   if (!pathname.includes("usuario")) return null;
   return (
     <Sidebar className={cn("bg-linear-to-b from-purple-dark via-purple-dark to-primary text-primary-foreground", className)} {...props}>
-      <SidebarHeader>
-        <BrandLogo variant="pro-base" />
+      <SidebarHeader className="bg-white h-20 flex items-center justify-center">
+        <BrandLogo variant="pro-black" />
       </SidebarHeader>
       <Separator />
       <SidebarContent className="p-2">
