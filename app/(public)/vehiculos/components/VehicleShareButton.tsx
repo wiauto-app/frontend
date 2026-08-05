@@ -26,7 +26,7 @@ export const VehicleShareButton = ({
         type="button"
         size="icon"
         variant={variant}
-        className={cn("rounded-full text-muted-foreground hover:bg-muted hover:text-foreground", variant === "outline" && "border-2 border-muted-foreground/50 rounded-md")}
+        className={cn("rounded-full text-muted-foreground hover:bg-muted hover:text-foreground bg-white", variant === "outline" && "border-2 border-muted-foreground/50 rounded-md")}
         aria-label="Compartir vehículo"
         onClick={(event) => {
           event.stopPropagation();

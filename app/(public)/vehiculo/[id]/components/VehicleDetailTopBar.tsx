@@ -1,4 +1,4 @@
-
+import { VehicleEngagementMenu } from "@/app/(public)/vehiculos/components/VehicleEngagementMenu";
 import { VehicleFavoriteButton } from "@/app/(public)/vehiculos/components/VehicleFavoriteButton";
 import { VehicleShareButton } from "@/app/(public)/vehiculos/components/VehicleShareButton";
 import { PageBreadcrumbs } from "@/components/navigation/page-breadcrumbs";
@@ -7,10 +7,10 @@ import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
 import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 
-type VehicleDetailTopBarProps = {
+interface VehicleDetailTopBarProps {
   vehicle: Vehicle;
   breadcrumbItems: BreadcrumbItem[];
-};
+}
 
 export const VehicleDetailTopBar = ({
   vehicle,
@@ -29,6 +29,7 @@ export const VehicleDetailTopBar = ({
             dealership={vehicle.dealership}
             variant="outline"
           />
+          <VehicleEngagementMenu vehicleId={vehicle.id} variant="outline" />
           <VehicleFavoriteButton vehicleId={vehicle.id} variant="outline" />
           <VehicleShareButton
             vehicleId={vehicle.id}

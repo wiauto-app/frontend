@@ -1,4 +1,4 @@
-import { UpdateProfilePayload } from "@/app/(user)/perfil/schemas/update-profile.schema";
+import { UpdateProfilePayload } from "@/app/usuario/perfil/schemas/update-profile.schema";
 import { User } from "@/interfaces/user.interface";
 import { ApiResponse, apiPatch } from "@/lib/api";
 

@@ -118,15 +118,18 @@ export function getVehicleTags(vehicle: VehicleListItem): string[] {
   } else if (vehicle.publisher_type === "particular") {
     tags.push("Particular");
   }
-  if (vehicle.is_featured) {
-    tags.push("Destacado");
-  }
   return tags;
 }
 
+export function getPrimaryCuotaValue(vehicle: VehicleListItem): number | null {
+  const cuota = vehicle.cuotas.find((item) => item.value > 0);
+  return cuota?.value ?? null;
+}
+
 export function getFinancedPrice(vehicle: VehicleListItem): string | null {
-  if (vehicle.cuota?.value) {
-    return formatMonthlyPrice(vehicle.cuota.value);
+  const cuotaValue = getPrimaryCuotaValue(vehicle);
+  if (cuotaValue) {
+    return formatMonthlyPrice(cuotaValue);
   }
   const estimated = vehicle.price / 84;
   return formatMonthlyPrice(estimated);

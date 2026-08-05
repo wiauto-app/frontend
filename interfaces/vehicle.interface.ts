@@ -83,6 +83,7 @@ export interface VehicleVersionSummary {
   make_name: string;
   model_name: string;
   version_name: string;
+  fuel_name: string;
 }
 
 export interface VehicleAddressDetails {
@@ -97,30 +98,41 @@ export interface VehicleAddressDetails {
   formatted_lines: string[];
 }
 
+/** Publicador en la proyección de listado público. */
+export interface VehicleListItemPublisher {
+  id: string;
+  name: string;
+  avatar_url: string;
+}
+
+/**
+ * Proyección de listado público (`GET /v1/vehicles`).
+ * Alineada con el `VehicleListItem` del backend.
+ */
 export interface VehicleListItem {
   id: string;
-  ref?: number;
+  ref: number;
   price: number;
   mileage: number;
   lat: number;
   lng: number;
-  address?: string | null;
-  address_details?: VehicleAddressDetails | null;
   condition: string;
   version_summary: VehicleVersionSummary;
   created_at: string;
+  publisher_type: PublisherType;
+  power: number;
+  displacement: number;
+  transmission_type: TransmissionType;
   images: VehicleImage[];
-  features: Feature[];
+  features: VehicleService[];
   services: VehicleService[];
   vehicle_type: VehicleTypeRef | null;
+  category: VehicleTypeRef | null;
   color: ColorRef | null;
   dgt_label: DgtLabelRef | null;
   warranty_type: WarrantyTypeRef | null;
-  cuota: CuotaRef | null;
-  transmission_type?: TransmissionType;
-  publisher_type?: PublisherType;
-  power?: number;
-  is_featured?: boolean;
+  cuotas: CuotaRef[];
+  publisher: VehicleListItemPublisher;
 }
 
 export interface Publisher {

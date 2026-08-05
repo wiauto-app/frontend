@@ -2,8 +2,8 @@ import type { LucideIcon } from "lucide-react";
 import {
   CarFront,
   Cog,
+  Fuel,
   Gauge,
-  MapPin,
   Palette,
   Zap,
 } from "lucide-react";
@@ -22,18 +22,6 @@ export interface VehicleGridSpec {
   value: string;
   Icon: LucideIcon;
 }
-
-const getLocationLabel = (vehicle: VehicleListItem): string | null => {
-  const details = vehicle.address_details;
-  if (!details) return null;
-
-  return (
-    details.municipality?.trim() ||
-    details.province?.trim() ||
-    details.neighborhood?.trim() ||
-    null
-  );
-};
 
 export const buildVehicleGridSpecs = (
   vehicle: VehicleListItem,
@@ -61,12 +49,21 @@ export const buildVehicleGridSpecs = (
     }
   }
 
-  if (vehicle.power && vehicle.power > 0) {
+  if (vehicle.power > 0) {
     specs.push({
       key: "power",
       label: "Potencia",
       value: `${vehicle.power} CV`,
       Icon: Zap,
+    });
+  }
+
+  if (vehicle.version_summary.fuel_name) {
+    specs.push({
+      key: "fuel",
+      label: "Combustible",
+      value: vehicle.version_summary.fuel_name,
+      Icon: Fuel,
     });
   }
 
@@ -76,16 +73,6 @@ export const buildVehicleGridSpecs = (
       label: "Tipo",
       value: vehicle.vehicle_type.name,
       Icon: CarFront,
-    });
-  }
-
-  const location = getLocationLabel(vehicle);
-  if (location) {
-    specs.push({
-      key: "location",
-      label: "Ubicación",
-      value: location,
-      Icon: MapPin,
     });
   }
 

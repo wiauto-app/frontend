@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, LogOut, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 
 import { useUser } from "@/app/contexts/auth/useUser";
 import { UserAvatar } from "./userAvatar";
@@ -13,9 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getUserSidebarLinks } from "@/app/(user)/constants/user.constants";
+import { getUserSidebarLinks } from "@/app/usuario/constants/user.constants";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GoPerson } from "react-icons/go";
 import { LuStore } from "react-icons/lu";
 
 function getDisplayName(name?: string, lastName?: string, email?: string) {

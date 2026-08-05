@@ -12,6 +12,7 @@ import {
   formatMonthlyPrice,
   formatPrice,
   getConditionLabel,
+  getPrimaryCuotaValue,
   getVehicleDisplayName,
   getVehicleUrl,
 } from "../utils";
@@ -37,9 +38,8 @@ export const VehicleMapCard = () => {
   const vehicleUrl = getVehicleUrl(selectedVehicle.id);
   const conditionLabel = getConditionLabel(selectedVehicle.condition);
   const specs = buildVehicleGridSpecs(selectedVehicle).slice(0, 2);
-  const financedLabel = selectedVehicle.cuota?.value
-    ? formatMonthlyPrice(selectedVehicle.cuota.value)
-    : null;
+  const cuotaValue = getPrimaryCuotaValue(selectedVehicle);
+  const financedLabel = cuotaValue ? formatMonthlyPrice(cuotaValue) : null;
   const detailLabel = `Ver detalle de ${displayName}`;
 
   const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -78,11 +78,6 @@ export const VehicleMapCard = () => {
         </Button>
 
         <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] flex-wrap gap-1.5">
-          {selectedVehicle.is_featured && (
-            <span className="rounded-md bg-primary px-2 py-0.5 text-[10px] font-semibold tracking-wide text-primary-foreground uppercase shadow-sm">
-              Destacado
-            </span>
-          )}
           <span className="rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-slate-700 uppercase shadow-sm backdrop-blur-sm">
             {conditionLabel}
           </span>

@@ -1,7 +1,6 @@
-import { ChevronRight, Send } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { SectionContainer } from "./SectionContainer";
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "./data/home-data";
+import { NewsletterSubscribeForm } from "./NewsletterSubscribeForm";
 import { getHomeData } from "./services/homeService";
 
 export async function NewsletterSection() {
@@ -28,23 +27,7 @@ export async function NewsletterSection() {
             {data.description}
           </p>
         </div>
-        <form className="mx-auto mt-8 flex max-w-md overflow-hidden rounded-lg bg-white shadow-sm">
-          <Input
-            type="email"
-            name="email"
-            placeholder="Tu correo electrónico"
-            required
-            className="h-10 flex-1 border-0 bg-white px-4 text-sm text-slate-700 outline-none placeholder:text-slate-400"
-          />
-          <button
-            type="submit"
-            className="flex size-10 shrink-0 items-center justify-center text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: BRAND_BLUE }}
-            aria-label="Suscribirse"
-          >
-            <ChevronRight className="size-5" aria-hidden />
-          </button>
-        </form>
+        <NewsletterSubscribeForm />
       </div>
     </SectionContainer>
   );

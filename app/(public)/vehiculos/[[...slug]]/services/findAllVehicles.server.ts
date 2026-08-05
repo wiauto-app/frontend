@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 
 import { API_URL } from "@/constants";
 import type {
@@ -9,7 +8,7 @@ import type {
 import { buildVehiclesQueryString } from "@/lib/vehicles/build-vehicles-query-params";
 import { CACHE_ONE_HOUR, CACHE_TAGS } from "@/constants/cache.constants";
 
-export interface VehiclesListingServerResult {
+export interface VehiclesListingResult {
   vehicles: VehicleListItem[];
   total: number;
   page: number;
@@ -18,8 +17,8 @@ export interface VehiclesListingServerResult {
 
 export const findAllVehicles = async (
   params: FindAllVehiclesParams,
-): Promise<VehiclesListingServerResult> => {
-  const empty: VehiclesListingServerResult = {
+): Promise<VehiclesListingResult> => {
+  const empty: VehiclesListingResult = {
     vehicles: [],
     total: 0,
     page: params.page ?? 1,

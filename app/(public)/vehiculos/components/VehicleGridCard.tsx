@@ -22,20 +22,22 @@ import {
   formatMonthlyPrice,
   getConditionLabel,
   getImageUrl,
+  getPrimaryCuotaValue,
   getVehicleDisplayName,
   getVehicleUrl,
 } from "../utils";
-import {
-  buildVehicleGridSpecs,
-  getPublisherTypeLabel,
-} from "../utils/build-vehicle-grid-specs";
+import { buildVehicleGridSpecs } from "../utils/build-vehicle-grid-specs";
+import { VehicleEngagementMenu } from "./VehicleEngagementMenu";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
-import { Separator } from "@/components/ui/separator";
+import { VehicleShareDialog } from "./VehicleShareDialog";
+import { useState } from "react";
+import { VehicleShareButton } from "./VehicleShareButton";
 
 interface VehicleGridCardProps {
   vehicle: VehicleListItem;
   interactive?: boolean;
   footer?: React.ReactNode;
+  onDismissed?: (vehicleId: string) => void;
 }
 
 interface VehicleGridCardBadgesProps {
@@ -63,11 +65,6 @@ const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
   return (
     <>
       <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] flex-wrap gap-1.5">
-        {vehicle.is_featured && (
-          <span className="rounded-md bg-primary px-2 py-0.5 text-[10px] font-semibold tracking-wide text-primary-foreground uppercase shadow-sm">
-            Destacado
-          </span>
-        )}
         <span className="rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-slate-700 uppercase shadow-sm backdrop-blur-sm">
           {conditionLabel}
         </span>
@@ -103,10 +100,8 @@ const VehicleGridCardBody = ({
   const makeName = getVehicleMakeName(vehicle);
   const modelLine = getVehicleModelLine(vehicle);
   const specs = buildVehicleGridSpecs(vehicle);
-  const publisherLabel = getPublisherTypeLabel(vehicle.publisher_type);
-  const financedLabel = vehicle.cuota?.value
-    ? formatMonthlyPrice(vehicle.cuota.value)
-    : null;
+  const cuotaValue = getPrimaryCuotaValue(vehicle);
+  const financedLabel = cuotaValue ? formatMonthlyPrice(cuotaValue) : null;
   const detailLabel = `Ver detalle de ${displayName}`;
 
   return (
@@ -163,23 +158,6 @@ const VehicleGridCardBody = ({
         </ul>
       )}
 
-      {(publisherLabel || vehicle.warranty_type?.name) && (
-        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 border-t border-slate-200/80 pt-2 text-[11px] text-muted-foreground">
-          {publisherLabel && <span>{publisherLabel}</span>}
-          {publisherLabel && vehicle.warranty_type?.name && (
-            <span aria-hidden>·</span>
-          )}
-          {vehicle.warranty_type?.name && (
-            <span
-              className="truncate"
-              title={`Garantía ${vehicle.warranty_type.name}`}
-            >
-              Garantía {vehicle.warranty_type.name}
-            </span>
-          )}
-        </div>
-      )}
-
       <Link
         href={vehicleUrl}
         prefetch={false}
@@ -202,14 +180,13 @@ export const VehicleGridCard = ({
   vehicle,
   interactive = false,
   footer,
+  onDismissed,
 }: VehicleGridCardProps) => {
   const imageUrl = getImageUrl(vehicle.images[0]?.url ?? "");
   const displayName = getVehicleDisplayName(vehicle);
   const vehicleUrl = getVehicleUrl(vehicle.id);
-  const impressionRef = useVehicleImpressionTracker<HTMLDivElement>(
-    vehicle.id,
-  );
-
+  const impressionRef = useVehicleImpressionTracker<HTMLDivElement>(vehicle.id);
+  const [openShareDialog, setOpenShareDialog] = useState(false);
   return (
     <Card
       ref={impressionRef}
@@ -225,10 +202,19 @@ export const VehicleGridCard = ({
       />
 
       <CardHeader className="pointer-events-none relative aspect-square overflow-hidden p-0 pt-0">
-        <div className="pointer-events-auto absolute top-2 right-2 z-10">
+        <div className="pointer-events-auto absolute top-2 right-2 z-10 flex items-center gap-1">
           <VehicleFavoriteButton
             vehicleId={vehicle.id}
             className="rounded-full bg-white shadow-sm"
+          />
+          <VehicleShareButton
+            vehicleId={vehicle.id}
+            vehicleTitle={displayName}
+          />
+          <VehicleEngagementMenu
+            vehicleId={vehicle.id}
+            className="rounded-full bg-white shadow-sm"
+            onDismissed={onDismissed}
           />
         </div>
 
@@ -253,7 +239,6 @@ export const VehicleGridCard = ({
       />
       {footer ? (
         <>
-          <Separator />
           <CardFooter className="relative z-10 pointer-events-auto px-2.5 pb-0">
             {footer}
           </CardFooter>

@@ -2,24 +2,36 @@
 
 import { Car } from "lucide-react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
+import type { ReactNode } from "react";
 import { VehicleGridCard } from "./VehicleGridCard";
 import { VehiclesPagination } from "./VehiclesPagination";
 import { Button } from "@/components/ui/button";
+import { useAuthenticatedVehiclesListing } from "../hooks/useAuthenticatedVehiclesListing";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
+import { BuyAssistantBannerCard } from "./buyAssistantBannerCard";
+import { VehiclesMap } from "./vehiclesMap";
+import { MapButton } from "./mapButton";
 
 interface VehiclesListingViewProps {
   vehicles: VehicleListItem[];
   total: number;
+  onDismissed: (vehicleId: string) => void;
+  goToPage: (page: number) => void;
+  resetFilters: () => void;
+  pageLimit: number;
+  currentPage: number;
 }
 
 const VehiclesListingView = ({
   vehicles,
   total,
+  onDismissed,
+  goToPage,
+  resetFilters,
+  pageLimit,
+  currentPage,
 }: VehiclesListingViewProps) => {
-  const { filters, resetFilters, goToPage } = useVehiclesListingFilters();
-
-  const totalPages = Math.ceil(total / (filters.limit || 12));
-  const currentPage = filters.page || 1;
+  const totalPages = Math.ceil(total / pageLimit);
 
   if (vehicles.length === 0) {
     return (
@@ -45,8 +57,13 @@ const VehiclesListingView = ({
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
+        <BuyAssistantBannerCard />
         {vehicles.map((vehicle) => (
-          <VehicleGridCard key={vehicle.id} vehicle={vehicle} />
+          <VehicleGridCard
+            key={vehicle.id}
+            vehicle={vehicle}
+            onDismissed={onDismissed}
+          />
         ))}
       </div>
 
@@ -62,11 +79,52 @@ const VehiclesListingView = ({
 export interface VehiclesPageContentProps {
   vehicles: VehicleListItem[];
   total: number;
+  isMapVisible?: boolean;
+  titleNode: ReactNode;
+  activeFiltersNode: ReactNode;
 }
 
 export const VehiclesPageContent = ({
-  vehicles,
-  total,
+  vehicles: initialVehicles,
+  total: initialTotal,
+  isMapVisible = false,
+  titleNode,
+  activeFiltersNode,
 }: VehiclesPageContentProps) => {
-  return <VehiclesListingView vehicles={vehicles} total={total} />;
+  const { resetFilters, goToPage } = useVehiclesListingFilters();
+  const { vehicles, total, handleDismissed, filters } =
+    useAuthenticatedVehiclesListing({
+      initialVehicles,
+      initialTotal,
+    });
+
+  return (
+    <>
+      <div className="mx-auto min-w-0 flex-1 py-2">
+        <div className="flex items-center justify-between">
+          {titleNode}
+          <MapButton />
+        </div>
+        {activeFiltersNode}
+        <VehiclesListingView
+          vehicles={vehicles}
+          total={total}
+          onDismissed={handleDismissed}
+          goToPage={goToPage}
+          resetFilters={resetFilters}
+          pageLimit={filters.limit || 12}
+          currentPage={filters.page || 1}
+        />
+      </div>
+      {isMapVisible ? (
+        <div className="hidden min-w-0 shrink-0 basis-[min(100%,420px)] lg:block xl:basis-[480px]">
+          <VehiclesMap
+            vehicles={vehicles}
+            total={total}
+            isMapVisible={isMapVisible}
+          />
+        </div>
+      ) : null}
+    </>
+  );
 };

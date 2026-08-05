@@ -25,6 +25,7 @@ const resolveVersionParts = (
       make_name: source.version.make?.name ?? "",
       model_name: source.version.model?.name ?? "",
       version_name: source.version.name ?? "",
+      fuel_name: "",
     };
   }
 

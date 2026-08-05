@@ -6,6 +6,9 @@ import Providers from "./providers";
 import { Footer, NewsletterSection } from "@/components/home";
 import { AssistantDialog } from "@/components/assistant/assistantDialog";
 import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
+import { FooterWrapper } from "@/components/ui/footerWrapper";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { ProfessionalSidebar } from "./usuario/components/professionalSidebar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -37,14 +40,19 @@ export default async function RootLayout({
         )}
       >
         <body className="flex flex-col relative">
-          <Navbar />
-          <main className="flex flex-1 flex-col">{children}</main>
-          <div className="mt-20">
-            <NewsletterSection />
-            <Footer />
-          </div>
-          <AssistantDialog />
-          <MobileNavbar />
+          <SidebarProvider>
+            <ProfessionalSidebar />
+            <SidebarInset>
+              <Navbar />
+              <main className="flex flex-1 flex-col">{children}</main>
+              <FooterWrapper>
+                <NewsletterSection />
+                <Footer />
+              </FooterWrapper>
+              <AssistantDialog />
+              <MobileNavbar />
+            </SidebarInset>
+          </SidebarProvider>
         </body>
       </html>
     </Providers>

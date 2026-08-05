@@ -68,7 +68,9 @@ export const vehicleService = {
   vehicles: {
     findAll: (params?: FindAllVehiclesParams): Promise<ApiResponse<PaginatedResponse<VehicleListItem>>> => {
       const query = buildVehiclesQueryString(params);
-      return apiGet<PaginatedResponse<VehicleListItem>>(`/v1/vehicles${query}`, undefined, 60);
+      // Sin revalidate: con sesión el backend excluye descartes del usuario;
+      // no debe reutilizar cache compartida anónima.
+      return apiGet<PaginatedResponse<VehicleListItem>>(`/v1/vehicles${query}`);
     },
     findSimilar: (
       id: string,

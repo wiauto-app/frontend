@@ -17,10 +17,8 @@ import { FRONTEND_URL } from "@/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FiltersTitle } from "../components/filtersTitle";
 import { FiltersLoading } from "../components/filtersLoading";
-import { MapButton } from "../components/mapButton";
 import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
 import { cn } from "@/lib/utils";
-import { VehiclesMap } from "../components/vehiclesMap";
 import { SaveSearchButton } from "../components/SaveSearchButton";
 import { BuyAssistantButton } from "../components/buyAssistantButton";
 
@@ -110,26 +108,15 @@ export default async function VehiclesListingPage(props: {
               <VehiclesFilters />
             </Suspense>
           </aside>
-          <div className="mx-auto min-w-0 flex-1 py-2">
-            <div className="flex items-center justify-between">
-              <FiltersTitle title={activeFilters.title} />
-              <MapButton />
-            </div>
-            <ActiveFilters activeFilters={activeFilters} />
-            <VehiclesPageContent
-              vehicles={listing.vehicles}
-              total={listing.total}
-            />
-          </div>
-          {isMapVisible && (
-            <div className="hidden min-w-0 shrink-0 basis-[min(100%,420px)] lg:block xl:basis-[480px]">
-              <VehiclesMap
-                vehicles={listing.vehicles}
-                total={listing.total}
-                isMapVisible={isMapVisible}
-              />
-            </div>
-          )}
+          <VehiclesPageContent
+            vehicles={listing.vehicles}
+            total={listing.total}
+            isMapVisible={isMapVisible}
+            titleNode={<FiltersTitle title={activeFilters.title} />}
+            activeFiltersNode={
+              <ActiveFilters activeFilters={activeFilters} />
+            }
+          />
         </div>
       </div>
     </VehiclesListingShell>

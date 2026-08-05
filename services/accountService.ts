@@ -1,6 +1,6 @@
 import type { AccountSettings } from "@/interfaces/account.interface";
-import type { UpdateEmailFormValues } from "@/app/(user)/perfil/schemas/update-email.schema";
-import type { UpdatePasswordFormValues } from "@/app/(user)/perfil/schemas/update-password.schema";
+import type { UpdateEmailFormValues } from "@/app/usuario/perfil/schemas/update-email.schema";
+import type { UpdatePasswordFormValues } from "@/app/usuario/perfil/schemas/update-password.schema";
 import { ApiResponse, apiGet, apiPatch, fetchWithAuth } from "@/lib/api";
 
 type ApiMessageResponse = {

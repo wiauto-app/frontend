@@ -3,11 +3,13 @@
 import { CustomMap } from "@/components/customMap";
 import { DEFAULT_CENTER } from "@/constants/map.constants";
 import { VehiclesMarker } from "@/components/ui/vehiclesMarker";
-import { VehiclesPageContentProps } from "./VehiclesPageContent";
+import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
 import { VehicleMapCard } from "./VehicleMapCard";
 
-export interface VehiclesMapProps extends VehiclesPageContentProps {
+export interface VehiclesMapProps {
+  vehicles: VehicleListItem[];
+  total: number;
   isMapVisible: boolean;
 }
 
@@ -31,7 +33,7 @@ export const VehiclesMap = ({ vehicles }: VehiclesMapProps) => {
               lat: vehicle.lat,
               lng: vehicle.lng,
             }}
-            variant={!vehicle.is_featured ? "default" : "dot"}
+            variant="default"
             onClick={() => setSelectedVehicle(vehicle)}
           />
         ))}
