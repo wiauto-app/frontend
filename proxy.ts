@@ -23,14 +23,16 @@ export async function proxy(req: NextRequest) {
   }
 
   const access_token = req.cookies.get(cookiesConfig.accessToken.name)?.value ?? null;
+  console.log("access_token", access_token);
   const refresh_token = req.cookies.get(cookiesConfig.refreshToken.name)?.value ?? null;
-
+  console.log("refresh_token", refresh_token);
   if (!access_token || !refresh_token) {
+    console.log("redirecting to login");
     return NextResponse.redirect(new URL("/iniciar-sesion", req.url));
   }
 
   const result = await ensureValidSession({ refresh_token, access_token });
-
+  console.log("result", result);
   if (
     result.outcome === "session_valid" ||
     result.outcome === "me_not_ok" ||

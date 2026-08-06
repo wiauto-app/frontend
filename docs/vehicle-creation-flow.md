@@ -58,7 +58,7 @@ Wizard legacy (`VehicleForm` 5 pasos) ya no se usa en rutas públicas.
 
 ## Imágenes
 
-`ImagesForm` → MinIO temp → backend promueve + WebP. Previews: `getImageUrl` + `NEXT_PUBLIC_MEDIA_URL`.
+`ImagesForm` → object storage temp → backend promueve + WebP. Previews: `getImageUrl` + `NEXT_PUBLIC_MEDIA_URL` (`media.wiauto.es`).
 
 ## MapInput
 

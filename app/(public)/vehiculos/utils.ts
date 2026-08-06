@@ -84,14 +84,16 @@ export function formatMonthlyPrice(price: number, cuotas?: number): string {
   );
 }
 
+/** Prefijo del CDN público (`NEXT_PUBLIC_MEDIA_URL`) + pathname `/{bucket}/{key}`. */
 export function getImageUrl(image: string): string {
   if (!image) return "/placeholder-car.jpg";
+  if (image.startsWith("http://") || image.startsWith("https://")) {
+    return image;
+  }
   if (image.startsWith("/")) {
     return `${MEDIA_URL}${image}`;
   }
-  else {
-    return `${MEDIA_URL}/${image}`;
-  }
+  return `${MEDIA_URL}/${image}`;
 }
 
 

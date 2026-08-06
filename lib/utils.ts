@@ -34,8 +34,12 @@ export const objectToQueryString = (obj?: object) => {
   return params.toString();
 };
 
+/** Prefijo del CDN público (`NEXT_PUBLIC_MEDIA_URL`) + pathname `/{bucket}/{key}`. */
 export const getImageUrl = (fileKey: string) => {
   if (!fileKey) return "/placeholder-car.jpg";
+  if (fileKey.startsWith("http://") || fileKey.startsWith("https://")) {
+    return fileKey;
+  }
   if (fileKey.startsWith("/")) {
     return `${MEDIA_URL ?? ""}${fileKey}`;
   }

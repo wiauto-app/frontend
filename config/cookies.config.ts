@@ -24,6 +24,7 @@ export const cookiesConfig = {
       path: "/",
     },
   },
+  
   refreshToken: {
     name: "refresh_token",
     options: {
