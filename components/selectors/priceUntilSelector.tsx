@@ -30,7 +30,7 @@ export const PriceUntilSelector = () => {
   if (isLoading && price_ranges.length === 0) {
     return (
       <div className="relative">
-        <Skeleton className="h-11 w-full rounded-lg" />
+        <Skeleton className="h-9 w-full rounded-lg" />
       </div>
     );
   }

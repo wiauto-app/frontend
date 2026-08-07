@@ -150,7 +150,7 @@ export const HeroFiltersMakeSelector = () => {
   const [search, setSearch] = useState("");
   const [open_values, setOpenValues] = useState<string[]>([]);
   const debounced_search = useDebouncedValue(search, 300);
-
+  const [open, setOpen] = useState(false);
   const make_cascade_filters = useMemo(
     () => ({
       province_slug: facetQueryParams.province_slug,
@@ -185,7 +185,7 @@ export const HeroFiltersMakeSelector = () => {
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
           <Button
@@ -202,7 +202,7 @@ export const HeroFiltersMakeSelector = () => {
       />
       <PopoverContent
         align="end"
-        className="flex w-full md:w-96  flex-col gap-2 "
+        className="flex w-full md:w-96  flex-col gap-2 bg-transparent"
       >
         <SearchInput
           placeholder="Buscar marca"
@@ -273,6 +273,14 @@ export const HeroFiltersMakeSelector = () => {
               })}
             </Accordion>
           )}
+        </div>
+        <div className="flex items-center justify-end gap-2">
+          <Button onClick={() => setOpen(false)} variant="outline" size="sm">
+            Cancelar
+          </Button>
+          <Button onClick={() => setOpen(false)} variant="default" size="sm">
+            Aplicar
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

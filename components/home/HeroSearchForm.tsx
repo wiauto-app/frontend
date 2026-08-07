@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -85,7 +85,7 @@ const HeroFiltersSearchForm = () => {
   const { buildListingHref, facetQueryParams } = useHeroSearchFilters();
   const debounced_facet_params = useDebouncedValue(facetQueryParams, 250);
 
-  const { data, isPending, isFetching } = useQuery({
+  const { data, isPending,isLoading, isFetching } = useQuery({
     queryKey: ["hero-count", debounced_facet_params],
     queryFn: () => heroFacetService.getCount(debounced_facet_params),
     placeholderData: keepPreviousData,
@@ -101,7 +101,7 @@ const HeroFiltersSearchForm = () => {
 
   return (
     <form
-      className="grid grid-cols-1 gap-4"
+      className="grid grid-cols-1 gap-4 md:w-84 w-full"
       onSubmit={(event) => {
         event.preventDefault();
         handleSearch();
@@ -111,8 +111,8 @@ const HeroFiltersSearchForm = () => {
       {/* <HeroFiltersModelSelector /> */}
       <HeroFiltersLocationSelector />
       <PriceUntilSelector />
-      <Button type="submit" aria-label={search_label}>
-        <Search className="size-4" />
+      <Button disabled={isLoading} type="submit" aria-label={search_label}>
+        {isLoading ? <Loader2 className="size-4" /> : <Search className="size-4" />}
         {search_label}
       </Button>
     </form>
