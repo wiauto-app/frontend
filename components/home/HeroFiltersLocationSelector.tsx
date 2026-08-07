@@ -15,15 +15,10 @@ import {
 } from "@/components/ui/popover";
 import { SearchInput } from "@/components/ui/searchInput";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+// import { Badge } from "@/components/ui/badge";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { heroFacetService } from "@/services/search/heroFacetService";
+// import { heroFacetService } from "@/services/search/heroFacetService";
+import { heroCatalogService } from "@/services/search/heroCatalogService";
 import type { LocationSelectedItem } from "@/components/selectors/FilterLocationSelector/interfaces/locationSelector.interface";
 import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
 import {
@@ -35,6 +30,8 @@ import { ProvinceQuickBadges } from "@/components/selectors/ProvinceQuickBadges"
 import type { ProvinceQuickBadgeItem } from "@/components/selectors/utils/build-province-badges";
 import { buildHeroListingHref } from "@/lib/vehicles/listing-url";
 import { useOptionalHeroSearchFilters } from "./HeroSearchFiltersContext";
+import { VirtualizedAccordionList } from "./VirtualizedAccordionList";
+import { VirtualizedCheckboxList } from "./VirtualizedCheckboxList";
 
 interface ProvinceMunicipalitiesListProps {
   province: HeroCatalogFacetItem;
@@ -80,10 +77,23 @@ const ProvinceMunicipalitiesList = ({
   onApplySelection,
   onMunicipalitiesLoaded,
 }: ProvinceMunicipalitiesListProps) => {
+  // Facet OpenSearch (comentado: catálogo Postgres sin contadores)
+  // const { data: municipalities = [], isLoading } = useQuery({
+  //   queryKey: ["hero-facets", "municipalities", province.slug],
+  //   queryFn: async () => {
+  //     const items = await heroFacetService.getMunicipalities(province.slug, {});
+  //     return items.map((item) => ({
+  //       ...item,
+  //       province_id: province.id,
+  //     }));
+  //   },
+  //   enabled: isOpen,
+  // });
+
   const { data: municipalities = [], isLoading } = useQuery({
-    queryKey: ["hero-facets", "municipalities", province.slug],
+    queryKey: ["hero-catalog", "municipalities", province.slug],
     queryFn: async () => {
-      const items = await heroFacetService.getMunicipalities(province.slug, {});
+      const items = await heroCatalogService.getMunicipalities(province.slug);
       return items.map((item) => ({
         ...item,
         province_id: province.id,
@@ -211,9 +221,9 @@ const ProvinceMunicipalitiesList = ({
         label={
           <div className="flex w-full items-center justify-between gap-2">
             <p className="truncate font-medium">Todos los municipios</p>
-            <span className="shrink-0 text-xs text-muted-foreground">
+            {/* <span className="shrink-0 text-xs text-muted-foreground">
               {province.vehicle_count}
-            </span>
+            </span> */}
           </div>
         }
       />
@@ -222,27 +232,30 @@ const ProvinceMunicipalitiesList = ({
           No hay municipios disponibles
         </p>
       ) : (
-        municipalities.map((municipality) => (
-          <CustomCheckbox
-            key={municipality.id}
-            checked={
-              is_province_all_selected ||
-              selected_municipality_slugs_set.has(municipality.slug)
-            }
-            disabled={is_province_all_selected}
-            onChange={(event) =>
-              handleSelectMunicipality(event.target.checked, municipality)
-            }
-            label={
-              <div className="flex w-full items-center justify-between gap-2">
-                <p className="truncate">{municipality.name}</p>
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  {municipality.vehicle_count}
-                </span>
-              </div>
-            }
-          />
-        ))
+        <VirtualizedCheckboxList
+          items={municipalities}
+          getItemKey={(municipality) => municipality.id}
+          renderItem={(municipality) => (
+            <CustomCheckbox
+              checked={
+                is_province_all_selected ||
+                selected_municipality_slugs_set.has(municipality.slug)
+              }
+              disabled={is_province_all_selected}
+              onChange={(event) =>
+                handleSelectMunicipality(event.target.checked, municipality)
+              }
+              label={
+                <div className="flex w-full items-center justify-between gap-2">
+                  <p className="truncate">{municipality.name}</p>
+                  {/* <span className="shrink-0 text-xs text-muted-foreground">
+                    {municipality.vehicle_count}
+                  </span> */}
+                </div>
+              }
+            />
+          )}
+        />
       )}
     </div>
   );
@@ -277,16 +290,21 @@ export const HeroFiltersLocationSelector = ({
   const [open_values, setOpenValues] = useState<string[]>([]);
   const debounced_search = useDebouncedValue(search, 300);
 
-  const { data: provinces = [], isLoading } = useQuery({
-    queryKey: ["hero-facets", "provinces", debounced_search],
-    queryFn: () =>
-      heroFacetService.getProvinces(
-        {},
-        debounced_search.trim() || undefined,
-      ),
-  });
+  // Facet OpenSearch (comentado: catálogo Postgres sin contadores)
+  // const { data: provinces = [], isLoading } = useQuery({
+  //   queryKey: ["hero-facets", "provinces", debounced_search],
+  //   queryFn: () =>
+  //     heroFacetService.getProvinces(
+  //       {},
+  //       debounced_search.trim() || undefined,
+  //     ),
+  // });
 
-  const open_value_set = useMemo(() => new Set(open_values), [open_values]);
+  const { data: provinces = [], isLoading } = useQuery({
+    queryKey: ["hero-catalog", "provinces", debounced_search],
+    queryFn: () =>
+      heroCatalogService.getProvinces(debounced_search.trim() || undefined),
+  });
 
   const handleApplyLocationPayload = useCallback(
     (payload: LocationUrlPayload) => {
@@ -385,62 +403,47 @@ export const HeroFiltersLocationSelector = ({
             onClear={() => setSearch("")}
             aria-label="Buscar ubicación"
           />
-          <div className="max-h-96 overflow-y-auto">
-            {isLoading && (
-              <div className="flex flex-col gap-2">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    className="h-8 w-full rounded-sm bg-muted-foreground/20"
-                  />
-                ))}
-              </div>
-            )}
-            {!isLoading && provinces.length === 0 && (
-              <p className="px-1 py-2 text-sm text-muted-foreground">
-                No hay provincias disponibles
-              </p>
-            )}
-            {!isLoading && provinces.length > 0 && (
-              <Accordion
-                multiple={false}
-                value={open_values}
-                onValueChange={handleAccordionValueChange}
-                className="flex w-full flex-col gap-2"
-              >
-                {provinces.map((province) => {
-                  const province_value = String(province.id);
-                  const is_open = open_value_set.has(province_value);
-
-                  return (
-                    <AccordionItem
-                      className="rounded-md border px-2"
-                      value={province_value}
-                      key={province.id}
-                    >
-                      <AccordionTrigger className="py-3 **:data-[slot=accordion-trigger-icon]:!text-primary">
-                        <div className="flex w-full items-center justify-between gap-2 pr-2">
-                          <span className="truncate">{province.name}</span>
-                          <Badge className="shrink-0 bg-primary/10 text-xs font-normal text-primary">
-                            {province.vehicle_count} Vehículos
-                          </Badge>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ProvinceMunicipalitiesList
-                          province={province}
-                          isOpen={is_open}
-                          selectedItems={selectedItems}
-                          onApplySelection={handleApplySelection}
-                          onMunicipalitiesLoaded={handleMunicipalitiesLoaded}
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-                  );
-                })}
-              </Accordion>
-            )}
-          </div>
+          {isLoading && (
+            <div className="flex max-h-96 flex-col gap-2 overflow-y-auto">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  className="h-8 w-full rounded-sm bg-muted-foreground/20"
+                />
+              ))}
+            </div>
+          )}
+          {!isLoading && provinces.length === 0 && (
+            <p className="px-1 py-2 text-sm text-muted-foreground">
+              No hay provincias disponibles
+            </p>
+          )}
+          {!isLoading && provinces.length > 0 && (
+            <VirtualizedAccordionList
+              items={provinces}
+              getItemKey={(province) => province.id}
+              getItemValue={(province) => String(province.id)}
+              openValues={open_values}
+              onOpenValuesChange={handleAccordionValueChange}
+              renderTrigger={(province) => (
+                <div className="flex w-full items-center justify-between gap-2 pr-2">
+                  <span className="truncate">{province.name}</span>
+                  {/* <Badge className="shrink-0 bg-primary/10 text-xs font-normal text-primary">
+                    {province.vehicle_count} Vehículos
+                  </Badge> */}
+                </div>
+              )}
+              renderContent={(province, is_open) => (
+                <ProvinceMunicipalitiesList
+                  province={province}
+                  isOpen={is_open}
+                  selectedItems={selectedItems}
+                  onApplySelection={handleApplySelection}
+                  onMunicipalitiesLoaded={handleMunicipalitiesLoaded}
+                />
+              )}
+            />
+          )}
         </PopoverContent>
       </Popover>
       {showQuickBadges ? (

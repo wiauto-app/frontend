@@ -31,6 +31,7 @@ interface HeroSearchFiltersContextValue {
   handleToggleModel: (model: HeroCatalogFacetItem, checked: boolean) => void;
   setLocationPayload: (payload: LocationUrlPayload) => void;
   setUntilPrice: (until_price?: number) => void;
+  /** Cascada facet desactivada en UI (hero usa catálogo Postgres). Se mantiene por compatibilidad. */
   facetQueryParams: HeroFacetCascadeFilters;
   buildListingHref: () => string;
 }

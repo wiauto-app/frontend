@@ -22,6 +22,16 @@ export interface FindModelsByMakeParams {
   page?: number;
   limit?: number;
   query?: string;
+  search?: string;
+}
+
+export interface FindAllModelsParams {
+  make_id: number;
+  page?: number;
+  limit?: number;
+  search?: string;
+  order_by?: string;
+  order_direction?: "ASC" | "DESC";
 }
 
 export const modelService = {
@@ -34,6 +44,25 @@ export const modelService = {
       `${V1_CATALOG_MODELS}/search${query}`,
     );
     return response.data?.models ?? [];
+  },
+  findAll: async (
+    params: FindAllModelsParams,
+  ): Promise<PaginatedResponse<SearchModelItem>> => {
+    const query = qs.stringify(
+      {
+        make_id: params.make_id,
+        page: params.page ?? 1,
+        limit: params.limit ?? 10,
+        search: params.search,
+        order_by: params.order_by,
+        order_direction: params.order_direction,
+      },
+      { skipNulls: true, addQueryPrefix: true },
+    );
+    const response = await apiGet<PaginatedResponse<SearchModelItem>>(
+      `${V1_CATALOG_MODELS}${query}`,
+    );
+    return response.data ?? { data: [], total: 0, page: 1, limit: 10 };
   },
   findByMakeId: async (
     params: FindModelsByMakeParams,

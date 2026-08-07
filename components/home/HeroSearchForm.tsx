@@ -2,22 +2,22 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Loader2, Search } from "lucide-react";
+// import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "../ui/card";
 import { NavbarPublishButton } from "../navbar/components/NavbarPublishButton";
 import { PriceUntilSelector } from "../selectors/priceUntilSelector";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { heroFacetService } from "@/services/search/heroFacetService";
+// import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+// import { heroFacetService } from "@/services/search/heroFacetService";
 import { cn } from "@/lib/utils";
 import {
   HeroSearchFiltersProvider,
   useHeroSearchFilters,
 } from "./HeroSearchFiltersContext";
 import { HeroFiltersMakeSelector } from "./HeroFiltersMakeSelector";
-import { HeroFiltersModelSelector } from "./HeroFiltersModelSelector";
+// import { HeroFiltersModelSelector } from "./HeroFiltersModelSelector";
 import { HeroFiltersLocationSelector } from "./HeroFiltersLocationSelector";
 import { HeroReferenceSearch } from "./HeroReferenceSearch";
 
@@ -28,20 +28,23 @@ interface HeroModeToggleProps {
   onModeChange: (mode: HeroSearchMode) => void;
 }
 
-const buildSearchButtonLabel = (
-  count: number | undefined,
-  isLoading: boolean,
-): string => {
-  if (isLoading && count === undefined) {
-    return "Buscando...";
-  }
+// CTA con conteo OpenSearch (comentado: label fijo sin hero-count)
+// const buildSearchButtonLabel = (
+//   count: number | undefined,
+//   isLoading: boolean,
+// ): string => {
+//   if (isLoading && count === undefined) {
+//     return "Buscando...";
+//   }
+//
+//   if (count === 1) {
+//     return "Buscar 1 coche";
+//   }
+//
+//   return `Buscar ${count ?? 0} coches`;
+// };
 
-  if (count === 1) {
-    return "Buscar 1 coche";
-  }
-
-  return `Buscar ${count ?? 0} coches`;
-};
+const SEARCH_BUTTON_LABEL = "Buscar coches";
 
 const HeroModeToggle = ({ mode, onModeChange }: HeroModeToggleProps) => {
   return (
@@ -82,18 +85,21 @@ const HeroModeToggle = ({ mode, onModeChange }: HeroModeToggleProps) => {
 
 const HeroFiltersSearchForm = () => {
   const router = useRouter();
-  const { buildListingHref, facetQueryParams } = useHeroSearchFilters();
-  const debounced_facet_params = useDebouncedValue(facetQueryParams, 250);
+  const {
+    buildListingHref,
+    // facetQueryParams,
+  } = useHeroSearchFilters();
 
-  const { data, isPending,isLoading, isFetching } = useQuery({
-    queryKey: ["hero-count", debounced_facet_params],
-    queryFn: () => heroFacetService.getCount(debounced_facet_params),
-    placeholderData: keepPreviousData,
-  });
-
-  const count = data?.count;
-  const is_count_loading = isPending || isFetching;
-  const search_label = buildSearchButtonLabel(count, is_count_loading);
+  // Facet OpenSearch hero-count (comentado: CTA fijo)
+  // const debounced_facet_params = useDebouncedValue(facetQueryParams, 250);
+  // const { data, isPending, isLoading, isFetching } = useQuery({
+  //   queryKey: ["hero-count", debounced_facet_params],
+  //   queryFn: () => heroFacetService.getCount(debounced_facet_params),
+  //   placeholderData: keepPreviousData,
+  // });
+  // const count = data?.count;
+  // const is_count_loading = isPending || isFetching;
+  // const search_label = buildSearchButtonLabel(count, is_count_loading);
 
   const handleSearch = () => {
     router.push(buildListingHref());
@@ -111,9 +117,9 @@ const HeroFiltersSearchForm = () => {
       {/* <HeroFiltersModelSelector /> */}
       <HeroFiltersLocationSelector />
       <PriceUntilSelector />
-      <Button disabled={isLoading} type="submit" aria-label={search_label}>
-        {isLoading ? <Loader2 className="size-4" /> : <Search className="size-4" />}
-        {search_label}
+      <Button type="submit" aria-label={SEARCH_BUTTON_LABEL}>
+        <Search className="size-4" />
+        {SEARCH_BUTTON_LABEL}
       </Button>
     </form>
   );
