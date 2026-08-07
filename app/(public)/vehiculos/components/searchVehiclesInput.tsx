@@ -125,7 +125,7 @@ export const SearchVehiclesInput = () => {
   const showResults = hasMinLength && vehicles.length > 0;
 
   return (
-    <div className="w-full min-w-0 flex-1">
+    <div className="hidden md:block w-full min-w-0 flex-1">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger
           render={

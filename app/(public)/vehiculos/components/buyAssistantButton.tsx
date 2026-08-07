@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { MdAssistant } from "react-icons/md";
 import { ASSISTANT_KEYS } from "@/components/assistant/constants/assistantKeys.constants";
 import { saveBuyAssistantInitialFilters } from "@/components/assistant/utils/buyAssistantSessionStorage";
 import { pickSearchFiltersFromListing } from "@/components/assistant/utils/pickSearchFiltersFromListing";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
+import { IAButton } from "@/components/ui/iaButton";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 export const BuyAssistantButton = () => {
   const router = useRouter();
@@ -19,13 +19,15 @@ export const BuyAssistantButton = () => {
   };
 
   return (
-    <Button
+    <IAButton
       type="button"
-      className="w-full"
+      size="2xl"
+      className="rounded-2xl max-w-xl text-lg font-semibold w-fit"
       aria-label="Abrir asistente de compra con los filtros actuales"
       onClick={handleClick}
     >
-      Asistente de compra <MdAssistant aria-hidden />
-    </Button>
+      <Sparkles className="size-6" />
+      Asistente de compra <ArrowRight className="size-5" />
+    </IAButton>
   );
 };

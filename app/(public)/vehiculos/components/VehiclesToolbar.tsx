@@ -30,8 +30,8 @@ export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
 
   return (
     <div className="sticky top-20 z-30 border-b border-slate-200 bg-[#EEF3FA]">
-      <div className="mx-auto flex container-custom items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:py-4">
-        <div className="flex gap-2 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
+      <div className="mx-auto flex container-custom items-center justify-between md:justify-start gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:py-4">
+        <div className="hidden md:flex gap-2 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
           <Button onClick={() => router.push("/vehiculos")}>Comprar</Button>
           <Button
             variant="outline"
@@ -82,7 +82,7 @@ export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
               }))}
             >
               <SelectTrigger
-                className="h-11 w-full min-w-44 rounded-lg border border-slate-200 bg-white pl-10 pr-8 font-medium text-slate-700"
+                className="h-11 w-full  rounded-lg border border-slate-200 bg-white pl-10 pr-8 font-medium text-slate-700"
                 aria-label="Ordenar resultados"
               >
                 <SelectValue placeholder="Ordenar" />

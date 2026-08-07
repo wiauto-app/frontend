@@ -20,7 +20,7 @@ import { FiltersLoading } from "../components/filtersLoading";
 import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
 import { cn } from "@/lib/utils";
 import { SaveSearchButton } from "../components/SaveSearchButton";
-import { BuyAssistantButton } from "../components/buyAssistantButton";
+import { BuyAssistantBannerCard } from "../components/buyAssistantBannerCard";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
@@ -104,7 +104,8 @@ export default async function VehiclesListingPage(props: {
           <aside className="hidden w-85 shrink-0 flex-col gap-2 lg:flex">
             <Suspense fallback={<FiltersLoading />}>
               <SaveSearchButton />
-              <BuyAssistantButton />
+              <BuyAssistantBannerCard />
+
               <VehiclesFilters />
             </Suspense>
           </aside>
@@ -113,9 +114,7 @@ export default async function VehiclesListingPage(props: {
             total={listing.total}
             isMapVisible={isMapVisible}
             titleNode={<FiltersTitle title={activeFilters.title} />}
-            activeFiltersNode={
-              <ActiveFilters activeFilters={activeFilters} />
-            }
+            activeFiltersNode={<ActiveFilters activeFilters={activeFilters} />}
           />
         </div>
       </div>

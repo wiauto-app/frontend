@@ -286,7 +286,7 @@ export const NotificacionesContent = () => {
               </div>
             ) : (
               <>
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 max-h-[calc(100vh-22rem)] overflow-y-auto">
                   {notifications.map((notification) => (
                     <NotificationInboxItem
                       key={notification.id}

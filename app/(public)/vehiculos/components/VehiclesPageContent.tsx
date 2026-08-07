@@ -8,9 +8,9 @@ import { VehiclesPagination } from "./VehiclesPagination";
 import { Button } from "@/components/ui/button";
 import { useAuthenticatedVehiclesListing } from "../hooks/useAuthenticatedVehiclesListing";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
-import { BuyAssistantBannerCard } from "./buyAssistantBannerCard";
 import { VehiclesMap } from "./vehiclesMap";
 import { MapButton } from "./mapButton";
+import { BuyAssistantBannerCard } from "./buyAssistantBannerCard";
 
 interface VehiclesListingViewProps {
   vehicles: VehicleListItem[];
@@ -57,7 +57,9 @@ const VehiclesListingView = ({
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
-        <BuyAssistantBannerCard />
+        <div className="lg:hidden">
+          <BuyAssistantBannerCard />
+        </div>
         {vehicles.map((vehicle) => (
           <VehicleGridCard
             key={vehicle.id}
@@ -117,7 +119,7 @@ export const VehiclesPageContent = ({
         />
       </div>
       {isMapVisible ? (
-        <div className="hidden min-w-0 shrink-0 basis-[min(100%,420px)] lg:block xl:basis-[480px]">
+        <div className="hidden min-w-0 shrink-0 basis-[min(100%,600px)] lg:block xl:basis-180">
           <VehiclesMap
             vehicles={vehicles}
             total={total}

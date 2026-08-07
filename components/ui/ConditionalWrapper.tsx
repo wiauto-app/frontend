@@ -14,8 +14,8 @@ interface ConditionalWrapperProps {
 export const ConditionalWrapper = ({
   children,
   paths = [],
-  justParticular = false,
-  justProfessional = false,
+  justParticular,
+  justProfessional,
   className,
 }: ConditionalWrapperProps) => {
   const pathname = usePathname();
@@ -24,8 +24,11 @@ export const ConditionalWrapper = ({
   // Si no coincide la ruta, no aplicamos ninguna restricción.
   const matchesPath =
     paths.length === 0 || paths.some((path) => pathname.includes(path));
-
   if (matchesPath) {
+    if (justParticular === undefined && justProfessional === undefined) {
+      return null;
+    }
+
     if (justParticular && !isParticular) {
       return null;
     }
