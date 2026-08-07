@@ -56,7 +56,7 @@ export default async function CrearVehiculoExitoPage({
             size="lg"
             className="h-11 w-full text-base font-semibold"
             nativeButton={false}
-            render={<Link href="/mis-anuncios" />}
+            render={<Link href="/usuario/mis-anuncios" />}
           >
             <LayoutList className="size-4" aria-hidden />
             Ir a mis anuncios
