@@ -17,6 +17,7 @@ import { serializeQuickVehiclePayload } from "@/components/vehicles/utils/serial
 import { mapVehicleDetailToQuickFormValues } from "@/components/vehicles/utils/mapVehicleDetailToQuickFormValues";
 import { ProfessionalEditPreview } from "./ProfessionalEditPreview";
 import { ProfessionalEditSections } from "./ProfessionalEditSections";
+import { useUser } from "@/app/contexts/auth/useUser";
 
 interface ProfessionalVehicleEditFormProps {
   vehicleId: string;
@@ -32,8 +33,11 @@ export const ProfessionalVehicleEditForm = ({
     queryFn: () => vehiclesService.findOne(vehicleId),
   });
 
+  const { user } = useUser();
   const form = useForm<QuickVehicleSchema>({
-    resolver: standardSchemaResolver(quickVehicleSchema) as Resolver<QuickVehicleSchema>,
+    resolver: standardSchemaResolver(
+      quickVehicleSchema,
+    ) as Resolver<QuickVehicleSchema>,
     defaultValues: createQuickVehicleDefaultValues,
   });
 
