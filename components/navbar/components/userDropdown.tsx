@@ -26,7 +26,7 @@ function getDisplayName(name?: string, lastName?: string, email?: string) {
 
 export function UserDropdown() {
   const { user, logout, isLoading } = useUser();
-
+  const { has, planName, } = useEntitlements();
   if (isLoading) {
     return (
       <div className="flex items-center gap-2">
@@ -38,7 +38,7 @@ export function UserDropdown() {
       </div>
     );
   }
-
+  
   if (!user) {
     return (
       <Link
@@ -52,7 +52,6 @@ export function UserDropdown() {
   }
 
   const displayName = getDisplayName(user.name, user.last_name, user.email);
-  const { has, planName } = useEntitlements();
   const sidebarLinks = getUserSidebarLinks({
     dealershipMembership: user.dealership_membership,
     hasDismissedVehicles: has("dismissed_vehicles"),

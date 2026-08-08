@@ -4,15 +4,30 @@ import { Suspense, useState } from "react";
 import { Menu } from "lucide-react";
 import { UserSidebar, UserSidebarFallback } from "./components/UserSidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { cva } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 const USER_SIDEBAR_WIDTH = "w-72 lg:w-80";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const { isSubscribed } = useEntitlements();
+  const layourVariants = cva(
+    "mx-auto w-full px-4 py-2 sm:px-6 md:py-8 lg:px-8 ",
+    {
+      variants: {
+        isSubscribed: {
+          true: "max-w-[1800px] ",
+          false: "max-w-full p-0 ",
+        },
+      },
+    },
+  );
 
   return (
     <div className="min-h-screen bg-muted-foreground/10">
-      <div className="mx-auto w-full max-w-[1800px] px-4 py-2 sm:px-6 md:py-8 lg:px-8">
+      <div className={cn(layourVariants({ isSubscribed }))}>
         <div className="flex flex-col gap-4 md:flex-row md:gap-8">
           <div className="flex md:hidden">
             <Sheet open={open} onOpenChange={setOpen} swipeDirection="left">
@@ -32,11 +47,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Sheet>
           </div>
 
-          <aside className={`hidden shrink-0 md:block ${USER_SIDEBAR_WIDTH}`}>
-            <Suspense fallback={<UserSidebarFallback />}>
-              <UserSidebar />
-            </Suspense>
-          </aside>
+          {!isSubscribed && (
+            <aside className={`hidden shrink-0 md:block ${USER_SIDEBAR_WIDTH}`}>
+              <Suspense fallback={<UserSidebarFallback />}>
+                <UserSidebar />
+              </Suspense>
+            </aside>
+          )}
 
           <main className="min-w-0 w-full flex-1">{children}</main>
         </div>

@@ -60,7 +60,10 @@ export function UserSidebar() {
   const tab = searchParams.get("tab");
 
   const { user, logout } = useUser();
-  const { has } = useEntitlements();
+  const { has, isSubscribed } = useEntitlements();
+
+  if(isSubscribed) return null;
+
   const sidebarLinks = getUserSidebarLinks({
     dealershipMembership: user?.dealership_membership,
     hasDismissedVehicles: has("dismissed_vehicles"),

@@ -68,5 +68,6 @@ export const useEntitlements = () => {
     getLimit,
     refetch: query.refetch,
     planName: query.data?.subscription?.plan_name ?? null,
+    isSubscribed: query.data?.subscription?.status === "active",
   };
 };
