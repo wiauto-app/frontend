@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   Car,
   ChevronUp,
@@ -41,10 +42,22 @@ const ASSISTANT_OPTIONS = [
 ] as const;
 
 const gradientClasses = "bg-linear-to-r from-purple to-primary-soft";
+const RENDER_DELAY_MS = 1000;
 
 export const AssistantDialog = () => {
   const { isOpen, setIsOpen } = useCardOpenStatusStore();
   const { user } = useUser();
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setIsReady(true);
+    }, RENDER_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -53,6 +66,10 @@ export const AssistantDialog = () => {
   const handleClose = () => {
     setIsOpen(false);
   };
+
+  if (!isReady) {
+    return null;
+  }
 
   return (
     <>
