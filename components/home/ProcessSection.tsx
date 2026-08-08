@@ -1,33 +1,41 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 import { Check } from "lucide-react";
+import { useState } from "react";
+
+import type { StrapiProcessSection } from "@/interfaces/strapi-components.interface";
+import { getStrapiMediaUrl } from "@/lib/strapi-media";
 import { cn } from "@/lib/utils";
+
+import { BRAND_BLUE, BRAND_BLUE_PROCESS } from "./data/home-data";
 import { ProcessBlocksContent } from "./ProcessBlocksContent";
 import { ProcessIllustration } from "./ProcessIllustration";
 import { SectionContainer } from "./SectionContainer";
-import { BRAND_BLUE, BRAND_BLUE_PROCESS } from "./data/home-data";
-import type { HomeProcessSectionData } from "./types/home-page.types";
 
-type ProcessSectionProps = {
-  data: HomeProcessSectionData;
-};
+interface ProcessSectionProps {
+  data: StrapiProcessSection | null | undefined;
+}
 
 export function ProcessSection({ data }: ProcessSectionProps) {
-  const [activeTabId, setActiveTabId] = useState(data.tabs[0]?.id ?? "");
+  const tabs = data?.tabs ?? [];
+  const [active_tab_id, setActiveTabId] = useState<number | null>(
+    tabs[0]?.id ?? null,
+  );
 
-  if (!data.tabs.length) {
+  if (!data || tabs.length === 0) {
     return null;
   }
 
-  const activeTab =
-    data.tabs.find((tab) => tab.id === activeTabId) ?? data.tabs[0];
+  const active_tab =
+    tabs.find((tab) => tab.id === active_tab_id) ?? tabs[0];
+  const active_image_url = getStrapiMediaUrl(active_tab.image?.url);
+  const active_heading = active_tab.titulo?.trim() || active_tab.tab?.trim() || "";
 
   return (
     <SectionContainer className="bg-white py-12 lg:py-16">
       <div className="mb-8 sm:mb-10">
-        <ProcessBlocksContent content={data.title} variant="title" />
+        <ProcessBlocksContent content={data.titulo} variant="title" />
       </div>
 
       <div className="flex justify-center">
@@ -36,24 +44,26 @@ export function ProcessSection({ data }: ProcessSectionProps) {
           role="tablist"
           aria-label="Proceso de automoción"
         >
-          {data.tabs.map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               role="tab"
-              aria-selected={activeTab.id === tab.id}
+              aria-selected={active_tab.id === tab.id}
               onClick={() => setActiveTabId(tab.id)}
               className={cn(
                 "rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors sm:px-6 sm:py-3",
-                activeTab.id === tab.id
+                active_tab.id === tab.id
                   ? "text-white"
                   : "text-slate-900 hover:text-slate-700",
               )}
               style={
-                activeTab.id === tab.id ? { backgroundColor: BRAND_BLUE } : undefined
+                active_tab.id === tab.id
+                  ? { backgroundColor: BRAND_BLUE }
+                  : undefined
               }
             >
-              {tab.label}
+              {tab.tab}
             </button>
           ))}
         </div>
@@ -65,26 +75,32 @@ export function ProcessSection({ data }: ProcessSectionProps) {
         role="tabpanel"
       >
         <div className="max-w-lg">
-          <p
-            className="inline-flex items-center gap-2 text-lg font-bold sm:text-xl"
-            style={{ color: BRAND_BLUE }}
-          >
-            <Check className="size-5 shrink-0 stroke-[3]" aria-hidden />
-            {activeTab.heading}
-          </p>
+          {active_heading ? (
+            <p
+              className="inline-flex items-center gap-2 text-lg font-bold sm:text-xl"
+              style={{ color: BRAND_BLUE }}
+            >
+              <Check className="size-5 shrink-0 stroke-[3]" aria-hidden />
+              {active_heading}
+            </p>
+          ) : null}
           <div className="mt-5">
             <ProcessBlocksContent
-              content={activeTab.description}
+              content={active_tab.descripcion}
               variant="description"
             />
           </div>
         </div>
 
         <div className="mt-8 flex min-h-[220px] items-center justify-center lg:mt-0 lg:min-h-[260px]">
-          {activeTab.image_url ? (
+          {active_image_url ? (
             <Image
-              src={activeTab.image_url}
-              alt={activeTab.image_alt ?? activeTab.heading}
+              src={active_image_url}
+              alt={
+                active_tab.image?.alternativeText?.trim() ||
+                active_heading ||
+                "Ilustración del proceso"
+              }
               width={420}
               height={280}
               className="max-w-md object-contain"

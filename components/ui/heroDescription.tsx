@@ -1,5 +1,7 @@
-export const HeroDescription = ({ children }: { children: React.ReactNode }) => {
+import { cn } from "@/lib/utils"
+
+export const HeroDescription = ({ children, className }: { children: React.ReactNode, className?: string }) => {
   return (
-    <div className="hidden text-base text-white/90 text-center md:block lg:text-left max-w-full lg:max-w-md">{children}</div>
+    <div className={cn("hidden text-base text-white/90 text-center md:block lg:text-left max-w-full lg:max-w-md", className)}>{children}</div>
   )
 }

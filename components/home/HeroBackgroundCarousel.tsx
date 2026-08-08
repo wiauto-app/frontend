@@ -11,13 +11,13 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { HeroBackdrop } from "@/components/ui/heroBackdrop";
-
-import type { HomeHeroData } from "./types/home-page.types";
+import type { StrapiImage } from "@/interfaces/strapi-components.interface";
+import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
 const AUTOPLAY_MS = 5000;
 
 interface HeroBackgroundCarouselProps {
-  images: HomeHeroData["hero_images"];
+  images: StrapiImage[] | null | undefined;
   fallbackUrl: string | null;
   title: string;
 }
@@ -29,23 +29,36 @@ interface HeroSlide {
 }
 
 const buildSlides = (
-  images: HomeHeroData["hero_images"],
+  images: StrapiImage[] | null | undefined,
   fallbackUrl: string | null,
   title: string,
 ): HeroSlide[] => {
-  const withUrl = images
-    .filter((image) => image.image_url.trim().length > 0)
-    .slice()
+  const with_url = (images ?? [])
+    .map((image) => {
+      const image_url = getStrapiMediaUrl(image.image?.url);
+      if (!image_url?.trim()) {
+        return null;
+      }
+
+      return {
+        id: String(image.id),
+        image_url,
+        image_alt: image.alt?.trim() || title,
+        order: image.order,
+        active: Boolean(image.active),
+      };
+    })
+    .filter((image): image is NonNullable<typeof image> => image !== null)
     .sort((a, b) => a.order - b.order);
 
-  const activeImages = withUrl.filter((image) => image.active);
-  const source = activeImages.length > 0 ? activeImages : withUrl;
+  const active_images = with_url.filter((image) => image.active);
+  const source = active_images.length > 0 ? active_images : with_url;
 
   if (source.length > 0) {
     return source.map((image) => ({
       id: image.id,
       image_url: image.image_url,
-      image_alt: image.image_alt || title,
+      image_alt: image.image_alt,
     }));
   }
 
@@ -89,7 +102,6 @@ export const HeroBackgroundCarousel = ({
           delay: AUTOPLAY_MS,
           stopOnInteraction: false,
           stopOnMouseEnter: false,
-          
         }),
       ]}
       className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden rounded-b-lg [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-content]>div]:h-full"

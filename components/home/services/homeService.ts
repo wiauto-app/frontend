@@ -1,31 +1,85 @@
-import { getStrapiData } from "@/lib/strapi-api";
-import { mapHomePageData } from "../mappers/map-home-page-data";
-import type { HomePageData } from "../types/home-page.types";
+import qs from "qs";
+
+import { getStrapiData, type StrapiResponse } from "@/lib/strapi-api";
+import { HERO_POPULATE } from "@/lib/strapi-populate";
+
 import type { StrapiHomepageResponse } from "../types/strapi-home.types";
 
-// Se agrega el campo 'image' en el populate de heroImages
-const HOME_POPULATE_QUERY = `
-/homepage
-?populate[homeSeo][populate][shareImage]=true
-&populate[homeHero][populate][caracteristicas][populate][icon]=true
-&populate[homeHero][populate][backgroundImage]=true
-&populate[homeHero][populate][heroImages][populate][image]=true
+const HOME_POPULATE_QUERY = {
+  populate: {
+    homeSeo: {
+      populate: {
+        shareImage: true,
+      },
+    },
+    homeHero: {
+      populate: {
+        caracteristicas: {
+          populate: {
+            icon: true,
+          },
+        },
+        backgroundImage: true,
+        heroImages: {
+          populate: {
+            image: true,
+          },
+        },
+        actionLinks: true,
+      },
+    },
+    promocion_planes: HERO_POPULATE,
+    homeAppAdvertisment: {
+      populate: {
+        appMockup: true,
+      },
+    },
+    homeFeatures: {
+      populate: {
+        feature: {
+          populate: {
+            icon: true,
+          },
+        },
+      },
+    },
+    homeNewsletter: true,
+    processSection: {
+      populate: {
+        tabs: {
+          populate: {
+            image: true,
+          },
+        },
+      },
+    },
+    herramientas: {
+      populate: {
+        imagen: true,
+        boton: true,
+      },
+    },
+    bajas_emisiones: {
+      populate: {
+        header: true,
+        imagen: true,
+        links: {
+          populate: {
+            imagen: true,
+            boton: true,
+          },
+        },
+      },
+    },
+  },
+};
 
-&populate[homeHero][populate][actionLinks]=true
-&populate[homeAppAdvertisment][populate][appMockup]=true
-&populate[homeFeatures][populate][feature][populate][icon]=true
-&populate[homeNewsletter]=true
-&populate[processSection][populate][tabs][populate][image]=true
-&populate[herramientas][populate][imagen]=true
-&populate[herramientas][populate][boton]=true
-&populate[bajas_emisiones][populate][header]=true
-&populate[bajas_emisiones][populate][imagen]=true
-&populate[bajas_emisiones][populate][links][populate][imagen]=true
-&populate[bajas_emisiones][populate][links][populate][boton]=true
-
-`.replace(/\s/g, "");
-
-export const getHomeData = async (): Promise<HomePageData> => {
-  const response = await getStrapiData<StrapiHomepageResponse>(HOME_POPULATE_QUERY);
-  return mapHomePageData(response);
+export const getHomeData = async (): Promise<StrapiHomepageResponse> => {
+  const query = qs.stringify(HOME_POPULATE_QUERY, {
+    encodeValuesOnly: true,
+  });
+  const response = await getStrapiData<StrapiResponse<StrapiHomepageResponse>>(
+    `/homepage?${query}`,
+  );
+  return response.data;
 };

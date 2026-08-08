@@ -1,24 +1,24 @@
 import Image from "next/image";
-import type { HomeFeaturesData } from "./types/home-page.types";
-import { SectionContainer } from "./SectionContainer";
-import { BRAND_BLUE } from "./data/home-data";
-import { getStrapiMediaUrl } from "@/lib/strapi-media";
-import { IconContainer } from "../ui/iconContainer";
+
 import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
+import type { StrapiFeaturesSection } from "@/interfaces/strapi-components.interface";
+import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
-type ValuePropositionSectionProps = {
-  data: HomeFeaturesData;
-};
+import { IconContainer } from "../ui/iconContainer";
+import { BRAND_BLUE } from "./data/home-data";
+import { SectionContainer } from "./SectionContainer";
 
-function FeatureIcon({
-  icon_url,
-  icon_alt,
-  icon_name,
-}: {
+interface ValuePropositionSectionProps {
+  data: StrapiFeaturesSection | null | undefined;
+}
+
+interface FeatureIconProps {
   icon_url: string | null;
   icon_alt: string;
   icon_name: string | null;
-}) {
+}
+
+const FeatureIcon = ({ icon_url, icon_alt, icon_name }: FeatureIconProps) => {
   if (icon_url) {
     return (
       <span className="inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -49,34 +49,61 @@ function FeatureIcon({
       className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-white"
       style={{ backgroundColor: BRAND_BLUE }}
     >
-      <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-        <path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9z" strokeLinecap="round" strokeLinejoin="round" />
+      <svg
+        viewBox="0 0 24 24"
+        className="size-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        aria-hidden
+      >
+        <path
+          d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9z"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
         <path d="M12 8v4M10 10h4" strokeLinecap="round" />
       </svg>
     </span>
   );
-}
+};
 
 export function ValuePropositionSection({ data }: ValuePropositionSectionProps) {
+  if (!data) {
+    return null;
+  }
+
+  const features = data.feature ?? [];
+
   return (
     <SectionContainer className="py-12 lg:py-16">
       <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
         <div>
-          <h2 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl lg:text-[2rem] lg:leading-snug">
-            {data.title}
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-slate-500">{data.description}</p>
+          {data.title ? (
+            <h2 className="text-2xl leading-tight font-bold text-slate-900 sm:text-3xl lg:text-[2rem] lg:leading-snug">
+              {data.title}
+            </h2>
+          ) : null}
+          {data.description ? (
+            <p className="mt-5 text-base leading-relaxed text-slate-500">
+              {data.description}
+            </p>
+          ) : null}
 
-          {data.features.length > 0 ? (
+          {features.length > 0 ? (
             <ul className="mt-8 space-y-5">
-              {data.features.map((feature) => (
+              {features.map((feature) => (
                 <li key={feature.id} className="flex items-center gap-4">
                   <FeatureIcon
                     icon_url={getStrapiMediaUrl(feature.icon?.url)}
-                    icon_alt={feature.icon?.alternativeText?.trim() || feature.label}
+                    icon_alt={
+                      feature.icon?.alternativeText?.trim() || feature.label
+                    }
                     icon_name={feature.iconName}
                   />
-                  <span className="text-base text-slate-500">{feature.label}</span>
+                  <span className="text-base text-slate-500">
+                    {feature.label}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -85,7 +112,7 @@ export function ValuePropositionSection({ data }: ValuePropositionSectionProps) 
 
         <div className="relative flex min-h-[320px] items-end justify-center lg:min-h-[400px]">
           <div
-            className="absolute right-0 top-8 h-[85%] w-[88%] overflow-hidden rounded-tl-[4rem] rounded-br-2xl"
+            className="absolute top-8 right-0 h-[85%] w-[88%] overflow-hidden rounded-tl-[4rem] rounded-br-2xl"
             style={{ backgroundColor: "#001F3F" }}
           >
             <div

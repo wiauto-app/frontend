@@ -3,6 +3,7 @@
 import { CustomMap } from "@/components/customMap";
 import { DEFAULT_CENTER } from "@/constants/map.constants";
 import { VehiclesMarker } from "@/components/ui/vehiclesMarker";
+import { cn } from "@/lib/utils";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
 import { VehicleMapCard } from "./VehicleMapCard";
@@ -11,17 +12,28 @@ export interface VehiclesMapProps {
   vehicles: VehicleListItem[];
   total: number;
   isMapVisible: boolean;
+  className?: string;
+  mapId?: string;
 }
 
-export const VehiclesMap = ({ vehicles }: VehiclesMapProps) => {
+export const VehiclesMap = ({
+  vehicles,
+  className,
+  mapId = "vehicles-listing-map",
+}: VehiclesMapProps) => {
   const setSelectedVehicle = useSelectedVehicleStore(
     (state) => state.setSelectedVehicle,
   );
 
   return (
-    <div className="sticky top-39.5 h-[calc(100dvh-160px)] w-full">
+    <div
+      className={cn(
+        "sticky top-39.5 h-[calc(100dvh-160px)] w-full",
+        className,
+      )}
+    >
       <CustomMap
-        mapId="vehicle-publish-map"
+        mapId={mapId}
         gestureHandling="greedy"
         defaultCenter={DEFAULT_CENTER}
         defaultZoom={14}

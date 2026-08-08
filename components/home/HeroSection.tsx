@@ -1,52 +1,60 @@
-import { HeroBackgroundCarousel } from "./HeroBackgroundCarousel";
-import { StoreButtons } from "./StoreButtons";
-import type { HomeHeroData } from "./types/home-page.types";
-import { HeroSearchForm } from "./HeroSearchForm";
+import type { StrapiHomeHero } from "@/interfaces/strapi-components.interface";
+import { getStrapiMediaUrl } from "@/lib/strapi-media";
+
 import { Hero } from "../ui/hero";
-import { HeroTitle } from "../ui/heroTitle";
-import { HeroDescription } from "../ui/heroDescription";
-import { HeroFeatures } from "./heroFeatures";
 import { HeroBackdrop } from "../ui/heroBackdrop";
+import { HeroDescription } from "../ui/heroDescription";
+import { HeroTitle } from "../ui/heroTitle";
+import { HeroBackgroundCarousel } from "./HeroBackgroundCarousel";
+import { HeroFeatures } from "./heroFeatures";
+import { HeroSearchForm } from "./HeroSearchForm";
+import { StoreButtons } from "./StoreButtons";
 
 interface HeroSectionProps {
-  data: HomeHeroData;
+  data: StrapiHomeHero | null | undefined;
 }
 
 export function HeroSection({ data }: HeroSectionProps) {
-  if (!data.background_image_url) {
+  if (!data) {
     return null;
   }
+
+  const background_image_url = getStrapiMediaUrl(data.backgroundImage?.url);
+  if (!background_image_url) {
+    return null;
+  }
+
+  const title = data.title?.trim() || "";
+  const features = data.caracteristicas ?? [];
+
   return (
     <Hero
       leftContent={
         <div className="flex flex-col ">
-          <div className="text-white flex flex-col lg:gap-5 px-4 2xl:px-14">
-            <HeroTitle>{data.title}</HeroTitle>
+          <div className="flex flex-col px-4 text-white lg:gap-5 2xl:px-14">
+            <HeroTitle>{title}</HeroTitle>
             {data.subtitle ? (
               <HeroDescription>{data.subtitle}</HeroDescription>
             ) : null}
-            <HeroFeatures features={data.features} />
+            <HeroFeatures features={features} />
           </div>
         </div>
       }
       rightContent={
-        <div className="flex  justify-center items-end h-full">
+        <div className="flex h-full items-end justify-center">
           <HeroSearchForm />
         </div>
       }
       floatingContent={
         <>
-          <div className="absolute hidden lg:flex lg:top-0 lg:right-0 bg-black/50 rounded-s-lg p-2 z-10 flex-col gap-1">
-            {/* <p className="text-white text-sm font-bold">
-        {data.download_app_label}
-      </p> */}
+          <div className="absolute z-10 hidden flex-col gap-1 rounded-s-lg bg-black/50 p-2 lg:top-0 lg:right-0 lg:flex">
             <StoreButtons className="flex flex-col gap-1" />
           </div>
-          <HeroBackdrop/>
+          <HeroBackdrop />
           <HeroBackgroundCarousel
-            images={data.hero_images}
-            fallbackUrl={data.background_image_url}
-            title={data.title}
+            images={data.heroImages}
+            fallbackUrl={background_image_url}
+            title={title}
           />
         </>
       }

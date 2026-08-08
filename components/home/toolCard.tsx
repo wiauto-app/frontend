@@ -8,12 +8,15 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { BRAND_BLUE } from "./data/home-data";
-import type { StrapiCard } from "./types/home-page.types";
+import type { StrapiCard } from "@/interfaces/strapi-components.interface";
 
 const DEFAULT_BACKGROUND = BRAND_BLUE;
 
 const pickImageUrl = (item: StrapiCard): string | null => {
   const media = item.imagen;
+  if (!media) {
+    return null;
+  }
 
   return (
     getStrapiMediaUrl(media.formats?.medium?.url) ??
@@ -29,9 +32,11 @@ type ToolCardProps = {
 export const ToolCard = ({ item }: ToolCardProps) => {
   const backgroundColor = item.colorFondo?.trim() || DEFAULT_BACKGROUND;
   const imageUrl = pickImageUrl(item);
-  const imageAlt = item.imagen.alternativeText?.trim() || item.titulo;
-  const ctaLabel = item.boton.label?.trim() || "Ver más";
-  const ctaAriaLabel = `${ctaLabel}: ${item.titulo}`;
+  const title = item.titulo?.trim() || "";
+  const imageAlt = item.imagen?.alternativeText?.trim() || title;
+  const ctaLabel = item.boton?.label?.trim() || "Ver más";
+  const ctaUrl = item.boton?.url?.trim() || "#";
+  const ctaAriaLabel = `${ctaLabel}: ${title}`;
 
   return (
     <Card
@@ -42,14 +47,16 @@ export const ToolCard = ({ item }: ToolCardProps) => {
        
         <div className="relative z-10 flex flex-1 flex-col justify-center gap-4 ">
           <div className="space-y-1">
-            <h3 className="font-bold leading-tight text-xl lg:text-2xl" style={{ color: item.colorTexto }}>
-              {item.titulo}
+            <h3 className="font-bold leading-tight text-xl lg:text-2xl" style={{ color: item.colorTexto ?? undefined }}>
+              {title}
             </h3>
-            <p className="max-w-md text-sm leading-relaxed  sm:text-base" style={{ color: item.colorTexto }}>
-              {item.descripcion}
-            </p>
+            {item.descripcion ? (
+              <p className="max-w-md text-sm leading-relaxed  sm:text-base" style={{ color: item.colorTexto ?? undefined }}>
+                {item.descripcion}
+              </p>
+            ) : null}
           </div>
-          <Link href={item.boton.url} aria-label={ctaAriaLabel} className="w-full md:w-fit">
+          <Link href={ctaUrl} aria-label={ctaAriaLabel} className="w-full md:w-fit">
             <Button
               variant="secondary"
               size="sm"

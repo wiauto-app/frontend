@@ -64,7 +64,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: #0153e8;
-  --primary-dark: #05132c;
+  --primary-dark: #0E1D44;
   --primary-soft: #397ff4;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -102,8 +102,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary-dark: #05132c;
-  --primary: #0153e8;
+  --primary-dark: #0E1D44;
+  --primary: #010101;
   --primary-soft: #3a80f5;
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);

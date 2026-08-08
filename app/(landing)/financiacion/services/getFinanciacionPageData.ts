@@ -5,54 +5,8 @@ import type {
   FinanciacionPageData,
   StrapiFinanciacionResponse,
 } from "../interfaces/financiacion.interface";
+import { ADVANTAGES_POPULATE, HERO_POPULATE, STEPS_POPULATE } from "@/lib/strapi-populate";
 
-const HERO_POPULATE = {
-  populate: {
-    acciones: {
-      populate: {
-        imagen: true,
-      },
-    },
-    imagen: true,
-    caracteristicas: {
-      populate: {
-        icon: true,
-      },
-    },
-    card: {
-      populate: {
-        boton: {
-          populate: {
-            imagen: true,
-          },
-        },
-        imagen: true,
-      },
-    },
-  },
-};
-
-const ADVANTAGES_POPULATE = {
-  populate: {
-    header: true,
-    caracteristicas: {
-      populate: {
-        icon: true,
-      },
-    },
-  },
-};
-
-const STEPS_POPULATE = {
-  populate: {
-    header: true,
-    steps: {
-      populate: {
-        icon: true,
-      },
-    },
-  },
-};
 
 const FINANCIACION_POPULATE_QUERY = {
   populate: {

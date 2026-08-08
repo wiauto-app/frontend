@@ -1,5 +1,5 @@
 import { ServiceHomeItem } from "./serviceHomeItem";
-import { VehicleExtraServiceItem } from "./types/home-page.types";
+import type { VehicleExtraServiceItem } from "./types/vehicle-extra-service.types";
 import { cn } from "@/lib/utils";
 
 export const VehicleExtraServices = ({

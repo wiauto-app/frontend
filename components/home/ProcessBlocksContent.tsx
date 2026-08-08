@@ -4,13 +4,13 @@ import {
   BlocksRenderer,
   type BlocksContent,
 } from "@strapi/blocks-react-renderer";
-import type { StrapiRichTextBlock } from "./types/strapi-home.types";
+
 import { BRAND_BLUE } from "./data/home-data";
 
-type ProcessBlocksContentProps = {
-  content: StrapiRichTextBlock[];
+interface ProcessBlocksContentProps {
+  content: BlocksContent | null | undefined;
   variant: "title" | "description";
-};
+}
 
 export const ProcessBlocksContent = ({
   content,
@@ -24,7 +24,7 @@ export const ProcessBlocksContent = ({
     return (
       <h2 className="text-center text-2xl font-bold tracking-tight text-slate-900 sm:text-[1.75rem] lg:text-3xl">
         <BlocksRenderer
-          content={content as unknown as BlocksContent}
+          content={content}
           blocks={{
             paragraph: ({ children }) => <span>{children}</span>,
           }}
@@ -40,7 +40,7 @@ export const ProcessBlocksContent = ({
 
   return (
     <BlocksRenderer
-      content={content as unknown as BlocksContent}
+      content={content}
       blocks={{
         paragraph: ({ children }) => (
           <p className="text-sm leading-relaxed text-slate-500 sm:text-base">

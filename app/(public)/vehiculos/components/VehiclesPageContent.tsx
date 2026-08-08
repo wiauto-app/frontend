@@ -6,8 +6,19 @@ import type { ReactNode } from "react";
 import { VehicleGridCard } from "./VehicleGridCard";
 import { VehiclesPagination } from "./VehiclesPagination";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useFiltersManager } from "@/hooks/useFiltersManager";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useAuthenticatedVehiclesListing } from "../hooks/useAuthenticatedVehiclesListing";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
+import { SHOW_MAP_KEY } from "../[[...slug]]/constants/filterKeys.constants";
+import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
 import { VehiclesMap } from "./vehiclesMap";
 import { MapButton } from "./mapButton";
 import { BuyAssistantBannerCard } from "./buyAssistantBannerCard";
@@ -99,6 +110,24 @@ export const VehiclesPageContent = ({
       initialVehicles,
       initialTotal,
     });
+  const { handleChange } = useFiltersManager({
+    keys: [SHOW_MAP_KEY],
+  });
+  const is_below_lg = useMediaQuery("(max-width: 1023px)");
+  const clearSelectedVehicle = useSelectedVehicleStore(
+    (state) => state.clearSelectedVehicle,
+  );
+
+  const is_mobile_map_open = isMapVisible && is_below_lg;
+
+  const handleMapDialogOpenChange = (open: boolean) => {
+    if (open) {
+      return;
+    }
+
+    handleChange(SHOW_MAP_KEY, "false");
+    clearSelectedVehicle();
+  };
 
   return (
     <>
@@ -118,15 +147,41 @@ export const VehiclesPageContent = ({
           currentPage={filters.page || 1}
         />
       </div>
+
       {isMapVisible ? (
         <div className="hidden min-w-0 shrink-0 basis-[min(100%,600px)] lg:block xl:basis-180">
           <VehiclesMap
             vehicles={vehicles}
             total={total}
             isMapVisible={isMapVisible}
+            mapId="vehicles-listing-map-desktop"
           />
         </div>
       ) : null}
+
+      <Dialog open={is_mobile_map_open} onOpenChange={handleMapDialogOpenChange}>
+        <DialogContent
+          showCloseButton
+          className="flex h-dvh max-h-dvh w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:max-w-none **:data-[slot=dialog-close]:z-50 **:data-[slot=dialog-close]:bg-background/90 **:data-[slot=dialog-close]:shadow-sm"
+          aria-describedby={undefined}
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle>Mapa de vehículos</DialogTitle>
+            <DialogDescription>
+              Visualiza en el mapa los vehículos del listado actual.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="relative min-h-0 flex-1">
+            <VehiclesMap
+              vehicles={vehicles}
+              total={total}
+              isMapVisible={is_mobile_map_open}
+              mapId="vehicles-listing-map-mobile"
+              className="static h-full"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

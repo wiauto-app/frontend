@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-import type { HeroFeature } from "@/interfaces/hero-feature.interface";
-import { cn } from "@/lib/utils";
-import { IconContainer } from "../ui/iconContainer";
 import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
-import { StrapiIconFeature } from "@/interfaces/strapi-components.interface";
+import type { StrapiIconFeature } from "@/interfaces/strapi-components.interface";
+import { cn } from "@/lib/utils";
+
+import { IconContainer } from "../ui/iconContainer";
 
 interface HeroFeatureIconProps {
   icon_url: string | null;
@@ -55,7 +55,7 @@ const HeroFeatureIcon = ({
   );
 };
 
-export const HeroFeatures = ({ features }: { features: StrapiIconFeature[] }) => {
+export const HeroFeatures = ({ features, className }: { features: StrapiIconFeature[], className?: string }) => {
   if (features.length === 0) {
     return null;
   }
@@ -66,9 +66,9 @@ export const HeroFeatures = ({ features }: { features: StrapiIconFeature[] }) =>
         <li key={feature.id} className="flex items-center gap-3">
           <IconContainer Icon={resolveStrapiIconName(feature.iconName)} justIcon />
           <div className="min-w-0">
-            <p className="text-sm font-medium text-white">{feature.label}</p>
+            <p className={cn("text-sm font-medium text-white", className)}>{feature.label}</p>
             {feature.descripcion ? (
-              <p className="mt-0.5 text-xs text-white/75">
+              <p className={cn("mt-0.5 text-xs text-white/75", className)}>
                 {feature.descripcion}
               </p>
             ) : null}

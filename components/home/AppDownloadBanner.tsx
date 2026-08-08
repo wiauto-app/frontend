@@ -1,29 +1,36 @@
 import Image from "next/image";
-import type { HomeAppAdvertisementData } from "./types/home-page.types";
+
+import type { StrapiAppAdvertisment } from "@/interfaces/strapi-components.interface";
+import { getStrapiMediaUrl } from "@/lib/strapi-media";
+
 import { AppPhoneMockup } from "./AppPhoneMockup";
 import { SectionContainer } from "./SectionContainer";
-import { StoreButtons } from "./StoreButtons";
 import { SectionHeading } from "./SectionHeading";
+import { StoreButtons } from "./StoreButtons";
 
-type AppDownloadBannerProps = {
-  data: HomeAppAdvertisementData;
-};
+interface AppDownloadBannerProps {
+  data: StrapiAppAdvertisment | null | undefined;
+}
 
 export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
-  const firstWord = data.title.split(" ")[0];
-  const restOfWords = data.title.split(" ").slice(1).join(" ");
+  if (!data?.title?.trim()) {
+    return null;
+  }
+
+  const title = data.title.trim();
+  const first_word = title.split(" ")[0] ?? "";
+  const rest_of_words = title.split(" ").slice(1).join(" ");
+  const app_mockup_url = getStrapiMediaUrl(data.appMockup?.url);
+
   return (
-    <SectionContainer className=" h-auto lg:h-[550px] flex items-end">
-      <div
-        className="relative  rounded-[2rem] sm:rounded-[2.5rem] w-full bg-primary dots-background  "
-      >
-    
-        <div className="grid grid-cols-1 lg:grid-cols-2 py-10 px-5">
+    <SectionContainer className=" flex h-auto items-end lg:h-[550px]">
+      <div className="dots-background relative w-full rounded-[2rem] bg-primary sm:rounded-[2.5rem] ">
+        <div className="grid grid-cols-1 px-5 py-10 lg:grid-cols-2">
           <div className="flex justify-center  ">
-            {data.app_mockup_url ? (
+            {app_mockup_url ? (
               <Image
-                src={data.app_mockup_url}
-                alt={data.title}
+                src={app_mockup_url}
+                alt={title}
                 width={260}
                 height={520}
                 sizes="260px"
@@ -35,23 +42,23 @@ export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
             )}
           </div>
 
-          <div className="text-center text-white lg:text-left space-y-4 z-10">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white sm:text-xs">
-              {data.phrase}
-            </p>
+          <div className="z-10 space-y-4 text-center text-white lg:text-left">
+            {data.phrase ? (
+              <p className="text-[11px] font-semibold tracking-[0.18em] text-white uppercase sm:text-xs">
+                {data.phrase}
+              </p>
+            ) : null}
             <SectionHeading
-              className="text-2xl text-center lg:text-left lg:text-5xl max-w-full w-full lg:max-w-sm  text-white"
+              className="w-full max-w-full text-center text-2xl text-white lg:max-w-sm lg:text-left lg:text-5xl"
               highlightClassName="text-primary-soft font-bold"
-              lead={firstWord}
-              highlight={restOfWords}
+              lead={first_word}
+              highlight={rest_of_words}
             />
-            {/* <h2 className=" text-[1.75rem] font-bold leading-tight sm:text-3xl lg:text-[2.25rem] ">
-              {}
-            </h2> */}
-
-            <p className="mx-auto max-w-xl text-sm leading-relaxed text-white/95 sm:text-base lg:mx-0">
-              {data.description}
-            </p>
+            {data.description ? (
+              <p className="mx-auto max-w-xl text-sm leading-relaxed text-white/95 sm:text-base lg:mx-0">
+                {data.description}
+              </p>
+            ) : null}
             <StoreButtons className=" justify-center lg:justify-start" />
           </div>
         </div>

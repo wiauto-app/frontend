@@ -1,6 +1,6 @@
 
 import { Brain, Car, Check, CreditCard, Landmark, Shield, Star, User } from "lucide-react";
-import { VehicleExtraServiceItem } from "../types/home-page.types";
+import type { VehicleExtraServiceItem } from "../types/vehicle-extra-service.types";
 
 export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
   {

@@ -52,9 +52,11 @@ export const IconContainer = ({
   return (
     <div
       className={cn(
-        "rounded-md flex items-center justify-center shrink-0",
-        !hasCustomColors && "bg-primary/10 text-primary",
-       justIcon ? "" : sizes[size].container,
+        "rounded-md flex items-center justify-center shrink-0 text-primary",
+
+        justIcon
+          ? ""
+          : ` ${sizes[size].container} ${!hasCustomColors && "bg-primary/10 "}`,
         rounded && "rounded-full",
         className,
       )}

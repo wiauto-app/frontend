@@ -1,12 +1,21 @@
-import { ToolCard } from "./toolCard"
-import { StrapiCard } from "./types/home-page.types"
+import type { StrapiCard } from "@/interfaces/strapi-components.interface";
 
-export const ToolsAccess = ({ data }: { data: StrapiCard[] }) => {
+import { ToolCard } from "./toolCard";
+
+interface ToolsAccessProps {
+  data: StrapiCard[] | null | undefined;
+}
+
+export const ToolsAccess = ({ data }: ToolsAccessProps) => {
+  if (!data?.length) {
+    return null;
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {data.map((item) => (
-        <ToolCard key={item.titulo} item={item} />
+        <ToolCard key={item.id} item={item} />
       ))}
     </div>
-  )
-}
+  );
+};

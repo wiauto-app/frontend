@@ -29,3 +29,10 @@ export type StrapiPaginationMeta = {
 export type StrapiListMeta = {
   pagination: StrapiPaginationMeta;
 };
+
+export interface StrapiResponse<T> {
+  data: T;
+  meta: {
+    pagination: StrapiPaginationMeta;
+  } | null;
+}

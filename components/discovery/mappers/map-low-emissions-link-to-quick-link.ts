@@ -1,15 +1,21 @@
-import type { HomeLowEmissionsLink } from "@/components/home/types/home-page.types";
+import type { StrapiCard } from "@/interfaces/strapi-components.interface";
+import { getStrapiMediaUrl } from "@/lib/strapi-media";
+
 import type { QuickLink } from "../types";
 import { resolveLowEmissionsQuickLinkIcon } from "../utils/resolve-low-emissions-quick-link-icon";
 
 export const mapLowEmissionsLinkToQuickLink = (
-  link: HomeLowEmissionsLink,
-): QuickLink => ({
-  label: link.title,
-  description: link.description,
-  href: link.href,
-  Icon: resolveLowEmissionsQuickLinkIcon(link.href),
-  imageUrl: link.image_url,
-  borderColor: link.border_color || undefined,
-  titleColor: link.title_color || undefined,
-});
+  link: StrapiCard,
+): QuickLink => {
+  const href = link.boton?.url?.trim() || "#";
+
+  return {
+    label: link.titulo?.trim() || "",
+    description: link.descripcion?.trim() || undefined,
+    href,
+    Icon: resolveLowEmissionsQuickLinkIcon(href),
+    imageUrl: getStrapiMediaUrl(link.imagen?.url),
+    borderColor: link.colorFondo?.trim() || undefined,
+    titleColor: link.colorTexto?.trim() || undefined,
+  };
+};

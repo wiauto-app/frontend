@@ -48,9 +48,9 @@ export interface StrapiHero {
   id: number;
   titulo: string | null;
   descripcion: string | null;
-  acciones: StrapiLink[] | null;
+  acciones: StrapiLink[];
   imagen: StrapiMedia | null;
-  caracteristicas: StrapiIconFeature[] | null;
+  caracteristicas: StrapiIconFeature[];
   card: StrapiCard | null;
 }
 

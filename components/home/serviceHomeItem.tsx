@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { IconContainer } from "../ui/iconContainer";
-import type { VehicleExtraServiceItem } from "./types/home-page.types";
+import type { VehicleExtraServiceItem } from "./types/vehicle-extra-service.types";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
