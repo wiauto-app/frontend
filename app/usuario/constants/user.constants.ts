@@ -17,19 +17,15 @@ import {
   Building2,
   EyeOff,
 } from "lucide-react";
-import {
-  PUBLISHER_TYPE,
-  type PublisherType,
-} from "@/interfaces/vehicle.interface";
 import type { DealershipMembership } from "@/services/dealerships/types/team.types";
 
 const basePath = "/usuario";
 
-export interface UserSidebarLink  {
+export interface UserSidebarLink {
   href: string;
   label: string;
   icon: LucideIcon;
-};
+}
 
 export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
   { href: `${basePath}/inicio`, label: "Inicio", icon: LayoutGrid },
@@ -56,10 +52,17 @@ export const USER_SIDEBAR_DEALERSHIP_PROFILE_LINK: UserSidebarLink = {
   icon: Building2,
 };
 
-export const USER_SIDEBAR_PROFESSIONAL_LINKS: UserSidebarLink[] = [
-  { href: `${basePath}/monetizacion`, label: "Monetización", icon: CreditCard },
-  { href: `${basePath}/descartados`, label: "Descartados", icon: EyeOff },
-];
+export const USER_SIDEBAR_MONETIZATION_LINK: UserSidebarLink = {
+  href: `${basePath}/monetizacion`,
+  label: "Monetización",
+  icon: CreditCard,
+};
+
+export const USER_SIDEBAR_DISMISSED_LINK: UserSidebarLink = {
+  href: `${basePath}/descartados`,
+  label: "Descartados",
+  icon: EyeOff,
+};
 
 export const USER_SIDEBAR_TEAM_LINK: UserSidebarLink = {
   href: `${basePath}/equipo`,
@@ -67,9 +70,32 @@ export const USER_SIDEBAR_TEAM_LINK: UserSidebarLink = {
   icon: Users,
 };
 
-export type GetUserSidebarLinksParams = {
-  userType?: PublisherType;
+export interface GetUserSidebarLinksParams {
   dealershipMembership?: DealershipMembership | null;
+  hasDismissedVehicles?: boolean;
+}
+
+const insertAfterMisAnuncios = (
+  links: UserSidebarLink[],
+  extra: UserSidebarLink[],
+): UserSidebarLink[] => {
+  if (extra.length === 0) {
+    return links;
+  }
+
+  const misAnunciosIndex = links.findIndex(
+    (link) => link.href === `${basePath}/mis-anuncios`,
+  );
+
+  if (misAnunciosIndex === -1) {
+    return [...links, ...extra];
+  }
+
+  return [
+    ...links.slice(0, misAnunciosIndex + 1),
+    ...extra,
+    ...links.slice(misAnunciosIndex + 1),
+  ];
 };
 
 const insertDealershipProfileLink = (
@@ -89,35 +115,21 @@ const insertDealershipProfileLink = (
 };
 
 export const getUserSidebarLinks = (
-  params?: GetUserSidebarLinksParams | PublisherType,
-  dealershipMembership?: DealershipMembership | null,
+  params?: GetUserSidebarLinksParams,
 ): UserSidebarLink[] => {
-  const userType = typeof params === "object" ? params?.userType : params;
-  const membership =
-    typeof params === "object" ? params?.dealershipMembership : dealershipMembership;
+  const membership = params?.dealershipMembership ?? null;
+  const hasDismissedVehicles = params?.hasDismissedVehicles === true;
 
-  const teamLinks = membership ? [USER_SIDEBAR_TEAM_LINK] : [];
+  const entitlementLinks: UserSidebarLink[] = [
+    USER_SIDEBAR_MONETIZATION_LINK,
+    ...(hasDismissedVehicles ? [USER_SIDEBAR_DISMISSED_LINK] : []),
+    ...(membership ? [USER_SIDEBAR_TEAM_LINK] : []),
+  ];
 
-  if (userType !== PUBLISHER_TYPE.PROFESSIONAL) {
-    return insertDealershipProfileLink([...USER_SIDEBAR_LINKS, ...teamLinks]);
-  }
-
-  const misAnunciosIndex = USER_SIDEBAR_LINKS.findIndex(
-    (link) => link.href === `${basePath}/mis-anuncios`,
+  const withEntitlements = insertAfterMisAnuncios(
+    USER_SIDEBAR_LINKS,
+    entitlementLinks,
   );
 
-  if (misAnunciosIndex === -1) {
-    return insertDealershipProfileLink([
-      ...USER_SIDEBAR_LINKS,
-      ...USER_SIDEBAR_PROFESSIONAL_LINKS,
-      ...teamLinks,
-    ]);
-  }
-
-  return insertDealershipProfileLink([
-    ...USER_SIDEBAR_LINKS.slice(0, misAnunciosIndex + 1),
-    ...USER_SIDEBAR_PROFESSIONAL_LINKS,
-    ...teamLinks,
-    ...USER_SIDEBAR_LINKS.slice(misAnunciosIndex + 1),
-  ]);
+  return insertDealershipProfileLink(withEntitlements);
 };

@@ -17,6 +17,7 @@ import { useMyListingsPage } from "../hooks/useMyListingsPage";
 import { aggregateListingStats } from "../utils/aggregateListingStats";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import { useUser } from "@/app/contexts/auth/useUser";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 const formatEuros = (amountCents: number): string =>
   new Intl.NumberFormat("es-ES", {
@@ -26,14 +27,14 @@ const formatEuros = (amountCents: number): string =>
 
 export const MyListing = () => {
   const { user, isLoading: isUserLoading } = useUser();
+  const { has } = useEntitlements();
   const searchParams = useSearchParams();
   const [scheduleListing, setScheduleListing] = useState<OwnerVehicleListItem | null>(
     null,
   );
 
-  const audience = user?.userType ?? "particular";
   const isAuthenticated = Boolean(user);
-  const isProfessional = user?.userType === "professional";
+  const canUseAdvancedEditor = has("advanced_listing_editor");
 
   const {
     listings,
@@ -45,8 +46,8 @@ export const MyListing = () => {
     updateFilters,
     resetFilters,
     billingMe,
-    featurePlan,
-    featurePrice,
+    featureOffer,
+    featureDurationDays,
     isLoading,
     isBillingLoading,
     error,
@@ -65,7 +66,6 @@ export const MyListing = () => {
     isUpdatingStatus,
     isRemoving,
   } = useMyListingsPage({
-    audience,
     enabled: isAuthenticated,
   });
 
@@ -82,7 +82,9 @@ export const MyListing = () => {
       filters.untilCreatedAt,
   );
 
-  const featurePriceLabel = featurePrice ? formatEuros(featurePrice.amount_cents) : null;
+  const featurePriceLabel = featureOffer
+    ? formatEuros(featureOffer.amount_cents)
+    : null;
 
   const isMutating =
     isDuplicating ||
@@ -198,8 +200,18 @@ export const MyListing = () => {
 
       <MyListingsSummaryCards
         stats={aggregatedStats}
-        listingsUsed={billingMe?.usage?.listings_used ?? billingMe?.vehicle_listings_used}
-        listingsMax={billingMe?.quotas?.max_listings ?? billingMe?.vehicle_listings_max}
+        listingsUsed={
+          billingMe?.entitlements?.vehicles?.used ??
+          billingMe?.usage?.listings_used ??
+          billingMe?.vehicle_listings_used
+        }
+        listingsMax={
+          billingMe?.entitlements?.vehicles?.unlimited
+            ? null
+            : (billingMe?.entitlements?.vehicles?.limit ??
+              billingMe?.quotas?.max_listings ??
+              billingMe?.vehicle_listings_max)
+        }
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
@@ -260,7 +272,7 @@ export const MyListing = () => {
                 onRemove={handleRemove}
                 onToggleStatus={handleToggleStatus}
                 isMutating={isMutating}
-                isProfessional={isProfessional}
+                canUseAdvancedEditor={canUseAdvancedEditor}
                 featurePriceLabel={featurePriceLabel}
               />
               <MyListingsPagination
@@ -274,13 +286,13 @@ export const MyListing = () => {
 
         <MyListingsPromoSidebar
           listings={listings}
-          featurePlan={featurePlan}
+          featureOffer={featureOffer}
           onFeature={handleFeature}
           isFeatureLoading={isFeaturing}
         />
       </div>
 
-      <MyListingsHelpSection />
+      <MyListingsHelpSection featureDurationDays={featureDurationDays} />
 
       <ScheduleListingDialog
         listing={scheduleListing}

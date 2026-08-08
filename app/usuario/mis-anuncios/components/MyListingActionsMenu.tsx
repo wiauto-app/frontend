@@ -38,7 +38,7 @@ interface MyListingActionsMenuProps {
     id: string,
     nextStatus: "active" | "inactive",
   ) => Promise<void>;
-  isProfessional?: boolean;
+  canUseAdvancedEditor?: boolean;
   disabled?: boolean;
 }
 
@@ -48,7 +48,7 @@ export const MyListingActionsMenu = ({
   onSchedule,
   onRemove,
   onToggleStatus,
-  isProfessional = false,
+  canUseAdvancedEditor = false,
   disabled = false,
 }: MyListingActionsMenuProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -101,7 +101,7 @@ export const MyListingActionsMenu = ({
             <Pencil className="size-4" aria-hidden />
             Editar
           </DropdownMenuItem>
-          {isProfessional ? (
+          {canUseAdvancedEditor ? (
             <DropdownMenuItem
               render={
                 <Link href={`/editar-vehiculo-profesional/${listing.id}`} />

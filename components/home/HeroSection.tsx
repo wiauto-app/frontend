@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "motion/react";
+
 import type { StrapiHomeHero } from "@/interfaces/strapi-components.interface";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
@@ -8,6 +12,14 @@ import { HeroTitle } from "../ui/heroTitle";
 import { HeroBackgroundCarousel } from "./HeroBackgroundCarousel";
 import { HeroFeatures } from "./heroFeatures";
 import { HeroSearchForm } from "./HeroSearchForm";
+import {
+  fadeIn,
+  getVariant,
+  HERO_DELAYS,
+  staggerContainer,
+  staggerItem,
+} from "./motion";
+import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 import { StoreButtons } from "./StoreButtons";
 
 interface HeroSectionProps {
@@ -15,6 +27,11 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ data }: HeroSectionProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const container_variants = getVariant(staggerContainer, prefersReducedMotion);
+  const item_variants = getVariant(staggerItem, prefersReducedMotion);
+  const background_variants = getVariant(fadeIn, prefersReducedMotion);
+
   if (!data) {
     return null;
   }
@@ -30,32 +47,66 @@ export function HeroSection({ data }: HeroSectionProps) {
   return (
     <Hero
       leftContent={
-        <div className="flex flex-col ">
+        <motion.div
+          className="flex flex-col"
+          initial="hidden"
+          animate="visible"
+          variants={container_variants}
+        >
           <div className="flex flex-col px-4 text-white lg:gap-5 2xl:px-14">
-            <HeroTitle>{title}</HeroTitle>
+            <motion.div
+              variants={item_variants}
+              transition={{ delay: HERO_DELAYS.title }}
+            >
+              <HeroTitle>{title}</HeroTitle>
+            </motion.div>
             {data.subtitle ? (
-              <HeroDescription>{data.subtitle}</HeroDescription>
+              <motion.div variants={item_variants}>
+                <HeroDescription>{data.subtitle}</HeroDescription>
+              </motion.div>
             ) : null}
-            <HeroFeatures features={features} />
+            <motion.div variants={item_variants}>
+              <HeroFeatures features={features} />
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       }
       rightContent={
-        <div className="flex h-full items-end justify-center">
+        <motion.div
+          className="flex h-full items-end justify-center"
+          initial="hidden"
+          animate="visible"
+          variants={item_variants}
+          transition={{ delay: HERO_DELAYS.search }}
+        >
           <HeroSearchForm />
-        </div>
+        </motion.div>
       }
       floatingContent={
         <>
-          <div className="absolute z-10 hidden flex-col gap-1 rounded-s-lg bg-black/50 p-2 lg:top-0 lg:right-0 lg:flex">
+          <motion.div
+            className="absolute z-10 hidden flex-col gap-1 rounded-s-lg bg-black/50 p-2 lg:top-0 lg:right-0 lg:flex"
+            initial="hidden"
+            animate="visible"
+            variants={item_variants}
+            transition={{ delay: HERO_DELAYS.storeButtons }}
+          >
             <StoreButtons className="flex flex-col gap-1" />
-          </div>
+          </motion.div>
           <HeroBackdrop />
-          <HeroBackgroundCarousel
-            images={data.heroImages}
-            fallbackUrl={background_image_url}
-            title={title}
-          />
+          <motion.div
+            className="absolute inset-0 z-0"
+            initial="hidden"
+            animate="visible"
+            variants={background_variants}
+            transition={{ delay: HERO_DELAYS.background }}
+          >
+            <HeroBackgroundCarousel
+              images={data.heroImages}
+              fallbackUrl={background_image_url}
+              title={title}
+            />
+          </motion.div>
         </>
       }
     />

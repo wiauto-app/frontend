@@ -91,7 +91,7 @@ export const buildVehicleGridSpecs = (
 export const getPublisherTypeLabel = (
   publisherType: VehicleListItem["publisher_type"],
 ): string | null => {
-  if (publisherType === "professional") return "Profesional";
+  if (publisherType === "dealership") return "Concesionaria";
   if (publisherType === "particular") return "Particular";
   return null;
 };

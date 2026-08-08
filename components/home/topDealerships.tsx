@@ -1,4 +1,6 @@
 import { dealershipService } from "@/services/dealerships/dealershipService";
+
+import { MotionSection } from "./motion";
 import { SectionContainer } from "./SectionContainer";
 import { SectionHeading } from "./SectionHeading";
 import { TopDealershipsSlider } from "./TopDealershipsSlider";
@@ -11,9 +13,11 @@ export const TopDealerships = async () => {
   }
 
   return (
-    <SectionContainer>
-      <SectionHeading lead="Concesionarios" highlight="destacados" />
-      <TopDealershipsSlider dealerships={result.data} />
-    </SectionContainer>
+    <MotionSection>
+      <SectionContainer>
+        <SectionHeading lead="Concesionarios" highlight="destacados" />
+        <TopDealershipsSlider dealerships={result.data} />
+      </SectionContainer>
+    </MotionSection>
   );
 };

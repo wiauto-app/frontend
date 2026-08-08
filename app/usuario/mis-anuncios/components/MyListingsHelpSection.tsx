@@ -2,34 +2,44 @@
 
 import { HelpCircle, Star, RefreshCw, BarChart3 } from "lucide-react";
 
-const helpItems = [
-  {
-    icon: BarChart3,
-    title: "Rendimiento de tus anuncios",
-    description:
-      "Las métricas muestran visitas, contactos y favoritos de los últimos 30 días comparados con el periodo anterior.",
-  },
-  {
-    icon: Star,
-    title: "Destacar un vehículo",
-    description:
-      "El destacado es un servicio premium de pago único. Tu anuncio aparecerá primero en los listados durante 30 días.",
-  },
-  {
-    icon: RefreshCw,
-    title: "Renovar gratis",
-    description:
-      "La renovación gratuita actualiza la fecha de publicación y mejora la posición en búsqueda. Tiene un intervalo mínimo de 7 días.",
-  },
-  {
-    icon: HelpCircle,
-    title: "Estados del anuncio",
-    description:
-      "Un anuncio activo es visible para compradores. Puedes pausarlo, programar su publicación o eliminarlo desde el menú de acciones.",
-  },
-];
+interface MyListingsHelpSectionProps {
+  featureDurationDays?: number | null;
+}
 
-export const MyListingsHelpSection = () => {
+export const MyListingsHelpSection = ({
+  featureDurationDays = null,
+}: MyListingsHelpSectionProps) => {
+  const featuredDescription =
+    featureDurationDays != null
+      ? `El destacado es un servicio premium de pago único. Tu anuncio aparecerá primero en los listados durante ${featureDurationDays} días.`
+      : "El destacado es un servicio premium de pago único. Tu anuncio aparecerá primero en los listados durante el periodo de la oferta contratada.";
+
+  const helpItems = [
+    {
+      icon: BarChart3,
+      title: "Rendimiento de tus anuncios",
+      description:
+        "Las métricas muestran visitas, contactos y favoritos de los últimos 30 días comparados con el periodo anterior.",
+    },
+    {
+      icon: Star,
+      title: "Destacar un vehículo",
+      description: featuredDescription,
+    },
+    {
+      icon: RefreshCw,
+      title: "Renovar gratis",
+      description:
+        "La renovación gratuita actualiza la fecha de publicación y mejora la posición en búsqueda. Tiene un intervalo mínimo de 7 días.",
+    },
+    {
+      icon: HelpCircle,
+      title: "Estados del anuncio",
+      description:
+        "Un anuncio activo es visible para compradores. Puedes pausarlo, programar su publicación o eliminarlo desde el menú de acciones.",
+    },
+  ];
+
   return (
     <section
       id="ayuda-mis-anuncios"

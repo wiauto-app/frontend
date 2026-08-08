@@ -17,6 +17,46 @@ export interface BillingPlanEffectConfig {
   credits?: number;
 }
 
+export type EntitlementValueType = "boolean" | "limit" | "unlimited";
+
+export type EntitlementFeatureKey =
+  | "vehicles"
+  | "photos_per_vehicle"
+  | "videos_per_vehicle"
+  | "ai_requests"
+  | "users"
+  | "video_upload"
+  | "ai_generation"
+  | "statistics"
+  | "featured_listings"
+  | "dismissed_vehicles"
+  | "advanced_listing_editor"
+  | (string & {});
+
+export interface EntitlementBooleanValue {
+  bool: boolean;
+}
+
+export interface EntitlementLimitValue {
+  limit: number;
+}
+
+export interface EntitlementUnlimitedValue {
+  unlimited: true;
+}
+
+export type EntitlementValue =
+  | EntitlementBooleanValue
+  | EntitlementLimitValue
+  | EntitlementUnlimitedValue;
+
+export interface BillingPlanEntitlement {
+  feature: EntitlementFeatureKey;
+  value_type: EntitlementValueType;
+  value: EntitlementValue;
+}
+
+/** @deprecated Preferir entitlements */
 export interface PlanQuotas {
   max_listings: number;
   max_photos: number;
@@ -27,14 +67,55 @@ export interface PlanQuotas {
 export interface BillingCatalogPlan {
   id: string;
   name: string;
+  slug?: string | null;
   description: string | null;
-  audience: string;
+  audience: string | null;
   billing_type: "recurring" | "one_time";
+  type?: string;
   is_featured: boolean;
   sort_order: number;
   effect_config?: BillingPlanEffectConfig;
+  plan_version_id?: string | null;
   prices: BillingPlanPrice[];
   features: BillingPlanFeature[];
+  entitlements?: BillingPlanEntitlement[];
+}
+
+export interface AssistantCreditPack {
+  id: string;
+  title: string;
+  description: string | null;
+  credits_quantity: number;
+  amount_cents: number;
+  currency: string;
+  stripe_price_id: string | null;
+  is_active: boolean;
+  sort_order: number;
+}
+
+export interface FeaturedListingOffer {
+  id: string;
+  title: string;
+  description: string | null;
+  duration_days: number;
+  boost_weight: number;
+  amount_cents: number;
+  currency: string;
+  stripe_price_id: string | null;
+  is_active: boolean;
+  sort_order: number;
+}
+
+export type MonetizacionAddonKind = "assistant_credits" | "featured_listing";
+
+export interface MonetizacionAddon {
+  id: string;
+  kind: MonetizacionAddonKind;
+  title: string;
+  description: string | null;
+  amount_cents: number;
+  currency: string;
+  detail_label: string | null;
 }
 
 export interface AssistantQuotaResponse {
@@ -50,26 +131,40 @@ export interface BillingMeUsage {
   dealership_id?: string | null;
 }
 
+export interface BillingMeEntitlementEntry {
+  type: EntitlementValueType;
+  value?: boolean;
+  limit?: number | null;
+  used?: number;
+  remaining?: number | null;
+  unlimited?: boolean;
+}
+
+export interface BillingMeSubscription {
+  id: string;
+  plan_id: string;
+  plan_name: string;
+  plan_version_id?: string | null;
+  status: string;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+}
+
 export interface BillingMeResponse {
-  subscription: {
-    id: string;
-    plan_id: string;
-    plan_name: string;
-    status: string;
-    current_period_end: string | null;
-    cancel_at_period_end: boolean;
-  } | null;
+  subscription: BillingMeSubscription | null;
   effective_role: {
     id: string;
     name: string;
   } | null;
-  /** @deprecated Preferir `usage.listings_used` */
+  entitlements?: Record<string, BillingMeEntitlementEntry>;
+  /** @deprecated Preferir `entitlements.vehicles.used` */
   vehicle_listings_used: number;
-  /** @deprecated Preferir `quotas.max_listings` */
+  /** @deprecated Preferir `entitlements.vehicles.limit` */
   vehicle_listings_max: number | null;
+  /** @deprecated Preferir `entitlements` */
   quotas?: PlanQuotas;
   usage?: BillingMeUsage;
-  source?: "dealership" | "free";
+  source?: "subscription" | "dealership_owner" | "free" | "admin" | "dealership";
   plan_id?: string | null;
   stripe_customer_id: string | null;
 }

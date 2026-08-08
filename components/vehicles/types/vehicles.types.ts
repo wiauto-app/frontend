@@ -44,7 +44,7 @@ export interface AdminVehicleListItem {
   status: "active" | "pending" | "inactive" | "sold" | "archived";
   is_featured: boolean;
   views: number;
-  publisher_type: "professional" | "particular";
+  publisher_type: "dealership" | "particular";
   transmission_type: "manual" | "automatic";
   power: number;
   displacement: number;
@@ -113,7 +113,7 @@ export interface AdminVehicleDetail {
   battery_capacity: number;
   time_to_charge: number;
   license_plate: string;
-  publisher_type: "professional" | "particular";
+  publisher_type: "dealership" | "particular";
   phone_code: string;
   phone: string;
   has_whatsapp: boolean;
@@ -138,7 +138,7 @@ export interface Vehicle {
   status: "active" | "pending" | "inactive" | "sold" | "archived";
   is_featured: boolean;
   views: number;
-  publisher_type: "professional" | "particular";
+  publisher_type: "dealership" | "particular";
   expires_at: Date;
   lat: number;
   lng: number;
@@ -196,7 +196,7 @@ export const createVehicleDefaultValues: VehicleSchema = {
   transmission_type: "manual",
   power: 0,
   displacement: 0,
-  publisher_type: "professional",
+  publisher_type: "dealership",
   phone: { phone_code: "", phone: "" },
   show_phone: true,
   has_whatsapp: false,

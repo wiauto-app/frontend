@@ -16,6 +16,7 @@ import {
 import { getUserSidebarLinks } from "@/app/usuario/constants/user.constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LuStore } from "react-icons/lu";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 function getDisplayName(name?: string, lastName?: string, email?: string) {
   const fullName = [name, lastName].filter(Boolean).join(" ").trim();
@@ -51,9 +52,10 @@ export function UserDropdown() {
   }
 
   const displayName = getDisplayName(user.name, user.last_name, user.email);
+  const { has, planName } = useEntitlements();
   const sidebarLinks = getUserSidebarLinks({
-    userType: user.userType,
     dealershipMembership: user.dealership_membership,
+    hasDismissedVehicles: has("dismissed_vehicles"),
   });
 
   return (
@@ -69,9 +71,9 @@ export function UserDropdown() {
               <p className="hidden max-w-[160px] truncate text-sm font-bold text-slate-900 sm:inline">
                 {displayName}
               </p>
-              <span className="text-xs text-muted-foreground">
-                {user.userType}
-              </span>
+              {planName ? (
+                <span className="text-xs text-muted-foreground">{planName}</span>
+              ) : null}
             </div>
           </button>
         }

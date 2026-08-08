@@ -35,6 +35,7 @@ export default async function Page() {
     getPublicPlansCatalog(),
   ]);
 
+
   const cms = cms_result.status === "fulfilled" ? cms_result.value : null;
   const plans = plans_result.status === "fulfilled" ? plans_result.value : [];
   const catalog_error = plans_result.status === "rejected";
@@ -56,7 +57,6 @@ export default async function Page() {
       ) : null}
 
       {cms?.caracteristicas ? <PlansFeaturesSection data={cms.caracteristicas} /> : null}
-
       <PlansPricingSection plans={plans} catalogError={catalog_error} />
 
       {cms?.tech_add ? <PlansTechSection data={cms.tech_add} /> : null}

@@ -115,7 +115,7 @@ export { getVehicleDisplayName, getVehicleMakeName };
 
 export function getVehicleTags(vehicle: VehicleListItem): string[] {
   const tags: string[] = ["Reservable"];
-  if (vehicle.publisher_type === "professional") {
+  if (vehicle.publisher_type === "dealership") {
     tags.push("Profesional");
   } else if (vehicle.publisher_type === "particular") {
     tags.push("Particular");

@@ -237,12 +237,12 @@ describe("buildVehicleListingUrl — Opción C", () => {
         type_slug: "ocasion",
         since_price: 1000,
         until_price: 14000,
-        publisher_types: ["professional"],
+        publisher_types: ["dealership"],
       }),
     ).toEqual({
       pathname: "/vehiculos",
       search:
-        "marcas=toyota&tipo=ocasion&precio_desde=1000&precio_hasta=14000&publisher_types=professional",
+        "marcas=toyota&tipo=ocasion&precio_desde=1000&precio_hasta=14000&publisher_types=dealership",
     });
   });
 
@@ -312,7 +312,7 @@ describe("normalizeVehicleListingHref", () => {
 
   it("no elimina publisher_types al normalizar", () => {
     const params = new URLSearchParams(
-      "marcas=toyota,abarth&tipo=ocasion&precio_desde=1000&precio_hasta=14000&publisher_types=professional",
+      "marcas=toyota,abarth&tipo=ocasion&precio_desde=1000&precio_hasta=14000&publisher_types=dealership",
     );
     const target = normalizeVehicleListingHref(undefined, params);
     expect(target).toBeNull();

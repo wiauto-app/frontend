@@ -1,7 +1,6 @@
 import { API_URL, FRONTEND_URL } from "@/constants";
 import { User } from "@/interfaces/user.interface";
 import { VehicleList } from "@/interfaces/vehicle-list.interface";
-import { PublisherType } from "@/interfaces/vehicle.interface";
 import type { DealershipMembership } from "@/services/dealerships/types/team.types";
 import { ApiResponse, apiGet, apiPost, fetchWithAuth } from "@/lib/api";
 import {
@@ -16,7 +15,6 @@ import { LoginDto, RegisterDto, ResetPasswordDto, ContactDto } from "@/validatio
 
 export interface MeResponseDto extends User {
   vehicle_lists: VehicleList[];
-  userType: PublisherType;
   dealership_membership?: DealershipMembership | null;
 }
 

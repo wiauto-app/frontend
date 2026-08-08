@@ -16,7 +16,7 @@ describe("getExpandedFilterSectionIds", () => {
         makes_slugs: ["toyota", "abarth"],
         since_price: 1000,
         until_price: 14000,
-        publisher_types: ["professional"],
+        publisher_types: ["dealership"],
       }),
     ).toEqual([
       FILTER_SECTION_IDS.MAKE_MODEL,

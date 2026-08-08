@@ -12,10 +12,6 @@ import {
   VehiclesSuggestionsSkeleton,
   ZonesSkeleton,
 } from "@/components/home";
-import {
-  EXTRA_SERVICES_DATA,
-  EXTRA_SERVICES_DATA_2,
-} from "@/components/home/constants/extraServices.constants";
 import { PromotionPlans } from "@/components/home/promotionPlans";
 import { SearchForm } from "@/components/home/searchForm";
 import { getHomeData } from "@/components/home/services/homeService";
@@ -55,7 +51,6 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 export default async function Home() {
   const home_data = await getHomeData();
-  console.log(home_data);
   const low_emissions = home_data.bajas_emisiones;
   const low_emissions_links = low_emissions?.links ?? [];
   const low_emissions_quick_links =
@@ -68,21 +63,23 @@ export default async function Home() {
       <div className="container-custom flex flex-col gap-5 md:gap-12">
         <HeroSection data={home_data.homeHero} />
 
-        <StoreButtons className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden" />
+        <StoreButtons
+          animateEntrance
+          className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden"
+        />
         <SearchForm />
 
-        <VehicleExtraServices data={EXTRA_SERVICES_DATA} />
+        <VehicleExtraServices />
         <AppDownloadBanner data={home_data.homeAppAdvertisment} />
-          <PromotionPlans data={home_data.promocion_planes} />
+        <PromotionPlans data={home_data.promocion_planes} />
         <Suspense fallback={<PopularCategoriesGridSkeleton />}>
           <PopularCategoriesGrid />
         </Suspense>
         <Suspense fallback={<VehiclesSuggestionsSkeleton />}>
           <VehiclesSuggestions />
         </Suspense>
-   
         <VehicleExtraServices
-          data={EXTRA_SERVICES_DATA_2}
+          variant="secondary"
           className=" rounded-xl lg:grid-cols-4"
         />
         <Suspense fallback={<ZonesSkeleton />}>

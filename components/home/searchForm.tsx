@@ -1,50 +1,52 @@
 "use client";
 
+import { SparklesIcon } from "lucide-react";
+import { useState } from "react";
+
+import { cn } from "@/lib/utils";
+
+import { Badge } from "../ui/badge";
+import { Card, CardContent } from "../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { AiSearchForm } from "./aiSearchForm";
-import { Card, CardContent } from "../ui/card";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Badge } from "../ui/badge";
-import { SparklesIcon } from "lucide-react";
+import { HERO_DELAYS, MotionSection } from "./motion";
 
 export const SearchForm = () => {
   const [activeTab, setActiveTab] = useState<"search-ai" | "search-filters">(
     "search-ai",
   );
+
   return (
-    <Card
-      size="sm"
-      className={cn(
-        activeTab === "search-ai" &&
-          "bg-primary shadow-lg ring-4 ring-primary/50",
-      )}
+    <MotionSection
+      inView={false}
+      transition={{ delay: HERO_DELAYS.search }}
     >
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="search-ai">
-              <div className="flex items-center gap-2">
-                <Badge>Nuevo</Badge>
-                <span className="flex items-center gap-2  font-bold text-primary">
-                  <SparklesIcon className="size-5" />
-                  Buscar con IA
-                </span>
-              </div>
-            </TabsTrigger>
-            {/* <TabsTrigger value="search-filters">
-              Filtros
-              <FilterIcon className="size-5" />
-            </TabsTrigger> */}
-          </TabsList>
-          <TabsContent value="search-ai">
-            <AiSearchForm />
-          </TabsContent>
-          {/* <TabsContent value="search-filters">
-            <HeroSearchForm />
-          </TabsContent> */}
-        </Tabs>
-      </CardContent>
-    </Card>
+      <Card
+        size="sm"
+        className={cn(
+          activeTab === "search-ai" &&
+            "bg-primary shadow-lg ring-4 ring-primary/50",
+        )}
+      >
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="search-ai">
+                <div className="flex items-center gap-2">
+                  <Badge>Nuevo</Badge>
+                  <span className="flex items-center gap-2 font-bold text-primary">
+                    <SparklesIcon className="size-5" />
+                    Buscar con IA
+                  </span>
+                </div>
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="search-ai">
+              <AiSearchForm />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </MotionSection>
   );
 };

@@ -24,7 +24,7 @@ interface MyListingCardProps {
     nextStatus: "active" | "inactive",
   ) => Promise<void>;
   isMutating?: boolean;
-  isProfessional?: boolean;
+  canUseAdvancedEditor?: boolean;
 }
 
 const formatPrice = (price: number): string =>
@@ -65,7 +65,7 @@ export const MyListingCard = ({
   onRemove,
   onToggleStatus,
   isMutating = false,
-  isProfessional = false,
+  canUseAdvancedEditor = false,
 }: MyListingCardProps) => {
   const imageUrl = listing.image?.url ? getImageUrl(listing.image.url) : null;
   const expiryBadge = getExpiryBadge(listing);
@@ -142,7 +142,7 @@ export const MyListingCard = ({
             onSchedule={onSchedule}
             onRemove={onRemove}
             onToggleStatus={onToggleStatus}
-            isProfessional={isProfessional}
+            canUseAdvancedEditor={canUseAdvancedEditor}
             disabled={isMutating}
           />
         </div>

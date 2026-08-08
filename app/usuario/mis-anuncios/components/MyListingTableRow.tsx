@@ -31,7 +31,7 @@ interface MyListingTableRowProps {
     nextStatus: "active" | "inactive",
   ) => Promise<void>;
   isMutating?: boolean;
-  isProfessional?: boolean;
+  canUseAdvancedEditor?: boolean;
   featurePriceLabel?: string | null;
 }
 
@@ -114,7 +114,7 @@ export const MyListingTableRow = ({
   onRemove,
   onToggleStatus,
   isMutating = false,
-  isProfessional = false,
+  canUseAdvancedEditor = false,
   featurePriceLabel,
 }: MyListingTableRowProps) => {
   const imageUrl = listing.image?.url ? getImageUrl(listing.image.url) : null;
@@ -254,7 +254,7 @@ export const MyListingTableRow = ({
             onSchedule={onSchedule}
             onRemove={onRemove}
             onToggleStatus={onToggleStatus}
-            isProfessional={isProfessional}
+            canUseAdvancedEditor={canUseAdvancedEditor}
             disabled={isMutating}
           />
         </div>

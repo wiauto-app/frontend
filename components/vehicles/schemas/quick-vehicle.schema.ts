@@ -92,7 +92,7 @@ const quickVehicleBaseSchema = z.object({
   services_ids: optionalUuidArray,
   cuota_ids: optionalUuidArray,
   warranty_type_id: optionalUuid,
-  publisher_type: z.enum(["professional", "particular"]).default("particular"),
+  publisher_type: z.enum(["dealership", "particular"]).default("particular"),
 });
 
 export const quickVehicleSchema = quickVehicleBaseSchema.superRefine((data, ctx) => {

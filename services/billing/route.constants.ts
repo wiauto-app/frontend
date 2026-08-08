@@ -1,5 +1,7 @@
 export const V1_BILLING = "v1/billing";
 export const V1_BILLING_PLANS_CATALOG = `${V1_BILLING}/plans/catalog`;
+export const V1_BILLING_ASSISTANT_CREDIT_PACKS_CATALOG = `${V1_BILLING}/assistant-credit-packs/catalog`;
+export const V1_BILLING_FEATURED_LISTING_OFFERS_CATALOG = `${V1_BILLING}/featured-listing-offers/catalog`;
 export const V1_BILLING_ME = `${V1_BILLING}/me`;
 export const V1_BILLING_CHECKOUT_SUBSCRIPTION = `${V1_BILLING}/checkout/subscription`;
 export const V1_BILLING_CHECKOUT_ONE_TIME = `${V1_BILLING}/checkout/one-time`;

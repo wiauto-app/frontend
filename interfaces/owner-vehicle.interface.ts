@@ -22,6 +22,7 @@ export interface OwnerVehicleListItem {
   renewed_at: string | null;
   is_featured: boolean;
   featured_expires_at: string | null;
+  featured_boost_weight?: number | null;
   is_featured_active: boolean;
   can_feature: boolean;
   transmission_type?: VehicleTransmissionTypeValue | string | null;

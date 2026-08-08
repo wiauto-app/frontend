@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/navbar/components/userAvatar";
 import { getUserSidebarLinks } from "../constants/user.constants";
 import { useUser } from "@/app/contexts/auth/useUser";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 const USER_AREA_BASE_PATH = "/usuario";
 const PERFIL_PATH = `${USER_AREA_BASE_PATH}/perfil`;
@@ -59,9 +60,10 @@ export function UserSidebar() {
   const tab = searchParams.get("tab");
 
   const { user, logout } = useUser();
+  const { has } = useEntitlements();
   const sidebarLinks = getUserSidebarLinks({
-    userType: user?.userType,
     dealershipMembership: user?.dealership_membership,
+    hasDismissedVehicles: has("dismissed_vehicles"),
   });
   return (
     <div className="w-full  flex flex-col gap-4">

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import type { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
-import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
+import type { FeaturedListingOffer } from "@/interfaces/billing.interface";
 import { myListingsService } from "@/services/myListings/myListingsService";
 import { billingService } from "@/services/billingService";
 import { absoluteUrl } from "@/lib/seo/absolute-url";
@@ -20,7 +20,9 @@ import {
 
 export const MY_LISTINGS_QUERY_KEY = ["my-listings"] as const;
 export const BILLING_ME_QUERY_KEY = ["billing-me"] as const;
-export const BILLING_CATALOG_QUERY_KEY = ["billing-catalog"] as const;
+export const FEATURED_LISTING_OFFERS_QUERY_KEY = [
+  "featured-listing-offers-catalog",
+] as const;
 
 const MY_LISTINGS_PAGE_LIMIT = 20;
 
@@ -57,12 +59,10 @@ const parsePositiveInt = (value: string | undefined): number | null => {
 };
 
 interface UseMyListingsPageOptions {
-  audience?: string;
   enabled?: boolean;
 }
 
 export const useMyListingsPage = ({
-  audience = "particular",
   enabled = true,
 }: UseMyListingsPageOptions = {}) => {
   const queryClient = useQueryClient();
@@ -187,23 +187,27 @@ export const useMyListingsPage = ({
     enabled,
   });
 
-  const billingCatalogQuery = useQuery({
-    queryKey: [...BILLING_CATALOG_QUERY_KEY, audience],
-    queryFn: () => billingService.getCatalog(audience),
+  const featuredOffersQuery = useQuery({
+    queryKey: FEATURED_LISTING_OFFERS_QUERY_KEY,
+    queryFn: () => billingService.getFeaturedListingOffersCatalog(),
     enabled,
   });
 
-  const featurePlan = useMemo((): BillingCatalogPlan | null => {
-    return (
-      billingCatalogQuery.data?.find(
-        (plan) => plan.effect_config?.type === "feature_vehicle",
-      ) ?? null
+  const featureOffer = useMemo((): FeaturedListingOffer | null => {
+    const activeOffers = (featuredOffersQuery.data ?? []).filter(
+      (offer) => offer.is_active && offer.stripe_price_id,
     );
-  }, [billingCatalogQuery.data]);
 
-  const featurePrice = useMemo(() => {
-    return featurePlan?.prices.find((price) => price.interval === "one_time") ?? null;
-  }, [featurePlan]);
+    if (activeOffers.length === 0) {
+      return null;
+    }
+
+    return [...activeOffers].sort(
+      (left, right) =>
+        left.sort_order - right.sort_order ||
+        left.amount_cents - right.amount_cents,
+    )[0];
+  }, [featuredOffersQuery.data]);
 
   const invalidateListings = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: MY_LISTINGS_QUERY_KEY });
@@ -237,16 +241,16 @@ export const useMyListingsPage = ({
 
   const featureMutation = useMutation({
     mutationFn: async (vehicleId: string) => {
-      if (!featurePrice) {
-        throw new Error("El plan de destacado no está disponible");
+      if (!featureOffer) {
+        throw new Error("La oferta de destacado no está disponible");
       }
 
-      const checkoutUrl = await billingService.createOneTimeCheckout(
-        featurePrice.id,
-        { vehicle_id: vehicleId },
+      const checkoutUrl = await billingService.createFeaturedListingCheckout(
+        featureOffer.id,
+        vehicleId,
         {
-          success_url: absoluteUrl("/mis-anuncios?checkout=success"),
-          cancel_url: absoluteUrl("/mis-anuncios?checkout=cancel"),
+          success_url: absoluteUrl("/usuario/mis-anuncios?checkout=success"),
+          cancel_url: absoluteUrl("/usuario/mis-anuncios?checkout=cancel"),
         },
       );
 
@@ -317,10 +321,10 @@ export const useMyListingsPage = ({
     updateFilters,
     resetFilters,
     billingMe: billingMeQuery.data ?? null,
-    featurePlan,
-    featurePrice,
+    featureOffer,
+    featureDurationDays: featureOffer?.duration_days ?? null,
     isLoading: listingsQuery.isLoading,
-    isBillingLoading: billingMeQuery.isLoading || billingCatalogQuery.isLoading,
+    isBillingLoading: billingMeQuery.isLoading || featuredOffersQuery.isLoading,
     isFetching: listingsQuery.isFetching,
     error: listingsQuery.error,
     refetch: listingsQuery.refetch,

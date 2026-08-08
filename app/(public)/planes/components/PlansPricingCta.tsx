@@ -22,7 +22,7 @@ export const PlansPricingCta = ({
 
   const handleClick = async () => {
     if (!planPriceId) {
-      toast.error("Este plan no tiene un precio mensual disponible");
+      toast.error("Este plan no tiene un precio de suscripción disponible");
       return;
     }
 

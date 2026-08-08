@@ -1,9 +1,13 @@
+"use client";
+
 import { Car, CreditCard, Scale, Shield } from "lucide-react";
+import Link from "next/link";
+
+import { Card, CardContent } from "../ui/card";
+import { IconContainer } from "../ui/iconContainer";
+import { MotionStagger } from "./motion";
 import { SectionContainer } from "./SectionContainer";
 import { SectionHeading } from "./SectionHeading";
-import { IconContainer } from "../ui/iconContainer";
-import { Card, CardContent } from "../ui/card";
-import Link from "next/link";
 
 const TOOLS_SHORTCUTS_DATA = [
   {
@@ -40,26 +44,30 @@ export const ToolsShortcuts = () => {
   return (
     <SectionContainer>
       <SectionHeading lead="Herramientas" highlight="rápidas" />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <MotionStagger className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {TOOLS_SHORTCUTS_DATA.map((item) => (
           <Card key={item.title} size="sm">
-            <CardContent className="flex flex-col gap-4 items-center">
-              <IconContainer className="bg-white/10 shadow-md " Icon={item.icon} />
+            <CardContent className="flex flex-col items-center gap-4">
+              <IconContainer
+                className="bg-white/10 shadow-md"
+                Icon={item.icon}
+              />
               <div>
-                <h3 className="text-base font-bold">
-                  {item.title}
-                </h3>
-                <p className="text-xs  text-muted-foreground">
+                <h3 className="text-base font-bold">{item.title}</h3>
+                <p className="text-xs text-muted-foreground">
                   {item.description}
                 </p>
-                <Link href={item.href} className="text-sm text-primary underline-offset-4 hover:underline mt-2 block">
+                <Link
+                  href={item.href}
+                  className="mt-2 block text-sm text-primary underline-offset-4 hover:underline"
+                >
                   {item.label}
                 </Link>
               </div>
             </CardContent>
           </Card>
         ))}
-      </div>
+      </MotionStagger>
     </SectionContainer>
   );
 };

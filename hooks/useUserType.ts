@@ -1,13 +1,13 @@
-"use client"
-import { useUser } from "@/app/contexts/auth/useUser";
+"use client";
 
+/**
+ * @deprecated Preferir `useEntitlements`. Los tipos de cuenta ya no existen.
+ * Se mantiene como stub vacío para no romper imports residuales.
+ */
 export const useUserType = () => {
-
-  const {user} = useUser();
-
   return {
-    isParticular: user?.userType === "particular" || !user,
-    isProfessional: user?.userType === "professional",
-    userType: user?.userType,
+    isParticular: true,
+    isProfessional: false,
+    userType: undefined as undefined,
   };
-}
+};

@@ -8,7 +8,7 @@ import { MultiButtonFilter } from "./multiButtonFilter";
 import type { PublisherTypesValue } from "./types";
 
 const PUBLISHER_OPTIONS: { key: PublisherType; label: string }[] = [
-  { key: PUBLISHER_TYPE.PROFESSIONAL, label: "Profesional" },
+  { key: PUBLISHER_TYPE.DEALERSHIP, label: "Concesionaria" },
   { key: PUBLISHER_TYPE.PARTICULAR, label: "Particular" },
 ];
 

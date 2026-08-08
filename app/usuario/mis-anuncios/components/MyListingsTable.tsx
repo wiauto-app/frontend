@@ -15,7 +15,7 @@ interface MyListingsTableProps {
     nextStatus: "active" | "inactive",
   ) => Promise<void>;
   isMutating?: boolean;
-  isProfessional?: boolean;
+  canUseAdvancedEditor?: boolean;
   featurePriceLabel?: string | null;
 }
 
@@ -28,7 +28,7 @@ export const MyListingsTable = ({
   onRemove,
   onToggleStatus,
   isMutating = false,
-  isProfessional = false,
+  canUseAdvancedEditor = false,
   featurePriceLabel,
 }: MyListingsTableProps) => {
   return (
@@ -81,7 +81,7 @@ export const MyListingsTable = ({
                 onRemove={onRemove}
                 onToggleStatus={onToggleStatus}
                 isMutating={isMutating}
-                isProfessional={isProfessional}
+                canUseAdvancedEditor={canUseAdvancedEditor}
                 featurePriceLabel={featurePriceLabel}
               />
             ))}

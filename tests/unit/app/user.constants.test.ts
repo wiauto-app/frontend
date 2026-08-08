@@ -1,12 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { getUserSidebarLinks } from "@/app/usuario/constants/user.constants";
-import { PUBLISHER_TYPE } from "@/interfaces/vehicle.interface";
 
 describe("getUserSidebarLinks", () => {
   it("incluye Contactos / Leads en la navegación", () => {
     const links = getUserSidebarLinks({
-      userType: PUBLISHER_TYPE.PARTICULAR,
       dealershipMembership: null,
     });
 
@@ -15,7 +13,6 @@ describe("getUserSidebarLinks", () => {
 
   it("muestra Perfil de concesionaria en la navegación", () => {
     const links = getUserSidebarLinks({
-      userType: PUBLISHER_TYPE.PARTICULAR,
       dealershipMembership: null,
     });
 
@@ -26,7 +23,6 @@ describe("getUserSidebarLinks", () => {
 
   it("muestra Equipo cuando hay dealership_membership", () => {
     const links = getUserSidebarLinks({
-      userType: PUBLISHER_TYPE.PARTICULAR,
       dealershipMembership: {
         dealership_id: "dealer-1",
         dealership_name: "Auto Norte",
@@ -40,22 +36,22 @@ describe("getUserSidebarLinks", () => {
 
   it("oculta Equipo sin membership", () => {
     const links = getUserSidebarLinks({
-      userType: PUBLISHER_TYPE.PROFESSIONAL,
       dealershipMembership: null,
+      hasDismissedVehicles: true,
     });
 
     expect(links.some((link) => link.href === "/usuario/equipo")).toBe(false);
   });
 
-  it("muestra links profesionales y Equipo para usuario professional con membership", () => {
+  it("muestra Monetización siempre y Descartados con entitlement", () => {
     const links = getUserSidebarLinks({
-      userType: PUBLISHER_TYPE.PROFESSIONAL,
       dealershipMembership: {
         dealership_id: "dealer-1",
         dealership_name: "Auto Norte",
         member_id: "member-1",
         role: "admin",
       },
+      hasDismissedVehicles: true,
     });
 
     expect(links.some((link) => link.href === "/usuario/monetizacion")).toBe(true);
@@ -64,14 +60,17 @@ describe("getUserSidebarLinks", () => {
     expect(links.some((link) => link.href === "/usuario/equipo")).toBe(true);
   });
 
-  it("oculta Descartados para particulares", () => {
+  it("oculta Descartados sin entitlement", () => {
     const links = getUserSidebarLinks({
-      userType: PUBLISHER_TYPE.PARTICULAR,
       dealershipMembership: null,
+      hasDismissedVehicles: false,
     });
 
     expect(links.some((link) => link.href === "/usuario/descartados")).toBe(
       false,
+    );
+    expect(links.some((link) => link.href === "/usuario/monetizacion")).toBe(
+      true,
     );
   });
 });

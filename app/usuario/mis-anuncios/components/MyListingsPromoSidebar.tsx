@@ -2,15 +2,15 @@
 
 import { RefreshCw, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
+import type { FeaturedListingOffer } from "@/interfaces/billing.interface";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 
-type MyListingsPromoSidebarProps = {
+interface MyListingsPromoSidebarProps {
   listings: OwnerVehicleListItem[];
-  featurePlan: BillingCatalogPlan | null;
+  featureOffer: FeaturedListingOffer | null;
   onFeature: (id: string) => Promise<void>;
   isFeatureLoading?: boolean;
-};
+}
 
 const formatEuros = (amount_cents: number) =>
   new Intl.NumberFormat("es-ES", {
@@ -20,12 +20,12 @@ const formatEuros = (amount_cents: number) =>
 
 export const MyListingsPromoSidebar = ({
   listings,
-  featurePlan,
+  featureOffer,
   onFeature,
   isFeatureLoading = false,
 }: MyListingsPromoSidebarProps) => {
   const firstFeatureableListing = listings.find((listing) => listing.can_feature);
-  const featurePrice = featurePlan?.prices[0];
+  const durationDays = featureOffer?.duration_days ?? null;
 
   const handleFeatureClick = async () => {
     if (!firstFeatureableListing) {
@@ -43,19 +43,20 @@ export const MyListingsPromoSidebar = ({
         </div>
         <h2 className="text-base font-semibold text-gray-900">Destaca tu anuncio</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Aparece primero en los listados durante 30 días y aumenta la visibilidad
-          de tu vehículo frente a compradores activos.
+          Aparece primero en los listados
+          {durationDays != null ? ` durante ${durationDays} días` : ""} y aumenta la
+          visibilidad de tu vehículo frente a compradores activos.
         </p>
-        {featurePrice ? (
+        {featureOffer ? (
           <p className="mt-2 text-sm font-medium text-gray-800">
-            Desde {formatEuros(featurePrice.amount_cents)}
+            Desde {formatEuros(featureOffer.amount_cents)}
           </p>
         ) : null}
         <Button
           type="button"
           size="sm"
           className="mt-4 w-full bg-blue-600 text-white hover:bg-blue-700"
-          disabled={!firstFeatureableListing || isFeatureLoading || !featurePrice}
+          disabled={!firstFeatureableListing || isFeatureLoading || !featureOffer}
           onClick={handleFeatureClick}
         >
           <Star className="mr-1.5 size-4 fill-current" aria-hidden />

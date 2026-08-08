@@ -2,7 +2,7 @@ import { DealershipScheduleDay } from "@/services/dealerships/types/dealership.t
 import { VehiclePriceHistoryItem } from "./vehicle-price.interface";
 
 export const PUBLISHER_TYPE = {
-  PROFESSIONAL: "professional",
+  DEALERSHIP: "dealership",
   PARTICULAR: "particular",
 } as const;
 

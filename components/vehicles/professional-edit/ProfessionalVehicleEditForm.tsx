@@ -15,7 +15,6 @@ import {
 import { vehiclesService } from "@/components/vehicles/services/vehiclesService";
 import { serializeQuickVehiclePayload } from "@/components/vehicles/utils/serializeQuickVehiclePayload";
 import { mapVehicleDetailToQuickFormValues } from "@/components/vehicles/utils/mapVehicleDetailToQuickFormValues";
-import { useUser } from "@/app/contexts/auth/useUser";
 import { ProfessionalEditPreview } from "./ProfessionalEditPreview";
 import { ProfessionalEditSections } from "./ProfessionalEditSections";
 
@@ -28,8 +27,6 @@ export const ProfessionalVehicleEditForm = ({
   vehicleId,
   onSuccess,
 }: ProfessionalVehicleEditFormProps) => {
-  const { user } = useUser();
-
   const { data: vehicleDetail, isLoading: isLoadingVehicle } = useQuery({
     queryKey: ["vehicle", vehicleId],
     queryFn: () => vehiclesService.findOne(vehicleId),
@@ -48,13 +45,13 @@ export const ProfessionalVehicleEditForm = ({
     const values = mapVehicleDetailToQuickFormValues(vehicleDetail);
     form.reset({
       ...values,
-      publisher_type: "professional",
+      publisher_type: "dealership",
     });
   }, [vehicleDetail, form]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
     const payload = serializeQuickVehiclePayload(
-      { ...data, publisher_type: "professional" },
+      { ...data, publisher_type: "dealership" },
       { isUpdate: true },
     );
     const response = await vehiclesService.update(vehicleId, payload as never);

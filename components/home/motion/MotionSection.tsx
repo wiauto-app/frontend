@@ -14,6 +14,8 @@ interface MotionSectionProps extends Omit<HTMLMotionProps<"div">, "children"> {
   variants?: Variants;
   as?: "section" | "div";
   amount?: number;
+  /** When false, animates on mount instead of whileInView */
+  inView?: boolean;
 }
 
 export const MotionSection = ({
@@ -22,6 +24,7 @@ export const MotionSection = ({
   variants = fadeUp,
   as = "div",
   amount = 0.2,
+  inView = true,
   ...rest
 }: MotionSectionProps) => {
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -32,8 +35,9 @@ export const MotionSection = ({
     <Component
       className={cn(className)}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount }}
+      {...(inView
+        ? { whileInView: "visible", viewport: { once: true, amount } }
+        : { animate: "visible" })}
       variants={resolvedVariants}
       {...rest}
     >

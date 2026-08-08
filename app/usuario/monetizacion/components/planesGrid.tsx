@@ -2,14 +2,15 @@ import { Check, X } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
+import { listCatalogEntitlementDisplays } from "@/lib/billing/entitlements";
 
-type PlanesGridProps = {
+interface PlanesGridProps {
   plans: BillingCatalogPlan[];
   active_plan_id: string | null;
   loading?: boolean;
   onSelectPlan: (plan: BillingCatalogPlan, price_id: string) => void;
   formatPrice: (amount_cents: number) => string;
-};
+}
 
 const PlanesGrid = ({
   plans,
@@ -33,8 +34,9 @@ const PlanesGrid = ({
         const yearly = plan.prices.find((price) => price.interval === "year");
         const primary_price = monthly ?? plan.prices[0];
         const is_active = active_plan_id === plan.id;
-        const included = plan.features.filter((feature) => feature.included);
-        const excluded = plan.features.filter((feature) => !feature.included);
+        const entitlementItems = listCatalogEntitlementDisplays(plan.entitlements);
+        const included = (plan.features ?? []).filter((feature) => feature.included);
+        const excluded = (plan.features ?? []).filter((feature) => !feature.included);
 
         return (
           <Card key={plan.id} className="flex flex-col gap-6 bg-white p-4">
@@ -58,6 +60,12 @@ const PlanesGrid = ({
             </CardHeader>
             <CardContent>
               <ul className="flex flex-col gap-2">
+                {entitlementItems.map((item) => (
+                  <li key={item.feature} className="flex items-center gap-2">
+                    <Check className="w-4 h-4 bg-blue-500 text-white rounded-full p-1" />
+                    <p>{item.valueLabel}</p>
+                  </li>
+                ))}
                 {included.map((feature) => (
                   <li key={feature.id} className="flex items-center gap-2">
                     <Check className="w-4 h-4 bg-blue-500 text-white rounded-full p-1" />

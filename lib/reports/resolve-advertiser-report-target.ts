@@ -19,7 +19,7 @@ type ResolveAdvertiserReportTargetInput = {
 export const resolveAdvertiserReportTarget = (
   input: ResolveAdvertiserReportTargetInput,
 ): ReportTarget | null => {
-  if (input.publisherType === PUBLISHER_TYPE.PROFESSIONAL) {
+  if (input.publisherType === PUBLISHER_TYPE.DEALERSHIP) {
     const dealershipId = input.dealership?.id?.trim();
 
     if (!dealershipId) {

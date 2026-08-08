@@ -1,41 +1,27 @@
 "use client";
 
-import { useUserType } from "@/hooks/useUserType";
 import { usePathname } from "next/navigation";
 
 interface ConditionalWrapperProps {
   children: React.ReactNode;
-  paths?: string[];
-  justParticular?: boolean;
-  justProfessional?: boolean;
+  /** Si la ruta actual incluye alguno de estos paths, no se renderizan los children. */
+  hideOnPaths?: string[];
   className?: string;
 }
 
 export const ConditionalWrapper = ({
   children,
-  paths = [],
-  justParticular,
-  justProfessional,
+  hideOnPaths = [],
   className,
 }: ConditionalWrapperProps) => {
   const pathname = usePathname();
-  const { isParticular } = useUserType();
 
-  // Si no coincide la ruta, no aplicamos ninguna restricción.
-  const matchesPath =
-    paths.length === 0 || paths.some((path) => pathname.includes(path));
-  if (matchesPath) {
-    if (justParticular === undefined && justProfessional === undefined) {
-      return null;
-    }
+  const shouldHide =
+    hideOnPaths.length > 0 &&
+    hideOnPaths.some((path) => pathname.includes(path));
 
-    if (justParticular && !isParticular) {
-      return null;
-    }
-
-    if (justProfessional && isParticular) {
-      return null;
-    }
+  if (shouldHide) {
+    return null;
   }
 
   return className ? (

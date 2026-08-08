@@ -15,7 +15,7 @@ export const CreateVehicleSchema = z.object({
   phone_code: z.string().min(1, "Código de teléfono requerido"),
   phone: z.string().min(1, "Teléfono requerido"),
   email: z.email("Email inválido"),
-  publisher_type: z.enum([PUBLISHER_TYPE.PROFESSIONAL, PUBLISHER_TYPE.PARTICULAR], {
+  publisher_type: z.enum([PUBLISHER_TYPE.DEALERSHIP, PUBLISHER_TYPE.PARTICULAR], {
     message: "Tipo de publicador inválido",
   }),
   transmission_type: z.enum([TRANSMISSION_TYPE.MANUAL, TRANSMISSION_TYPE.AUTOMATIC]).optional(),
@@ -58,7 +58,7 @@ export const FindAllVehiclesSchema = z.object({
   lat: z.coerce.number().optional(),
   lng: z.coerce.number().optional(),
   radius: z.coerce.number().int().positive().optional(),
-  publisher_types: z.array(z.enum([PUBLISHER_TYPE.PROFESSIONAL, PUBLISHER_TYPE.PARTICULAR])).optional(),
+  publisher_types: z.array(z.enum([PUBLISHER_TYPE.DEALERSHIP, PUBLISHER_TYPE.PARTICULAR])).optional(),
   is_seller_featured: z.coerce.boolean().optional(),
   warranty_slugs: z.array(z.string()).optional(),
   since_year: z.coerce.number().int().positive().optional(),
