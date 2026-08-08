@@ -26,13 +26,13 @@ export function ProfessionalSidebar({
 }: React.ComponentProps<typeof Sidebar>) {
   const { user, logout } = useUser();
   const pathname = usePathname();
-  const { has, planName, isSubscribed } = useEntitlements();
+  const { has, isSubscribed, isPrivileged } = useEntitlements();
 
   const sidebarLinks = getUserSidebarLinks({
     dealershipMembership: user?.dealership_membership,
     hasDismissedVehicles: has("dismissed_vehicles"),
   });
-  if (!pathname.includes("usuario") || !isSubscribed) return null;
+  if (!pathname.includes("usuario") || !(isSubscribed || isPrivileged)) return null;
   return (
     <Sidebar className={cn("bg-linear-to-b from-purple-dark via-purple-dark to-primary text-primary-foreground", className)} {...props}>
       <SidebarHeader className="bg-white h-20 flex items-center justify-center">

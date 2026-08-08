@@ -1,11 +1,11 @@
 import { UserX } from "lucide-react";
 import type { BillingInvoice } from "@/interfaces/billing.interface";
 
-type BillTableProps = {
+interface BillTableProps {
   bills: BillingInvoice[];
   loading?: boolean;
   formatPrice: (amount_cents: number) => string;
-};
+}
 
 const getStatusColor = (status: string) => {
   if (status === "paid") {
@@ -30,6 +30,9 @@ const getStatusLabel = (status: string) => {
   }
 };
 
+const getInvoiceUrl = (bill: BillingInvoice): string | null =>
+  bill.invoice_pdf_url || bill.hosted_invoice_url || null;
+
 const BillTable = ({ bills, loading = false, formatPrice }: BillTableProps) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -51,35 +54,70 @@ const BillTable = ({ bills, loading = false, formatPrice }: BillTableProps) => {
                 <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Estado
                 </th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {bills.map((bill) => (
-                <tr key={bill.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <span className="font-semibold text-gray-900">
-                      {new Date(bill.paid_at ?? bill.created_at).toLocaleDateString("es-ES")}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="font-semibold text-gray-900">
-                      Factura {bill.stripe_invoice_id.slice(-8)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="font-semibold text-gray-900">
-                      {formatPrice(bill.amount_paid_cents)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(bill.status)}`}
-                    >
-                      {getStatusLabel(bill.status)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {bills.map((bill) => {
+                const invoiceUrl = getInvoiceUrl(bill);
+
+                return (
+                  <tr key={bill.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <span className="font-semibold text-gray-900">
+                        {new Date(bill.paid_at ?? bill.created_at).toLocaleDateString("es-ES")}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-semibold text-gray-900">
+                        Factura {bill.stripe_invoice_id.slice(-8)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-semibold text-gray-900">
+                        {formatPrice(bill.amount_paid_cents)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(bill.status)}`}
+                      >
+                        {getStatusLabel(bill.status)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {invoiceUrl ? (
+                        <div className="flex flex-wrap items-center gap-3">
+                          <a
+                            href={invoiceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium text-blue-600 hover:underline"
+                            aria-label={`Ver factura ${bill.stripe_invoice_id.slice(-8)}`}
+                          >
+                            Ver factura
+                          </a>
+                          <a
+                            href={invoiceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium text-blue-600 hover:underline"
+                            aria-label={`Imprimir factura ${bill.stripe_invoice_id.slice(-8)}`}
+                          >
+                            Imprimir
+                          </a>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-400" aria-hidden>
+                          —
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

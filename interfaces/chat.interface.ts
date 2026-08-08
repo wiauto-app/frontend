@@ -1,6 +1,7 @@
 export const CHAT_TYPE = {
   INDIVIDUAL: "individual",
   GROUP: "group",
+  SUPPORT: "support",
 } as const;
 
 export type ChatType = (typeof CHAT_TYPE)[keyof typeof CHAT_TYPE];
@@ -43,10 +44,18 @@ export interface ChatParticipantSummary {
   email?: string;
 }
 
+export interface ChatTicketSummary {
+  id: string;
+  title: string;
+  status: import("./ticket.interface").TicketStatus;
+}
+
 export interface ChatListItem {
   id: string;
   chat_type: ChatType;
   vehicle_id: string | null;
+  ticket_id: string | null;
+  ticket: ChatTicketSummary | null;
   created_at: string;
   updated_at: string;
   other_participants: ChatParticipantSummary[];
@@ -61,6 +70,7 @@ export interface ChatItem {
   participants: string[];
   chat_type: ChatType;
   vehicle_id: string | null;
+  ticket_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -103,6 +113,12 @@ export interface MessagesReadPayload {
   message_ids: string[];
 }
 
+export interface UnreadUpdatedPayload {
+  chat_id: string;
+  user_id: string;
+  unread_count: number;
+}
+
 export interface TypingPayload {
   chat_id: string;
   user_id: string;
@@ -120,14 +136,14 @@ export interface PaginatedResult<T> {
   limit: number;
 }
 
-export type CreateChatDto = {
+export interface CreateChatDto {
   participants: string[];
   vehicle_id: string | null;
   chat_type?: ChatType;
-};
+}
 
-export type SendChatMessageDto = {
+export interface SendChatMessageDto {
   content: string;
   type: ChatMessageType;
   metadata?: ChatMessageMetadata;
-};
+}

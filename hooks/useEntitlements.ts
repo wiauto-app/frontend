@@ -16,9 +16,12 @@ export const useEntitlements = () => {
   });
 
   const entitlements = query.data?.entitlements ?? {};
+  const isPrivileged =
+    query.data?.source === "admin" || user?.isAdmin === true;
+  const isSubscribed = query.data?.subscription?.status === "active";
 
   const has = (feature: string): boolean => {
-    if (query.data?.source === "admin") {
+    if (isPrivileged) {
       return true;
     }
 
@@ -43,7 +46,7 @@ export const useEntitlements = () => {
   };
 
   const getLimit = (feature: string): number | null => {
-    if (query.data?.source === "admin") {
+    if (isPrivileged) {
       return null;
     }
 
@@ -68,6 +71,7 @@ export const useEntitlements = () => {
     getLimit,
     refetch: query.refetch,
     planName: query.data?.subscription?.plan_name ?? null,
-    isSubscribed: query.data?.subscription?.status === "active",
+    isSubscribed,
+    isPrivileged,
   };
 };

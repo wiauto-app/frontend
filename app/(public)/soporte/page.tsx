@@ -9,6 +9,7 @@ import { HeroTitle } from "@/components/ui/heroTitle";
 import { Channels } from "./components/channels";
 import { SupportFeatures } from "./components/supportFeatures";
 import { SupportQuestions } from "./components/supportQuestions";
+import { SupportTicketCta } from "./components/SupportTicketCta";
 import { resolveStrapiIconName } from "../simulador-financiamiento/utils/resolveStrapiIconName";
 import { getSoportePageData } from "./services/getSoportePageData";
 import { HeroCard } from "@/components/ui/heroCard";
@@ -74,6 +75,7 @@ export default async function Page() {
         floatingContent={<HeroBackdrop />}
       />
       <Channels data={content.canales} />
+      <SupportTicketCta />
       <SupportFeatures data={content.caracteristicas} />
       <SupportQuestions data={content.preguntas} />
     </div>

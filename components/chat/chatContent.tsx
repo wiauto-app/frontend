@@ -7,6 +7,7 @@ import { ArrowLeft, MessageSquare } from "lucide-react";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { MessageStatusIcon } from "@/components/chat/components/MessageStatusIcon";
 import { ChatMessageComposer } from "@/components/chat/chatMessageComposer";
+import { ChatTicketStatusPanel } from "@/components/chat/ChatTicketStatusPanel";
 import { useChatSocket } from "@/components/chat/context/chatSocketContext";
 import { useChatFilters } from "@/components/chat/hooks/useChatFilters";
 import { formatMessageTime } from "@/components/chat/utils/formatMessageTime";
@@ -215,10 +216,14 @@ export const ChatContent = () => {
   }, [typingByChatId, chatId, user?.id]);
 
   const headerTitle = selectedChat
-    ? formatParticipantNames(selectedChat.other_participants)
+    ? selectedChat.ticket?.title?.trim() ||
+      formatParticipantNames(selectedChat.other_participants)
     : "Conversación";
 
   const presenceLabel = useMemo(() => {
+    if (selectedChat?.ticket) {
+      return "Soporte WiAuto";
+    }
     if (otherParticipantIds.length === 0) return null;
     const onlineCount = otherParticipantIds.filter(
       (id) => presenceByUserId[id] === "online",
@@ -230,7 +235,7 @@ export const ChatContent = () => {
       return `${onlineCount} en línea`;
     }
     return "Desconectado";
-  }, [otherParticipantIds, presenceByUserId]);
+  }, [otherParticipantIds, presenceByUserId, selectedChat?.ticket]);
 
   const handleBackToList = () => {
     handleChange("chat_id", undefined);
@@ -247,29 +252,36 @@ export const ChatContent = () => {
 
   return (
     <div className="flex min-h-[60vh] flex-col">
-      <header className="flex items-center gap-3 border-b pb-3">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          className="lg:hidden"
-          onClick={handleBackToList}
-          aria-label="Volver a la lista de chats"
-        >
-          <ArrowLeft className="size-4" />
-        </Button>
-        <Avatar className="size-10">
-          <AvatarImage src={selectedChat?.other_participants[0]?.avatar_url} />
-          <AvatarFallback>
-            {selectedChat?.other_participants[0]?.name?.charAt(0) ?? "?"}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <h2 className="truncate text-sm font-semibold">{headerTitle}</h2>
-          {presenceLabel ? (
-            <p className="text-xs text-muted-foreground">{presenceLabel}</p>
-          ) : null}
+      <header className="flex flex-col gap-3 border-b pb-3">
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="lg:hidden"
+            onClick={handleBackToList}
+            aria-label="Volver a la lista de chats"
+          >
+            <ArrowLeft className="size-4" />
+          </Button>
+          <Avatar className="size-10">
+            <AvatarImage src={selectedChat?.other_participants[0]?.avatar_url} />
+            <AvatarFallback>
+              {selectedChat?.ticket
+                ? "S"
+                : (selectedChat?.other_participants[0]?.name?.charAt(0) ?? "?")}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-semibold">{headerTitle}</h2>
+            {presenceLabel ? (
+              <p className="text-xs text-muted-foreground">{presenceLabel}</p>
+            ) : null}
+          </div>
         </div>
+        {selectedChat?.ticket ? (
+          <ChatTicketStatusPanel ticket={selectedChat.ticket} />
+        ) : null}
       </header>
 
       <div

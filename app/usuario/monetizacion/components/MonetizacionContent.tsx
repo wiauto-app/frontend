@@ -196,9 +196,6 @@ export const MonetizacionContent = () => {
 
       {billing_me ? (
         <div className="rounded-xl border border-gray-100 bg-white p-4 text-sm text-gray-700 space-y-1">
-          <p>
-            Rol actual: <strong>{billing_me.effective_role?.name ?? "Sin rol"}</strong>
-          </p>
           {vehiclesUsage ? (
             <p>
               {getEntitlementFeatureLabel("vehicles")}: <strong>{vehiclesUsage}</strong>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { PhoneInput, DEFAULT_PHONE_CODE } from "@/components/forms/phoneInput";
 import { ImageInput } from "@/components/ui/imageInput";
+import { CreateTicketDialog } from "@/components/support/CreateTicketDialog";
 import { getImageUrl } from "@/lib/utils";
 import {
   mapProfileFormToPayload,
@@ -50,6 +51,7 @@ export const PerfilContent = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const [isTicketDialogOpen, setIsTicketDialogOpen] = useState(false);
   const activeTab =
     searchParams.get("tab") === "dealership" ? "dealership" : "profile";
 
@@ -63,7 +65,9 @@ export const PerfilContent = () => {
     }
 
     const query = params.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
   };
 
   const {
@@ -156,214 +160,232 @@ export const PerfilContent = () => {
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
-      <div className="flex flex-col items-center gap-6 rounded-xl border border-blue-100 bg-blue-100/50 p-6 md:flex-row md:items-start">
-        <div className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-200 text-2xl font-bold text-blue-700">
-          {avatarUrl ? (
-            <Image
-              src={getImageUrl(avatarUrl)}
-              alt={fullName}
-              fill
-              unoptimized
-              className="object-cover"
-            />
-          ) : (
-            (user?.name?.charAt(0).toUpperCase() ?? "U")
-          )}
-        </div>
+          <div className="flex flex-col items-center gap-6 rounded-xl border border-blue-100 bg-blue-100/50 p-6 md:flex-row md:items-start">
+            <div className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-200 text-2xl font-bold text-blue-700">
+              {avatarUrl ? (
+                <Image
+                  src={getImageUrl(avatarUrl)}
+                  alt={fullName}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              ) : (
+                (user?.name?.charAt(0).toUpperCase() ?? "U")
+              )}
+            </div>
 
-        <div className="flex-1 text-center md:text-left">
-          <div className="mb-2 flex flex-col gap-3 md:flex-row md:items-center">
-            <h1 className="text-2xl font-bold text-gray-900">{fullName}</h1>
-            <div className="flex items-center justify-center gap-2 md:justify-start">
-              <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-                <CheckCircle2 className="size-3" /> Top vendedor
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-                <ShieldCheck className="size-3" /> Verificado
-              </span>
+            <div className="flex-1 text-center md:text-left">
+              <div className="mb-2 flex flex-col gap-3 md:flex-row md:items-center">
+                <h1 className="text-2xl font-bold text-gray-900">{fullName}</h1>
+                <div className="flex items-center justify-center gap-2 md:justify-start">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                    <CheckCircle2 className="size-3" /> Top vendedor
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                    <ShieldCheck className="size-3" /> Verificado
+                  </span>
+                </div>
+              </div>
+              <p className="text-sm font-medium text-gray-700">
+                {user?.email ?? "Sin email"}
+              </p>
             </div>
           </div>
-          <p className="text-sm font-medium text-gray-700">
-            {user?.email ?? "Sin email"}
-          </p>
-        </div>
-      </div>
 
-      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <Controller
-            name="avatar_url"
-            control={control}
-            render={({ field }) => (
-              <Field>
-                <FieldLabel>Foto de perfil</FieldLabel>
-                <ImageInput
-                  value={field.value}
-                  onChange={field.onChange}
-                  bucketName="profile-images"
-                  path={`avatars/${user?.id ?? "me"}`}
-                  referenceId={user?.id}
-                  description="PNG, JPG o WEBP. Se guardará como tu avatar."
-                />
-              </Field>
-            )}
-          />
-
-          <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
-            <Field data-invalid={Boolean(errors.name)}>
-              <FieldLabel htmlFor="name">Nombres</FieldLabel>
-              <Input
-                id="name"
-                placeholder="Andrea"
-                aria-invalid={Boolean(errors.name)}
-                {...register("name")}
+          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <Controller
+                name="avatar_url"
+                control={control}
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>Foto de perfil</FieldLabel>
+                    <ImageInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      bucketName="profile-images"
+                      path={`avatars/${user?.id ?? "me"}`}
+                      referenceId={user?.id}
+                      description="PNG, JPG o WEBP. Se guardará como tu avatar."
+                    />
+                  </Field>
+                )}
               />
-              {errors.name ? <FieldError errors={[errors.name]} /> : null}
-            </Field>
 
-            <Field data-invalid={Boolean(errors.last_name)}>
-              <FieldLabel htmlFor="last_name">Apellidos</FieldLabel>
-              <Input
-                id="last_name"
-                placeholder="Gutiérrez"
-                aria-invalid={Boolean(errors.last_name)}
-                {...register("last_name")}
-              />
-              {errors.last_name ? (
-                <FieldError errors={[errors.last_name]} />
-              ) : null}
-            </Field>
-
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="phone">Teléfono</FieldLabel>
-                  <PhoneInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    ariaInvalid={fieldState.invalid}
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+                <Field data-invalid={Boolean(errors.name)}>
+                  <FieldLabel htmlFor="name">Nombres</FieldLabel>
+                  <Input
+                    id="name"
+                    placeholder="Andrea"
+                    aria-invalid={Boolean(errors.name)}
+                    {...register("name")}
                   />
-                  {errors.phone?.phone_code ? (
-                    <FieldError errors={[errors.phone.phone_code]} />
-                  ) : null}
-                  {errors.phone?.phone ? (
-                    <FieldError errors={[errors.phone.phone]} />
+                  {errors.name ? <FieldError errors={[errors.name]} /> : null}
+                </Field>
+
+                <Field data-invalid={Boolean(errors.last_name)}>
+                  <FieldLabel htmlFor="last_name">Apellidos</FieldLabel>
+                  <Input
+                    id="last_name"
+                    placeholder="Gutiérrez"
+                    aria-invalid={Boolean(errors.last_name)}
+                    {...register("last_name")}
+                  />
+                  {errors.last_name ? (
+                    <FieldError errors={[errors.last_name]} />
                   ) : null}
                 </Field>
-              )}
-            />
 
-            <Field data-invalid={Boolean(errors.dni)}>
-              <FieldLabel htmlFor="dni">DNI</FieldLabel>
-              <Input
-                id="dni"
-                inputMode="numeric"
-                placeholder="12345678A"
-                aria-invalid={Boolean(errors.dni)}
-                {...register("dni")}
+                <Controller
+                  name="phone"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="phone">Teléfono</FieldLabel>
+                      <PhoneInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        ariaInvalid={fieldState.invalid}
+                      />
+                      {errors.phone?.phone_code ? (
+                        <FieldError errors={[errors.phone.phone_code]} />
+                      ) : null}
+                      {errors.phone?.phone ? (
+                        <FieldError errors={[errors.phone.phone]} />
+                      ) : null}
+                    </Field>
+                  )}
+                />
+
+                <Field data-invalid={Boolean(errors.dni)}>
+                  <FieldLabel htmlFor="dni">DNI</FieldLabel>
+                  <Input
+                    id="dni"
+                    inputMode="numeric"
+                    placeholder="12345678A"
+                    aria-invalid={Boolean(errors.dni)}
+                    {...register("dni")}
+                  />
+                  {errors.dni ? <FieldError errors={[errors.dni]} /> : null}
+                </Field>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="mt-4 w-full"
+              >
+                {isSubmitting ? "Guardando..." : "Guardar cambios"}
+              </Button>
+            </form>
+          </div>
+
+          {isLoadingAccount && (
+            <div
+              className="flex min-h-32 items-center justify-center rounded-xl border border-gray-100 bg-white p-6 shadow-sm"
+              role="status"
+              aria-label="Cargando configuración de cuenta"
+            >
+              <Loader2 className="size-8 animate-spin text-muted-foreground" />
+            </div>
+          )}
+
+          {isAccountError && (
+            <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-sm text-red-700">
+              No se pudieron cargar los datos de tu cuenta. Intenta recargar la
+              página.
+            </div>
+          )}
+
+          {account && (
+            <>
+              <EmailSettingsSection
+                account={account}
+                onUpdated={handleAccountUpdated}
               />
-              {errors.dni ? <FieldError errors={[errors.dni]} /> : null}
-            </Field>
-          </div>
+              {hasPassword && <PasswordSettingsSection />}
+              <TwoFactorSettingsSection
+                account={account}
+                onUpdated={handleAccountUpdated}
+              />
+            </>
+          )}
 
-          <Button type="submit" disabled={isSubmitting} className="mt-4 w-full">
-            {isSubmitting ? "Guardando..." : "Guardar cambios"}
-          </Button>
-        </form>
-      </div>
-
-      {isLoadingAccount && (
-        <div
-          className="flex min-h-32 items-center justify-center rounded-xl border border-gray-100 bg-white p-6 shadow-sm"
-          role="status"
-          aria-label="Cargando configuración de cuenta"
-        >
-          <Loader2 className="size-8 animate-spin text-muted-foreground" />
-        </div>
-      )}
-
-      {isAccountError && (
-        <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-sm text-red-700">
-          No se pudieron cargar los datos de tu cuenta. Intenta recargar la
-          página.
-        </div>
-      )}
-
-      {account && (
-        <>
-          <EmailSettingsSection
-            account={account}
-            onUpdated={handleAccountUpdated}
-          />
-          {hasPassword && <PasswordSettingsSection />}
-          <TwoFactorSettingsSection
-            account={account}
-            onUpdated={handleAccountUpdated}
-          />
-        </>
-      )}
-
-      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
-        <h2 className="mb-6 text-lg font-bold text-gray-900">
-          Badges de verificación
-        </h2>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="size-5 text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">
-                Identidad (DNI)
-              </span>
+          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+            <h2 className="mb-6 text-lg font-bold text-gray-900">
+              Badges de verificación
+            </h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="size-5 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700">
+                    Identidad (DNI)
+                  </span>
+                </div>
+                <Button size="sm" type="button">
+                  Verificar
+                </Button>
+              </div>
             </div>
-            <Button size="sm" type="button">
-              Verificar
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
-        <h2 className="mb-6 text-lg font-bold text-gray-900">Soporte</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
-            <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
-              <MessageCircle className="size-5" />
-            </div>
-            <h3 className="text-sm font-bold text-gray-900">
-              Chat con un asesor
-            </h3>
-            <p className="mt-1 text-xs text-gray-500">
-              Respuesta {"<"} 5 min en horario laboral
-            </p>
           </div>
 
-          <div className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
-            <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
-              <Mail className="size-5" />
-            </div>
-            <h3 className="text-sm font-bold text-gray-900">Envía un ticket</h3>
-            <p className="mt-1 text-xs text-gray-500">ayuda@wiauto.es</p>
-          </div>
+          <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+            <h2 className="mb-6 text-lg font-bold text-gray-900">Soporte</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <button
+                type="button"
+                onClick={() => setIsTicketDialogOpen(true)}
+                className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 text-left transition-colors hover:bg-blue-50"
+                aria-label="Enviar un ticket de soporte"
+              >
+                <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
+                  <MessageCircle className="size-5" />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900">
+                  Envía un ticket
+                </h3>
+                <p className="mt-1 text-xs text-gray-500">
+                  ayuda@wiauto.es
+                </p>
+              </button>
 
-          <div className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
-            <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
-              <BookOpen className="size-5" />
+              <a href="mailto:ayuda@wiauto.es" className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
+                <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
+                  <Mail className="size-5" />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900">
+                  Envía un email
+                </h3>
+                <p className="mt-1 text-xs text-gray-500">ayuda@wiauto.es</p>
+              </a>
+
+              <a target="_blank" href="/preguntas-frecuentes" className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
+                <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
+                  <BookOpen className="size-5" />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900">
+                  Centro de ayuda
+                </h3>
+                <p className="mt-1 text-xs text-gray-500">
+                  Guías, FAQ y tutoriales
+                </p>
+              </a>
             </div>
-            <h3 className="text-sm font-bold text-gray-900">Centro de ayuda</h3>
-            <p className="mt-1 text-xs text-gray-500">
-              Guías, FAQ y tutoriales
-            </p>
           </div>
-        </div>
-      </div>
         </TabsContent>
 
         <TabsContent value="dealership">
           <DealershipProfileTabContent />
         </TabsContent>
       </Tabs>
+
+      <CreateTicketDialog
+        open={isTicketDialogOpen}
+        onOpenChange={setIsTicketDialogOpen}
+      />
     </div>
   );
 };

@@ -152,10 +152,6 @@ export interface BillingMeSubscription {
 
 export interface BillingMeResponse {
   subscription: BillingMeSubscription | null;
-  effective_role: {
-    id: string;
-    name: string;
-  } | null;
   entitlements?: Record<string, BillingMeEntitlementEntry>;
   /** @deprecated Preferir `entitlements.vehicles.used` */
   vehicle_listings_used: number;

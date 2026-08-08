@@ -73,7 +73,10 @@ export const ChatList = () => {
   return (
     <div className="flex max-h-[70vh] flex-col gap-2 overflow-y-auto">
       {chats.map((chat) => {
-        const title = formatParticipantNames(chat.other_participants);
+        const isSupport = Boolean(chat.ticket_id) || chat.chat_type === "support";
+        const title = isSupport
+          ? chat.ticket?.title?.trim() || "Soporte"
+          : formatParticipantNames(chat.other_participants);
         const subtitle =
           chat.last_message_preview?.trim() ||
           chat.other_participants[0]?.email?.trim() ||
@@ -95,29 +98,42 @@ export const ChatList = () => {
                 "border-primary/30 bg-primary/5",
             )}
             onClick={() => handleSelectChat(chat.id)}
-            aria-label={`Abrir chat con ${title}`}
+            aria-label={`Abrir chat ${title}`}
           >
             <div className="flex min-w-0 flex-1 items-center gap-3">
               <AvatarGroup>
-                {chat.other_participants.map((participant) => (
-                  <Avatar key={participant.id}>
-                    <AvatarImage src={participant.avatar_url} />
-                    <AvatarFallback>
-                      {participant.name?.charAt(0) ?? "U"}
-                    </AvatarFallback>
+                {chat.other_participants.length > 0 ? (
+                  chat.other_participants.map((participant) => (
+                    <Avatar key={participant.id}>
+                      <AvatarImage src={participant.avatar_url} />
+                      <AvatarFallback>
+                        {participant.name?.charAt(0) ?? "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  ))
+                ) : (
+                  <Avatar>
+                    <AvatarFallback>S</AvatarFallback>
                   </Avatar>
-                ))}
+                )}
               </AvatarGroup>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <p
-                    className={cn(
-                      "truncate text-sm",
-                      hasUnread ? "font-semibold" : "font-medium",
-                    )}
-                  >
-                    {title}
-                  </p>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p
+                      className={cn(
+                        "truncate text-sm",
+                        hasUnread ? "font-semibold" : "font-medium",
+                      )}
+                    >
+                      {title}
+                    </p>
+                    {isSupport ? (
+                      <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
+                        Soporte
+                      </span>
+                    ) : null}
+                  </div>
                   {timeLabel ? (
                     <span className="shrink-0 text-[10px] text-muted-foreground">
                       {timeLabel}
