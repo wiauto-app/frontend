@@ -46,7 +46,7 @@ export const HeroTitle = ({
   children,
   className,
   highlightClassName,
-  highlight = true,
+  highlight = false,
   as = "h1",
 }: HeroTitleProps) => {
   const Component = as;

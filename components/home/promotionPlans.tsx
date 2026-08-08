@@ -43,7 +43,7 @@ export const PromotionPlans = ({
           className="lg:h-auto"
           leftContent={
             <>
-              <HeroTitle as="h3" className="text-foreground">
+              <HeroTitle as="h3" className="text-foreground" highlight>
                 {data.titulo}
               </HeroTitle>
               <HeroDescription className="text-foreground lg:max-w-xs">
