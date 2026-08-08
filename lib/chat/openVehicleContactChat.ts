@@ -57,6 +57,8 @@ export const openVehicleContactChat = async ({
         id: createResponse.data.id,
         chat_type: createResponse.data.chat_type,
         vehicle_id: createResponse.data.vehicle_id,
+        ticket_id: createResponse.data.ticket_id ?? null,
+        ticket: null,
         created_at: createResponse.data.created_at,
         updated_at: createResponse.data.updated_at,
         other_participants: [],

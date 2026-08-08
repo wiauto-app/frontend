@@ -17,7 +17,6 @@ import { SearchForm } from "@/components/home/searchForm";
 import { getHomeData } from "@/components/home/services/homeService";
 import { StoreButtons } from "@/components/home/StoreButtons";
 import { TopDealerships } from "@/components/home/topDealerships";
-import { ToolsShortcuts } from "@/components/home/toolsShortcuts";
 import { VehicleExtraServices } from "@/components/home/vehicleExtraServices";
 import { VehiclesSuggestions } from "@/components/home/vehiclesSuggestions";
 import { Zones } from "@/components/home/zones";
@@ -89,7 +88,6 @@ export default async function Home() {
         <Suspense fallback={<RelatedNewsSectionSkeleton />}>
           <RelatedNewsSection />
         </Suspense>
-        <ToolsShortcuts />
         <Suspense fallback={<TopDealershipsSkeleton />}>
           <TopDealerships />
         </Suspense>
