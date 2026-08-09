@@ -17,7 +17,12 @@ export const Hero = ({
   className,
 }: HeroProps) => {
   return (
-    <section className={cn("relative lg:h-140  rounded-lg py-12 px-10  rounded-b-lg overflow-hidden ", className)}>
+    <section
+      className={cn(
+        "relative lg:h-140  rounded-lg py-12 px-10  rounded-b-lg overflow-hidden ",
+        className,
+      )}
+    >
       {image ? (
         <Image
           src={image}

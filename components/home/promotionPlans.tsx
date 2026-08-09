@@ -75,9 +75,9 @@ export const PromotionPlans = ({
           }
           floatingContent={
             image_url ? (
-              <div className="pointer-events-none absolute top-0 right-0 z-0 flex h-full items-center justify-end pr-4 [perspective:1200px] lg:pr-10">
+              <div className="pointer-events-none hidden lg:absolute top-0 right-0 z-0 lg:flex h-full items-center justify-end pr-4 lg:[perspective:1200px] lg:pr-10">
                 <motion.div
-                  className="origin-right transform-[rotateX(10deg)_rotateY(-18deg)] will-change-transform"
+                  className="origin-right lg:transform-[rotateX(10deg)_rotateY(-18deg)] lg:will-change-transform"
                   style={{ transformStyle: "preserve-3d" }}
                   initial="hidden"
                   whileInView="visible"

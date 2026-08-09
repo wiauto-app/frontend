@@ -59,7 +59,7 @@ export const HeroTitle = ({
   return (
     <Component
       className={cn(
-        "w-full text-center text-2xl font-bold text-white lg:w-auto lg:max-w-md lg:text-left lg:text-4xl",
+        "w-full text-center text-3xl font-bold text-white lg:w-auto lg:max-w-md lg:text-left lg:text-4xl",
         className,
       )}
     >
