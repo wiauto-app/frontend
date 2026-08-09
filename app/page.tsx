@@ -26,6 +26,7 @@ import {
 } from "@/components/discovery";
 import { mapLowEmissionsLinkToQuickLink } from "@/components/discovery/mappers/map-low-emissions-link-to-quick-link";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
+import { LandingContainer } from "@/components/ui/landingContainer";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
@@ -59,7 +60,7 @@ export default async function Home() {
 
   return (
     <>
-      <div className="container-custom flex flex-col gap-5 md:gap-12">
+      <LandingContainer>
         <HeroSection data={home_data.homeHero} />
 
         <StoreButtons
@@ -99,7 +100,7 @@ export default async function Home() {
             quickLinks={low_emissions_quick_links}
           />
         </Suspense>
-      </div>
+      </LandingContainer>
     </>
   );
 }

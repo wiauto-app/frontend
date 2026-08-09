@@ -2,6 +2,7 @@ import { FaqQuestionsList } from "@/components/preguntas-frecuentes/FaqQuestions
 import { getFaqData } from "@/components/preguntas-frecuentes/services/faqService";
 import type { FaqItem } from "@/components/preguntas-frecuentes/types/faq.types";
 import { Card, CardContent } from "@/components/ui/card";
+import { LandingHeader } from "@/components/ui/landingHeader";
 
 export default async function PreguntasFrecuentes() {
   let items: FaqItem[] = [];
@@ -18,15 +19,7 @@ export default async function PreguntasFrecuentes() {
 
   return (
     <>
-      <div className="w-full bg-[#DBE6F8] from-blue-700 to-blue-600 py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-5xl font-bold text-start mb-4 flex items-center gap-3">
-            <span className="text-black">Preguntas</span>
-            <span className="text-blue-700">frecuentes</span>
-          </h1>
-          <div className="w-20 h-1 bg-blue-700 mt-4" />
-        </div>
-      </div>
+      <LandingHeader title="Preguntas frecuentes" />
       <div className="flex min-h-[60vh] items-center justify-center p-4 w-full">
         <Card className="container-custom mx-auto">
           <CardContent className="grid grid-cols-1 lg:grid-cols-2">

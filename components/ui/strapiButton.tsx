@@ -11,7 +11,7 @@ export const StrapiButton = ({
   className?: string;
 }) => {
   return (
-    <Link href={button.url}>
+    <Link className="w-full lg:w-auto" href={button.url}>
       <Button
         className={cn(
           className,

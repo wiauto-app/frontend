@@ -26,7 +26,7 @@ export const FinanciacionSoporteSection = ({
             height={500}
           />
         </div>
-        <div className="flex-1 flex flex-col justify-center gap-3 py-4 pl-3 lg:pl-0">
+        <div className="flex-1 flex flex-col justify-center gap-3 px-5 pb-5 ">
           <div>
       
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug mt-0.5">
@@ -37,21 +37,21 @@ export const FinanciacionSoporteSection = ({
                 "Trabajamos con un aliado sólido que comparte nuestro compromiso de brindarte la mejor experiencia."}
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5  lg:gap-2 pt-1">
             {caracteristicasStrapi.map((item, idx: number) => {
               const Icon = resolveStrapiIconName(item.iconName);
               const label = item.label;
               const desc = item.descripcion;
 
               return (
-                <div key={idx} className="flex flex-col items-start gap-0.5">
+                <div key={idx} className="flex flex-col items-center gap-0.5 ">
                   <IconContainer Icon={Icon} />
 
-                  <span className="text-xs font-extrabold text-blue-600 leading-none">
+                  <span className="text-xs font-extrabold text-blue-600 leading-none text-center">
                     {label}
                   </span>
                   {desc && (
-                    <span className="text-[9px] text-slate-500 leading-tight max-w-30">
+                    <span className="text-[9px] text-slate-500 leading-tight max-w-30 text-center">
                       {desc}
                     </span>
                   )}
@@ -61,17 +61,7 @@ export const FinanciacionSoporteSection = ({
           </div>
         </div>
 
-        <div className="w-full lg:w-55 xl:w-62.5 py-4 my-auto shrink-0 pr-3 lg:pr-0 self-stretch flex items-center">
-          <div className="bg-white border border-slate-100/80 rounded-xl p-5 shadow-xs flex flex-col items-center justify-center text-center w-full h-full min-h-35">
-            <h3 className="text-2xl font-black text-blue-600 tracking-tight mb-1">
-              {hero?.card?.titulo || "CrediAuto"}
-            </h3>
-            <p className="text-[10px] text-slate-500 max-w-37.5 leading-snug">
-              {hero?.card?.descripcion ||
-                "Un aliado comprometido con tu movilidad."}
-            </p>
-          </div>
-        </div>
+    
       </div>
     </section>
   );

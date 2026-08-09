@@ -7,9 +7,9 @@ export const HeroActions = ({ actions }: { actions: StrapiLink[] }) => {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-col lg:flex-row items-center gap-3 ">
       {actions.map((action) => (
-        <StrapiButton key={action.id} button={action} />
+        <StrapiButton className="w-full lg:w-auto" key={action.id} button={action} />
       ))}
     </div>
   );

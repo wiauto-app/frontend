@@ -6,6 +6,7 @@ import { FinanciacionSoporteSection } from './components/FinanciacionSoporteSect
 import { FinanciacionStatsSection } from './components/FinanciacionStatsSection';
 import { FinanciacionVentajasSection } from './components/FinanciacionVentajasSection';
 import { getFinanciacionPageData } from './services/getFinanciacionPageData';
+import { LandingContainer } from '@/components/ui/landingContainer';
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -45,7 +46,7 @@ export default async function FinanciacionPage() {
   }
 
   return (
-    <div className='container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col gap-14 py-8'>
+    <LandingContainer>
       {content.hero ? <FinanciacionHeroSection hero={content.hero} /> : null}
 
       {content.ventajas ? (
@@ -60,6 +61,6 @@ export default async function FinanciacionPage() {
         <FinanciacionStatsSection items={content.estadisticas} />
       ) : null}
 
-    </div>
+    </LandingContainer>
   );
 }
