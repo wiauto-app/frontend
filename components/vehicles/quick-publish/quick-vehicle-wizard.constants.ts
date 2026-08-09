@@ -8,6 +8,9 @@ export interface QuickVehicleIntroStep {
 
 export const QUICK_VEHICLE_STEP_QUERY_PARAM = "step";
 
+/** Marca el único botón que puede publicar (evita submit por Enter en inputs). */
+export const QUICK_VEHICLE_SUBMIT_ATTR = "data-quick-vehicle-submit";
+
 export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
   {
     id: 1,

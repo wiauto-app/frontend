@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, type FormEvent, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm, type Resolver } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
@@ -19,13 +19,17 @@ import { QuickVehiclePreview } from "./QuickVehiclePreview";
 import { QuickVehicleOptionalSections } from "./QuickVehicleOptionalSections";
 import { QuickVehicleIntroWizard } from "./QuickVehicleIntroWizard";
 import { useUser } from "@/app/contexts/auth/useUser";
+import { QUICK_VEHICLE_SUBMIT_ATTR } from "./quick-vehicle-wizard.constants";
 
 interface QuickVehicleFormProps {
   vehicleId?: string;
   onSuccess?: () => void;
 }
 
-export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps) => {
+export const QuickVehicleForm = ({
+  vehicleId,
+  onSuccess,
+}: QuickVehicleFormProps) => {
   const router = useRouter();
   const { user } = useUser();
   const isEditMode = Boolean(vehicleId);
@@ -37,8 +41,10 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
   });
 
   const form = useForm<QuickVehicleSchema>({
-    resolver: standardSchemaResolver(quickVehicleSchema) as Resolver<QuickVehicleSchema>,
-    defaultValues: createQuickVehicleDefaultValues,
+    resolver: standardSchemaResolver(
+      quickVehicleSchema,
+    ) as Resolver<QuickVehicleSchema>,
+    defaultValues: { ...createQuickVehicleDefaultValues },
   });
 
   useEffect(() => {
@@ -53,12 +59,17 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
     if (user.email && !form.getValues("email")) {
       form.setValue("email", user.email);
     }
-  }, [user, form, isEditMode]);
+  }, [user, isEditMode, form]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
-    const payload = serializeQuickVehiclePayload(data, { isUpdate: Boolean(vehicleId) });
+    const payload = serializeQuickVehiclePayload(data, {
+      isUpdate: Boolean(vehicleId),
+    });
     if (vehicleId) {
-      const response = await vehiclesService.update(vehicleId, payload as never);
+      const response = await vehiclesService.update(
+        vehicleId,
+        payload as never,
+      );
       if (response.ok) {
         toast.success("Vehículo actualizado correctamente");
         onSuccess?.();
@@ -71,7 +82,9 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
     const response = await vehiclesService.create(payload as never);
     if (response.ok && response.data?.id) {
       onSuccess?.();
-      router.push(`/crear-vehiculo/exito?id=${encodeURIComponent(response.data.id)}`);
+      router.push(
+        `/crear-vehiculo/exito?id=${encodeURIComponent(response.data.id)}`,
+      );
       return;
     }
 
@@ -82,6 +95,35 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
     }
 
     toast.error(response.message || "Error al publicar el vehículo");
+  };
+
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const submitter = (event.nativeEvent as SubmitEvent).submitter as
+      | HTMLElement
+      | null;
+    const isExplicitPublish =
+      submitter?.getAttribute(QUICK_VEHICLE_SUBMIT_ATTR) === "true";
+
+    // Enter en un input dispara submit implícito (GET nativo) y borra ?step=…
+    if (!isExplicitPublish) {
+      return;
+    }
+
+    void form.handleSubmit(handleSubmit)(event);
+  };
+
+  const handleFormKeyDown = (event: KeyboardEvent<HTMLFormElement>) => {
+    if (event.key !== "Enter") return;
+
+    const target = event.target as HTMLElement;
+    if (target.tagName === "TEXTAREA") return;
+    if (target.tagName === "BUTTON" || target.closest("button")) return;
+    if (target.closest(`[${QUICK_VEHICLE_SUBMIT_ATTR}="true"]`)) return;
+
+    // Enter en inputs dispara submit implícito (GET) y pierde ?step=… + estado del form.
+    event.preventDefault();
   };
 
   if (isEditMode && isLoadingVehicle) {
@@ -100,7 +142,10 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
   return (
     <FormProvider {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit)}
+        method="post"
+        noValidate
+        onSubmit={handleFormSubmit}
+        onKeyDown={handleFormKeyDown}
         className="grid grid-cols-1 gap-5 lg:grid-cols-4"
       >
         <div className="flex flex-col gap-6 lg:col-span-3">
@@ -127,9 +172,11 @@ export const QuickVehicleForm = ({ vehicleId, onSuccess }: QuickVehicleFormProps
             type="button"
             className="text-left text-sm text-primary hover:underline"
             onClick={() => {
-              document.getElementById("quick-optional-sections")?.scrollIntoView({
-                behavior: "smooth",
-              });
+              document
+                .getElementById("quick-optional-sections")
+                ?.scrollIntoView({
+                  behavior: "smooth",
+                });
             }}
           >
             Completar después →

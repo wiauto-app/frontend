@@ -3,35 +3,46 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AdvancedMarker,
-  Map,
   MapMouseEvent,
+  useMap,
   useMapsLibrary,
 } from "@vis.gl/react-google-maps";
 import { LocateFixed, MapPin, Search } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { CustomMap } from "../customMap";
 import { DEFAULT_CENTER } from "@/constants/map.constants";
+import { cn } from "@/lib/utils";
+import { CustomMap, GoogleMapsApiProvider } from "../customMap";
 
-
-
-export type MapInputValue = {
+export interface MapInputValue {
   lat: number;
   lng: number;
-};
+}
 
-type MapInputProps = {
+interface MapInputProps {
   value: MapInputValue;
   onChange: (value: MapInputValue) => void;
   ariaInvalid?: boolean;
+}
+
+const MapPanToValue = ({ value }: { value: MapInputValue }) => {
+  const map = useMap();
+  const { lat, lng } = value;
+
+  useEffect(() => {
+    if (!map) return;
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+    map.panTo({ lat, lng });
+  }, [map, lat, lng]);
+
+  return null;
 };
 
 const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const placesLibrary = useMapsLibrary("places");
   const [isLocating, setIsLocating] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
 
   const handleMapClick = useCallback(
     (event: MapMouseEvent) => {
@@ -62,9 +73,11 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
   useEffect(() => {
     if (!placesLibrary || !searchInputRef.current) return;
 
+    // Input no controlado: Autocomplete clásico escribe en el DOM y pelea con value de React.
     const autocomplete = new placesLibrary.Autocomplete(searchInputRef.current, {
       fields: ["geometry", "formatted_address"],
       types: ["geocode"],
+      componentRestrictions: { country: "es" },
     });
 
     const listener = autocomplete.addListener("place_changed", () => {
@@ -72,7 +85,9 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
       const location = place.geometry?.location;
       if (!location) return;
       onChange({ lat: location.lat(), lng: location.lng() });
-      setSearchValue(place.formatted_address ?? "");
+      if (searchInputRef.current && place.formatted_address) {
+        searchInputRef.current.value = place.formatted_address;
+      }
     });
 
     return () => {
@@ -89,11 +104,11 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             ref={searchInputRef}
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
+            defaultValue=""
             placeholder="Buscar localidad o dirección"
             className="pl-9"
             aria-invalid={ariaInvalid}
+            autoComplete="off"
           />
         </div>
         <Button
@@ -115,6 +130,7 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
         )}
       >
         <CustomMap
+          withProvider={false}
           mapId="vehicle-publish-map"
           gestureHandling="greedy"
           defaultCenter={hasCoords ? value : DEFAULT_CENTER}
@@ -122,27 +138,30 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
           onClick={handleMapClick}
           style={{ width: "100%", height: "100%" }}
         >
+          <MapPanToValue value={value} />
           {hasCoords ? (
             <AdvancedMarker position={value}>
-              <MapPin className="size-8 text-primary fill-primary/20" aria-hidden />
+              <MapPin
+                className="size-8 fill-primary/20 text-primary"
+                aria-hidden
+              />
             </AdvancedMarker>
           ) : null}
         </CustomMap>
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Haz clic en el mapa o busca una dirección para fijar la ubicación del anuncio.
+        Haz clic en el mapa o busca una dirección para fijar la ubicación del
+        anuncio.
       </p>
     </div>
   );
 };
 
 export const MapInput = (props: MapInputProps) => {
-
-
   return (
-
+    <GoogleMapsApiProvider>
       <MapInputInner {...props} />
-
+    </GoogleMapsApiProvider>
   );
 };

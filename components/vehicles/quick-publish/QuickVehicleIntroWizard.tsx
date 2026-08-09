@@ -128,6 +128,7 @@ export const QuickVehicleIntroWizard = ({
             size="lg"
             disabled={form.formState.isSubmitting}
             className="w-full sm:w-auto"
+            data-quick-vehicle-submit="true"
           >
             {form.formState.isSubmitting ? (
               <Loader2 className="size-4 animate-spin" />
