@@ -7,14 +7,13 @@ import { refreshTokenService } from "@/app/(auth)/services/refreshTokenService";
 import type { ApiResponse } from "@/lib/api";
 import type { AuthResponseDto } from "@/validations/auth";
 import { MeResponseDto } from "@/services/authService";
-
 export type EnsureSessionResult =
   | { outcome: "session_valid" }
   | {
-      outcome: "session_refreshed";
-      access_token: string;
-      refresh_token_hash: string;
-    }
+    outcome: "session_refreshed";
+    access_token: string;
+    refresh_token?: string;
+  }
   | { outcome: "two_factor_pending" }
   | { outcome: "unauthorized" }
   | { outcome: "refresh_unavailable"; status: number }
@@ -55,21 +54,6 @@ const isTwoFactorPendingResponse = (
 ): boolean =>
   me.status === 401 && me.message === TWO_FA_REQUIRED_MESSAGE;
 
-const get_refresh_cookie_value = (
-  data: Pick<AuthResponseDto, "token"> & {
-    refresh_token?: string;
-    refreshToken_hash?: string;
-  },
-): string | null => {
-  if (typeof data.refresh_token === "string") {
-    return data.refresh_token;
-  }
-  if (typeof data.refreshToken_hash === "string") {
-    return data.refreshToken_hash;
-  }
-  return null;
-};
-
 const is_session_payload = (
   data: unknown,
 ): data is Pick<AuthResponseDto, "token"> & {
@@ -108,19 +92,25 @@ export const readSessionTokensFromCookies = async (): Promise<SessionTokens> => 
   };
 };
 
-export const getServerSessionWithTokens = async (params: {
+export const getServerSession = async (params?: {
   refresh_token?: string | null;
   access_token?: string | null;
 }): Promise<ApiResponse<MeResponseDto | null>> => {
-  const { refresh_token, access_token } = params;
 
-  if (!access_token) {
-    return {
-      ok: false,
-      message: "No access token",
-      status: 401,
-      data: null,
-    };
+  let access_token = null as string | null;
+  let refresh_token = null as string | null;
+  if (!params?.access_token && !params?.refresh_token) {
+    const cookiesStore = await cookies();
+    access_token = cookiesStore.get(cookiesConfig.accessToken.name)?.value ?? null;
+    refresh_token = cookiesStore.get(cookiesConfig.refreshToken.name)?.value ?? null;
+    if (!access_token && !refresh_token) {
+      return {
+        ok: false,
+        message: "No access token",
+        status: 401,
+        data: null,
+      };
+    }
   }
 
   const meResponse = await fetch(buildApiUrl("/auth/me"), {
@@ -141,10 +131,7 @@ export const getServerSessionWithTokens = async (params: {
   };
 };
 
-export const getServerSession = async (): Promise<ApiResponse<MeResponseDto | null>> => {
-  const tokens = await readSessionTokensFromCookies();
-  return getServerSessionWithTokens(tokens);
-};
+
 
 export const getServerSessionOrNull = async (): Promise<MeResponseDto | null> => {
   const session = await getServerSession();
@@ -165,8 +152,7 @@ export const ensureValidSession = async (params: {
     return { outcome: "two_factor_pending" };
   }
 
-  const me = await getServerSessionWithTokens({ refresh_token, access_token });
-
+  const me = await getServerSession({ refresh_token, access_token });
   if (me.ok) {
     return { outcome: "session_valid" };
   }
@@ -191,65 +177,15 @@ export const ensureValidSession = async (params: {
     };
   }
 
-  const refresh_cookie_value = get_refresh_cookie_value(refreshed.data);
-  if (!refresh_cookie_value) {
-    return { outcome: "unauthorized" };
-  }
 
   return {
     outcome: "session_refreshed",
     access_token: refreshed.data.token,
-    refresh_token_hash: refresh_cookie_value,
+    refresh_token: refreshed.data.refresh_token,
   };
 };
 
-/**
- * Orquesta ensureValidSession para cookies del request.
- * Errores de red / 5xx → status 503 sin clearCookies (no invalidar refresh válido).
- */
-export const resolveSessionRefresh = async (params: {
-  access_token: string | null;
-  refresh_token: string | null;
-}): Promise<ResolveSessionRefreshResult> => {
-  if (!params.refresh_token) {
-    return { status: 401, refreshed: false, clearCookies: true };
-  }
 
-  try {
-    const result = await ensureValidSession({
-      refresh_token: params.refresh_token,
-      access_token: params.access_token,
-    });
-
-    if (result.outcome === "session_refreshed") {
-      return {
-        status: 200,
-        refreshed: true,
-        clearCookies: false,
-        tokens: {
-          access_token: result.access_token,
-          refresh_token_hash: result.refresh_token_hash,
-        },
-      };
-    }
-
-    if (result.outcome === "unauthorized") {
-      return { status: 401, refreshed: false, clearCookies: true };
-    }
-
-    if (result.outcome === "refresh_unavailable") {
-      return {
-        status: result.status >= 500 ? result.status : 503,
-        refreshed: false,
-        clearCookies: false,
-      };
-    }
-
-    return { status: 200, refreshed: false, clearCookies: false };
-  } catch {
-    return { status: 503, refreshed: false, clearCookies: false };
-  }
-};
 
 /** Serializa cookies del request (middleware) o del store (server action) para el header Cookie. */
 export const requestCookiesToHeader = (
@@ -268,18 +204,17 @@ export type MutableCookieStore = {
 };
 
 /** Middleware / Route Handlers: escribe tokens en la NextResponse. */
-export const withSessionCookies = (
-  response: NextResponse,
+export const setSessionCookies = async (
   access_token: string,
   refresh_token_hash: string,
-): NextResponse => {
-  response.cookies.set(cookiesConfig.accessToken.name, access_token, cookiesConfig.accessToken.options);
-  response.cookies.set(
+): Promise<void> => {
+  const cookieStore = await cookies();
+  cookieStore.set(cookiesConfig.accessToken.name, access_token, cookiesConfig.accessToken.options);
+  cookieStore.set(
     cookiesConfig.refreshToken.name,
     refresh_token_hash,
     cookiesConfig.refreshToken.options,
   );
-  return response;
 };
 
 /** Middleware: elimina cookies de sesión en la NextResponse (p. ej. redirect a login). */

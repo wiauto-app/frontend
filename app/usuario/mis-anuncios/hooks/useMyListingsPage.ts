@@ -193,21 +193,18 @@ export const useMyListingsPage = ({
     enabled,
   });
 
-  const featureOffer = useMemo((): FeaturedListingOffer | null => {
-    const activeOffers = (featuredOffersQuery.data ?? []).filter(
-      (offer) => offer.is_active && offer.stripe_price_id,
-    );
-
-    if (activeOffers.length === 0) {
-      return null;
-    }
-
-    return [...activeOffers].sort(
-      (left, right) =>
-        left.sort_order - right.sort_order ||
-        left.amount_cents - right.amount_cents,
-    )[0];
+  const featureOffers = useMemo((): FeaturedListingOffer[] => {
+    return (featuredOffersQuery.data ?? [])
+      .filter((offer) => offer.is_active && offer.stripe_price_id)
+      .sort((left, right) => {
+        if (left.sort_order !== right.sort_order) {
+          return left.sort_order - right.sort_order;
+        }
+        return left.amount_cents - right.amount_cents;
+      });
   }, [featuredOffersQuery.data]);
+
+  const featureOffer = featureOffers[0] ?? null;
 
   const invalidateListings = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: MY_LISTINGS_QUERY_KEY });
@@ -240,28 +237,27 @@ export const useMyListingsPage = ({
   });
 
   const featureMutation = useMutation({
-    mutationFn: async (vehicleId: string) => {
-      if (!featureOffer) {
-        throw new Error("La oferta de destacado no está disponible");
-      }
-
+    mutationFn: async ({
+      vehicleId,
+      offerId,
+    }: {
+      vehicleId: string;
+      offerId: string;
+    }) => {
       const checkoutUrl = await billingService.createFeaturedListingCheckout(
-        featureOffer.id,
+        offerId,
         vehicleId,
         {
-          success_url: absoluteUrl("/usuario/mis-anuncios?checkout=success"),
+          success_url: absoluteUrl(
+            "/usuario/mis-anuncios?checkout=success",
+          ),
           cancel_url: absoluteUrl("/usuario/mis-anuncios?checkout=cancel"),
         },
       );
-
       if (!checkoutUrl) {
         throw new Error("No se pudo iniciar el checkout de destacado");
       }
-
-      return checkoutUrl;
-    },
-    onSuccess: (checkoutUrl) => {
-      window.location.href = checkoutUrl;
+      window.location.assign(checkoutUrl);
     },
   });
 
@@ -321,6 +317,7 @@ export const useMyListingsPage = ({
     updateFilters,
     resetFilters,
     billingMe: billingMeQuery.data ?? null,
+    featureOffers,
     featureOffer,
     featureDurationDays: featureOffer?.duration_days ?? null,
     isLoading: listingsQuery.isLoading,

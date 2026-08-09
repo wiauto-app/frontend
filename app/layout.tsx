@@ -9,7 +9,6 @@ import { AssistantDialog } from "@/components/assistant/assistantDialog";
 import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
 import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { ProfessionalSidebar } from "./usuario/components/professionalSidebar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -41,21 +40,15 @@ export default async function RootLayout({
         )}
       >
         <body className="flex flex-col relative">
-          <SidebarProvider>
-            <Suspense fallback={null}>
-              <ProfessionalSidebar />
-            </Suspense>
-            <SidebarInset>
-              <Navbar />
-              <main className="flex flex-1 flex-col">{children}</main>
-              <ConditionalWrapper hideOnPaths={["/usuario"]}>
-                <NewsletterSection />
-                <Footer />
-              </ConditionalWrapper>
-              <AssistantDialog />
-              <MobileNavbar />
-            </SidebarInset>
-          </SidebarProvider>
+          <Navbar />
+          <main className="flex flex-1 flex-col">{children}</main>
+          <ConditionalWrapper hideOnPaths={["/usuario"]}>
+            <NewsletterSection />
+            <Footer />
+          </ConditionalWrapper>
+          <AssistantDialog />
+          <MobileNavbar />
+         
         </body>
       </html>
     </Providers>

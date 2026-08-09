@@ -13,6 +13,14 @@ export const formatEuros = (value: number): string =>
     maximumFractionDigits: 0,
   }).format(value);
 
+//1999
+export const formatEurosCents = (value: number): string =>
+{
+  const euros = Math.floor(value / 100);
+  const cents = value % 100;
+  return `${euros},${cents.toString().padStart(2, "0")} €`;
+}
+
 export const formatPercentChange = (changePercent: number | null): string => {
   if (changePercent === null) {
     return "Sin datos previos";

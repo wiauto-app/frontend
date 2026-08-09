@@ -14,7 +14,7 @@ export async function loginAction(data: LoginDto): Promise<{ type: "session" | "
     const cookiesStore = await cookies();
     cookiesStore.set(cookiesConfig.accessToken.name, response.data.token, cookiesConfig.accessToken.options);
     const refresh_token =
-      response.data.refresh_token ?? response.data.refreshToken_hash;
+      response.data.refresh_token ?? response.data.refresh_token;
     if (!refresh_token) {
       throw new Error("No se recibió el token de actualización");
     }

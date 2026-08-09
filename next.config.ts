@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
   experimental:{
     optimizePackageImports: ['package-name'],
   },
+  logging:{
+    browserToTerminal:false
+  },
   images: {
     qualities: [70,80, 90, 100],
     remotePatterns: [

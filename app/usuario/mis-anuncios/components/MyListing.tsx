@@ -32,6 +32,7 @@ export const MyListing = () => {
   const [scheduleListing, setScheduleListing] = useState<OwnerVehicleListItem | null>(
     null,
   );
+  const [featuringOfferId, setFeaturingOfferId] = useState<string | null>(null);
 
   const isAuthenticated = Boolean(user);
   const canUseAdvancedEditor = has("advanced_listing_editor");
@@ -46,6 +47,7 @@ export const MyListing = () => {
     updateFilters,
     resetFilters,
     billingMe,
+    featureOffers,
     featureOffer,
     featureDurationDays,
     isLoading,
@@ -143,11 +145,20 @@ export const MyListing = () => {
     }
   };
 
-  const handleFeature = async (id: string) => {
+  const handleFeature = async (vehicleId: string, offerId?: string) => {
+    const selectedOfferId = offerId ?? featureOffer?.id;
+    if (!selectedOfferId) {
+      toast.error("No hay ofertas de destacado disponibles");
+      return;
+    }
+
+    setFeaturingOfferId(selectedOfferId);
     try {
-      await featureListing(id);
+      await featureListing({ vehicleId, offerId: selectedOfferId });
     } catch {
       toast.error("No se pudo iniciar el checkout de destacado");
+    } finally {
+      setFeaturingOfferId(null);
     }
   };
 
@@ -286,9 +297,10 @@ export const MyListing = () => {
 
         <MyListingsPromoSidebar
           listings={listings}
-          featureOffer={featureOffer}
+          featureOffers={featureOffers}
           onFeature={handleFeature}
           isFeatureLoading={isFeaturing}
+          featuringOfferId={featuringOfferId}
         />
       </div>
 

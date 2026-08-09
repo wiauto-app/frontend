@@ -4,7 +4,6 @@ export interface AuthResponseDto {
   token: string;
   /** Token crudo para cookie `refresh_token` (respuesta del API). */
   refresh_token?: string;
-  refreshToken_hash?: string;
 }
 
 

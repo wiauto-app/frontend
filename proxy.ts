@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookiesConfig } from "@/config/cookies.config";
 import {
   ensureValidSession,
-  withSessionCookies,
+  setSessionCookies,
   clearSessionCookiesOnResponse,
 } from "@/lib/ensure-session.server";
 
@@ -18,13 +18,21 @@ const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isPrivatePath = pathname.startsWith("/usuario");
-  if (!isPrivatePath) {
-    return NextResponse.next();
-  }
+
 
   const access_token = req.cookies.get(cookiesConfig.accessToken.name)?.value ?? null;
   const refresh_token = req.cookies.get(cookiesConfig.refreshToken.name)?.value ?? null;
-  if (!access_token || !refresh_token) {
+
+  const shouldRedirect = !access_token && !refresh_token && isPrivatePath;
+  if (shouldRedirect) {
+    return NextResponse.redirect(new URL("/iniciar-sesion", req.url));
+  }
+
+  if(!refresh_token && !isPrivatePath) {
+    return NextResponse.next();
+  }
+
+  if(!refresh_token) {
     return NextResponse.redirect(new URL("/iniciar-sesion", req.url));
   }
 
@@ -38,12 +46,11 @@ export async function proxy(req: NextRequest) {
   }
 
   if (result.outcome === "session_refreshed") {
-    const res = NextResponse.next();
-    return withSessionCookies(
-      res,
+    await setSessionCookies(
       result.access_token,
-      result.refresh_token_hash,
+      result.refresh_token ?? "",
     );
+    return NextResponse.next();
   }
 
   if (result.outcome === "two_factor_pending") {

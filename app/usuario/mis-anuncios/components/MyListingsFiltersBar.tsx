@@ -17,6 +17,7 @@ import {
 import { MY_LISTINGS_ORDER_OPTIONS } from "../constants/my-listings-order.constants";
 import { MyListingsMakeModelFilter } from "./MyListingsMakeModelFilter";
 import type { MyListingsFilters } from "../hooks/useMyListingsPage";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface MyListingsFiltersBarProps {
   filters: MyListingsFilters;
@@ -27,10 +28,10 @@ interface MyListingsFiltersBarProps {
 const hasActiveFilters = (filters: MyListingsFilters): boolean =>
   Boolean(
     filters.status ||
-      filters.makeId ||
-      filters.modelId ||
-      filters.sinceCreatedAt ||
-      filters.untilCreatedAt,
+    filters.makeId ||
+    filters.modelId ||
+    filters.sinceCreatedAt ||
+    filters.untilCreatedAt,
   );
 
 export const MyListingsFiltersBar = ({
@@ -39,108 +40,110 @@ export const MyListingsFiltersBar = ({
   onReset,
 }: MyListingsFiltersBarProps) => {
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-      <div className="flex flex-wrap items-center gap-2">
-        <MyListingsMakeModelFilter
-          makeId={filters.makeId}
-          modelId={filters.modelId}
-          onMakeChange={(makeId) => onChange({ makeId, modelId: null })}
-          onModelChange={(modelId) => onChange({ modelId })}
-        />
+    <Card>
+      <CardContent>
+        <div className="flex flex-wrap items-center gap-2">
+          <MyListingsMakeModelFilter
+            makeId={filters.makeId}
+            modelId={filters.modelId}
+            onMakeChange={(makeId) => onChange({ makeId, modelId: null })}
+            onModelChange={(modelId) => onChange({ modelId })}
+          />
 
-        <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1">
+            <Select
+              value={filters.status}
+              onValueChange={(value) =>
+                onChange({
+                  status: value ? (value as VehicleStatus) : null,
+                })
+              }
+              items={VEHICLE_STATUS_OPTIONS.map((option) => ({
+                label: option.label,
+                value: option.value,
+              }))}
+            >
+              <SelectTrigger
+                className="w-full sm:w-40 border-gray-200 bg-white"
+                aria-label="Filtrar por estado"
+              >
+                <SelectValue placeholder="Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                {VEHICLE_STATUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {filters.status ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="shrink-0 text-muted-foreground hover:text-foreground"
+                aria-label="Quitar filtro de estado"
+                onClick={() => onChange({ status: null })}
+              >
+                <X className="size-4" aria-hidden />
+              </Button>
+            ) : null}
+          </div>
+
           <Select
-            value={filters.status}
-            onValueChange={(value) =>
-              onChange({
-                status: value ? (value as VehicleStatus) : null,
-              })
-            }
-            items={VEHICLE_STATUS_OPTIONS.map((option) => ({
+            value={filters.order}
+            onValueChange={(value) => {
+              if (value) {
+                onChange({ order: value });
+              }
+            }}
+            items={MY_LISTINGS_ORDER_OPTIONS.map((option) => ({
               label: option.label,
               value: option.value,
             }))}
           >
             <SelectTrigger
-              className="w-full sm:w-40 border-gray-200 bg-white"
-              aria-label="Filtrar por estado"
+              className="w-full sm:w-48 border-gray-200 bg-white"
+              aria-label="Ordenar anuncios"
             >
-              <SelectValue placeholder="Estado" />
+              <SelectValue placeholder="Ordenar" />
             </SelectTrigger>
             <SelectContent>
-              {VEHICLE_STATUS_OPTIONS.map((option) => (
+              {MY_LISTINGS_ORDER_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {filters.status ? (
+
+          {hasActiveFilters(filters) ? (
             <Button
               type="button"
               variant="ghost"
-              size="icon-sm"
-              className="shrink-0 text-muted-foreground hover:text-foreground"
-              aria-label="Quitar filtro de estado"
-              onClick={() => onChange({ status: null })}
+              size="sm"
+              onClick={onReset}
+              className="text-gray-500 hover:text-gray-700"
             >
               <X className="size-4" aria-hidden />
+              Limpiar filtros
             </Button>
           ) : null}
         </div>
 
-        <Select
-          value={filters.order}
-          onValueChange={(value) => {
-            if (value) {
-              onChange({ order: value });
-            }
-          }}
-          items={MY_LISTINGS_ORDER_OPTIONS.map((option) => ({
-            label: option.label,
-            value: option.value,
-          }))}
-        >
-          <SelectTrigger
-            className="w-full sm:w-48 border-gray-200 bg-white"
-            aria-label="Ordenar anuncios"
-          >
-            <SelectValue placeholder="Ordenar" />
-          </SelectTrigger>
-          <SelectContent>
-            {MY_LISTINGS_ORDER_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {hasActiveFilters(filters) ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onReset}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <X className="size-4" aria-hidden />
-            Limpiar filtros
-          </Button>
-        ) : null}
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-gray-500">
-          Antigüedad del anuncio
-        </span>
-        <DateRangeSelector
-          startDate={filters.sinceCreatedAt}
-          endDate={filters.untilCreatedAt}
-          onStartDateChange={(value) => onChange({ sinceCreatedAt: value })}
-          onEndDateChange={(value) => onChange({ untilCreatedAt: value })}
-        />
-      </div>
-    </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-500">
+            Antigüedad del anuncio
+          </span>
+          <DateRangeSelector
+            startDate={filters.sinceCreatedAt}
+            endDate={filters.untilCreatedAt}
+            onStartDateChange={(value) => onChange({ sinceCreatedAt: value })}
+            onEndDateChange={(value) => onChange({ untilCreatedAt: value })}
+          />
+        </div>
+      </CardContent>
+    </Card>
   );
 };

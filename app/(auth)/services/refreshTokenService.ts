@@ -27,7 +27,7 @@ export const refreshTokenService = {
     });
 
     const body = (await refreshResponse.json()) as ApiResponse<AuthResponseDto>;
-
+    
     return {
       ok: body.ok ?? refreshResponse.ok,
       message: body.message ?? refreshResponse.statusText,

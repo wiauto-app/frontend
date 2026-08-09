@@ -1,6 +1,14 @@
-import { Car, Eye, Heart, MessageCircle, TrendingDown, TrendingUp } from "lucide-react";
+import {
+  Car,
+  Eye,
+  Heart,
+  MessageCircle,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
 import type { AggregatedListingStats } from "../utils/aggregateListingStats";
 import { ListingPerformanceSparkline } from "./ListingPerformanceSparkline";
+import { Card, CardContent } from "@/components/ui/card";
 
 type MyListingsSummaryCardsProps = {
   stats: AggregatedListingStats;
@@ -24,31 +32,38 @@ const formatChangeLabel = (changePercent: number | null): string => {
   return `${prefix}${changePercent}% vs 30 días anteriores`;
 };
 
-const SummaryCard = ({ label, value, changePercent, icon: Icon }: SummaryCardConfig) => {
+const SummaryCard = ({
+  label,
+  value,
+  changePercent,
+  icon: Icon,
+}: SummaryCardConfig) => {
   const isPositive = (changePercent ?? 0) >= 0;
   const TrendIcon = isPositive ? TrendingUp : TrendingDown;
 
   return (
-    <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex flex-col">
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className="size-4 text-gray-400" aria-hidden />
-        <h3 className="text-sm font-medium text-gray-500">{label}</h3>
-      </div>
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <p className="text-3xl font-bold text-gray-900">{value}</p>
-          <p
-            className={`text-xs font-medium flex items-center gap-1 mt-1 ${
-              isPositive ? "text-green-600" : "text-red-500"
-            }`}
-          >
-            <TrendIcon className="size-3" aria-hidden />
-            {formatChangeLabel(changePercent)}
-          </p>
+    <Card >
+      <CardContent>
+        <div className="flex items-center gap-2 mb-2">
+          <Icon className="size-4 text-gray-400" aria-hidden />
+          <h3 className="text-sm font-medium text-gray-500">{label}</h3>
         </div>
-        <ListingPerformanceSparkline positive={isPositive} />
-      </div>
-    </div>
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <p className="text-3xl font-bold text-gray-900">{value}</p>
+            <p
+              className={`text-xs font-medium flex items-center gap-1 mt-1 ${
+                isPositive ? "text-green-600" : "text-red-500"
+              }`}
+            >
+              <TrendIcon className="size-3" aria-hidden />
+              {formatChangeLabel(changePercent)}
+            </p>
+          </div>
+          <ListingPerformanceSparkline positive={isPositive} />
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
