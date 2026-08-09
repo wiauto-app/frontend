@@ -63,8 +63,8 @@ export const VehicleDetailSaveSearchSection = ({
 
   return (
     <>
-      <Card className="bg-primary/10">
-        <CardContent className="flex flex-row items-center justify-between gap-4">
+      <Card className="bg-primary/5" size="sm">
+        <CardContent className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Image
               src="/icons/alertBell.svg"
@@ -83,7 +83,6 @@ export const VehicleDetailSaveSearchSection = ({
           </div>
           <Button
             type="button"
-            className="mt-4"
             disabled={isLoading || isSaving}
             aria-label="Guardar búsqueda"
             onClick={() => {

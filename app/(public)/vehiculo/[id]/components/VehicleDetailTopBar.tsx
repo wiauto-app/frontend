@@ -17,7 +17,7 @@ export const VehicleDetailTopBar = ({
   breadcrumbItems,
 }: VehicleDetailTopBarProps) => {
   return (
-    <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+    <div className="border-b border-gray-200 bg-white">
       <div className="mx-auto container-custom flex items-center justify-between gap-4 py-3">
         <PageBreadcrumbs items={breadcrumbItems} />
 

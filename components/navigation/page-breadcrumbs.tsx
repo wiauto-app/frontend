@@ -82,16 +82,16 @@ const BreadcrumbTrail = ({
 
         return (
           <Fragment key={`${segment.label}-${index}`}>
-            <BreadcrumbItem>
+            <BreadcrumbItem className="max-w-44">
               {segment.href ? (
                 <BreadcrumbLink
                   render={<Link href={segment.href} />}
-                  className={styles.link}
+                  className={cn(styles.link, "truncate")}
                 >
                   {segment.label}
                 </BreadcrumbLink>
               ) : (
-                <BreadcrumbPage className={styles.page}>
+                <BreadcrumbPage className={cn(styles.page, "truncate")}>
                   {segment.label}
                 </BreadcrumbPage>
               )}
