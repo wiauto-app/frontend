@@ -39,6 +39,14 @@ import {
   HiCheck,
   HiOutlineTicket,
   HiOutlineEye,
+  HiOutlineUser,
+  HiOutlineShoppingCart,
+  HiOutlineClipboardCheck,
+  HiOutlineCalculator,
+  HiOutlineCash,
+  HiOutlineChip,
+  HiOutlineCollection,
+  HiOutlineSupport,
 } from "react-icons/hi";
 
 import {
@@ -102,6 +110,14 @@ const STRAPI_ICONS = {
   HiCheck,
   HiOutlineTicket,
   HiOutlineEye,
+  HiOutlineUser,
+  HiOutlineShoppingCart,
+  HiOutlineClipboardCheck,
+  HiOutlineCalculator,
+  HiOutlineCash,
+  HiOutlineChip,
+  HiOutlineCollection,
+  HiOutlineSupport,
 
   // Heroicons 2
   HiMiniReceiptPercent,

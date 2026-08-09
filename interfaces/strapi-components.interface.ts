@@ -46,8 +46,8 @@ export interface StrapiHeader {
 /** Componente `shared.hero` */
 export interface StrapiHero {
   id: number;
-  titulo: string | null;
-  descripcion: string | null;
+  titulo: string ;
+  descripcion: string ;
   acciones: StrapiLink[];
   imagen: StrapiMedia | null;
   caracteristicas: StrapiIconFeature[];
@@ -102,6 +102,15 @@ export interface StrapiPregunta {
   id: number;
   pregunta: string | null;
   respuesta: BlocksContent | null;
+}
+
+/** Componente `shared.faq` */
+export interface StrapiFaq {
+  id: number;
+  pregunta: string | null;
+  respuesta: BlocksContent | null;
+  categoria: string | null;
+  iconName: string | null;
 }
 
 /** Componente `shared.desplegable` */

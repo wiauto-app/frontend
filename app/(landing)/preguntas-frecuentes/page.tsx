@@ -1,15 +1,14 @@
-import { FaqQuestionsList } from "@/components/preguntas-frecuentes/FaqQuestionsList";
-import { getFaqData } from "@/components/preguntas-frecuentes/services/faqService";
-import type { FaqItem } from "@/components/preguntas-frecuentes/types/faq.types";
-import { Card, CardContent } from "@/components/ui/card";
 import { LandingHeader } from "@/components/ui/landingHeader";
 
+import { FaqPageContent } from "./components/FaqPageContent";
+import { getFaqPageData } from "./services/getFaqPageData";
+
 export default async function PreguntasFrecuentes() {
-  let items: FaqItem[] = [];
   let error_message: string | null = null;
+  let content = null;
 
   try {
-    items = await getFaqData();
+    content = await getFaqPageData();
   } catch (error) {
     error_message =
       error instanceof Error
@@ -17,38 +16,31 @@ export default async function PreguntasFrecuentes() {
         : "No se pudieron cargar las preguntas frecuentes.";
   }
 
+  const faqs =
+    content?.faqs?.filter((item) => item.pregunta?.trim()) ?? [];
+  const heroTitle = content?.hero?.titulo?.trim() || "Preguntas frecuentes";
+  const heroDescription = content?.hero?.descripcion?.trim() || undefined;
+
   return (
     <>
-      <LandingHeader title="Preguntas frecuentes" />
-      <div className="flex min-h-[60vh] items-center justify-center p-4 w-full">
-        <Card className="container-custom mx-auto">
-          <CardContent className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="w-full  flex items-start justify-center p-8 bg-white overflow-y-auto">
-              {error_message ? (
-                <div className="w-full max-w-xl rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-                  {error_message}
-                </div>
-              ) : null}
+      <LandingHeader title={heroTitle} description={heroDescription} />
 
-              {!error_message && items.length === 0 ? (
-                <div className="w-full max-w-xl rounded-lg border border-dashed border-slate-300 bg-slate-50 p-10 text-center text-slate-500">
-                  No hay preguntas publicadas todavía.
-                </div>
-              ) : null}
+      <div className="min-h-[60vh] w-full bg-[#F5F7FB] px-4 py-10 md:py-14">
+        {error_message ? (
+          <div className="mx-auto max-w-6xl rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error_message}
+          </div>
+        ) : null}
 
-              {!error_message && items.length > 0 ? (
-                <FaqQuestionsList items={items} />
-              ) : null}
-            </div>
-            <div className="hidden lg:flex lg:flex-1 relative overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-                <span className="text-white text-7xl font-bold tracking-tighter">
-                  W
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {!error_message && faqs.length === 0 ? (
+          <div className="mx-auto max-w-6xl rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+            No hay preguntas publicadas todavía.
+          </div>
+        ) : null}
+
+        {!error_message && faqs.length > 0 ? (
+          <FaqPageContent faqs={faqs} soporte={content?.soporte ?? null} />
+        ) : null}
       </div>
     </>
   );

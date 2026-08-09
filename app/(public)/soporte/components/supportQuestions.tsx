@@ -1,10 +1,7 @@
 import { FaqQuestionsList } from "@/components/preguntas-frecuentes/FaqQuestionsList";
-import type {
-  FaqItem,
-  StrapiBlock,
-} from "@/components/preguntas-frecuentes/types/faq.types";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageSectionTitle } from "@/components/ui/pageSectionTitle";
+import type { StrapiFaq } from "@/interfaces/strapi-components.interface";
 
 import type {
   SoportePreguntaItem,
@@ -15,9 +12,9 @@ interface SupportQuestionsProps {
   data: SoportePreguntas | null;
 }
 
-const mapSoportePreguntasToFaqItems = (
+const mapSoportePreguntasToStrapiFaqs = (
   items: SoportePreguntaItem[] | null | undefined,
-): FaqItem[] => {
+): StrapiFaq[] => {
   if (!items?.length) {
     return [];
   }
@@ -25,11 +22,11 @@ const mapSoportePreguntasToFaqItems = (
   return items
     .filter((item) => item.pregunta?.trim())
     .map((item) => ({
-      id: String(item.id),
+      id: item.id,
       pregunta: item.pregunta?.trim() ?? "",
-      respuesta: Array.isArray(item.respuesta)
-        ? (item.respuesta as unknown as StrapiBlock[])
-        : [],
+      respuesta: item.respuesta,
+      categoria: null,
+      iconName: null,
     }));
 };
 
@@ -38,7 +35,7 @@ export const SupportQuestions = ({ data }: SupportQuestionsProps) => {
     return null;
   }
 
-  const items = mapSoportePreguntasToFaqItems(data.preguntas);
+  const items = mapSoportePreguntasToStrapiFaqs(data.preguntas);
 
   return (
     <section className="flex flex-col gap-6">
