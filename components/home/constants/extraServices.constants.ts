@@ -57,7 +57,7 @@ export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
   {
     name: "Financiación",
     icon: CreditCard,
-    href: "/financiamiento",
+    href: "/financiacion",
     description: "Encuentra la mejor opción de financiación.",
   },
   {

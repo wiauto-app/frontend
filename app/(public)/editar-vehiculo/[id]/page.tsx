@@ -50,7 +50,7 @@ export default function EditarVehiculoPage() {
     <div className="container-custom mx-auto py-8">
       <div className="mb-8">
         <Link
-          href="/mis-anuncios"
+          href="/usuario/mis-anuncios"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />

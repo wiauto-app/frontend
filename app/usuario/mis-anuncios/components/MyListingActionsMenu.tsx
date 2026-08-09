@@ -118,7 +118,7 @@ export const MyListingActionsMenu = ({
           <DropdownMenuItem
             render={
               <Link
-                href={`/mis-anuncios/${listing.id}/informe`}
+                href={`/usuario/mis-anuncios/${listing.id}/informe`}
                 target="_blank"
                 rel="noopener noreferrer"
               />

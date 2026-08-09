@@ -27,7 +27,7 @@ export const DashboardInventorySection = ({
           </p>
         </div>
         <Link
-          href="/mis-anuncios"
+          href="/usuario/mis-anuncios"
           className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700"
         >
           Ver mis anuncios
