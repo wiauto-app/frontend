@@ -9,7 +9,6 @@ import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { AiSearchForm } from "./aiSearchForm";
-import { HERO_DELAYS, MotionSection } from "./motion";
 
 export const SearchForm = () => {
   const [activeTab, setActiveTab] = useState<"search-ai" | "search-filters">(
@@ -17,36 +16,31 @@ export const SearchForm = () => {
   );
 
   return (
-    <MotionSection
-      inView={false}
-      transition={{ delay: HERO_DELAYS.search }}
+    <Card
+      size="sm"
+      className={cn(
+        activeTab === "search-ai" &&
+          "bg-primary shadow-lg ring-4 ring-primary/50",
+      )}
     >
-      <Card
-        size="sm"
-        className={cn(
-          activeTab === "search-ai" &&
-            "bg-primary shadow-lg ring-4 ring-primary/50",
-        )}
-      >
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList>
-              <TabsTrigger value="search-ai">
-                <div className="flex items-center gap-2">
-                  <Badge>Nuevo</Badge>
-                  <span className="flex items-center gap-2 font-bold text-primary">
-                    <SparklesIcon className="size-5" />
-                    Buscar con IA
-                  </span>
-                </div>
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="search-ai">
-              <AiSearchForm />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </MotionSection>
+      <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList>
+            <TabsTrigger value="search-ai">
+              <div className="flex items-center gap-2">
+                <Badge>Nuevo</Badge>
+                <span className="flex items-center gap-2 font-bold text-primary">
+                  <SparklesIcon className="size-5" />
+                  Buscar con IA
+                </span>
+              </div>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="search-ai">
+            <AiSearchForm />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };

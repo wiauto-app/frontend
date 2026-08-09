@@ -120,8 +120,8 @@ export const HeroBackgroundCarousel = ({
               priority={index === 0}
               loading={index === 0 ? "eager" : "lazy"}
               fill
-              quality={80}
-              sizes="(max-width: 639px) 100vw, (max-width: 767px) 688px, (max-width: 1023px) 808px, (max-width: 1279px) 928px, (max-width: 1535px) 1068px, 1268px"
+              quality={50}
+              sizes="(max-width: 639px) 90vw, (max-width: 767px) 619px, (max-width: 1023px) 727px, (max-width: 1279px) 835px, (max-width: 1535px) 961px, 1000px"
               className="object-cover"
             />
           </CarouselItem>
