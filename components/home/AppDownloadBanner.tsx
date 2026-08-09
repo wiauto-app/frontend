@@ -6,21 +6,15 @@ import { getStrapiMediaUrl } from "@/lib/strapi-media";
 import { AppPhoneMockup } from "./AppPhoneMockup";
 import { MotionSection } from "./motion";
 import { SectionContainer } from "./SectionContainer";
-import { SectionHeading } from "./SectionHeading";
 import { StoreButtons } from "./StoreButtons";
 
 interface AppDownloadBannerProps {
-  data: StrapiAppAdvertisment | null | undefined;
+  data: StrapiAppAdvertisment;
 }
 
 export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
-  if (!data?.title?.trim()) {
-    return null;
-  }
+  
 
-  const title = data.title.trim();
-  const first_word = title.split(" ")[0] ?? "";
-  const rest_of_words = title.split(" ").slice(1).join(" ");
   const app_mockup_url = getStrapiMediaUrl(data.appMockup?.url);
 
   return (
@@ -32,7 +26,7 @@ export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
               {app_mockup_url ? (
                 <Image
                   src={app_mockup_url}
-                  alt={title}
+                  alt={data.title}
                   width={260}
                   height={520}
                   sizes="260px"
@@ -50,12 +44,11 @@ export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
                   {data.phrase}
                 </p>
               ) : null}
-              <SectionHeading
-                className="w-full max-w-full text-center text-2xl text-white lg:max-w-sm lg:text-left lg:text-5xl"
-                highlightClassName="text-primary-soft font-bold"
-                lead={first_word}
-                highlight={rest_of_words}
-              />
+              <h2
+                className="w-full max-w-full text-center text-2xl text-white lg:max-w-sm lg:text-left lg:text-5xl font-bold"
+              >
+                {data.title}
+              </h2>
               {data.description ? (
                 <p className="mx-auto max-w-xl text-sm leading-relaxed text-white/95 sm:text-base lg:mx-0">
                   {data.description}

@@ -41,7 +41,7 @@ export default async function RootLayout({
       >
         <body className="flex flex-col relative">
           <Navbar />
-          <main className="flex flex-1 flex-col">{children}</main>
+          <main className="flex flex-1 flex-col mb-10">{children}</main>
           <ConditionalWrapper hideOnPaths={["/usuario"]}>
             <NewsletterSection />
             <Footer />

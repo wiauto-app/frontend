@@ -194,12 +194,12 @@ export interface StrapiHomeHero {
 /** Componente `home.app-advertisment` */
 export interface StrapiAppAdvertisment {
   id: number;
-  appMockup: StrapiMedia | null;
-  title: string | null;
-  phrase: string | null;
-  description: string | null;
-  googleLabel: BlocksContent | null;
-  appleLabel: BlocksContent | null;
+  appMockup: StrapiMedia ;
+  title: string;
+  phrase: string;
+  description: string;
+  googleLabel: BlocksContent;
+  appleLabel: BlocksContent;
 }
 
 /** Componente `home.newsletter` */
