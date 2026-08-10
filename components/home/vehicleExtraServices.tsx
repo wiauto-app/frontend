@@ -1,4 +1,3 @@
-"use client";
 
 import { cn } from "@/lib/utils";
 
@@ -6,7 +5,6 @@ import {
   EXTRA_SERVICES_DATA,
   EXTRA_SERVICES_DATA_2,
 } from "./constants/extraServices.constants";
-import { MotionStagger } from "./motion";
 import { ServiceHomeItem } from "./serviceHomeItem";
 
 interface VehicleExtraServicesProps {
@@ -22,7 +20,7 @@ export const VehicleExtraServices = ({
     variant === "secondary" ? EXTRA_SERVICES_DATA_2 : EXTRA_SERVICES_DATA;
 
   return (
-    <MotionStagger
+    <div
       className={cn(
         "grid w-full grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5",
         className,
@@ -31,6 +29,6 @@ export const VehicleExtraServices = ({
       {data.map((item) => (
         <ServiceHomeItem key={item.href} item={item} />
       ))}
-    </MotionStagger>
+    </div>
   );
 };

@@ -7,12 +7,12 @@ import { billingService } from "@/services/billingService";
 import type { BillingMeEntitlementEntry } from "@/interfaces/billing.interface";
 
 export const useEntitlements = () => {
-  const { user, isAuthenticated } = useUser();
+  const { user, isAuthenticated,isLoading } = useUser();
 
   const query = useQuery({
-    queryKey: ["billing-me"],
+    queryKey: ["billing-me",user,isLoading],
     queryFn: () => billingService.getMe(),
-    enabled: Boolean(isAuthenticated && user),
+    enabled: Boolean(isAuthenticated && user && !isLoading),
   });
 
   const entitlements = query.data?.entitlements ?? {};

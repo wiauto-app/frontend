@@ -31,6 +31,10 @@ export const MotionSection = ({
   const resolvedVariants = getVariant(variants, prefersReducedMotion);
   const Component = as === "section" ? motion.section : motion.div;
 
+  if(prefersReducedMotion) {
+    return children
+  }
+
   return (
     <Component
       className={cn(className)}

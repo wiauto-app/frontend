@@ -30,7 +30,7 @@ export default async function RootLayout({
   return (
     <Providers>
       <html
-        lang="en"
+        lang="es"
         className={cn(
           "antialiased",
           geistSans.variable,

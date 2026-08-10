@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 import type { StrapiAppAdvertisment } from "@/interfaces/strapi-components.interface";
-import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
 import { AppPhoneMockup } from "./AppPhoneMockup";
 import { MotionSection } from "./motion";
@@ -14,18 +13,15 @@ interface AppDownloadBannerProps {
 
 export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
   
-
-  const app_mockup_url = getStrapiMediaUrl(data.appMockup?.url);
-
   return (
     <MotionSection>
       <SectionContainer className=" flex h-auto items-end lg:h-[550px]">
         <div className="dots-background relative w-full rounded-[2rem] bg-primary sm:rounded-[2.5rem] ">
           <div className="grid grid-cols-1 px-5 py-10 lg:grid-cols-2">
             <div className="flex justify-center  ">
-              {app_mockup_url ? (
+              {data.appMockup?.url ? (
                 <Image
-                  src={app_mockup_url}
+                  src={data.appMockup.url}
                   alt={data.title}
                   width={260}
                   height={520}

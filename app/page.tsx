@@ -37,9 +37,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
     title: seo?.metaTitle ?? "",
     description: seo?.metaDescription ?? undefined,
     keywords: seo?.keywords ?? undefined,
-    alternates: seo?.canonicalURL
-      ? { canonical: seo.canonicalURL }
-      : undefined,
+    alternates: seo?.canonicalURL ? { canonical: seo.canonicalURL } : undefined,
     robots: seo?.noIndex ? { index: false, follow: false } : undefined,
     openGraph: {
       title: seo?.metaTitle ?? undefined,
@@ -63,10 +61,7 @@ export default async function Home() {
       <LandingContainer>
         <HeroSection data={home_data.homeHero} />
 
-        <StoreButtons
-          animateEntrance
-          className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden"
-        />
+        <StoreButtons className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden" />
         <SearchForm />
 
         <VehicleExtraServices />

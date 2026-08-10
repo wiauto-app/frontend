@@ -222,7 +222,7 @@ export const fetchWithAuth = async <T>(
     }
 
     const refreshResult = await tryRefreshSession();
-
+    console.log(refreshResult);
     if (refreshResult.ok) {
       return fetchWithAuth<T>(path, {
         ...options,

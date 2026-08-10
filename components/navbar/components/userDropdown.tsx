@@ -27,17 +27,16 @@ function getDisplayName(name?: string, lastName?: string, email?: string) {
 export function UserDropdown() {
   const { user, logout, isLoading } = useUser();
   const { has, planName, } = useEntitlements();
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="hidden lg:block space-y-1">
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="h-2 w-20" />
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center gap-2">
+  //       <Skeleton className="h-10 w-10 rounded-full" />
+  //       <div className="hidden lg:block space-y-1">
+  //         <Skeleton className="h-3 w-8" />
+  //       </div>
+  //     </div>
+  //   );
+  // }
   
   if (!user) {
     return (
