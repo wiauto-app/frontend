@@ -28,7 +28,7 @@ export const MyListingsHeader = () => {
         <Button
           className="bg-blue-600 hover:bg-blue-700 text-white"
           nativeButton={false}
-          render={<Link href="/crear-vehiculo" aria-label="Crear nuevo anuncio" />}
+          render={<Link href="/publicar" aria-label="Crear nuevo anuncio" />}
         >
           <Plus className="size-4" aria-hidden />
           Nuevo anuncio

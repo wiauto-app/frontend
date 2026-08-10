@@ -9,7 +9,7 @@ import {
 
 
 const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
-
+const PRIVATE_PATHS = ["/usuario", "/publicar"];
 /**
  * En rutas protegidas: refresca sesión al navegar (UX).
  * El cliente usa POST /api/auth/refresh con single-flight; Nest mitiga rotación concurrente.

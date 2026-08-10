@@ -35,7 +35,7 @@ export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
           <Button onClick={() => router.push("/vehiculos")}>Comprar</Button>
           <Button
             variant="outline"
-            onClick={() => router.push("/crear-vehiculo")}
+            onClick={() => router.push("/publicar")}
           >
             Vender
           </Button>

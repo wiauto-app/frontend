@@ -65,7 +65,7 @@ export default async function CrearVehiculoExitoPage({
 
         <p className="mt-8 text-sm text-slate-500">
           <Link
-            href="/crear-vehiculo"
+            href="/publicar"
             className="inline-flex items-center gap-1.5 font-medium text-primary hover:underline"
           >
             <Plus className="size-3.5" aria-hidden />

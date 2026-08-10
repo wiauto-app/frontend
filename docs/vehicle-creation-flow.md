@@ -6,7 +6,7 @@ Formulario **single-page** (`QuickVehicleForm`). Submit → `POST /api/v1/vehicl
 
 | Ruta | Componente |
 |------|------------|
-| `/crear-vehiculo` | `QuickVehicleForm` |
+| `/publicar` | `QuickVehicleForm` |
 | `/editar-vehiculo/[id]` | `QuickVehicleForm` + `vehicleId` |
 
 Gate auth en cliente. Redirect éxito → `/mis-anuncios`.

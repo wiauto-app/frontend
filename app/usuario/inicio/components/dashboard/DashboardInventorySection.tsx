@@ -39,7 +39,7 @@ export const DashboardInventorySection = ({
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center">
           <p className="text-gray-600">Aún no tienes anuncios activos en stock.</p>
           <Link
-            href="/crear-vehiculo"
+            href="/publicar"
             className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700"
           >
             Publicar vehículo

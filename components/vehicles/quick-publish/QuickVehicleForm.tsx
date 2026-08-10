@@ -83,14 +83,14 @@ export const QuickVehicleForm = ({
     if (response.ok && response.data?.id) {
       onSuccess?.();
       router.push(
-        `/crear-vehiculo/exito?id=${encodeURIComponent(response.data.id)}`,
+        `/publicar/exito?id=${encodeURIComponent(response.data.id)}`,
       );
       return;
     }
 
     if (response.ok) {
       onSuccess?.();
-      router.push("/crear-vehiculo/exito");
+      router.push("/publicar/exito");
       return;
     }
 

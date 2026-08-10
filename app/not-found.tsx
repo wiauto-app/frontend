@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 const QUICK_LINKS = [
   { href: "/vehiculos", label: "Comprar vehículos" },
-  { href: "/crear-vehiculo", label: "Publicar anuncio" },
+  { href: "/publicar", label: "Publicar anuncio" },
   { href: "/concesionarias", label: "Concesionarios" },
   { href: "/tasador", label: "Tasador" },
 ] as const;

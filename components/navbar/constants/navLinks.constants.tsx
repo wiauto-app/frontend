@@ -109,7 +109,7 @@ export const NAV_LINKS: NavLink[] = [
     label: "Vender",
     items: [
       {
-        href: "/crear-vehiculo",
+        href: "/publicar",
         label: "Publicar vehículo",
         Icon: CirclePlus,
         description: "Crea tu anuncio y llega a compradores en minutos",

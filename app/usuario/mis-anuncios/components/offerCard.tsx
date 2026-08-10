@@ -18,9 +18,9 @@ export const OfferCard = ({
   return (
     <li>
       <Card size="sm">
-        <CardContent className="flex items-start justify-between gap-3">
+        <CardContent>
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between w-full ">
               <p className="text-sm font-semibold flex items-center gap-2">
                 {offer.title} <Zap className="text-primary size-4" />
               </p>
