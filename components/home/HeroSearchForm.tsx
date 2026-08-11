@@ -121,7 +121,11 @@ const HeroFiltersSearchForm = () => {
       {/* <HeroFiltersModelSelector /> */}
       <HeroFiltersLocationSelector
         value={selectedItems}
-        onChange={setSelectedItems}
+        onChange={(items) => {
+          if(items?.length && typeof items[0] === "object") {
+            setSelectedItems(items as LocationSelectedItem[]);
+          }
+        }}
       />
       <PriceUntilSelector />
       <Button type="submit" aria-label={SEARCH_BUTTON_LABEL}>

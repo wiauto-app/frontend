@@ -7,7 +7,6 @@ import { AuthContext } from "./authContext";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<MeResponseDto | undefined>(undefined);
-  console.log("user", user);
   const [isLoading, setIsLoading] = useState(false);
 
   const refreshUser = useCallback(async () => {
