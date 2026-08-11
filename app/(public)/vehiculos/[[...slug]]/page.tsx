@@ -21,6 +21,7 @@ import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
 import { cn } from "@/lib/utils";
 import { SaveSearchButton } from "../components/SaveSearchButton";
 import { BuyAssistantBannerCard } from "../components/buyAssistantBannerCard";
+import { LoadingComponent } from "@/components/ui/loadingComponent";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
@@ -77,6 +78,8 @@ export default async function VehiclesListingPage(props: {
   ]);
 
   const isMapVisible = search_params[SHOW_MAP_KEY] === "true";
+
+
   return (
     <VehiclesListingShell>
       <div>

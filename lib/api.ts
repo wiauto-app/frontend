@@ -32,14 +32,7 @@ interface TryRefreshSessionResult {
 }
 
 export const buildApiUrl = (path: string): string => {
-  const base = (API_URL ?? "").replace(/\/$/, "");
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-
-  if (!base) {
-    return normalizedPath;
-  }
-
-  return `${base}${normalizedPath}`;
+  return `${API_URL}${path}`;
 };
 
 const isAuthRefreshRequest = (requestUrl: string): boolean =>
@@ -65,22 +58,7 @@ const buildJsonHeaders = (
   return headers;
 };
 
-const parseJsonBody = async <T>(response: Response): Promise<T | null> => {
-  if (response.status === 204 || response.status === 205) {
-    return null;
-  }
 
-  const text = await response.text();
-  if (!text) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    return text as unknown as T;
-  }
-};
 
 const toApiResponse = <T>(
   response: Response,
@@ -143,7 +121,7 @@ let refreshSessionInFlight: Promise<TryRefreshSessionResult> | null = null;
 
 const executeRefreshSession = async (): Promise<TryRefreshSessionResult> => {
   try {
-    const res = await fetch("/api/auth/refresh", {
+    const res = await fetch(`${buildApiUrl("/auth/refresh")}`, {
       method: "POST",
       credentials: "include",
     });
@@ -222,7 +200,6 @@ export const fetchWithAuth = async <T>(
     }
 
     const refreshResult = await tryRefreshSession();
-    console.log(refreshResult);
     if (refreshResult.ok) {
       return fetchWithAuth<T>(path, {
         ...options,
@@ -258,18 +235,18 @@ export const fetchWithAuth = async <T>(
     };
   }
 
-  const body = await parseJsonBody<BackendJsonBody<T>>(res);
-  const apiResponse = toApiResponse<T>(res, body);
-
-  if (!res.ok && !apiResponse.message) {
-    apiResponse.message = res.statusText;
+  const body = await res.json();
+  if (!res.ok && !body.message) {
+    console.log("body", body);
+    body.message = res.statusText;
   }
 
   if (!res.ok) {
     console.error(body);
   }
 
-  return apiResponse;
+
+  return body;
 };
 
 export const fetchOptionalAuth = async <T>(
@@ -297,7 +274,7 @@ export const fetchOptionalAuth = async <T>(
     };
   }
 
-  const body = await parseJsonBody<BackendJsonBody<T>>(res);
+  const body = await res.json();
 
   if (!res.ok) {
     if (body !== null) {

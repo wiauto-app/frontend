@@ -120,21 +120,22 @@ export const billingService = {
   },
 
   getMe: async (): Promise<BillingMeResponse | null> => {
-    const response = await apiGet<BillingMeResponse>(V1_BILLING_ME);
-    if (!response.ok || !response.data) {
-      return null;
-    }
+      const response = await apiGet<BillingMeResponse>(V1_BILLING_ME);
+      if (!response.ok || !response.data) {
+        return null;
+      }
 
-    return {
-      ...response.data,
-      entitlements: response.data.entitlements ?? {},
-      subscription: response.data.subscription
-        ? {
+      return {
+        ...response.data,
+        entitlements: response.data.entitlements ?? {},
+        subscription: response.data.subscription
+          ? {
             ...response.data.subscription,
             plan_version_id: response.data.subscription.plan_version_id ?? null,
           }
-        : null,
-    };
+          : null,
+      };
+  
   },
 
   createSubscriptionCheckout: createPublicSubscriptionCheckout,

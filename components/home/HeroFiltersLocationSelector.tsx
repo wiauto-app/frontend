@@ -26,6 +26,10 @@ import { buildHeroListingHref } from "@/lib/vehicles/listing-url";
 import { useOptionalHeroSearchFilters } from "./HeroSearchFiltersContext";
 import { VirtualizedCheckboxList } from "./VirtualizedCheckboxList";
 
+type LocationSelectorValue =
+  | LocationSelectedItem[]
+  | string[];
+
 const buildLocationTriggerLabel = (
   selectedItems: LocationSelectedItem[],
   provinces: HeroCatalogFacetItem[],
@@ -48,8 +52,14 @@ const buildLocationTriggerLabel = (
 };
 
 export interface HeroFiltersLocationSelectorProps {
+  value?: LocationSelectorValue;
+
+  onChange?: (items: LocationSelectorValue) => void;
+
   navigateOnSelect?: boolean;
+
   onNavigate?: (href: string) => void;
+
   showQuickBadges?: boolean;
   quickBadgeLimit?: number;
   quickBadgeProvinces?: ProvinceQuickBadgeItem[];
@@ -57,94 +67,184 @@ export interface HeroFiltersLocationSelectorProps {
 }
 
 export const HeroFiltersLocationSelector = ({
+  value = [],
+  onChange,
   navigateOnSelect = false,
   onNavigate,
   showQuickBadges = false,
   quickBadgeLimit = 7,
   quickBadgeProvinces = [],
   placeholder = "Ubicación",
-}: HeroFiltersLocationSelectorProps = {}) => {
+}: HeroFiltersLocationSelectorProps) => {
   const router = useRouter();
   const hero_context = useOptionalHeroSearchFilters();
-  const [selectedItems, setSelectedItems] = useState<LocationSelectedItem[]>(
-    [],
-  );
+
   const [search, setSearch] = useState("");
   const debounced_search = useDebouncedValue(search, 300);
 
   const { data: provinces = [], isLoading } = useQuery({
     queryKey: ["hero-catalog", "provinces", debounced_search],
     queryFn: () =>
-      heroCatalogService.getProvinces(debounced_search.trim() || undefined),
+      heroCatalogService.getProvinces(
+        debounced_search.trim() || undefined,
+      ),
   });
+
+  /**
+   * Convierte SIEMPRE el value externo a
+   * LocationSelectedItem[] para uso interno.
+   *
+   * string[] representa slugs:
+   *
+   * ["madrid", "barcelona"]
+   *
+   * LocationSelectedItem[] mantiene el formato original.
+   */
+  const selectedLocationItems = useMemo<LocationSelectedItem[]>(() => {
+    if (value.length === 0) {
+      return [];
+    }
+
+    if (typeof value[0] === "string") {
+      const selectedSlugs = new Set(value as string[]);
+
+      return provinces
+        .filter((province) =>
+          selectedSlugs.has(province.slug),
+        )
+        .map((province) => ({
+          value: true,
+          type: "province" as const,
+          slug: province.slug,
+          province_id: province.id,
+        }));
+    }
+
+    return value as LocationSelectedItem[];
+  }, [provinces, value]);
 
   const handleApplyLocationPayload = useCallback(
     (payload: LocationUrlPayload) => {
       if (navigateOnSelect) {
         const href = buildHeroListingHref(payload);
+
         if (onNavigate) {
           onNavigate(href);
           return;
         }
+
         router.push(href);
         return;
       }
 
       if (!hero_context) {
-        throw new Error(
-          "HeroFiltersLocationSelector requiere HeroSearchFiltersProvider cuando navigateOnSelect es false",
-        );
+        return;
       }
 
       hero_context.setLocationPayload(payload);
     },
-    [hero_context, navigateOnSelect, onNavigate, router],
+    [
+      hero_context,
+      navigateOnSelect,
+      onNavigate,
+      router,
+    ],
   );
 
   const handleApplySelection = useCallback(
-    (next_items: LocationSelectedItem[]) => {
-      setSelectedItems(next_items);
-      handleApplyLocationPayload(buildLocationUrlPayload(next_items));
+    (nextItems: LocationSelectedItem[]) => {
+      /**
+       * Si el value original era string[],
+       * devolvemos string[].
+       *
+       * Si era LocationSelectedItem[],
+       * devolvemos LocationSelectedItem[].
+       */
+      if (
+        value.length === 0 ||
+        typeof value[0] === "string"
+      ) {
+        onChange?.(
+          nextItems.map((item) => item.slug),
+        );
+      } else {
+        onChange?.(nextItems);
+      }
+
+      handleApplyLocationPayload(
+        buildLocationUrlPayload(nextItems),
+      );
     },
-    [handleApplyLocationPayload],
+    [
+      handleApplyLocationPayload,
+      onChange,
+      value,
+    ],
   );
 
-  const handleSelectProvince = (
-    checked: boolean,
-    province: HeroCatalogFacetItem,
-  ) => {
-    if (checked) {
-      handleApplySelection([
-        ...selectedItems.filter(
+  const handleSelectProvince = useCallback(
+    (
+      checked: boolean,
+      province: HeroCatalogFacetItem,
+    ) => {
+      if (checked) {
+        const alreadySelected =
+          selectedLocationItems.some(
+            (item) =>
+              item.type === "province" &&
+              item.province_id === province.id,
+          );
+
+        if (alreadySelected) {
+          return;
+        }
+
+        handleApplySelection([
+          ...selectedLocationItems,
+          {
+            value: true,
+            type: "province",
+            slug: province.slug,
+            province_id: province.id,
+          },
+        ]);
+
+        return;
+      }
+
+      handleApplySelection(
+        selectedLocationItems.filter(
           (item) =>
-            !(item.type === "province" && item.province_id === province.id),
+            !(
+              item.type === "province" &&
+              item.province_id === province.id
+            ),
         ),
-        {
-          value: true,
-          type: "province",
-          slug: province.slug,
-          province_id: province.id,
-        },
-      ]);
-      return;
-    }
+      );
+    },
+    [
+      handleApplySelection,
+      selectedLocationItems,
+    ],
+  );
 
-    handleApplySelection(
-      selectedItems.filter(
-        (item) =>
-          !(item.type === "province" && item.province_id === province.id),
-      ),
-    );
-  };
-
+  /**
+   * Aquí selectedLocationItems SIEMPRE es
+   * LocationSelectedItem[], por lo que .filter()
+   * siempre existe.
+   */
   const selected_province_ids = useMemo(
     () =>
       new Set(
-        selectedItems
-          .filter((item) => item.type === "province")
-          .map((item) => item.province_id),
+        selectedLocationItems
+          .filter(
+            (item) => item.type === "province",
+          )
+          .map(
+            (item) => item.province_id,
+          ),
       ),
-    [selectedItems],
+    [selectedLocationItems],
   );
 
   const trigger_label = useMemo(() => {
@@ -152,8 +252,17 @@ export const HeroFiltersLocationSelector = ({
       return placeholder;
     }
 
-    return buildLocationTriggerLabel(selectedItems, provinces, placeholder);
-  }, [navigateOnSelect, placeholder, provinces, selectedItems]);
+    return buildLocationTriggerLabel(
+      selectedLocationItems,
+      provinces,
+      placeholder,
+    );
+  }, [
+    navigateOnSelect,
+    placeholder,
+    provinces,
+    selectedLocationItems,
+  ]);
 
   return (
     <div className="flex flex-col">
@@ -166,12 +275,16 @@ export const HeroFiltersLocationSelector = ({
               aria-label="Seleccionar ubicación"
             >
               <div className="flex w-full items-center justify-between text-sm">
-                <span className="truncate">{trigger_label}</span>
+                <span className="truncate">
+                  {trigger_label}
+                </span>
+
                 <ChevronDown className="size-4 shrink-0 opacity-50" />
               </div>
             </Button>
           }
         />
+
         <PopoverContent
           align="end"
           className="flex w-full flex-col gap-2 md:w-96"
@@ -183,34 +296,50 @@ export const HeroFiltersLocationSelector = ({
             onClear={() => setSearch("")}
             aria-label="Buscar provincia"
           />
+
           {isLoading ? (
             <div className="flex max-h-96 flex-col gap-2 overflow-y-auto">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Skeleton
-                  key={index}
-                  className="h-8 w-full rounded-sm bg-muted-foreground/20"
-                />
-              ))}
+              {Array.from({ length: 5 }).map(
+                (_, index) => (
+                  <Skeleton
+                    key={index}
+                    className="h-8 w-full rounded-sm bg-muted-foreground/20"
+                  />
+                ),
+              )}
             </div>
           ) : null}
-          {!isLoading && provinces.length === 0 ? (
+
+          {!isLoading &&
+          provinces.length === 0 ? (
             <p className="px-1 py-2 text-sm text-muted-foreground">
               No hay provincias disponibles
             </p>
           ) : null}
-          {!isLoading && provinces.length > 0 ? (
+
+          {!isLoading &&
+          provinces.length > 0 ? (
             <VirtualizedCheckboxList
               items={provinces}
-              getItemKey={(province) => province.id}
+              getItemKey={(province) =>
+                province.id
+              }
               className="max-h-96 overflow-y-auto"
               renderItem={(province) => (
                 <CustomCheckbox
-                  checked={selected_province_ids.has(province.id)}
+                  checked={selected_province_ids.has(
+                    province.id,
+                  )}
                   onChange={(event) =>
-                    handleSelectProvince(event.target.checked, province)
+                    handleSelectProvince(
+                      event.target.checked,
+                      province,
+                    )
                   }
                   label={
-                    <p className="truncate font-medium">{province.name}</p>
+                    <p className="truncate font-medium">
+                      {province.name}
+                    </p>
                   }
                 />
               )}
@@ -218,6 +347,7 @@ export const HeroFiltersLocationSelector = ({
           ) : null}
         </PopoverContent>
       </Popover>
+
       {showQuickBadges ? (
         <ProvinceQuickBadges
           provinces={quickBadgeProvinces}

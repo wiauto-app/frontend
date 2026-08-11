@@ -22,24 +22,14 @@ import type {
   ConditionVehicle,
   TransmissionType,
 } from "@/interfaces/vehicle.interface";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LocationSelector } from "@/components/selectors/locationSelector";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { FILTER_SECTION_IDS } from "../utils/getExpandedFilterSectionIds";
-import {
-  Popover,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTitle,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { Separator } from "@/components/ui/separator";
 import { FilterItem } from "./filterItem";
 import { VehicleTypeSelector } from "./vehicleTypeSelector";
-import { FiltersMakeSelector } from "@/components/selectors/FilterMakeSelector/filtersMakeSelector";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
-import { PUBLISHER_TYPE_KEY } from "../[[...slug]]/constants/filterKeys.constants";
+import { PROVINCE_KEY, PUBLISHER_TYPE_KEY } from "../[[...slug]]/constants/filterKeys.constants";
 import {
   HiOutlineCalendar,
   HiOutlineHome,
@@ -57,9 +47,9 @@ import {
   LuLeaf,
   LuPaintRoller,
 } from "react-icons/lu";
-import { cn } from "@/lib/utils";
 import { HeroFiltersMakeSelector } from "@/components/home/HeroFiltersMakeSelector";
 import { HeroFiltersLocationSelector } from "@/components/home/HeroFiltersLocationSelector";
+import { useSelectedLocationItemsStore } from "@/components/selectors/FilterLocationSelector/stores/selectedLocationItemsStore";
 
 interface VehiclesFiltersPanelProps {
   catalog: FiltersResponse;
@@ -70,8 +60,9 @@ export const VehiclesFiltersPanel = ({
 }: VehiclesFiltersPanelProps) => {
   const { filters, commitFilters } = useVehiclesListingFilters();
   const { values, handleMultiChange } = useFiltersManager({
-    keys: [PUBLISHER_TYPE_KEY],
+    keys: [PUBLISHER_TYPE_KEY,PROVINCE_KEY],
   });
+  const provinces = values[PROVINCE_KEY] as string[];
   const publisher_types = values[PUBLISHER_TYPE_KEY] as PublisherTypesValue;
 
   const [type_slug, setTypeSlug] = useState<string | undefined>(
@@ -146,6 +137,7 @@ export const VehiclesFiltersPanel = ({
 
   const iconSize = 24;
 
+  const { selectedItems, setSelectedItems } = useSelectedLocationItemsStore();
   return (
     <>
       <VehicleTypeSelector
@@ -205,7 +197,19 @@ export const VehiclesFiltersPanel = ({
         title="Ubicación"
         Icon={<HiOutlineMapPin size={iconSize} />}
       >
-        <HeroFiltersLocationSelector />
+        <HeroFiltersLocationSelector
+          value={
+            provinces 
+          }
+          onChange={(next) =>
+          {
+            console.log(next)
+            handleMultiChange(PROVINCE_KEY, next as string[] )
+
+
+          }
+          }
+        />
 
         {/* <LocationSelector /> */}
       </FilterItem>

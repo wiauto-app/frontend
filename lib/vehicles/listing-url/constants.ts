@@ -22,7 +22,7 @@ export const DEFAULT_LISTING_PARAMS: Required<
   Pick<FindAllVehiclesParams, "page" | "limit" | "order_by" | "order_direction">
 > = {
   page: 1,
-  limit: 12,
+  limit: 30,
   order_by: "created_at",
   order_direction: "DESC",
 };

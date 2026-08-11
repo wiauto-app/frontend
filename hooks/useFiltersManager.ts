@@ -94,7 +94,7 @@ export const useFiltersManager = ({
       return;
     }
 
-    router.replace(nextUrl, { scroll: false });
+    router.push(nextUrl, { scroll: false });
   };
 
   const values = useMemo(() => {

@@ -8,11 +8,10 @@ import type { BillingMeEntitlementEntry } from "@/interfaces/billing.interface";
 
 export const useEntitlements = () => {
   const { user, isAuthenticated,isLoading } = useUser();
-
   const query = useQuery({
     queryKey: ["billing-me",user,isLoading],
     queryFn: () => billingService.getMe(),
-    enabled: Boolean(isAuthenticated && user && !isLoading),
+    enabled: Boolean(isAuthenticated),
   });
 
   const entitlements = query.data?.entitlements ?? {};

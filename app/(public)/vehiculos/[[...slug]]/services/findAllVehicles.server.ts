@@ -22,7 +22,7 @@ export const findAllVehicles = async (
     vehicles: [],
     total: 0,
     page: params.page ?? 1,
-    limit: params.limit ?? 12,
+    limit: params.limit ?? 30,
   };
 
 
