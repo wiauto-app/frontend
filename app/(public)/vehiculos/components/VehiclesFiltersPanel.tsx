@@ -58,6 +58,8 @@ import {
   LuPaintRoller,
 } from "react-icons/lu";
 import { cn } from "@/lib/utils";
+import { HeroFiltersMakeSelector } from "@/components/home/HeroFiltersMakeSelector";
+import { HeroFiltersLocationSelector } from "@/components/home/HeroFiltersLocationSelector";
 
 interface VehiclesFiltersPanelProps {
   catalog: FiltersResponse;
@@ -145,249 +147,248 @@ export const VehiclesFiltersPanel = ({
   const iconSize = 24;
 
   return (
-  
-      <>
-        <VehicleTypeSelector
-          vehicleTypes={catalog.vehicleTypes}
-          value={type_slug}
-          onChange={(next) => {
-            setTypeSlug(next);
+    <>
+      <VehicleTypeSelector
+        vehicleTypes={catalog.vehicleTypes}
+        value={type_slug}
+        onChange={(next) => {
+          setTypeSlug(next);
+          commitFilters({
+            ...filters,
+            type_slug: next,
+            page: 1,
+          });
+        }}
+      />
+
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.CONDITION}
+        title="Estado"
+        Icon={<HiOutlineTag size={iconSize} />}
+      >
+        <ConditionSelector
+          value={filters.condition}
+          onChange={(next?: ConditionVehicle) =>
             commitFilters({
               ...filters,
-              type_slug: next,
+              condition: next,
               page: 1,
-            });
+            })
+          }
+        />
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.MAKE_MODEL}
+        title="Marca y Modelo"
+        Icon={<HiOutlineHome size={iconSize} />}
+      >
+        <HeroFiltersMakeSelector />
+
+        {/* <FiltersMakeSelector /> */}
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.PRICE}
+        title="Precio"
+        Icon={<HiOutlineCurrencyEuro size={iconSize} />}
+      >
+        <PriceSelector
+          cuotas={catalog.cuotas}
+          value={price_value}
+          onChange={handlePriceChange}
+        />
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.LOCATION}
+        title="Ubicación"
+        Icon={<HiOutlineMapPin size={iconSize} />}
+      >
+        <HeroFiltersLocationSelector />
+
+        {/* <LocationSelector /> */}
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.SERVICES}
+        title="Servicios"
+        Icon={<HiOutlineShoppingCart size={iconSize} />}
+      >
+        <ServicesSelector
+          services={catalog.services}
+          value={filters.service_slugs ?? []}
+          onChange={(next) =>
+            commitFilters({
+              ...filters,
+              service_slugs: next.length > 0 ? next : undefined,
+              page: 1,
+            })
+          }
+        />
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.SELLERS}
+        title="Vendedores"
+        Icon={<HiOutlineUser size={iconSize} />}
+      >
+        <SellersSelector
+          value={publisher_types}
+          onChange={(next) => {
+            handleMultiChange(PUBLISHER_TYPE_KEY, next as PublisherTypesValue);
           }}
         />
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.YEAR}
+        title="Año"
+        Icon={<HiOutlineCalendar size={iconSize} />}
+      >
+        <YearSelector
+          value={year_range}
+          onChange={(range) =>
+            commitFilters({
+              ...filters,
+              since_year: range.since,
+              until_year: range.until,
+              page: 1,
+            })
+          }
+        />
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.MILEAGE}
+        title="Kilometraje"
+        Icon={<FaGauge size={iconSize} />}
+      >
+        <KmSelector
+          value={km_range}
+          onChange={(range) =>
+            commitFilters({
+              ...filters,
+              since_mileage: range.since,
+              until_mileage: range.until,
+              page: 1,
+            })
+          }
+        />
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.ENGINE}
+        title="Motor"
+        Icon={<TbEngine size={iconSize} />}
+      >
+        <EngineSelector
+          fuelTypes={catalog.fuels}
+          tractions={catalog.tractions}
+          fuelTypeSlugs={filters.fuel_type_slugs ?? []}
+          onFuelTypeSlugsChange={(next) =>
+            commitFilters({
+              ...filters,
+              fuel_type_slugs: next.length > 0 ? next : undefined,
+              page: 1,
+            })
+          }
+          tractionSlugs={filters.traction_slugs ?? []}
+          onTractionSlugsChange={(next) =>
+            commitFilters({
+              ...filters,
+              traction_slugs: next.length > 0 ? next : undefined,
+              page: 1,
+            })
+          }
+          transmissionTypes={
+            (filters.transmission_types ?? []) as TransmissionType[]
+          }
+          onTransmissionTypesChange={(next) =>
+            commitFilters({
+              ...filters,
+              transmission_types: next.length > 0 ? next : undefined,
+              page: 1,
+            })
+          }
+        />
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.ELECTRIC}
+        title="Eléctricos"
+        Icon={<LuBatteryCharging size={iconSize} />}
+      >
+        <ElectricSelector
+          autonomyValue={filters.autonomy_since}
+          onAutonomyChange={(value) =>
+            commitFilters({
+              ...filters,
+              autonomy_since: value,
+              page: 1,
+            })
+          }
+          batteryValue={battery_range}
+          onBatteryChange={handleBatteryChange}
+        />
+      </FilterItem>
+      <Separator />
 
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.CONDITION}
-          title="Estado"
-          Icon={<HiOutlineTag size={iconSize} />}
-        >
-          <ConditionSelector
-            value={filters.condition}
-            onChange={(next?: ConditionVehicle) =>
-              commitFilters({
-                ...filters,
-                condition: next,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.MAKE_MODEL}
-          title="Marca y Modelo"
-          Icon={<HiOutlineHome size={iconSize} />}
-        >
-          <FiltersMakeSelector />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.PRICE}
-          title="Precio"
-          Icon={<HiOutlineCurrencyEuro size={iconSize} />}
-        >
-          <PriceSelector
-            cuotas={catalog.cuotas}
-            value={price_value}
-            onChange={handlePriceChange}
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.LOCATION}
-          title="Ubicación"
-          Icon={<HiOutlineMapPin size={iconSize} />}
-        >
-          <LocationSelector />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.SERVICES}
-          title="Servicios"
-          Icon={<HiOutlineShoppingCart size={iconSize} />}
-        >
-          <ServicesSelector
-            services={catalog.services}
-            value={filters.service_slugs ?? []}
-            onChange={(next) =>
-              commitFilters({
-                ...filters,
-                service_slugs: next.length > 0 ? next : undefined,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.SELLERS}
-          title="Vendedores"
-          Icon={<HiOutlineUser size={iconSize} />}
-        >
-          <SellersSelector
-            value={publisher_types}
-            onChange={(next) => {
-              handleMultiChange(
-                PUBLISHER_TYPE_KEY,
-                next as PublisherTypesValue,
-              );
-            }}
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.YEAR}
-          title="Año"
-          Icon={<HiOutlineCalendar size={iconSize} />}
-        >
-          <YearSelector
-            value={year_range}
-            onChange={(range) =>
-              commitFilters({
-                ...filters,
-                since_year: range.since,
-                until_year: range.until,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.MILEAGE}
-          title="Kilometraje"
-          Icon={<FaGauge size={iconSize} />}
-        >
-          <KmSelector
-            value={km_range}
-            onChange={(range) =>
-              commitFilters({
-                ...filters,
-                since_mileage: range.since,
-                until_mileage: range.until,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.ENGINE}
-          title="Motor"
-          Icon={<TbEngine size={iconSize} />}
-        >
-          <EngineSelector
-            fuelTypes={catalog.fuels}
-            tractions={catalog.tractions}
-            fuelTypeSlugs={filters.fuel_type_slugs ?? []}
-            onFuelTypeSlugsChange={(next) =>
-              commitFilters({
-                ...filters,
-                fuel_type_slugs: next.length > 0 ? next : undefined,
-                page: 1,
-              })
-            }
-            tractionSlugs={filters.traction_slugs ?? []}
-            onTractionSlugsChange={(next) =>
-              commitFilters({
-                ...filters,
-                traction_slugs: next.length > 0 ? next : undefined,
-                page: 1,
-              })
-            }
-            transmissionTypes={
-              (filters.transmission_types ?? []) as TransmissionType[]
-            }
-            onTransmissionTypesChange={(next) =>
-              commitFilters({
-                ...filters,
-                transmission_types: next.length > 0 ? next : undefined,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.ELECTRIC}
-          title="Eléctricos"
-          Icon={<LuBatteryCharging size={iconSize} />}
-        >
-          <ElectricSelector
-            autonomyValue={filters.autonomy_since}
-            onAutonomyChange={(value) =>
-              commitFilters({
-                ...filters,
-                autonomy_since: value,
-                page: 1,
-              })
-            }
-            batteryValue={battery_range}
-            onBatteryChange={handleBatteryChange}
-          />
-        </FilterItem>
-        <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.DGT}
+        title="Etiquetas DGT"
+        Icon={<LuLeaf size={iconSize} />}
+      >
+        <DgtLabelSelector
+          dgtLabels={catalog.dgtLabels}
+          value={filters.dgt_label_ids ?? []}
+          onChange={(next) =>
+            commitFilters({
+              ...filters,
+              dgt_label_ids: next.length > 0 ? next : undefined,
+              page: 1,
+            })
+          }
+        />
+      </FilterItem>
+      <Separator />
 
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.DGT}
-          title="Etiquetas DGT"
-          Icon={<LuLeaf size={iconSize} />}
-        >
-          <DgtLabelSelector
-            dgtLabels={catalog.dgtLabels}
-            value={filters.dgt_label_ids ?? []}
-            onChange={(next) =>
-              commitFilters({
-                ...filters,
-                dgt_label_ids: next.length > 0 ? next : undefined,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-        <Separator />
-
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.FEATURES}
-          title="Equipamiento"
-          Icon={<LuCar size={iconSize} />}
-        >
-          <FeaturesSelector
-            features={catalog.features}
-            value={filters.features_slugs ?? []}
-            onChange={(next) =>
-              commitFilters({
-                ...filters,
-                features_slugs: next.length > 0 ? next : undefined,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-        <Separator />
-        <FilterItem
-          sectionId={FILTER_SECTION_IDS.COLOR}
-          title="Color"
-          Icon={<LuPaintRoller size={iconSize} />}
-        >
-          <ColorSelector
-            colors={catalog.colors}
-            value={filters.color_slugs ?? []}
-            onChange={(next) =>
-              commitFilters({
-                ...filters,
-                color_slugs: next.length > 0 ? next : undefined,
-                page: 1,
-              })
-            }
-          />
-        </FilterItem>
-      </>
-       
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.FEATURES}
+        title="Equipamiento"
+        Icon={<LuCar size={iconSize} />}
+      >
+        <FeaturesSelector
+          features={catalog.features}
+          value={filters.features_slugs ?? []}
+          onChange={(next) =>
+            commitFilters({
+              ...filters,
+              features_slugs: next.length > 0 ? next : undefined,
+              page: 1,
+            })
+          }
+        />
+      </FilterItem>
+      <Separator />
+      <FilterItem
+        sectionId={FILTER_SECTION_IDS.COLOR}
+        title="Color"
+        Icon={<LuPaintRoller size={iconSize} />}
+      >
+        <ColorSelector
+          colors={catalog.colors}
+          value={filters.color_slugs ?? []}
+          onChange={(next) =>
+            commitFilters({
+              ...filters,
+              color_slugs: next.length > 0 ? next : undefined,
+              page: 1,
+            })
+          }
+        />
+      </FilterItem>
+    </>
   );
 };

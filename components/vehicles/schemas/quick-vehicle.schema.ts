@@ -61,6 +61,7 @@ const quickVehicleBaseSchema = z.object({
   catalog_make_id: z.coerce.number().int().positive().optional(),
   catalog_model_id: z.coerce.number().int().positive().optional(),
   catalog_year_id: z.coerce.number().int().positive().optional(),
+  catalog_body_type_id: z.coerce.number().int().positive().optional(),
   catalog_fuel_type_id: z.coerce.number().int().positive().optional(),
   /** Solo formulario: indica si el combustible admite recarga. No se envía al API. */
   catalog_fuel_can_charge: z.boolean().optional().default(false),

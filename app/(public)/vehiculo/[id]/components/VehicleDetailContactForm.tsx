@@ -207,7 +207,7 @@ export const VehicleDetailContactForm = ({
           </Button>
 
           <Button type="button" variant="link" className="w-full">
-            Ir al simulador de financiamiento →
+            Ir al simulador de financiación →
           </Button>
         </div>
       </form>
@@ -305,7 +305,7 @@ export const VehicleDetailContactForm = ({
         </Button>
 
         <Button type="button" variant="link" className="w-full">
-          Ir al simulador de financiamiento →
+          Ir al simulador de financiación →
         </Button>
       </div>
     </form>

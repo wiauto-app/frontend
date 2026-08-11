@@ -12,21 +12,25 @@ type VersionOption = CatalogVersionItem & { label: string };
  * La consulta solo se hace cuando hay los tres IDs; el paso del año es el disparador en UI.
  */
 export const VersionSelector = ({
+  makeId,
   value,
   onChange,
   modelId,
   fuelTypeId,
+  bodyTypeId,
   yearId,
   ariaInvalid,
   disabled,
   placeholder = "Versión",
   hideLabel = false,
 }: {
+  makeId?: number;
   value?: string;
   onChange?: (value: string | undefined) => void;
   modelId?: number;
   fuelTypeId?: number;
   yearId?: number;
+  bodyTypeId?: number;
   ariaInvalid?: boolean;
   disabled?: boolean;
   placeholder?: string;
@@ -38,8 +42,10 @@ export const VersionSelector = ({
     queryKey: ["catalogVersions", modelId, fuelTypeId, yearId],
     queryFn: () =>
       catalogVersionsService.findAll({
+        make_id: makeId,
         model_id: modelId,
-        ...(fuelTypeId ? { fuel_type_id: fuelTypeId } : {}),
+        body_type_id: bodyTypeId,
+        // ...(fuelTypeId ? { fuel_type_id: fuelTypeId } : {}),
         year_id: yearId,
         page: 1,
         limit: 100,

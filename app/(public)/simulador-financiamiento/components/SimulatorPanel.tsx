@@ -189,13 +189,13 @@ export const SimulatorPanel = () => {
     <section
       id="simulador"
       className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)]"
-      aria-label="Simulador de financiamiento"
+      aria-label="Simulador de financiación"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Config */}
         <div className="flex flex-col gap-6 border-b border-slate-100 p-6 sm:p-8 lg:border-b-0 lg:border-r">
           <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
-            1. Configura tu financiamiento
+            1. Configura tu financiación
           </h2>
 
           {configError ? (

@@ -43,6 +43,8 @@ export interface CatalogVersionItem {
 }
 
 export interface CatalogVersionPaginationParams extends PaginationParams {
+  make_id?: number;
+  body_type_id?: number;
   model_id?: number;
   fuel_type_id?: number;
   year_id?: number;

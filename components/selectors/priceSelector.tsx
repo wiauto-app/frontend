@@ -25,95 +25,37 @@ type PriceSelectorProps = {
   onChange: (value: PriceFilterValue) => void;
 };
 
-export const PriceSelector = ({ cuotas, value, onChange }: PriceSelectorProps) => {
+export const PriceSelector = ({
+  cuotas,
+  value,
+  onChange,
+}: PriceSelectorProps) => {
   return (
     <div>
-      <Tabs>
-        <TabsList className="w-full">
-          <TabsTrigger value="cash">Contado</TabsTrigger>
-          <TabsTrigger value="cuota">Cuota</TabsTrigger>
-        </TabsList>
-        <TabsContent value="cash">
-          <div className="flex flex-col gap-2">
-            <PriceSelect
-              prices={prices}
-              placeholder="Desde"
-              value={value.since?.toString() ?? ""}
-              onValueChange={(raw) =>
-                onChange({
-                  ...value,
-                  since: raw ? Number(raw) : undefined,
-                })
-              }
-            />
-            <PriceSelect
-              prices={prices}
-              placeholder="Hasta"
-              value={value.until?.toString() ?? ""}
-              onValueChange={(raw) =>
-                onChange({
-                  ...value,
-                  until: raw ? Number(raw) : undefined,
-                })
-              }
-            />
-          </div>
-        </TabsContent>
-        <TabsContent value="cuota">
-          <div className="flex flex-col gap-2">
-            <PriceSelect
-              prices={cuotaPrices}
-              placeholder="Desde"
-              value={value.since?.toString() ?? ""}
-              onValueChange={(raw) =>
-                onChange({
-                  ...value,
-                  since: raw ? Number(raw) : undefined,
-                })
-              }
-            />
-            <PriceSelect
-              prices={cuotaPrices}
-              placeholder="Hasta"
-              value={value.until?.toString() ?? ""}
-              onValueChange={(raw) =>
-                onChange({
-                  ...value,
-                  until: raw ? Number(raw) : undefined,
-                })
-              }
-            />
-            <Select
-              value={value.cuota_slug ?? ""}
-              onValueChange={(raw) =>
-                onChange({
-                  ...value,
-                  cuota_slug: raw || undefined,
-                })
-              }
-              items={cuotas.map((cuota) => ({
-                label: `${cuota.name}${
-                  cuota.value > 12 ? ` (${(cuota.value / 12).toFixed(1)} años)` : ""
-                }`,
-                value: cuota.slug,
-              }))}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecciona una cuota" />
-              </SelectTrigger>
-              <SelectContent className="max-h-[300px] overflow-y-auto">
-                {cuotas.map((cuota) => (
-                  <SelectItem key={cuota.id} value={cuota.slug}>
-                    {cuota.name}{" "}
-                    {cuota.value > 12 &&
-                      `(${(cuota.value / 12).toFixed(1)} años)`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </TabsContent>
-      </Tabs>
+      <div className="flex flex-col gap-2">
+        <PriceSelect
+          prices={prices}
+          placeholder="Desde"
+          value={value.since?.toString() ?? ""}
+          onValueChange={(raw) =>
+            onChange({
+              ...value,
+              since: raw ? Number(raw) : undefined,
+            })
+          }
+        />
+        <PriceSelect
+          prices={prices}
+          placeholder="Hasta"
+          value={value.until?.toString() ?? ""}
+          onValueChange={(raw) =>
+            onChange({
+              ...value,
+              until: raw ? Number(raw) : undefined,
+            })
+          }
+        />
+      </div>
     </div>
   );
 };
@@ -139,7 +81,6 @@ const PriceSelect = ({
           <SelectItem
             key={price}
             value={price.toString()}
-            className="text-lg font-medium"
           >
             {price} €
           </SelectItem>
