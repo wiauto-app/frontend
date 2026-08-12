@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
@@ -19,23 +19,24 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { heroCatalogService } from "@/services/search/heroCatalogService";
 import type { LocationSelectedItem } from "@/components/selectors/FilterLocationSelector/interfaces/locationSelector.interface";
 import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
-import { buildLocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
+import {
+  buildLocationUrlPayload,
+} from "@/components/selectors/FilterLocationSelector/utils/location-selection";
 import { ProvinceQuickBadges } from "@/components/selectors/ProvinceQuickBadges";
 import type { ProvinceQuickBadgeItem } from "@/components/selectors/utils/build-province-badges";
 import { buildHeroListingHref } from "@/lib/vehicles/listing-url";
 import { useOptionalHeroSearchFilters } from "./HeroSearchFiltersContext";
 import { VirtualizedCheckboxList } from "./VirtualizedCheckboxList";
-
-type LocationSelectorValue =
-  | LocationSelectedItem[]
-  | string[];
+import { Slider } from "../ui/slider";
+import { useFiltersManager } from "@/hooks/useFiltersManager";
+import { RADIUS_KEY } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
 
 const buildLocationTriggerLabel = (
-  selectedItems: LocationSelectedItem[],
+  selectedSlugs: string[],
   provinces: HeroCatalogFacetItem[],
   placeholder: string,
 ): string => {
-  if (!selectedItems.length) {
+  if (!selectedSlugs.length) {
     return placeholder;
   }
 
@@ -43,18 +44,26 @@ const buildLocationTriggerLabel = (
     provinces.map((province) => [province.slug, province.name]),
   );
 
-  const names = selectedItems
-    .filter((item) => item.type === "province")
-    .map((item) => provinceBySlug.get(item.slug) ?? item.slug)
+  const names = selectedSlugs
+    .map((slug) => provinceBySlug.get(slug) ?? slug)
     .filter(Boolean);
 
   return names.length > 0 ? names.join(", ") : placeholder;
 };
 
 export interface HeroFiltersLocationSelectorProps {
-  value?: LocationSelectorValue;
+  /**
+   * Slugs de las provincias seleccionadas.
+   *
+   * Ejemplo:
+   * ["madrid", "barcelona"]
+   */
+  value?: string[];
 
-  onChange?: (items: LocationSelectorValue) => void;
+  /**
+   * Devuelve únicamente los slugs seleccionados.
+   */
+  onChange?: (slugs: string[]) => void;
 
   navigateOnSelect?: boolean;
 
@@ -77,51 +86,84 @@ export const HeroFiltersLocationSelector = ({
   placeholder = "Ubicación",
 }: HeroFiltersLocationSelectorProps) => {
   const router = useRouter();
+
   const hero_context = useOptionalHeroSearchFilters();
 
-  const [search, setSearch] = useState("");
-  const debounced_search = useDebouncedValue(search, 300);
+  const { handleChange, values } = useFiltersManager({
+    keys: [RADIUS_KEY],
+  });
 
-  const { data: provinces = [], isLoading } = useQuery({
+  const radius = Number(values[RADIUS_KEY] ?? 0);
+
+  const [search, setSearch] = useState("");
+  const [radiusValue, setRadiusValue] = useState(radius);
+
+  const debounced_search = useDebouncedValue(search, 300);
+  const debounced_radius = useDebouncedValue(radiusValue, 500);
+
+  /**
+   * Mantener el slider sincronizado si el radius
+   * cambia desde otro lugar.
+   */
+  useEffect(() => {
+    setRadiusValue(radius);
+  }, [radius]);
+
+  /**
+   * Actualizar el filtro únicamente después
+   * de que el usuario deje de mover el slider.
+   */
+  useEffect(() => {
+    handleChange(
+      RADIUS_KEY,
+      debounced_radius > 0
+        ? debounced_radius.toString()
+        : "",
+    );
+  }, [debounced_radius, handleChange]);
+
+  /**
+   * Catálogo completo.
+   *
+   * Se utiliza para resolver los slugs seleccionados
+   * aunque la búsqueda actual esté filtrando provincias.
+   */
+  const {
+    data: allProvinces = [],
+    isLoading: isLoadingAllProvinces,
+  } = useQuery({
+    queryKey: ["hero-catalog", "provinces"],
+    queryFn: () => heroCatalogService.getProvinces(),
+    staleTime: 1000 * 60 * 10,
+  });
+
+  /**
+   * Provincias que se muestran en el selector.
+   */
+  const {
+    data: provinces = [],
+    isLoading: isLoadingProvinces,
+  } = useQuery({
     queryKey: ["hero-catalog", "provinces", debounced_search],
     queryFn: () =>
       heroCatalogService.getProvinces(
         debounced_search.trim() || undefined,
       ),
+    staleTime: 1000 * 60 * 5,
   });
 
+  const isLoading =
+    isLoadingProvinces || isLoadingAllProvinces;
+
   /**
-   * Convierte SIEMPRE el value externo a
-   * LocationSelectedItem[] para uso interno.
+   * Los seleccionados son ÚNICAMENTE slugs.
    *
-   * string[] representa slugs:
-   *
-   * ["madrid", "barcelona"]
-   *
-   * LocationSelectedItem[] mantiene el formato original.
+   * No guardamos objetos de provincia en el estado.
    */
-  const selectedLocationItems = useMemo<LocationSelectedItem[]>(() => {
-    if (value.length === 0) {
-      return [];
-    }
-
-    if (typeof value[0] === "string") {
-      const selectedSlugs = new Set(value as string[]);
-
-      return provinces
-        .filter((province) =>
-          selectedSlugs.has(province.slug),
-        )
-        .map((province) => ({
-          value: true,
-          type: "province" as const,
-          slug: province.slug,
-          province_id: province.id,
-        }));
-    }
-
-    return value as LocationSelectedItem[];
-  }, [provinces, value]);
+  const selectedSlugs = useMemo(
+    () => new Set(value),
+    [value],
+  );
 
   const handleApplyLocationPayload = useCallback(
     (payload: LocationUrlPayload) => {
@@ -152,33 +194,46 @@ export const HeroFiltersLocationSelector = ({
   );
 
   const handleApplySelection = useCallback(
-    (nextItems: LocationSelectedItem[]) => {
+    (nextSlugs: string[]) => {
       /**
-       * Si el value original era string[],
-       * devolvemos string[].
-       *
-       * Si era LocationSelectedItem[],
-       * devolvemos LocationSelectedItem[].
+       * El componente exterior SIEMPRE recibe slugs.
        */
-      if (
-        value.length === 0 ||
-        typeof value[0] === "string"
-      ) {
-        onChange?.(
-          nextItems.map((item) => item.slug),
-        );
-      } else {
-        onChange?.(nextItems);
-      }
+      onChange?.(nextSlugs);
+
+      /**
+       * Para construir el payload necesitamos
+       * resolver los slugs a objetos.
+       */
+      const provinceBySlug = new Map(
+        allProvinces.map((province) => [
+          province.slug,
+          province,
+        ]),
+      );
+
+      const nextItems: LocationSelectedItem[] = nextSlugs
+        .map((slug) => provinceBySlug.get(slug))
+        .filter(
+          (
+            province,
+          ): province is HeroCatalogFacetItem =>
+            Boolean(province),
+        )
+        .map((province) => ({
+          value: true,
+          type: "province" as const,
+          slug: province.slug,
+          province_id: province.id,
+        }));
 
       handleApplyLocationPayload(
         buildLocationUrlPayload(nextItems),
       );
     },
     [
+      allProvinces,
       handleApplyLocationPayload,
       onChange,
-      value,
     ],
   );
 
@@ -187,64 +242,22 @@ export const HeroFiltersLocationSelector = ({
       checked: boolean,
       province: HeroCatalogFacetItem,
     ) => {
+      const nextSlugs = new Set(selectedSlugs);
+
       if (checked) {
-        const alreadySelected =
-          selectedLocationItems.some(
-            (item) =>
-              item.type === "province" &&
-              item.province_id === province.id,
-          );
-
-        if (alreadySelected) {
-          return;
-        }
-
-        handleApplySelection([
-          ...selectedLocationItems,
-          {
-            value: true,
-            type: "province",
-            slug: province.slug,
-            province_id: province.id,
-          },
-        ]);
-
-        return;
+        nextSlugs.add(province.slug);
+      } else {
+        nextSlugs.delete(province.slug);
       }
 
       handleApplySelection(
-        selectedLocationItems.filter(
-          (item) =>
-            !(
-              item.type === "province" &&
-              item.province_id === province.id
-            ),
-        ),
+        Array.from(nextSlugs).filter(Boolean),
       );
     },
     [
       handleApplySelection,
-      selectedLocationItems,
+      selectedSlugs,
     ],
-  );
-
-  /**
-   * Aquí selectedLocationItems SIEMPRE es
-   * LocationSelectedItem[], por lo que .filter()
-   * siempre existe.
-   */
-  const selected_province_ids = useMemo(
-    () =>
-      new Set(
-        selectedLocationItems
-          .filter(
-            (item) => item.type === "province",
-          )
-          .map(
-            (item) => item.province_id,
-          ),
-      ),
-    [selectedLocationItems],
   );
 
   const trigger_label = useMemo(() => {
@@ -253,15 +266,15 @@ export const HeroFiltersLocationSelector = ({
     }
 
     return buildLocationTriggerLabel(
-      selectedLocationItems,
-      provinces,
+      value,
+      allProvinces,
       placeholder,
     );
   }, [
+    allProvinces,
     navigateOnSelect,
     placeholder,
-    provinces,
-    selectedLocationItems,
+    value,
   ]);
 
   return (
@@ -287,7 +300,7 @@ export const HeroFiltersLocationSelector = ({
 
         <PopoverContent
           align="end"
-          className="flex w-full flex-col gap-2 md:w-96"
+          className="flex w-full flex-col gap-3 md:w-96"
         >
           <SearchInput
             placeholder="Buscar provincia"
@@ -299,43 +312,37 @@ export const HeroFiltersLocationSelector = ({
 
           {isLoading ? (
             <div className="flex max-h-96 flex-col gap-2 overflow-y-auto">
-              {Array.from({ length: 5 }).map(
-                (_, index) => (
-                  <Skeleton
-                    key={index}
-                    className="h-8 w-full rounded-sm bg-muted-foreground/20"
-                  />
-                ),
-              )}
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  className="h-8 w-full rounded-sm bg-muted-foreground/20"
+                />
+              ))}
             </div>
           ) : null}
 
-          {!isLoading &&
-          provinces.length === 0 ? (
+          {!isLoading && provinces.length === 0 ? (
             <p className="px-1 py-2 text-sm text-muted-foreground">
               No hay provincias disponibles
             </p>
           ) : null}
 
-          {!isLoading &&
-          provinces.length > 0 ? (
+          {!isLoading && provinces.length > 0 ? (
             <VirtualizedCheckboxList
               items={provinces}
-              getItemKey={(province) =>
-                province.id
-              }
+              getItemKey={(province) => province.slug}
               className="max-h-96 overflow-y-auto"
               renderItem={(province) => (
                 <CustomCheckbox
-                  checked={selected_province_ids.has(
-                    province.id,
+                  checked={selectedSlugs.has(
+                    province.slug,
                   )}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     handleSelectProvince(
                       event.target.checked,
                       province,
-                    )
-                  }
+                    );
+                  }}
                   label={
                     <p className="truncate font-medium">
                       {province.name}
@@ -345,6 +352,35 @@ export const HeroFiltersLocationSelector = ({
               )}
             />
           ) : null}
+
+          <div className="flex flex-col gap-2 border-t pt-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
+                Radio de búsqueda
+              </span>
+
+              <span className="font-medium">
+                {radiusValue > 0
+                  ? `${radiusValue} km`
+                  : "Sin límite"}
+              </span>
+            </div>
+
+            {/* <Slider
+              min={0}
+              max={100}
+              step={1}
+              value={[radiusValue]}
+              onValueChange={(value) => {
+                setRadiusValue(value[0] ?? 0);
+              }}
+            />
+
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Sin límite</span>
+              <span>100 km</span>
+            </div> */}
+          </div>
         </PopoverContent>
       </Popover>
 

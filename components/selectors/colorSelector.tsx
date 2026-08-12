@@ -13,7 +13,6 @@ type ColorSelectorProps = {
 export const ColorSelector = ({ colors, value, onChange }: ColorSelectorProps) => {
   return (
     <MultiCheckboxFilter
-      title="Color"
       items={colors.map((color) => ({
         key: color.slug,
         label: (

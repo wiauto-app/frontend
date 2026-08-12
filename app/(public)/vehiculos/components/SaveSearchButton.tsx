@@ -20,7 +20,7 @@ export const SaveSearchButton = () => {
       <Button
         type="button"
         variant="outline"
-        className="w-full"
+        className="w-full border-primary bg-primary/10 text-primary h-12 rounded-full hover:bg-primary/20 hover:text-primary"
         aria-label="Guardar búsqueda"
         onClick={handleOpenDialog}
       >

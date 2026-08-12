@@ -6,7 +6,7 @@ import { VehiclesFiltersPanel } from "./VehiclesFiltersPanel";
 export const VehiclesFilters = async () => {
   const catalog = await filtersService.getFilters();
   return (
-    <Card size="sm" >
+    <Card size="sm" className="rounded-3xl" >
       <CardHeader>
         <CardTitle>Filtros</CardTitle>
       </CardHeader>

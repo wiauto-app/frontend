@@ -1,3 +1,4 @@
+import { Province } from "./locations.interface";
 import type {
   PublisherType,
   TransmissionType,
@@ -43,7 +44,7 @@ export interface ActiveFiltersResolved {
   makes: ActiveFilterItem[];
   models: ActiveFilterItem[];
   categories: ActiveFilterItem[];
-  provinces: ActiveFilterItem[];
+  provinces: Province[];
   communities: ActiveFilterItem[];
   municipalities: ActiveFilterItem[];
   services: ActiveFilterItem[];

@@ -11,7 +11,7 @@ export type MultiCheckboxItem = {
 };
 
 type MultiCheckboxFilterProps = {
-  title: string;
+  title?: string;
   items: MultiCheckboxItem[];
   value: string[];
   onChange: (value: string[]) => void;

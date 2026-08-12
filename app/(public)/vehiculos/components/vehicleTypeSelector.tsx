@@ -4,11 +4,18 @@ import { cn } from "@/lib/utils";
 import { VehicleType } from "@/interfaces/vehicle.interface";
 import { WiautoImage } from "@/components/ui/wiautoImage";
 import { Check } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type VehicleTypeSelectorProps = {
   vehicleTypes: VehicleType[];
   value?: string;
-  onChange: (slug?: string) => void;
+  onChange: (slug?: string | null) => void;
 };
 
 export const VehicleTypeSelector = ({
@@ -17,47 +24,40 @@ export const VehicleTypeSelector = ({
   onChange,
 }: VehicleTypeSelectorProps) => {
   return (
-    <div className="grid grid-cols-3 gap-1">
-      {vehicleTypes.map((vehicleType) => {
-        const active = value === vehicleType.slug;
-
-        return (
-          <button
-            key={vehicleType.id}
-            type="button"
-            onClick={() => onChange(active ? undefined : vehicleType.slug)}
-            className={cn(
-              "flex flex-col items-center justify-center gap-1 border p-0 rounded-sm overflow-hidden cursor-pointer hover:bg-muted/50 hover:border-primary",
-              active
-                ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                : "",
-            )}
+    <Select
+      items={vehicleTypes.map((vehicleType) => ({
+        label: vehicleType.name,
+        value: vehicleType.slug,
+      }))}
+      onValueChange={(next) => onChange(next ?? null)}
+      value={value}
+    >
+      <SelectTrigger className={cn("w-full")}>
+        <SelectValue placeholder="Tipo de vehículo" />
+      </SelectTrigger>
+      <SelectContent>
+        {vehicleTypes.map((vehicleType) => (
+          <SelectItem
+            className={cn("cursor-pointer h-8")}
+            key={vehicleType.slug}
+            value={vehicleType.slug}
           >
-            {vehicleType.image_url && (
-              <div
-                className={cn(
-                  "flex h-16 w-full items-center justify-center  overflow-hidden relative",
-                  active ? "bg-white/15" : "bg-muted group-hover:bg-primary/5",
-                )}
-              >
+            <div className="flex items-center gap-2">
+              {vehicleType.image_url && (
                 <WiautoImage
-                  sizes="100px"
-                  unoptimized={false}
                   src={vehicleType.image_url}
                   alt={vehicleType.name}
-                  fill
-                  className="object-cover"
+                  width={20}
+                  height={20}
+                  sizes="20px"
+                  className="rounded-full object-cover"
                 />
-              </div>
-            )}
-
-            <div className="flex-1   flex items-center justify-between">
-              <p className="text-xs font-medium max-w-full truncate">{vehicleType.name}</p>
-              {active && <Check className="h-4 w-4 shrink-0" />}
+              )}
+              <span>{vehicleType.name}</span>
             </div>
-          </button>
-        );
-      })}
-    </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };

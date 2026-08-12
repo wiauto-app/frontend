@@ -20,6 +20,8 @@ export const ActiveFiltersChips = ({
   readOnly = false,
 }: ActiveFiltersChipsProps) => {
   const { activeFilters } = useActiveFiltersStore();
+
+
   const {
     filters,
     commitFilters,
@@ -27,7 +29,6 @@ export const ActiveFiltersChips = ({
     setSearchInput,
     resetFilters,
   } = useVehiclesListingFilters();
-
   const chips = useMemo(
     () =>
       buildActiveFilterChips(activeFilters, {

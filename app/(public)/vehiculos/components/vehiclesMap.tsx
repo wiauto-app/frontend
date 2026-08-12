@@ -7,6 +7,11 @@ import { cn } from "@/lib/utils";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
 import { VehicleMapCard } from "./VehicleMapCard";
+import { useActiveFiltersStore } from "../stores/activeFiltersStore";
+import { useEffect, useState } from "react";
+import { getProvincesMapView } from "../utils/getProvincesMapView";
+import { AdvancedMarker } from "@vis.gl/react-google-maps";
+import { ProvinceMarker } from "./provinceMarker";
 
 export interface VehiclesMapProps {
   vehicles: VehicleListItem[];
@@ -21,9 +26,23 @@ export const VehiclesMap = ({
   className,
   mapId = "vehicles-listing-map",
 }: VehiclesMapProps) => {
+  const [defaultCenter, setDefaultCenter] = useState<{ lat: number; lng: number }>(DEFAULT_CENTER);
+  const [defaultZoom, setDefaultZoom] = useState<number>(14);
   const setSelectedVehicle = useSelectedVehicleStore(
     (state) => state.setSelectedVehicle,
   );
+  const { activeFilters } = useActiveFiltersStore();
+  const provinces = activeFilters?.resolved?.provinces;
+
+  useEffect(() => {
+    if (provinces) {
+      const center = provinces.map((province) => province.center);
+
+      const mapView = getProvincesMapView(center);
+      setDefaultCenter(mapView?.center);
+      setDefaultZoom(mapView?.zoom);
+    }
+  }, [provinces])
 
   return (
     <div
@@ -35,9 +54,17 @@ export const VehiclesMap = ({
       <CustomMap
         mapId={mapId}
         gestureHandling="greedy"
-        defaultCenter={DEFAULT_CENTER}
-        defaultZoom={14}
+        defaultCenter={defaultCenter}
+        defaultZoom={defaultZoom}
       >
+        {provinces?.map((province) => (
+          <ProvinceMarker
+            key={province.id}
+            lat={province.center.coordinates[1]}
+            lng={province.center.coordinates[0]}
+            name={province.name}
+          />
+        ))}
         {vehicles.map((vehicle) => (
           <VehiclesMarker
             key={vehicle.id}

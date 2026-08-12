@@ -131,7 +131,7 @@ export const VehiclesPageContent = ({
 
   return (
     <>
-      <div className="mx-auto min-w-0 flex-1 py-2">
+      <div className="mx-auto min-w-0 flex-1  space-y-2">
         <div className="flex items-center justify-between">
           {titleNode}
           <MapButton />

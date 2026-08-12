@@ -50,25 +50,6 @@ export const EstadisticasContent = () => {
     );
   }
 
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="text-center bg-white p-8 rounded-xl shadow-sm border border-gray-100 max-w-md mx-auto mt-10">
-        <BarChart3 className="mx-auto h-12 w-12 text-gray-300" aria-hidden />
-        <h2 className="mt-4 text-lg font-semibold text-gray-900">
-          Inicia sesión para ver tus estadísticas
-        </h2>
-        <p className="mt-2 text-gray-500">
-          Accede al alcance y las acciones de los usuarios sobre tus anuncios.
-        </p>
-        <Link
-          href="/iniciar-sesion"
-          className="mt-4 inline-flex items-center bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-        >
-          Iniciar sesión
-        </Link>
-      </div>
-    );
-  }
 
   if (!isDateRangeValid) {
     return (

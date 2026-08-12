@@ -57,14 +57,14 @@
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --color-nature: #679775;
-  --color-purple: #5E3CE6;
-  --color-purple-dark: #0A1238;
+  --color-purple: #5e3ce6;
+  --color-purple-dark: #0a1238;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: #0153e8;
-  --primary-dark: #0E1D44;
+  --primary-dark: #0e1d44;
   --primary-soft: #397ff4;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -97,12 +97,12 @@
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --color-nature: #679775;
-  --color-purple: #5E3CE6;
+  --color-purple: #5e3ce6;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary-dark: #0E1D44;
+  --primary-dark: #0e1d44;
   --primary: #010101;
   --primary-soft: #3a80f5;
   --primary-foreground: oklch(0.205 0 0);
@@ -156,13 +156,15 @@
 
 @media (min-width: 1024px) {
   .container-custom {
-    max-width: 960px;
+    max-width: 1100px;
   }
 }
 
 @media (min-width: 1280px) {
   .container-custom {
     max-width: 1100px;
+    background-color: transparent;
+
   }
 }
 
@@ -213,7 +215,6 @@
     max-width: 1920px;
   }
 }
-
 
 @layer base {
   * {

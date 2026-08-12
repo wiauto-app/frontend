@@ -29,7 +29,11 @@ import { Separator } from "@/components/ui/separator";
 import { FilterItem } from "./filterItem";
 import { VehicleTypeSelector } from "./vehicleTypeSelector";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
-import { PROVINCE_KEY, PUBLISHER_TYPE_KEY } from "../[[...slug]]/constants/filterKeys.constants";
+import {
+  PROVINCE_KEY,
+  PUBLISHER_TYPE_KEY,
+  VEHICLE_TYPE_KEY,
+} from "../[[...slug]]/constants/filterKeys.constants";
 import {
   HiOutlineCalendar,
   HiOutlineHome,
@@ -49,7 +53,6 @@ import {
 } from "react-icons/lu";
 import { HeroFiltersMakeSelector } from "@/components/home/HeroFiltersMakeSelector";
 import { HeroFiltersLocationSelector } from "@/components/home/HeroFiltersLocationSelector";
-import { useSelectedLocationItemsStore } from "@/components/selectors/FilterLocationSelector/stores/selectedLocationItemsStore";
 
 interface VehiclesFiltersPanelProps {
   catalog: FiltersResponse;
@@ -59,15 +62,12 @@ export const VehiclesFiltersPanel = ({
   catalog,
 }: VehiclesFiltersPanelProps) => {
   const { filters, commitFilters } = useVehiclesListingFilters();
-  const { values, handleMultiChange } = useFiltersManager({
-    keys: [PUBLISHER_TYPE_KEY,PROVINCE_KEY],
+  const { values, handleMultiChange, handleChange } = useFiltersManager({
+    keys: [PUBLISHER_TYPE_KEY, PROVINCE_KEY, VEHICLE_TYPE_KEY],
   });
   const provinces = values[PROVINCE_KEY] as string[];
   const publisher_types = values[PUBLISHER_TYPE_KEY] as PublisherTypesValue;
-
-  const [type_slug, setTypeSlug] = useState<string | undefined>(
-    filters.type_slug,
-  );
+  const type_slug = values[VEHICLE_TYPE_KEY] as string;
 
   const [battery_until, setBatteryUntil] = useState<number | undefined>(
     filters.battery_capacity_until,
@@ -137,19 +137,18 @@ export const VehiclesFiltersPanel = ({
 
   const iconSize = 24;
 
-  const { selectedItems, setSelectedItems } = useSelectedLocationItemsStore();
   return (
     <>
       <VehicleTypeSelector
         vehicleTypes={catalog.vehicleTypes}
         value={type_slug}
         onChange={(next) => {
-          setTypeSlug(next);
-          commitFilters({
-            ...filters,
-            type_slug: next,
-            page: 1,
-          });
+          handleChange(VEHICLE_TYPE_KEY, next ?? undefined);
+          // commitFilters({
+          //   ...filters,
+          //   type_slug: next,
+          //   page: 1,
+          // });
         }}
       />
 
@@ -198,17 +197,10 @@ export const VehiclesFiltersPanel = ({
         Icon={<HiOutlineMapPin size={iconSize} />}
       >
         <HeroFiltersLocationSelector
-          value={
-            provinces 
-          }
-          onChange={(next) =>
-          {
-            console.log(next)
-            handleMultiChange(PROVINCE_KEY, next as string[] )
-
-
-          }
-          }
+          value={ typeof provinces === "string" ? [provinces] : provinces}
+          onChange={(next) => {
+            handleMultiChange(PROVINCE_KEY, typeof next === "string" ? [next] : next );
+          }}
         />
 
         {/* <LocationSelector /> */}

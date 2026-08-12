@@ -5,11 +5,11 @@ export const CheckBoxContainer = ({
   title,
 }: {
   children: React.ReactNode;
-  title: string;
+  title?: string;
 }) => {
   return (
     <div className="flex flex-col gap-2">
-      <Label className="text-sm font-medium text-slate-600">{title}</Label>
+      {title ? <Label className="text-sm font-medium text-slate-600">{title}</Label> : null}
       <div className="grid grid-cols-2 gap-2">{children}</div>
     </div>
   );

@@ -49,9 +49,9 @@ export const FiltersLocationSelector = () => {
     () =>
       Boolean(
         activeFilters?.resolved.municipalities.length &&
-          !activeFilters.resolved.provinces.length &&
-          selectedProvinces.length === 0 &&
-          provinces.length > 0,
+        !activeFilters.resolved.provinces.length &&
+        selectedProvinces.length === 0 &&
+        provinces.length > 0,
       ),
     [activeFilters, provinces.length, selectedProvinces.length],
   );
@@ -181,6 +181,7 @@ export const FiltersLocationSelector = () => {
               item={province}
             />
           ))}
+       
       </PopoverContent>
     </Popover>
   );

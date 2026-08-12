@@ -17,7 +17,6 @@ export const ServicesSelector = ({
 }: ServicesSelectorProps) => {
   return (
     <MultiCheckboxFilter
-      title="Servicios"
       items={services.map((service) => ({
         key: service.slug,
         label: service.name,

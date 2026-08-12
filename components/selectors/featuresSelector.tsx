@@ -17,8 +17,7 @@ export const FeaturesSelector = ({
 }: FeaturesSelectorProps) => {
   return (
     <MultiCheckboxFilter
-      title="Equipamiento"
-      items={features.map((feature) => ({
+        items={features.map((feature) => ({
         key: feature.slug,
         label: feature.name,
       }))}

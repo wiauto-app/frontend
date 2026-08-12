@@ -71,7 +71,7 @@ interface UseFiltersManagerReturn {
 }
 
 export const useFiltersManager = ({
-  keys,
+  keys = [],
 }: UseFiltersManagerProps): UseFiltersManagerReturn => {
   const router = useRouter();
   const pathname = usePathname();
