@@ -13,6 +13,8 @@ import {
   useVehicleAiAction,
   VEHICLE_AI_MISSING_FIELDS_MESSAGE,
 } from "@/hooks/useVehicleAiAction";
+import { IconContainer } from "@/components/ui/iconContainer";
+import { toast } from "sonner";
 
 export type VehiclePriceRecommendationStatus =
   | "idle"
@@ -35,19 +37,6 @@ export const buildVehiclePriceRangeLabel = (
 ): string =>
   `${formatVehiclePriceEur(rangeMin)} - ${formatVehiclePriceEur(rangeMax)}`;
 
-export const buildVehiclePriceSampleLabel = (sampleCount: number): string =>
-  `Basado en ${sampleCount} vehículos similares en tu zona (España)`;
-
-export const buildVehiclePriceSourceLabel = (
-  source: RecommendVehiclePriceSource,
-  sampleCount: number,
-): string => {
-  if (source === "platform") {
-    return buildVehiclePriceSampleLabel(sampleCount);
-  }
-
-  return "Estimación basada en el mercado español (IA). A medida que haya más anuncios similares en WiAuto, usaremos datos reales de la plataforma.";
-};
 
 export const resolveVehiclePriceRecommendationStatus = (
   data: RecommendVehiclePriceResponse | null,
@@ -92,6 +81,8 @@ export const VehiclePriceRecommendation = () => {
       shouldDirty: true,
       shouldValidate: true,
     });
+
+    toast.success("Precio recomendado aplicado correctamente");
   };
 
   const isLoading = status === "loading";
@@ -99,12 +90,10 @@ export const VehiclePriceRecommendation = () => {
 
   return (
     <div className="flex flex-col gap-4 rounded-md border border-primary bg-primary/5 p-4">
-      <div className="flex items-start gap-4">
-        <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary/20">
-          <Euro className="size-8 text-primary" aria-hidden="true" />
-        </div>
+      <div className="flex flex-col md:flex-row items-start gap-4">
+        <IconContainer Icon={Euro} size="lg" rounded/>
         <div className="flex flex-1 flex-col gap-2">
-          <p className="font-medium text-primary">Precio justo según WiAuto</p>
+          <p className="font-medium text-primary">Precio WiAuto</p>
 
           {showResult && result ? (
             <>
@@ -115,14 +104,9 @@ export const VehiclePriceRecommendation = () => {
                 </span>
                 <span>{formatVehiclePriceEur(result.range_max)}</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {buildVehiclePriceSourceLabel(
-                  result.source,
-                  result.sample_count,
-                )}
-              </p>
+           
               {result.explanation ? (
-                <p className="text-sm text-foreground">{result.explanation}</p>
+                <p className="text-sm text-foreground hidden md:block">{result.explanation}</p>
               ) : null}
             </>
           ) : (
@@ -132,6 +116,9 @@ export const VehiclePriceRecommendation = () => {
             </p>
           )}
         </div>
+        {result?.explanation ? (
+                <p className="text-sm text-foreground block md:hidden">{result?.explanation}</p>
+              ) : null}
       </div>
 
       {!canExecute ? (
@@ -152,6 +139,7 @@ export const VehiclePriceRecommendation = () => {
           type="button"
           onClick={handleCalculatePrice}
           disabled={!canExecute || isLoading}
+          className="w-full md:w-auto"
           aria-label="Calcular precio justo del vehículo"
         >
           {isLoading ? (
@@ -170,6 +158,7 @@ export const VehiclePriceRecommendation = () => {
             variant="outline"
             onClick={handleUseRecommendedPrice}
             aria-label="Usar precio recomendado en el formulario"
+            className="w-full md:w-auto"
           >
             Usar precio recomendado (
             {formatVehiclePriceEur(result.recommended_price)})
