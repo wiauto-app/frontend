@@ -51,13 +51,8 @@ export const MobileNavbar = () => {
       icon: <HiOutlineChat size={size} />,
       activeIcon: <HiChat size={size} />,
       href: "/mensajes",
-    },
-    {
-      label: "Vender",
-      icon: <HiOutlinePlus size={size} />,
-      activeIcon: <HiPlus size={size} />,
-      href: "/perfil",
-    },
+    }
+ 
   ];
 
   const unauthenticatedItems: MobileNavbarItemData[] = [
