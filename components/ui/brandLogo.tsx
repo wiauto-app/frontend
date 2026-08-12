@@ -92,7 +92,7 @@ export const BrandLogo = ({
         className="object-contain"
         priority
         fetchPriority="high"
-        quality={100}
+        quality={70}
       />
     </Link>
   );
