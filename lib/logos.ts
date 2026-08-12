@@ -18,9 +18,9 @@ export interface Logos {
 
 export const LOGOS: Logos = {
   normal: {
-    black: MEDIA_URL + "/wiauto-strapi/Group_1000002681_2963bea72b.avif",
-    base: MEDIA_URL + "/wiauto-strapi/Group_1000002682_104ab9e4f3.avif",
-    white: MEDIA_URL + "/wiauto-strapi/Group_1000002683_8ebb8a53ac.avif",
+    black: MEDIA_URL + "/wiauto-strapi/Group_1000002681_9d7c5628fc.avif",
+    base: MEDIA_URL + "/wiauto-strapi/Group_1000002682_1_8cc20235e5.avif",
+    white: MEDIA_URL + "/wiauto-strapi/Group_1000002683_b36c2b39cd.avif",
   },
   pro: {
     black: MEDIA_URL + "/wiauto-strapi/Group_1000002687_152cb8f7c2.avif",
