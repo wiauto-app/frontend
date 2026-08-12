@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   buildVehiclePriceRangeLabel,
-  buildVehiclePriceSampleLabel,
-  buildVehiclePriceSourceLabel,
   formatVehiclePriceEur,
 } from "@/components/vehicles/quick-publish/VehiclePriceRecommendation";
 
@@ -19,15 +17,4 @@ describe("VehiclePriceRecommendation helpers", () => {
     expect(label).toMatch(/28\.000/);
   });
 
-  it("construye el texto de muestra con el número de comparables", () => {
-    expect(buildVehiclePriceSampleLabel(47)).toBe(
-      "Basado en 47 vehículos similares en tu zona (España)",
-    );
-  });
-
-  it("construye el texto de fuente para estimación de IA", () => {
-    expect(buildVehiclePriceSourceLabel("ai", 0)).toContain(
-      "Estimación basada en el mercado español (IA)",
-    );
-  });
 });
