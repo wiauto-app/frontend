@@ -60,9 +60,7 @@ export function UserSidebar() {
   const tab = searchParams.get("tab");
 
   const { user, logout } = useUser();
-  const { has, isSubscribed, isPrivileged } = useEntitlements();
-
-  if (isSubscribed || isPrivileged) return null;
+  const { has } = useEntitlements();
 
   const sidebarLinks = getUserSidebarLinks({
     dealershipMembership: user?.dealership_membership,
@@ -92,39 +90,41 @@ export function UserSidebar() {
       </Card>
 
       {/* Navigation Links */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <nav className="flex flex-col space-y-1">
-          {sidebarLinks.map((link) => {
-            const isActive = isSidebarLinkActive(link.href, pathname, tab);
-            const Icon = link.icon;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-600 hover:text-blue-600 hover:bg-blue-50/50"
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                {link.label}
-              </Link>
-            );
-          })}
+      <Card size="sm">
+        <CardContent>
+          <nav className="flex flex-col space-y-1">
+            {sidebarLinks.map((link) => {
+              const isActive = isSidebarLinkActive(link.href, pathname, tab);
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-600 hover:text-blue-600 hover:bg-blue-50/50"
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  {link.label}
+                </Link>
+              );
+            })}
 
-          <div className="pt-4 mt-2 border-t border-gray-100">
-            <Button
-              variant="ghost"
-              onClick={() => logout()}
-              className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50"
-            >
-              <LogOut className="w-5 h-5" />
-              Cerrar sesión
-            </Button>
-          </div>
-        </nav>
-      </div>
+            <div className="pt-4 mt-2 border-t border-gray-100">
+              <Button
+                variant="ghost"
+                onClick={() => logout()}
+                className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50"
+              >
+                <LogOut className="w-5 h-5" />
+                Cerrar sesión
+              </Button>
+            </div>
+          </nav>
+        </CardContent>
+      </Card>
     </div>
   );
 }

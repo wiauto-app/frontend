@@ -12,10 +12,12 @@ import {
   VerifyTwoFactorLoginResponse,
 } from "@/validations/auth";
 import { LoginDto, RegisterDto, ResetPasswordDto, ContactDto } from "@/validations/Schemas";
+import { BillingMeResponse } from "@/interfaces/billing.interface";
 
 export interface MeResponseDto extends User {
   vehicle_lists: VehicleList[];
   dealership_membership?: DealershipMembership | null;
+  billing_summary: BillingMeResponse;
 }
 
 export const authService = {

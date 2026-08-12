@@ -8,7 +8,6 @@ import { Footer, NewsletterSection } from "@/components/home";
 import { AssistantDialog } from "@/components/assistant/assistantDialog";
 import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
 import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 

@@ -1,23 +1,17 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 
 import { useUser } from "@/app/contexts/auth/useUser";
-import { billingService } from "@/services/billingService";
 import type { BillingMeEntitlementEntry } from "@/interfaces/billing.interface";
 
 export const useEntitlements = () => {
-  const { user, isAuthenticated,isLoading } = useUser();
-  const query = useQuery({
-    queryKey: ["billing-me",user,isLoading],
-    queryFn: () => billingService.getMe(),
-    enabled: Boolean(isAuthenticated),
-  });
+  const { user } = useUser();
+  const billingSummary = user?.billing_summary;
 
-  const entitlements = query.data?.entitlements ?? {};
+  const entitlements = user?.billing_summary?.entitlements ?? {};
   const isPrivileged =
-    query.data?.source === "admin" || user?.isAdmin === true;
-  const isSubscribed = query.data?.subscription?.status === "active";
+    user?.billing_summary?.source === "admin" || user?.isAdmin === true;
+  const isSubscribed = billingSummary?.subscription?.status === "active";
 
   const has = (feature: string): boolean => {
     if (isPrivileged) {
@@ -63,13 +57,10 @@ export const useEntitlements = () => {
 
   return {
     entitlements,
-    billingMe: query.data ?? null,
-    isLoading: query.isLoading,
-    isError: query.isError,
+    billingMe: billingSummary ?? null,
     has,
     getLimit,
-    refetch: query.refetch,
-    planName: query.data?.subscription?.plan_name ?? null,
+    planName: billingSummary?.subscription?.plan_name ?? null,
     isSubscribed,
     isPrivileged,
   };
