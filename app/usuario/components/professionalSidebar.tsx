@@ -74,11 +74,10 @@ export function ProfessionalSidebar({
     has,
     isSubscribed,
     isPrivileged,
-    isLoading: isEntitlementsLoading,
   } = useEntitlements();
 
   const isOnUsuarioPath = pathname.includes("usuario");
-  const isSidebarLoading = isLoading || isEntitlementsLoading;
+  const isSidebarLoading = isLoading;
 
   if (!isOnUsuarioPath) {
     return null;

@@ -21,8 +21,6 @@ export default async function Layout({
 
   const showProShell = status === "active";
   const showUserSidebar = !showProShell;
-  console.log("showUserSidebar", showUserSidebar);
-  console.log("showProShell", showProShell);
   const layoutVariants = cva(
     "mx-auto w-full px-4 py-2 sm:px-6 md:py-8 lg:px-8 ",
     {

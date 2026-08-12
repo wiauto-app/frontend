@@ -15,11 +15,8 @@ export const RequireEntitlement = ({
   children,
   fallback,
 }: RequireEntitlementProps) => {
-  const { has, isPrivileged, isLoading } = useEntitlements();
+  const { has, isPrivileged } = useEntitlements();
 
-  if (isLoading) {
-    return null;
-  }
 
   if (isPrivileged || has(feature)) {
     return <>{children}</>;

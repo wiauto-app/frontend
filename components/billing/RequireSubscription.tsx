@@ -13,11 +13,7 @@ export const RequireSubscription = ({
   children,
   fallback,
 }: RequireSubscriptionProps) => {
-  const { isSubscribed, isPrivileged, isLoading } = useEntitlements();
-
-  if (isLoading) {
-    return null;
-  }
+  const { isSubscribed, isPrivileged } = useEntitlements();
 
   if (isSubscribed || isPrivileged) {
     return <>{children}</>;
