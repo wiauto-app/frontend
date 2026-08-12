@@ -83,7 +83,7 @@ export function UserDropdown() {
           className="flex w-[85vw] max-w-sm flex-col gap-0 p-0"
         >
           {/* Header */}
-          <SheetHeader className="px-5 py-5 text-left">
+          <SheetHeader className="px-5 py-3 text-left">
             <div className="flex items-center gap-3">
               <UserAvatar />
 
@@ -110,7 +110,7 @@ export function UserDropdown() {
 
           {/* Dealership */}
           {user.dealership_membership && (
-            <div className="px-4 py-4">
+            <div className="px-4 py-2">
               <div className="flex items-center gap-3 ">
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
                   <LuStore className="size-5 text-slate-700" />
@@ -136,7 +136,7 @@ export function UserDropdown() {
           <Separator />
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <nav className="flex-1 overflow-y-auto p-2">
             <div className="space-y-1">
               {sidebarLinks.map((item) => {
                 const Icon = item.icon;
@@ -145,7 +145,7 @@ export function UserDropdown() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950 active:bg-slate-100"
+                    className="flex py-2 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950 active:bg-slate-100"
                   >
                     <Icon className="size-5 shrink-0" />
                     <span>{item.label}</span>
@@ -156,11 +156,11 @@ export function UserDropdown() {
           </nav>
 
           {/* Logout */}
-          <div className="border-t p-3">
+          <div className="border-t p-2">
             <button
               type="button"
               onClick={logout}
-              className="flex min-h-12 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+              className="flex py-2 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
             >
               <LogOut className="size-5 shrink-0" />
               <span>Cerrar sesión</span>

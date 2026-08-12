@@ -51,8 +51,13 @@ export const MobileNavbar = () => {
       icon: <HiOutlineChat size={size} />,
       activeIcon: <HiChat size={size} />,
       href: "/mensajes",
-    }
- 
+    },
+    {
+      label: "Perfil",
+      icon: <HiOutlineUser size={size} />,
+      activeIcon: <HiUser size={size} />,
+      href: "/usuario/inicio",
+    },
   ];
 
   const unauthenticatedItems: MobileNavbarItemData[] = [
@@ -81,9 +86,7 @@ export const MobileNavbar = () => {
       aria-label="Navegación móvil"
       className="fixed right-2 bottom-2 left-2 z-50 rounded-3xl bg-white/80 px-2 py-3 shadow-md backdrop-blur-sm md:hidden"
     >
-      <div
-        className={cn("grid gap-1", user ? "grid-cols-5" : "grid-cols-3")}
-      >
+      <div className={cn("grid gap-1", user ? "grid-cols-5" : "grid-cols-3")}>
         {user
           ? authenticatedItems.map((item) => (
               <MobileNavbarItem key={item.href} item={item} />
