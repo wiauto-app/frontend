@@ -19,7 +19,7 @@ export const Hero = ({
   return (
     <section
       className={cn(
-        "relative lg:h-140  rounded-lg py-12 px-10  rounded-b-lg overflow-hidden ",
+        "relative lg:h-140  rounded-lg py-6 lg:py-12 px-4 lg:px-10  rounded-b-lg overflow-hidden ",
         className,
       )}
     >
@@ -37,7 +37,7 @@ export const Hero = ({
       {floatingContent}
 
       <div className="relative mx-auto   flex flex-col lg:grid  lg:grid-cols-2 gap-4 lg:gap-10  h-full">
-        <div className="w-full flex flex-col gap-4 items-center lg:items-start">
+        <div className="w-full flex flex-col gap-4 items-center lg:items-start justify-center">
           {leftContent}
         </div>
         <div className="w-full flex flex-col gap-4 ">{rightContent}</div>

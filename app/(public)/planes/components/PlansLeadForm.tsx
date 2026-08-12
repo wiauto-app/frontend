@@ -15,13 +15,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PhoneInput } from "@/components/forms/phoneInput";
+import { PhoneFieldValue, PhoneInput } from "@/components/forms/phoneInput";
 import { PLAN_LEAD_CARS_QUANTITY_OPTIONS } from "@/app/(public)/planes/constants/cars-quantity.constants";
 import { planLeadService } from "@/services/planLead/planLeadService";
 import {
   planesLeadSchema,
   type PlanesLeadFormValues,
 } from "@/validations/planesLead.schema";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ControlledInput } from "@/components/forms/controlledInput";
 
 const defaultValues: PlanesLeadFormValues = {
   name: "",
@@ -58,126 +66,107 @@ export const PlansLeadForm = () => {
   };
 
   return (
-    <form
-      onSubmit={form.handleSubmit(handleSubmit)}
-      className="rounded-xl border border-slate-200 bg-white p-6 shadow-lg z-10"
-      aria-label="Formulario de contacto para planes profesionales"
-    >
-      <h3 className="text-lg font-semibold text-slate-900 mb-1">
-        ¿Quieres que te asesoremos?
-      </h3>
-      <p className="text-sm text-slate-600 mb-5">
-        Déjanos tus datos y te contactaremos para encontrar el plan ideal.
-      </p>
-
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="planes-lead-nombre">Nombre</Label>
-          <Input
-            id="planes-lead-nombre"
-            autoComplete="name"
-            placeholder="Tu nombre"
-            aria-invalid={Boolean(form.formState.errors.name)}
-            {...form.register("name")}
-          />
-          {form.formState.errors.name ? (
-            <p className="text-sm text-red-600">{form.formState.errors.name.message}</p>
-          ) : null}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="planes-lead-email">Email</Label>
-          <Input
-            id="planes-lead-email"
-            type="email"
-            autoComplete="email"
-            placeholder="tu@email.com"
-            aria-invalid={Boolean(form.formState.errors.email)}
-            {...form.register("email")}
-          />
-          {form.formState.errors.email ? (
-            <p className="text-sm text-red-600">{form.formState.errors.email.message}</p>
-          ) : null}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="planes-lead-telefono">Teléfono</Label>
-          <Controller
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <PhoneInput
-                value={field.value}
-                onChange={field.onChange}
-                ariaInvalid={Boolean(form.formState.errors.phone)}
-              />
-            )}
-          />
-          {form.formState.errors.phone?.phone || form.formState.errors.phone?.phone_code ? (
-            <p className="text-sm text-red-600">
-              {form.formState.errors.phone?.phone?.message ??
-                form.formState.errors.phone?.phone_code?.message}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="planes-lead-cars-quantity">Cantidad de vehículos</Label>
-          <Controller
-            control={form.control}
-            name="cars_quantity"
-            render={({ field }) => (
-              <Select
-                value={field.value}
-                onValueChange={field.onChange}
-                items={PLAN_LEAD_CARS_QUANTITY_OPTIONS.map((option) => ({
-                  label: option.label,
-                  value: option.value,
-                }))}
-              >
-                <SelectTrigger
-                  id="planes-lead-cars-quantity"
-                  className="w-full"
-                  aria-label="Cantidad de vehículos"
-                  aria-invalid={Boolean(form.formState.errors.cars_quantity)}
-                >
-                  <SelectValue placeholder="Selecciona un rango" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLAN_LEAD_CARS_QUANTITY_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {form.formState.errors.cars_quantity ? (
-            <p className="text-sm text-red-600">
-              {form.formState.errors.cars_quantity.message}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="planes-lead-mensaje">Mensaje</Label>
-          <Textarea
-            id="planes-lead-mensaje"
-            placeholder="Cuéntanos sobre tu concesionario o negocio"
-            rows={3}
-            {...form.register("message")}
-          />
-        </div>
-
-        <Button
-          type="submit"
-          disabled={form.formState.isSubmitting}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+    <Card size="sm" className="z-10">
+      <CardHeader>
+        <CardTitle>¿Quieres que te asesoremos?</CardTitle>
+        <CardDescription className="sr-only">
+          Déjanos tus datos y te contactaremos para encontrar el plan ideal.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          aria-label="Formulario de contacto para planes profesionales"
         >
-          {form.formState.isSubmitting ? "Enviando..." : "Solicitar información"}
-        </Button>
-      </div>
-    </form>
+          <div className="flex flex-col gap-4">
+            <ControlledInput
+              name="name"
+              control={form.control}
+              label="Nombre"
+              placeholder="Tu nombre"
+              type="text"
+            />
+
+            <ControlledInput
+              name="email"
+              control={form.control}
+              label="Email"
+              placeholder="Tu email"
+              type="email"
+            />
+
+            <ControlledInput
+              name="phone"
+              control={form.control}
+              label="Teléfono"
+              placeholder="Tu teléfono"
+              type="tel"
+            >
+              {({ field }) => (
+                <PhoneInput
+                  value={field.value as unknown as PhoneFieldValue}
+                  onChange={field.onChange}
+                  ariaInvalid={Boolean(form.formState.errors.phone)}
+                />
+              )}
+            </ControlledInput>
+
+            <ControlledInput
+              name="cars_quantity"
+              control={form.control}
+              label="Cantidad de coches"
+              placeholder="Tu mensaje"
+            >
+              {({ field }) => (
+                <Select
+                  value={field.value as string}
+                  onValueChange={field.onChange}
+                  items={PLAN_LEAD_CARS_QUANTITY_OPTIONS.map((option) => ({
+                    label: option.label,
+                    value: option.value,
+                  }))}
+                >
+                  <SelectTrigger
+                    id="planes-lead-cars-quantity"
+                    className="w-full"
+                    aria-label="Cantidad de vehículos"
+                    aria-invalid={Boolean(form.formState.errors.cars_quantity)}
+                  >
+                    <SelectValue placeholder="Selecciona un rango" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLAN_LEAD_CARS_QUANTITY_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </ControlledInput>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="planes-lead-mensaje">Mensaje</Label>
+              <Textarea
+                id="planes-lead-mensaje"
+                placeholder="Cuéntanos sobre tu concesionario o negocio"
+                rows={3}
+                {...form.register("message")}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {form.formState.isSubmitting
+                ? "Enviando..."
+                : "Solicitar información"}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };

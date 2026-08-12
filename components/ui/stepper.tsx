@@ -17,7 +17,7 @@ interface StepperProps {
 
 export function Stepper({ steps, currentStep, onStepClick, className }: StepperProps) {
   return (
-    <div className={cn("flex items-center justify-between", className)}>
+    <div className={cn("flex items-center justify-between ", className)}>
       {steps.map((step, idx) => {
         const isCompleted = currentStep > step.id;
         const isActive = currentStep === step.id;
