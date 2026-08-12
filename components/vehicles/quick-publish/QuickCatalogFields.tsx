@@ -44,7 +44,6 @@ export const QuickCatalogFields = () => {
     fuelTypeId: catalogFuelTypeId ? String(catalogFuelTypeId) : undefined,
   }));
 
-
   // Sincroniza selectores cuando el formulario se rellena desde identificación (matrícula/VIN).
   useEffect(() => {
     setIds({
@@ -137,7 +136,7 @@ export const QuickCatalogFields = () => {
           });
         }}
       />
-      <BodyTypeSelector
+      {/* <BodyTypeSelector
         modelId={ids.modelId ? Number(ids.modelId) : undefined}
         value={ids.bodyTypeId}
         onChange={(value) => {
@@ -148,21 +147,8 @@ export const QuickCatalogFields = () => {
             { shouldDirty: true },
           );
         }}
-      />
-      <FuelTypeSelector
-        modelId={ids.modelId ? Number(ids.modelId) : undefined}
-        bodyTypeId={ids.bodyTypeId ? Number(ids.bodyTypeId) : undefined}
-        value={ids.fuelTypeId}
-        onChange={(value) => {
-          updateIds("fuelTypeId", value);
-          form.setValue(
-            "catalog_fuel_type_id",
-            value ? Number(value) : undefined,
-            { shouldDirty: true },
-          );
-        }}
-        disabled={!ids.bodyTypeId}
-      />
+      /> */}
+
       <QuickYearSelector
         modelId={ids.modelId ? Number(ids.modelId) : undefined}
         value={ids.yearId}
@@ -182,6 +168,20 @@ export const QuickCatalogFields = () => {
         value={versionId ? String(versionId) : undefined}
         onChange={handleVersionChange}
         hideLabel={false}
+      />
+      <FuelTypeSelector
+        modelId={ids.modelId ? Number(ids.modelId) : undefined}
+        bodyTypeId={ids.bodyTypeId ? Number(ids.bodyTypeId) : undefined}
+        value={ids.fuelTypeId}
+        onChange={(value) => {
+          updateIds("fuelTypeId", value);
+          form.setValue(
+            "catalog_fuel_type_id",
+            value ? Number(value) : undefined,
+            { shouldDirty: true },
+          );
+        }}
+        disabled={!ids.bodyTypeId}
       />
     </div>
   );
