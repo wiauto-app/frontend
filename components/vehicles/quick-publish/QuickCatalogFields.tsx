@@ -44,7 +44,6 @@ export const QuickCatalogFields = () => {
     fuelTypeId: catalogFuelTypeId ? String(catalogFuelTypeId) : undefined,
   }));
 
-  console.log(ids);
 
   // Sincroniza selectores cuando el formulario se rellena desde identificación (matrícula/VIN).
   useEffect(() => {

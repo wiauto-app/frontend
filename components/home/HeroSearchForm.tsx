@@ -103,7 +103,7 @@ const HeroFiltersSearchForm = () => {
   // const is_count_loading = isPending || isFetching;
   // const search_label = buildSearchButtonLabel(count, is_count_loading);
 
-  const [selectedItems, setSelectedItems] = useState<LocationSelectedItem[]>();
+  const [selectedItems, setSelectedItems] = useState<string[]>();
 
   const handleSearch = () => {
     router.push(buildListingHref());
@@ -123,7 +123,7 @@ const HeroFiltersSearchForm = () => {
         value={selectedItems}
         onChange={(items) => {
           if(items?.length && typeof items[0] === "object") {
-            setSelectedItems(items as LocationSelectedItem[]);
+            setSelectedItems(items);
           }
         }}
       />

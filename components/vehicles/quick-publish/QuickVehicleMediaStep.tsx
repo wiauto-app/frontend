@@ -41,6 +41,7 @@ export const QuickVehicleMediaStep = ({
             render={({ field, fieldState }) => (
               <div>
                 <ImagesForm
+                  featureFirstImage={true}
                   value={field.value}
                   onChange={field.onChange}
                   reference_id={vehicleId}

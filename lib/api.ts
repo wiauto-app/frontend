@@ -379,37 +379,79 @@ export const apiDelete = async <T = null>(
   return fetchWithAuth<T>(path, options);
 };
 
-export const uploadSignedFile = async <T>(
+export const uploadSignedFile = <T>(
   url: string,
-  file: File,
-  opts?: { content_type?: string },
+  file: File | Blob,
+  opts?: {
+    content_type?: string;
+    onProgress?: (progress: number) => void;
+  },
 ): Promise<ApiResponse<T>> => {
-  const contentType =
-    opts?.content_type?.trim() ||
-    file.type.trim() ||
-    "application/octet-stream";
+  return new Promise((resolve) => {
+    const contentType =
+      opts?.content_type?.trim() ||
+      file.type?.trim() ||
+      "application/octet-stream";
 
-  const response = await fetch(url, {
-    method: "PUT",
-    body: file,
-    headers: {
-      "Content-Type": contentType,
-    },
-  });
+    const xhr = new XMLHttpRequest();
 
-  if (!response.ok) {
-    return {
-      message: response.statusText,
-      status: response.status,
-      ok: false,
-      data: null as T,
+    xhr.open("PUT", url, true);
+
+    xhr.setRequestHeader("Content-Type", contentType);
+
+    xhr.upload.onprogress = (event) => {
+      if (!event.lengthComputable) {
+        return;
+      }
+
+      const progress = Math.round(
+        (event.loaded / event.total) * 100,
+      );
+      console.log("progress", progress);
+
+      opts?.onProgress?.(progress);
     };
-  }
 
-  return {
-    message: response.statusText,
-    status: response.status,
-    ok: true,
-    data: null as T,
-  };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        opts?.onProgress?.(100);
+
+        resolve({
+          message: xhr.statusText,
+          status: xhr.status,
+          ok: true,
+          data: null as T,
+        });
+
+        return;
+      }
+
+      resolve({
+        message: xhr.statusText || "Upload failed",
+        status: xhr.status,
+        ok: false,
+        data: null as T,
+      });
+    };
+
+    xhr.onerror = () => {
+      resolve({
+        message: "Network error while uploading file",
+        status: xhr.status || 0,
+        ok: false,
+        data: null as T,
+      });
+    };
+
+    xhr.onabort = () => {
+      resolve({
+        message: "Upload aborted",
+        status: xhr.status || 0,
+        ok: false,
+        data: null as T,
+      });
+    };
+
+    xhr.send(file);
+  });
 };
