@@ -8,6 +8,7 @@ import {
 } from "react";
 import {
   Camera,
+  Check,
   GripVertical,
   ImagePlus,
   Loader2,
@@ -17,7 +18,6 @@ import {
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn, getImageUrl } from "@/lib/utils";
 import {
   filesService,
@@ -74,7 +74,9 @@ const blocked_non_image_extensions = [
 const get_file_extension = (file_name: string): string => {
   const lower = file_name.toLowerCase();
   const dot = lower.lastIndexOf(".");
+
   if (dot < 0) return "";
+
   return lower.slice(dot);
 };
 
@@ -93,12 +95,20 @@ export const normalize_vehicle_images = (
 interface PendingItem {
   temp_key: string;
   file: File;
+
+  /**
+   * URL local creada con URL.createObjectURL().
+   * Se utiliza inmediatamente para mostrar la imagen.
+   */
+  preview_url: string;
 }
 
 const is_valid_image_file = (file: File) => {
   const extension = get_file_extension(file.name);
 
-  if ((blocked_non_image_extensions as readonly string[]).includes(extension)) {
+  if (
+    (blocked_non_image_extensions as readonly string[]).includes(extension)
+  ) {
     toast.error(`${file.name}: solo se admiten imágenes.`);
     return false;
   }
@@ -145,6 +155,7 @@ export type ImagesFormProps = {
    * Si no se pasa, se usa un UUID estable por montaje del formulario.
    */
   reference_id?: string;
+
   featureFirstImage?: boolean;
 };
 
@@ -164,16 +175,16 @@ export const ImagesForm = ({
     value_ref.current = normalize_vehicle_images(value_prop ?? []);
   }, [value_prop]);
 
+  /**
+   * Imágenes que todavía están subiendo.
+   *
+   * La diferencia importante respecto al componente anterior es que
+   * cada pending item YA tiene una imagen visible mediante preview_url.
+   */
   const [pending_items, setPendingItems] = useState<PendingItem[]>([]);
 
   /**
    * Progreso individual por archivo.
-   *
-   * {
-   *   "uuid-1": 45,
-   *   "uuid-2": 82,
-   *   "uuid-3": 100
-   * }
    */
   const [upload_progress, set_upload_progress] = useState<
     Record<string, number>
@@ -201,22 +212,66 @@ export const ImagesForm = ({
 
   const locked_remove_paths_ref = useRef(new Set<string>());
 
-  const handle_remove_pending = useCallback((temp_key: string) => {
-    cancelled_upload_keys_ref.current.add(temp_key);
-
-    setPendingItems((prev) => prev.filter((p) => p.temp_key !== temp_key));
-
-    set_upload_progress((prev) => {
-      if (!(temp_key in prev)) {
-        return prev;
-      }
-
-      const next = { ...prev };
-      delete next[temp_key];
-
-      return next;
-    });
+  /**
+   * Libera una URL creada mediante URL.createObjectURL().
+   */
+  const revoke_preview_url = useCallback((preview_url: string) => {
+    if (preview_url.startsWith("blob:")) {
+      URL.revokeObjectURL(preview_url);
+    }
   }, []);
+
+  /**
+   * Elimina una imagen temporal.
+   */
+  const remove_pending_item = useCallback(
+    (temp_key: string, revoke_url = true) => {
+      setPendingItems((prev) => {
+        const item = prev.find((p) => p.temp_key === temp_key);
+
+        if (item && revoke_url) {
+          revoke_preview_url(item.preview_url);
+        }
+
+        return prev.filter((p) => p.temp_key !== temp_key);
+      });
+
+      set_upload_progress((prev) => {
+        if (!(temp_key in prev)) {
+          return prev;
+        }
+
+        const next = { ...prev };
+        delete next[temp_key];
+
+        return next;
+      });
+    },
+    [revoke_preview_url],
+  );
+
+  /**
+   * Cancela una subida y elimina inmediatamente la preview.
+   */
+  const handle_remove_pending = useCallback(
+    (temp_key: string) => {
+      cancelled_upload_keys_ref.current.add(temp_key);
+
+      remove_pending_item(temp_key);
+    },
+    [remove_pending_item],
+  );
+
+  /**
+   * Limpieza de todas las object URLs cuando el componente se desmonta.
+   */
+  useEffect(() => {
+    return () => {
+      for (const item of pending_items) {
+        revoke_preview_url(item.preview_url);
+      }
+    };
+  }, [pending_items, revoke_preview_url]);
 
   const append_committed_path = useCallback(
     (path: string) => {
@@ -231,6 +286,7 @@ export const ImagesForm = ({
       ];
 
       value_ref.current = next;
+
       onChange?.(next);
     },
     [onChange],
@@ -243,6 +299,7 @@ export const ImagesForm = ({
       );
 
       value_ref.current = next;
+
       onChange?.(next);
     },
     [onChange],
@@ -273,7 +330,9 @@ export const ImagesForm = ({
 
       set_paths_removing((previous) => {
         const next = new Set(previous);
+
         next.add(compound_path);
+
         return next;
       });
 
@@ -285,7 +344,9 @@ export const ImagesForm = ({
 
         if (!result.ok) {
           console.error(result.message);
+
           toast.error("No se pudo eliminar el archivo del almacén.");
+
           return;
         }
 
@@ -295,7 +356,9 @@ export const ImagesForm = ({
 
         set_paths_removing((previous) => {
           const next = new Set(previous);
+
           next.delete(compound_path);
+
           return next;
         });
       }
@@ -336,32 +399,11 @@ export const ImagesForm = ({
     [onChange],
   );
 
-  const clear_pending_item = useCallback((temp_key: string) => {
-    setPendingItems((prev) => prev.filter((p) => p.temp_key !== temp_key));
-
-    set_upload_progress((prev) => {
-      if (!(temp_key in prev)) {
-        return prev;
-      }
-
-      const next = { ...prev };
-      delete next[temp_key];
-
-      return next;
-    });
-  }, []);
-
+  /**
+   * Sube una imagen mientras la preview local ya está visible.
+   */
   const run_upload = useCallback(
     async (temp_key: string, file: File) => {
-      const discard_pending_after_failure = () => {
-        if (!cancelled_upload_keys_ref.current.has(temp_key)) {
-          clear_pending_item(temp_key);
-          return;
-        }
-
-        cancelled_upload_keys_ref.current.delete(temp_key);
-      };
-
       try {
         const result = await filesService.uploadTempVehicleImage(
           file,
@@ -377,28 +419,56 @@ export const ImagesForm = ({
           },
         );
 
-        if (!result?.path) {
-          discard_pending_after_failure();
-          return;
-        }
-
+        /**
+         * La subida terminó pero el usuario ya canceló la imagen.
+         *
+         * En ese caso NO añadimos el path al formulario.
+         */
         if (cancelled_upload_keys_ref.current.has(temp_key)) {
           cancelled_upload_keys_ref.current.delete(temp_key);
+
+          /**
+           * El archivo remoto puede haber llegado a subirse.
+           *
+           * Si tu backend permite borrar inmediatamente el temporal,
+           * aquí podrías llamar a removeStoredFiles().
+           */
           return;
         }
 
-        clear_pending_item(temp_key);
+        if (!result?.path) {
+          remove_pending_item(temp_key);
 
+          toast.error(`No se pudo obtener la ruta de ${file.name}`);
+
+          return;
+        }
+
+        /**
+         * Guardamos el path real en el formulario.
+         */
         append_committed_path(result.path);
-      } catch {
+
+        /**
+         * Ahora que el servidor confirmó la imagen,
+         * eliminamos la preview local.
+         */
+        remove_pending_item(temp_key);
+      } catch (error) {
+        console.error(error);
+
         toast.error(`No se pudo subir ${file.name}`);
 
-        discard_pending_after_failure();
+        remove_pending_item(temp_key);
       }
     },
-    [append_committed_path, clear_pending_item],
+    [append_committed_path, remove_pending_item],
   );
 
+  /**
+   * Recibe los archivos seleccionados y crea las previews
+   * ANTES de comenzar la subida.
+   */
   const handleAddedFiles = useCallback(
     (file_list: FileList | null) => {
       if (!file_list?.length) return;
@@ -409,11 +479,26 @@ export const ImagesForm = ({
 
       const new_pending: PendingItem[] = files.map((file) => ({
         temp_key: crypto.randomUUID(),
+
         file,
+
+        /**
+         * Esta operación es prácticamente inmediata.
+         *
+         * El navegador muestra el archivo local sin esperar
+         * absolutamente nada del servidor.
+         */
+        preview_url: URL.createObjectURL(file),
       }));
 
+      /**
+       * Primero mostramos las imágenes.
+       */
       setPendingItems((prev) => [...prev, ...new_pending]);
 
+      /**
+       * Inicializamos progreso.
+       */
       set_upload_progress((prev) => {
         const next = { ...prev };
 
@@ -424,6 +509,9 @@ export const ImagesForm = ({
         return next;
       });
 
+      /**
+       * Y EN PARALELO empezamos las subidas.
+       */
       new_pending.forEach((item) => {
         void run_upload(item.temp_key, item.file);
       });
@@ -437,6 +525,7 @@ export const ImagesForm = ({
       e.stopPropagation();
 
       drag_depth_ref.current = 0;
+
       setIsDragging(false);
 
       handleAddedFiles(e.dataTransfer.files);
@@ -466,6 +555,7 @@ export const ImagesForm = ({
 
     if (drag_depth_ref.current <= 0) {
       drag_depth_ref.current = 0;
+
       setIsDragging(false);
     }
   }, []);
@@ -478,6 +568,7 @@ export const ImagesForm = ({
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
+
         handle_drop_zone_click();
       }
     },
@@ -486,11 +577,15 @@ export const ImagesForm = ({
 
   const handle_committed_drag_start = useCallback(
     (index: number) => (e: React.DragEvent) => {
-      e.dataTransfer.setData(VEHICLE_IMAGE_DRAG_TYPE, String(index));
+      e.dataTransfer.setData(
+        VEHICLE_IMAGE_DRAG_TYPE,
+        String(index),
+      );
 
       e.dataTransfer.effectAllowed = "move";
 
       set_drag_source_index(index);
+
       set_drag_over_index(null);
     },
     [],
@@ -498,6 +593,7 @@ export const ImagesForm = ({
 
   const handle_committed_drag_end = useCallback(() => {
     set_drag_source_index(null);
+
     set_drag_over_index(null);
   }, []);
 
@@ -536,6 +632,7 @@ export const ImagesForm = ({
       const from_index = Number.parseInt(from_str, 10);
 
       set_drag_source_index(null);
+
       set_drag_over_index(null);
 
       if (Number.isNaN(from_index)) return;
@@ -547,7 +644,8 @@ export const ImagesForm = ({
 
   const input_id = `${form_field_id}-file-input`;
 
-  const has_gallery = committed_sorted.length > 0 || pending_items.length > 0;
+  const has_gallery =
+    committed_sorted.length > 0 || pending_items.length > 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -576,6 +674,7 @@ export const ImagesForm = ({
           accept={file_input_accept}
           onChange={(e) => {
             handleAddedFiles(e.target.files);
+
             e.target.value = "";
           }}
           className="sr-only"
@@ -629,6 +728,7 @@ export const ImagesForm = ({
         >
           {committed_sorted.map((image, index) => {
             const is_first_image = featureFirstImage && index === 0;
+
             return (
               <li
                 key={image.path}
@@ -642,7 +742,9 @@ export const ImagesForm = ({
                     : is_first_image
                       ? "border-primary ring-2 ring-primary/20"
                       : "border-border",
-                  drag_source_index === index ? "opacity-50" : "opacity-100",
+                  drag_source_index === index
+                    ? "opacity-50"
+                    : "opacity-100",
                 )}
               >
                 <img
@@ -690,6 +792,7 @@ export const ImagesForm = ({
                   className="absolute right-2 top-2 text-destructive hover:text-destructive-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
+
                     void handle_click_remove_committed(image.path);
                   }}
                   aria-busy={paths_removing.has(image.path)}
@@ -700,7 +803,10 @@ export const ImagesForm = ({
                   }
                 >
                   {paths_removing.has(image.path) ? (
-                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                    <Loader2
+                      className="size-4 animate-spin"
+                      aria-hidden
+                    />
                   ) : (
                     <Trash2 className="size-4" aria-hidden />
                   )}
@@ -712,52 +818,91 @@ export const ImagesForm = ({
           {pending_items.map((item) => {
             const progress = upload_progress[item.temp_key] ?? 0;
 
+            const is_uploaded = progress >= 100;
+
             return (
               <li
                 key={item.temp_key}
                 className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted"
-                aria-busy="true"
-                aria-label={`Subiendo ${item.file.name}`}
+                aria-busy={!is_uploaded}
+                aria-label={
+                  is_uploaded
+                    ? `${item.file.name} subida`
+                    : `Subiendo ${item.file.name}`
+                }
               >
-                <Skeleton className="absolute inset-0 size-full rounded-none bg-muted-foreground/15" />
+                {/*
+                 * ESTA ES LA PARTE IMPORTANTE:
+                 *
+                 * La imagen se muestra inmediatamente desde el navegador.
+                 * No esperamos al servidor.
+                 */}
+                <img
+                  src={item.preview_url}
+                  alt={item.file.name}
+                  className={cn(
+                    "size-full object-cover transition-all duration-300",
+                    !is_uploaded && "scale-[1.01]",
+                  )}
+                  draggable={false}
+                />
 
-                <div className="absolute inset-x-3 bottom-3 z-10">
-                  <div className="rounded-md bg-background/90 p-2 shadow-sm backdrop-blur-sm">
-                    <div className="mb-1.5 flex items-center justify-between gap-2">
-                      <span className="min-w-0 truncate text-xs font-medium text-foreground">
-                        Subiendo...
-                      </span>
+                {/*
+                 * Overlay muy sutil mientras se sube.
+                 *
+                 * Ya no sustituimos la imagen por un Skeleton.
+                 */}
+                {!is_uploaded ? (
+                  <div className="absolute inset-x-2 bottom-2 z-10">
+                    <div className="rounded-md bg-background/90 p-2 shadow-sm backdrop-blur-sm">
+                      <div className="mb-1.5 flex items-center justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-1.5">
+                          <Loader2 className="size-3.5 shrink-0 animate-spin text-primary" />
 
-                      <span className="shrink-0 text-xs font-medium text-foreground">
-                        {progress}%
-                      </span>
-                    </div>
+                          <span className="min-w-0 truncate text-xs font-medium text-foreground">
+                            Subiendo...
+                          </span>
+                        </div>
 
-                    <div
-                      className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
-                      role="progressbar"
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={progress}
-                      aria-label={`Progreso de subida de ${item.file.name}: ${progress}%`}
-                    >
+                        <span className="shrink-0 text-xs font-medium text-foreground">
+                          {progress}%
+                        </span>
+                      </div>
+
                       <div
-                        className="h-full rounded-full bg-primary transition-[width] duration-150 ease-out"
-                        style={{
-                          width: `${progress}%`,
-                        }}
-                      />
+                        className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+                        role="progressbar"
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={progress}
+                        aria-label={`Progreso de subida de ${item.file.name}: ${progress}%`}
+                      >
+                        <div
+                          className="h-full rounded-full bg-primary transition-[width] duration-150 ease-out"
+                          style={{
+                            width: `${progress}%`,
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="absolute bottom-2 left-2 z-10">
+                    <span className="flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm">
+                      <Check className="size-3.5 text-green-600" />
+                      Subida
+                    </span>
+                  </div>
+                )}
 
                 <Button
                   type="button"
                   size="icon-sm"
                   variant="destructive"
-                  className="absolute right-2 top-2 z-10 rounded-full shadow-md text-white"
+                  className="absolute right-2 top-2 z-10 rounded-full text-white shadow-md"
                   onClick={(e) => {
                     e.stopPropagation();
+
                     handle_remove_pending(item.temp_key);
                   }}
                   aria-label={`Cancelar subida de ${item.file.name}`}
