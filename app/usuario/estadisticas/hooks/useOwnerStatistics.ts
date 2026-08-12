@@ -35,6 +35,7 @@ export const useOwnerStatistics = ({
     staleTime: 60_000,
     enabled: enabled && Boolean(since) && Boolean(until),
   });
+  console.log(query.error);
 
   return {
     statistics: query.data ?? null,
