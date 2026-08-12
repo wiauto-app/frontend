@@ -15,13 +15,12 @@ import { cn } from "@/lib/utils";
 import {
   HeroSearchFiltersProvider,
   useHeroSearchFilters,
-  useOptionalHeroSearchFilters,
 } from "./HeroSearchFiltersContext";
 import { HeroFiltersMakeSelector } from "./HeroFiltersMakeSelector";
 // import { HeroFiltersModelSelector } from "./HeroFiltersModelSelector";
 import { HeroFiltersLocationSelector } from "./HeroFiltersLocationSelector";
 import { HeroReferenceSearch } from "./HeroReferenceSearch";
-import { LocationSelectedItem } from "../selectors/FilterLocationSelector/interfaces/locationSelector.interface";
+import { Suspense } from "react";
 
 type HeroSearchMode = "filters" | "reference";
 
@@ -119,14 +118,16 @@ const HeroFiltersSearchForm = () => {
     >
       <HeroFiltersMakeSelector />
       {/* <HeroFiltersModelSelector /> */}
-      <HeroFiltersLocationSelector
-        value={selectedItems}
-        onChange={(items) => {
-          if(items?.length && typeof items[0] === "object") {
-            setSelectedItems(items);
-          }
-        }}
-      />
+      <Suspense>
+        <HeroFiltersLocationSelector
+          value={selectedItems}
+          onChange={(items) => {
+            if (items?.length && typeof items[0] === "object") {
+              setSelectedItems(items);
+            }
+          }}
+        />
+      </Suspense>
       <PriceUntilSelector />
       <Button type="submit" aria-label={SEARCH_BUTTON_LABEL}>
         <Search className="size-4" />

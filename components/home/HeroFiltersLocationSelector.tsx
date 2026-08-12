@@ -27,7 +27,6 @@ import type { ProvinceQuickBadgeItem } from "@/components/selectors/utils/build-
 import { buildHeroListingHref } from "@/lib/vehicles/listing-url";
 import { useOptionalHeroSearchFilters } from "./HeroSearchFiltersContext";
 import { VirtualizedCheckboxList } from "./VirtualizedCheckboxList";
-import { Slider } from "../ui/slider";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { RADIUS_KEY } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
 
