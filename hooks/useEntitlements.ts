@@ -7,12 +7,10 @@ import type { BillingMeEntitlementEntry } from "@/interfaces/billing.interface";
 export const useEntitlements = () => {
   const { user } = useUser();
   const billingSummary = user?.billing_summary;
-
   const entitlements = user?.billing_summary?.entitlements ?? {};
   const isPrivileged =
     user?.billing_summary?.source === "admin" || user?.isAdmin === true;
   const isSubscribed = billingSummary?.subscription?.status === "active";
-
   const has = (feature: string): boolean => {
     if (isPrivileged) {
       return true;
