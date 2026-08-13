@@ -106,9 +106,7 @@ interface PendingItem {
 const is_valid_image_file = (file: File) => {
   const extension = get_file_extension(file.name);
 
-  if (
-    (blocked_non_image_extensions as readonly string[]).includes(extension)
-  ) {
+  if ((blocked_non_image_extensions as readonly string[]).includes(extension)) {
     toast.error(`${file.name}: solo se admiten imágenes.`);
     return false;
   }
@@ -155,14 +153,15 @@ export type ImagesFormProps = {
    * Si no se pasa, se usa un UUID estable por montaje del formulario.
    */
   reference_id?: string;
-
   featureFirstImage?: boolean;
+  maxImages?: number | null;
 };
 
 export const ImagesForm = ({
   value: value_prop,
   onChange,
   featureFirstImage = false,
+  maxImages,
 }: ImagesFormProps) => {
   const committed_sorted = useMemo(
     () => normalize_vehicle_images(value_prop ?? []),
@@ -472,8 +471,14 @@ export const ImagesForm = ({
   const handleAddedFiles = useCallback(
     (file_list: FileList | null) => {
       if (!file_list?.length) return;
-
-      const files = Array.from(file_list).filter(is_valid_image_file);
+      // if (maxImages && file_list.length > maxImages) {
+      //   toast.warning(`Solo se agregarán ${maxImages} imágenes`, {
+      //     position: "bottom-center",
+      //   });
+      // }
+      const files = Array.from(file_list)
+        .filter(is_valid_image_file)
+        // .slice(0, maxImages ?? undefined);
 
       if (!files.length) return;
 
@@ -577,10 +582,7 @@ export const ImagesForm = ({
 
   const handle_committed_drag_start = useCallback(
     (index: number) => (e: React.DragEvent) => {
-      e.dataTransfer.setData(
-        VEHICLE_IMAGE_DRAG_TYPE,
-        String(index),
-      );
+      e.dataTransfer.setData(VEHICLE_IMAGE_DRAG_TYPE, String(index));
 
       e.dataTransfer.effectAllowed = "move";
 
@@ -644,8 +646,7 @@ export const ImagesForm = ({
 
   const input_id = `${form_field_id}-file-input`;
 
-  const has_gallery =
-    committed_sorted.length > 0 || pending_items.length > 0;
+  const has_gallery = committed_sorted.length > 0 || pending_items.length > 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -742,9 +743,7 @@ export const ImagesForm = ({
                     : is_first_image
                       ? "border-primary ring-2 ring-primary/20"
                       : "border-border",
-                  drag_source_index === index
-                    ? "opacity-50"
-                    : "opacity-100",
+                  drag_source_index === index ? "opacity-50" : "opacity-100",
                 )}
               >
                 <img
@@ -803,10 +802,7 @@ export const ImagesForm = ({
                   }
                 >
                   {paths_removing.has(image.path) ? (
-                    <Loader2
-                      className="size-4 animate-spin"
-                      aria-hidden
-                    />
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
                   ) : (
                     <Trash2 className="size-4" aria-hidden />
                   )}

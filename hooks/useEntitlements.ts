@@ -57,7 +57,7 @@ export const useEntitlements = () => {
 
   return {
     entitlements,
-    billingMe: billingSummary ?? null,
+    billingSummary,
     has,
     getLimit,
     planName: billingSummary?.subscription?.plan_name ?? null,

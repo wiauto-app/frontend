@@ -14,6 +14,7 @@ export const QuickYearSelector = ({
   ariaInvalid,
   disabled,
   placeholder = "Año",
+  versionId,
 }: {
   value?: string;
   onChange?: (value: string | undefined) => void;
@@ -21,11 +22,13 @@ export const QuickYearSelector = ({
   ariaInvalid?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  versionId?: number;
 }) => {
+  
   const canFetch = Boolean(modelId);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["catalogYears", "quick", modelId],
+    queryKey: ["catalogYears", "quick", modelId, versionId],
     queryFn: () =>
       yearsService.findAll({
         model_id: modelId,
@@ -45,6 +48,7 @@ export const QuickYearSelector = ({
       })),
     [data?.data],
   );
+
 
   return (
     <Field data-invalid={ariaInvalid}>

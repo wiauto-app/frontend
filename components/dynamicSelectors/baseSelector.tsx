@@ -41,6 +41,7 @@ export interface BaseSelectProps<T> {
   };
   onCreate?: () => void;
   disabled?: boolean;
+  align?: "start" | "center" | "end";
 }
 
 export function BaseSelector<T>({
@@ -58,6 +59,7 @@ export function BaseSelector<T>({
   showExtraActions,
   onCreate,
   disabled = false,
+  align = "center",
 }: BaseSelectProps<T>) {
   const resolvedPlaceholder = placeholder ?? "Seleccionar";
   const resolvedEmptyLabel = emptyLabel ?? "No hay datos";
@@ -82,6 +84,7 @@ export function BaseSelector<T>({
 
   return (
     <Select
+      
       value={resolvedSelectValue}
       onValueChange={(next_value) => {
         onChange(next_value ?? undefined);
@@ -96,7 +99,7 @@ export function BaseSelector<T>({
         <SelectValue placeholder={resolvedPlaceholder} />
       </SelectTrigger>
 
-      <SelectContent className={cn("max-h-[240px] overflow-y-auto", contentClassName)}>
+      <SelectContent align={align} className={cn("max-h-[240px] overflow-y-auto", contentClassName)}>
         
         {items.length === 0 ? (
           <SelectItem value="__empty__" disabled className="opacity-70">

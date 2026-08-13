@@ -133,8 +133,8 @@ export interface BillingMeUsage {
 
 export interface BillingMeEntitlementEntry {
   type: EntitlementValueType;
-  value?: boolean;
-  limit?: number | null;
+  value: boolean;
+  limit: number | null;
   used?: number;
   remaining?: number | null;
   unlimited?: boolean;

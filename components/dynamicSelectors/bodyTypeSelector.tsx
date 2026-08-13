@@ -1,7 +1,7 @@
 import { bodyTypesService } from "@/components/vehicles/services/bodyTypesService";
 import type { CatalogBodyTypeItem } from "@/components/vehicles/types/catalog.types";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { BaseSelector } from "./baseSelector";
 
@@ -17,6 +17,7 @@ export const BodyTypeSelector = ({
   ariaInvalid,
   disabled,
   placeholder = "Carrocería",
+  versionId,
 }: {
   value?: string;
   onChange?: (value: string | undefined) => void;
@@ -24,9 +25,10 @@ export const BodyTypeSelector = ({
   ariaInvalid?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  versionId?: number;
 }) => {
   const { data, isLoading } = useQuery({
-    queryKey: ["catalogBodyTypes", modelId],
+    queryKey: ["catalogBodyTypes", modelId, versionId],
     queryFn: () =>
       bodyTypesService.findAll({
         model_id: modelId,
@@ -35,6 +37,7 @@ export const BodyTypeSelector = ({
       }),
     enabled: Boolean(modelId),
   });
+  
 
   const items = useMemo<BodyTypeOption[]>(
     () =>
@@ -44,6 +47,7 @@ export const BodyTypeSelector = ({
       })),
     [data?.data],
   );
+
 
   return (
     <Field data-invalid={ariaInvalid}>
@@ -61,6 +65,8 @@ export const BodyTypeSelector = ({
           value={value}
           onChange={(next_value) => onChange?.(next_value)}
           labelKey="label"
+          align="start"
+          contentClassName="w-64"
           valueKey="id"
           placeholder={placeholder}
           disabled={disabled || !modelId}

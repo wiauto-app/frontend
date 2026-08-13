@@ -9,6 +9,7 @@ import {
 
 
 const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
+const PRIVATE_PATHS = ["/usuario", "/publicar"];
 /**
  * En rutas protegidas: refresca sesión al navegar (UX).
  * El cliente usa POST /api/auth/refresh con single-flight; Nest mitiga rotación concurrente.
@@ -16,7 +17,7 @@ const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
  */
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const isPrivatePath = pathname.startsWith("/usuario");
+  const isPrivatePath = PRIVATE_PATHS.some(p => pathname.startsWith(p));
 
 
   const access_token = req.cookies.get(cookiesConfig.accessToken.name)?.value ?? null;

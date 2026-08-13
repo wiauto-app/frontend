@@ -26,7 +26,7 @@ export const VersionSelector = ({
 }: {
   makeId?: number;
   value?: string;
-  onChange?: (value: string | undefined) => void;
+  onChange?: (value: string | undefined, version?: CatalogVersionItem) => void;
   modelId?: number;
   fuelTypeId?: number;
   yearId?: number;
@@ -37,7 +37,7 @@ export const VersionSelector = ({
   /** Si true, no se muestra `FieldLabel` (útil cuando el padre ya tiene label, p. ej. react-hook-form). */
   hideLabel?: boolean;
 }) => {
-  const canFetch = Boolean(modelId && yearId);
+  const canFetch = Boolean(modelId);
   const { data, isLoading } = useQuery({
     queryKey: ["catalogVersions", modelId, fuelTypeId, yearId],
     queryFn: () =>
@@ -74,8 +74,13 @@ export const VersionSelector = ({
     <BaseSelector
       items={items}
       value={value}
-      onChange={(next_value) => onChange?.(next_value)}
+      onChange={(next_value) =>{
+        const version = data?.data.find((item) => Number(item.id) === Number(next_value));
+        onChange?.(next_value,version);
+      }}
       labelKey="label"
+      contentClassName="w-84"
+      align="start"
       valueKey="id"
       placeholder={placeholder}
       disabled={disabled || !canFetch}

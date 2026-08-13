@@ -15,6 +15,7 @@ export const FuelTypeSelector = ({
   onChange,
   modelId,
   bodyTypeId,
+  versionId,
   ariaInvalid,
   disabled,
   placeholder = "Combustible",
@@ -24,14 +25,15 @@ export const FuelTypeSelector = ({
   modelId?: number;
   /** Paso previo en UI; la consulta sigue filtrando por `model_id` en el backend. */
   bodyTypeId?: number;
+  versionId?: number;
   ariaInvalid?: boolean;
   disabled?: boolean;
   placeholder?: string;
 }) => {
-  const canFetch = Boolean(modelId && bodyTypeId);
+  const canFetch = Boolean(modelId);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["catalogFuelTypes", modelId, bodyTypeId],
+    queryKey: ["catalogFuelTypes", modelId, bodyTypeId, versionId],
     queryFn: () =>
       fuelTypesService.findAll({
         model_id: modelId,
@@ -66,6 +68,8 @@ export const FuelTypeSelector = ({
           value={value}
           onChange={(next_value) => onChange?.(next_value)}
           labelKey="label"
+          align="start"
+          contentClassName="w-64"
           valueKey="id"
           placeholder={placeholder}
           disabled={disabled || !canFetch}

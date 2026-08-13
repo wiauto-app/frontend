@@ -1,24 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useFormContext } from "react-hook-form";
 import { ControllerInput } from "@/components/ui/controllerInput";
 import { Input } from "@/components/ui/input";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
-import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
+import { useCanCharge } from "./hooks/useCanCharge";
 
 export const QuickVehicleElectricFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
-  const catalogFuelTypeId = form.watch("catalog_fuel_type_id");
-
-  const { data: fuelType } = useQuery({
-    queryKey: ["catalogFuelType", catalogFuelTypeId],
-    queryFn: () => fuelTypesService.findOne(catalogFuelTypeId!),
-    enabled: Boolean(catalogFuelTypeId),
-  });
-
-  const canCharge = fuelType?.can_charge ?? false;
+  const { canCharge } = useCanCharge();
 
   useEffect(() => {
     form.setValue("catalog_fuel_can_charge", canCharge, { shouldDirty: true });
