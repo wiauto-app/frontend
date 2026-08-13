@@ -471,14 +471,14 @@ export const ImagesForm = ({
   const handleAddedFiles = useCallback(
     (file_list: FileList | null) => {
       if (!file_list?.length) return;
-      // if (maxImages && file_list.length > maxImages) {
-      //   toast.warning(`Solo se agregarán ${maxImages} imágenes`, {
-      //     position: "bottom-center",
-      //   });
-      // }
+      if (maxImages && file_list.length > maxImages) {
+        toast.warning(`Solo se agregarán ${maxImages} imágenes`, {
+          position: "bottom-center",
+        });
+      }
       const files = Array.from(file_list)
         .filter(is_valid_image_file)
-        // .slice(0, maxImages ?? undefined);
+        .slice(0, maxImages ?? undefined);
 
       if (!files.length) return;
 
