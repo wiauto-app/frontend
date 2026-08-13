@@ -37,7 +37,7 @@ export type ConditionVehicle =
 export interface VehicleImage {
   id: string;
   url: string;
-  order: number;
+  order?: number;
 }
 
 

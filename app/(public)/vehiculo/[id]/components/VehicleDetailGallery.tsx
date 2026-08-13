@@ -22,6 +22,7 @@ type VehicleDetailGalleryProps = {
 const PLACEHOLDER_IMAGE: VehicleImage = {
   id: "placeholder",
   url: "/placeholder-car.jpg",
+  order: 0,
 };
 
 export const VehicleDetailGallery = ({
