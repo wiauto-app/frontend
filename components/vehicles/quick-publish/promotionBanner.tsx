@@ -7,11 +7,11 @@ import { FiCamera, FiVideo, FiTrendingUp, FiArrowRight } from "react-icons/fi";
 
 export const PromotionBanner = () => {
   return (
-    <Card className="group relative overflow-hidden border border-purple/20 bg-gradient-to-br from-purple/10 via-background to-purple/5 shadow-sm transition-all duration-300 hover:border-purple/40 hover:shadow-lg">
+    <Card size="sm" className="group relative overflow-hidden border border-purple/20 bg-gradient-to-br from-purple/10 via-background to-purple/5 shadow-sm transition-all duration-300 hover:border-purple/40 hover:shadow-lg">
       {/* Decorative elements */}
       <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-purple/10 blur-3xl transition-all duration-500 group-hover:bg-purple/20" />
 
-      <CardContent className="relative p-5 sm:p-6">
+      <CardContent className="relative ">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           
           {/* Left */}
