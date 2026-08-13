@@ -87,9 +87,7 @@ export const QuickVehicleIdentificationStep = () => {
           return;
         }
 
-        setIsLookupAvailable(
-          Boolean(response.ok && response.data?.available),
-        );
+        setIsLookupAvailable(Boolean(response.ok && response.data?.available));
       } catch {
         if (!cancelled) {
           setIsLookupAvailable(false);
@@ -155,67 +153,85 @@ export const QuickVehicleIdentificationStep = () => {
         }
       />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <ControllerInput name="license_plate" control={form.control} label="Matrícula" optional>
+        <ControllerInput
+          name="license_plate"
+          control={form.control}
+          label="Matrícula"
+          optional
+        >
           {({ field, fieldState }) => (
-            <Input
-              {...field}
-              value={String(field.value ?? "")}
-              placeholder="Ej. 1234 ABC"
-              aria-invalid={fieldState.invalid}
-            />
+            <div className="flex gap-2">
+              <Input
+                {...field}
+                value={String(field.value ?? "")}
+                placeholder="Ej. 1234 ABC"
+                aria-invalid={fieldState.invalid}
+              />
+              {isLookupAvailable ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleLookupByPlate}
+                  disabled={isLoading}
+                  aria-label="Buscar vehículo por matrícula"
+                  size="icon"
+                >
+                  {isLoading ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : (
+                    <Search className="size-4" aria-hidden />
+                  )}
+                </Button>
+              ) : null}
+            </div>
           )}
         </ControllerInput>
-        <ControllerInput name="vin_code" control={form.control} label="VIN / bastidor" optional>
+        <ControllerInput
+          name="vin_code"
+          control={form.control}
+          label="VIN / bastidor"
+          optional
+        >
           {({ field, fieldState }) => (
-            <Input
-              {...field}
-              value={String(field.value ?? "")}
-              placeholder="Opcional"
-              aria-invalid={fieldState.invalid}
-            />
+            <div className="flex gap-2">
+              <Input
+                {...field}
+                value={String(field.value ?? "")}
+                placeholder="Opcional"
+                aria-invalid={fieldState.invalid}
+              />
+              {isLookupAvailable ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={handleLookupByVin}
+                  disabled={isLoading}
+                  aria-label="Buscar vehículo por VIN"
+                >
+                  {isLoading ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : (
+                    <Search className="size-4" aria-hidden />
+                  )}
+                </Button>
+              ) : null}
+            </div>
           )}
         </ControllerInput>
       </div>
       {isAvailabilityLoading ? (
-        <p className="flex items-center gap-2 text-sm text-slate-500" role="status">
+        <p
+          className="flex items-center gap-2 text-sm text-slate-500"
+          role="status"
+        >
           <Loader2 className="size-4 animate-spin" aria-hidden />
           Comprobando búsqueda automática...
         </p>
       ) : null}
       {isLookupAvailable ? (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-          <div className="flex shrink-0 flex-col gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleLookupByPlate}
-              disabled={isLoading}
-              className="w-full sm:w-auto"
-              aria-label="Buscar vehículo por matrícula"
-            >
-              {isLoading ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <Search className="size-4" aria-hidden />
-              )}
-              Buscar por matrícula
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleLookupByVin}
-              disabled={isLoading}
-              className="w-full sm:w-auto"
-              aria-label="Buscar vehículo por VIN"
-            >
-              {isLoading ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <Search className="size-4" aria-hidden />
-              )}
-              Buscar por VIN
-            </Button>
-          </div>
+          <div className="flex shrink-0 flex-col gap-2"></div>
           <div className="flex-1">
             <QuickVehicleIdentificationPreview result={result} />
           </div>

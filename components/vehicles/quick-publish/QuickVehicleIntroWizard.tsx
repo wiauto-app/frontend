@@ -15,6 +15,7 @@ import {
   QUICK_VEHICLE_INTRO_STEPS,
   QUICK_VEHICLE_STEP_QUERY_PARAM,
 } from "./quick-vehicle-wizard.constants";
+import { cn } from "@/lib/utils";
 
 interface QuickVehicleIntroWizardProps {
   vehicleId?: string;
@@ -91,7 +92,10 @@ export const QuickVehicleIntroWizard = ({
         return <QuickVehicleIdentificationStep />;
       case 3:
         return (
-          <QuickVehicleMainSections vehicleId={vehicleId} contactName={contactName} />
+          <QuickVehicleMainSections
+            vehicleId={vehicleId}
+            contactName={contactName}
+          />
         );
       default:
         return null;
@@ -99,7 +103,7 @@ export const QuickVehicleIntroWizard = ({
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col lg:gap-6 gap-4">
       {!isEditMode ? (
         <Stepper
           steps={QUICK_VEHICLE_INTRO_STEPS}
@@ -109,15 +113,24 @@ export const QuickVehicleIntroWizard = ({
         />
       ) : null}
       {renderStep()}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex   items-center gap-3">
         {!isEditMode && !isFirstStep ? (
-          <Button type="button" variant="outline" onClick={handlePrevious}>
+          <Button
+            type="button"
+            variant="outline"
+            className={cn("w-9 sm:w-auto")}
+            onClick={handlePrevious}
+          >
             <ChevronLeft className="size-4" />
-            Anterior
+            <span className="hidden sm:block">Anterior</span>
           </Button>
         ) : null}
         {!isEditMode && !isLastStep ? (
-          <Button type="button" onClick={handleNext}>
+          <Button
+            type="button"
+            className=" flex-1 sm:flex-none"
+            onClick={handleNext}
+          >
             Siguiente
             <ChevronRight className="size-4" />
           </Button>
