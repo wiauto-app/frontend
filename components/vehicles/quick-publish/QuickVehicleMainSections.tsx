@@ -22,6 +22,8 @@ import { QuickVehicleAiDescriptionCard } from "./QuickVehicleAiDescriptionCard";
 import { QuickVehiclePricingFields } from "./QuickVehiclePricingFields";
 import { QuickVehicleTechnicalFields } from "./QuickVehicleTechnicalFields";
 import { GeneratedDescriptionConfig } from "./generatedDescription/generatedDescriptionConfig";
+import { PromotionBanner } from "./promotionBanner";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 interface QuickVehicleMainSectionsProps {
   vehicleId?: string;
@@ -34,9 +36,10 @@ export const QuickVehicleMainSections = ({
 }: QuickVehicleMainSectionsProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const phoneValue = form.watch("phone");
-
+  const { isSubscribed } = useEntitlements();
   return (
     <div className="flex flex-col gap-12">
+      {!isSubscribed ? <PromotionBanner /> : null}
       <QuickVehicleMediaStep vehicleId={vehicleId} />
 
       <VehicleFormStep number={2} label="¿Qué vehículo vendes?">
