@@ -4,11 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { authService, type MeResponseDto } from "@/services/authService";
 import { AuthContext } from "./authContext";
+import { useRouter } from "next/navigation";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<MeResponseDto | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
   const refreshUser = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -32,7 +33,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = useCallback(async () => {
     await authService.logout();
     setUser(undefined);
-  }, []);
+    router.refresh();
+  }, [router]);
 
   const value = useMemo(
     () => ({
