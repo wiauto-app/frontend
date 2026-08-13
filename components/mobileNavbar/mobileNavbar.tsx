@@ -7,10 +7,8 @@ import {
   HiOutlineChat,
   HiOutlineHeart,
   HiOutlineHome,
-  HiOutlinePlus,
   HiOutlineSearch,
   HiOutlineUser,
-  HiPlus,
   HiSearch,
   HiUser,
 } from "react-icons/hi";
@@ -44,13 +42,13 @@ export const MobileNavbar = () => {
       label: "Mis listas",
       icon: <HiOutlineHeart size={size} />,
       activeIcon: <HiHeart size={size} />,
-      href: "/favoritos",
+      href: "/usuario/favoritos",
     },
     {
       label: "Chat",
       icon: <HiOutlineChat size={size} />,
       activeIcon: <HiChat size={size} />,
-      href: "/mensajes",
+      href: "/usuario/mensajes",
     },
     {
       label: "Perfil",
