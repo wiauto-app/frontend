@@ -64,9 +64,10 @@ export const buildVehicleDetailMetadata = (vehicle: Vehicle): Metadata => {
     truncateDescription(vehicle.description) ||
     buildVehicleDescriptionFallback(vehicle);
   const canonical = `${FRONTEND_URL}/vehiculo/${vehicle.id}`;
-  const images = vehicle.images.map((image) => ({
+  const images = vehicle.images.sort((a, b) => a.order - b.order).map((image) => ({
     url: getImageUrl(image.url),
   }));
+  console.log("images", images);
 
   return {
     title,
