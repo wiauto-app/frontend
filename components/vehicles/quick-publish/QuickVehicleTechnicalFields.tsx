@@ -15,7 +15,7 @@ export const QuickVehicleTechnicalFields = () => {
   const { canCharge } = useCanCharge();
 
   useEffect(() => {
-    if (!canCharge) {
+    if (canCharge) {
       form.setValue("power", 0, { shouldDirty: true });
       form.setValue("displacement", 0, { shouldDirty: true });
     }
