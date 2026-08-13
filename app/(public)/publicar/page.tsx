@@ -31,8 +31,8 @@ export default function CrearVehiculoPage() {
         </p>
       </div>
 
-      <Card>
-        <CardContent>
+      <Card className="p-0 shadow-none border-none ring-0 lg:shadow-sm lg:p-4 lg:ring-1">
+        <CardContent className="p-0">
           <QuickVehicleForm />
         </CardContent>
       </Card>
