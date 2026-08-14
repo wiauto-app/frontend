@@ -28,7 +28,7 @@ interface MyListingTableRowProps {
   onRemove: (id: string) => Promise<void>;
   onToggleStatus: (
     id: string,
-    nextStatus: "active" | "inactive",
+    nextStatus: VehicleStatus,
   ) => Promise<void>;
   isMutating?: boolean;
   canUseAdvancedEditor?: boolean;

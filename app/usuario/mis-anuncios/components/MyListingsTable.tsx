@@ -3,6 +3,7 @@
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import { MyListingTableRow } from "./MyListingTableRow";
 import { Card, CardContent } from "@/components/ui/card";
+import { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 
 interface MyListingsTableProps {
   listings: OwnerVehicleListItem[];
@@ -13,7 +14,7 @@ interface MyListingsTableProps {
   onRemove: (id: string) => Promise<void>;
   onToggleStatus: (
     id: string,
-    nextStatus: "active" | "inactive",
+    nextStatus: VehicleStatus,
   ) => Promise<void>;
   isMutating?: boolean;
   canUseAdvancedEditor?: boolean;

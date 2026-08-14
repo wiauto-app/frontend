@@ -18,6 +18,7 @@ import { aggregateListingStats } from "../utils/aggregateListingStats";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 
 const formatEuros = (amountCents: number): string =>
   new Intl.NumberFormat("es-ES", {
@@ -182,15 +183,11 @@ export const MyListing = () => {
 
   const handleToggleStatus = async (
     id: string,
-    nextStatus: "active" | "inactive",
+    nextStatus: VehicleStatus,
   ) => {
     try {
       await updateStatus({ id, status: nextStatus });
-      toast.success(
-        nextStatus === "active"
-          ? "Anuncio activado correctamente"
-          : "Anuncio pausado correctamente",
-      );
+   
     } catch {
       toast.error("No se pudo cambiar el estado del anuncio");
     }

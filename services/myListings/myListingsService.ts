@@ -60,7 +60,7 @@ export const myListingsService = {
 
   updateStatus(
     id: string,
-    status: Extract<VehicleStatus, "active" | "inactive">,
+    status: VehicleStatus,
   ): Promise<ApiResponse<{ status: VehicleStatus }>> {
     return apiPatch(`${V1_VEHICLES}/${id}/status`, { status });
   },

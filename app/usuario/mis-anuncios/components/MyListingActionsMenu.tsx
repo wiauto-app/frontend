@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
+  Archive,
   CalendarClock,
   Copy,
   FileText,
@@ -28,16 +29,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
+import { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 
 interface MyListingActionsMenuProps {
   listing: OwnerVehicleListItem;
   onDuplicate: (id: string) => Promise<void>;
   onSchedule: (listing: OwnerVehicleListItem) => void;
   onRemove: (id: string) => Promise<void>;
-  onToggleStatus: (
-    id: string,
-    nextStatus: "active" | "inactive",
-  ) => Promise<void>;
+  onToggleStatus: (id: string, nextStatus: VehicleStatus) => Promise<void>;
   canUseAdvancedEditor?: boolean;
   disabled?: boolean;
 }
@@ -61,8 +60,7 @@ export const MyListingActionsMenu = ({
     onSchedule(listing);
   };
 
-  const handleToggleStatus = async () => {
-    const nextStatus = listing.status === "active" ? "inactive" : "active";
+  const handleToggleStatus = async (nextStatus: VehicleStatus) => {
     await onToggleStatus(listing.id, nextStatus);
   };
 
@@ -74,7 +72,9 @@ export const MyListingActionsMenu = ({
   const canToggleStatus =
     listing.status === "active" ||
     (listing.status === "inactive" && !listing.scheduled_publish_at);
-
+  const isActive = listing.status === "active";
+  const isSold = listing.status === "sold";
+  const isArchived = listing.status === "archived";
   return (
     <>
       <DropdownMenu>
@@ -94,9 +94,7 @@ export const MyListingActionsMenu = ({
         />
         <DropdownMenuContent align="end" className="w-44">
           <DropdownMenuItem
-            render={
-              <Link href={`/editar-vehiculo/${listing.id}`} />
-            }
+            render={<Link href={`/editar-vehiculo/${listing.id}`} />}
           >
             <Pencil className="size-4" aria-hidden />
             Editar
@@ -111,10 +109,10 @@ export const MyListingActionsMenu = ({
               Edición completa
             </DropdownMenuItem>
           ) : null}
-          <DropdownMenuItem onClick={handleDuplicate}>
+          {/* <DropdownMenuItem onClick={handleDuplicate}>
             <Copy className="size-4" aria-hidden />
             Duplicar
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuItem
             render={
               <Link
@@ -140,8 +138,32 @@ export const MyListingActionsMenu = ({
             <Trash2 className="size-4" aria-hidden />
             Eliminar
           </DropdownMenuItem>
+          {!isSold ? (
+            <DropdownMenuItem onClick={() => handleToggleStatus("sold")}>
+              <Copy className="size-4" aria-hidden />
+              Marcar como vendido
+            </DropdownMenuItem>
+          ) : null}
+          {!isArchived ? (
+            <DropdownMenuItem onClick={() => handleToggleStatus("archived")}>
+              <Archive className="size-4" aria-hidden />
+              Archivar
+            </DropdownMenuItem>
+          ) : null}
+          {!isActive ? (
+            <DropdownMenuItem onClick={() => handleToggleStatus("active")}>
+              <Power className="size-4" aria-hidden />
+              Activar
+            </DropdownMenuItem>
+          ) : null}
           {canToggleStatus ? (
-            <DropdownMenuItem onClick={handleToggleStatus}>
+            <DropdownMenuItem
+              onClick={() =>
+                handleToggleStatus(
+                  listing.status === "active" ? "inactive" : "active",
+                )
+              }
+            >
               <Power className="size-4" aria-hidden />
               {listing.status === "active" ? "Inactivar" : "Activar"}
             </DropdownMenuItem>

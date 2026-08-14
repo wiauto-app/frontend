@@ -284,7 +284,7 @@ export const useMyListingsPage = ({
       status,
     }: {
       id: string;
-      status: Extract<VehicleStatus, "active" | "inactive">;
+      status: VehicleStatus
     }) => {
       const response = await myListingsService.updateStatus(id, status);
       if (!response.ok) {
