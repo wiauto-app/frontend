@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function CrearVehiculoPage() {
   return (
-    <div className="container-custom mx-auto lg:py-8 py-4">
+    <div className="container-custom mx-auto lg:py-8 py-4 space-y-4">
       <div>
         <Link
           href="/perfil"

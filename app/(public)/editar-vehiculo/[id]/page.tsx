@@ -1,76 +1,41 @@
-"use client";
-
-import { useParams, useRouter } from "next/navigation";
+import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Car } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
-import { useUser } from "@/app/contexts/auth/useUser";
 
-export default function EditarVehiculoPage() {
-  const params = useParams<{ id: string }>();
-  const router = useRouter();
-  const { isLoading, isAuthenticated, user } = useUser();
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-r-transparent" />
-          <p className="mt-4 text-gray-500">Cargando...</p>
-        </div>
-      </div>
-    );
-  }
+export const metadata: Metadata = {
+  title: "Editar vehículo",
+  description: "Editar vehículo",
+}
 
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center bg-white p-8 rounded-xl shadow-sm border border-gray-100 max-w-md">
-          <Car className="mx-auto h-12 w-12 text-gray-300" />
-          <h2 className="mt-4 text-lg font-semibold text-gray-900">Inicia sesión para editar</h2>
-          <p className="mt-2 text-gray-500">Debes iniciar sesión para editar un vehículo</p>
-          <Link
-            href="/iniciar-sesion"
-            className="mt-4 inline-flex items-center bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            Iniciar sesión
-          </Link>
-        </div>
-      </div>
-    );
-  }
+export default async function EditarVehiculoPage(props: { params: Promise<{ id: string }> }) {
 
+  const { id } = await props.params;
   return (
-    <div className="container-custom mx-auto py-8">
-      <div className="mb-8">
+    <div className="container-custom mx-auto lg:py-8 py-4 space-y-4">
+      <div>
         <Link
-          href="/usuario/mis-anuncios"
+          href="/perfil"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver a mis anuncios
+          Volver al perfil
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Editar vehículo</h1>
-        <p className="text-gray-500 mt-1">Actualiza los datos de tu anuncio</p>
+        <h1 className="text-xl font-bold text-gray-900 sr-only md:not-sr-only">
+          Editar vehículo
+        </h1>
+      
       </div>
 
       <Card>
-        <CardHeader className="pb-4">
-          <CardTitle>Editar anuncio</CardTitle>
-          <CardDescription>
-            Modifica la información esencial o añade más detalles desde el panel lateral.
-          </CardDescription>
-        </CardHeader>
         <CardContent>
           <QuickVehicleForm
-            vehicleId={params.id}
-            onSuccess={() => router.push("/mis-anuncios")}
+            vehicleId={id}
+            redirectTo="/usuario/mis-anuncios"
           />
         </CardContent>
       </Card>

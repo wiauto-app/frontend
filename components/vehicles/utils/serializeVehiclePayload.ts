@@ -1,7 +1,7 @@
 import { TEMP_STORAGE_SEGMENT } from "@/services/files/temp-storage-path";
 import type { UpdateVehicleSchema, VehicleSchema } from "../types/vehicles.types";
 
-const is_temp_storage_path = (stored_path: string): boolean => {
+export const is_temp_storage_path = (stored_path: string): boolean => {
   const normalized = stored_path.trim().replace(/^\/+/, "");
   if (!normalized) {
     return false;

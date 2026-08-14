@@ -13,22 +13,22 @@ import {
   type QuickVehicleSchema,
 } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { vehiclesService } from "@/components/vehicles/services/vehiclesService";
-import { serializeQuickVehiclePayload } from "@/components/vehicles/utils/serializeQuickVehiclePayload";
 import { mapVehicleDetailToQuickFormValues } from "@/components/vehicles/utils/mapVehicleDetailToQuickFormValues";
 import { QuickVehiclePreview } from "./QuickVehiclePreview";
 import { QuickVehicleOptionalSections } from "./QuickVehicleOptionalSections";
 import { QuickVehicleIntroWizard } from "./QuickVehicleIntroWizard";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { QUICK_VEHICLE_SUBMIT_ATTR } from "./quick-vehicle-wizard.constants";
+import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
 
 interface QuickVehicleFormProps {
   vehicleId?: string;
-  onSuccess?: () => void;
+  redirectTo?: string;
 }
 
 export const QuickVehicleForm = ({
   vehicleId,
-  onSuccess,
+  redirectTo,
 }: QuickVehicleFormProps) => {
   const router = useRouter();
   const { user } = useUser();
@@ -62,8 +62,9 @@ export const QuickVehicleForm = ({
   }, [user, isEditMode, form]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
-    const payload = serializeQuickVehiclePayload(data, {
-      isUpdate: Boolean(vehicleId),
+    const payload = serializeVehiclePayload(data, {
+      is_update: Boolean(vehicleId),
+      // only_temp_images: Boolean(vehicleId),
     });
     if (vehicleId) {
       const response = await vehiclesService.update(
@@ -72,7 +73,9 @@ export const QuickVehicleForm = ({
       );
       if (response.ok) {
         toast.success("Vehículo actualizado correctamente");
-        onSuccess?.();
+        if (redirectTo) {
+          router.push(redirectTo);
+        }
       } else {
         toast.error(response.message || "Error al actualizar el vehículo");
       }
@@ -81,16 +84,22 @@ export const QuickVehicleForm = ({
 
     const response = await vehiclesService.create(payload as never);
     if (response.ok && response.data?.id) {
-      onSuccess?.();
-      router.push(
-        `/publicar/exito?id=${encodeURIComponent(response.data.id)}`,
-      );
+      if (redirectTo) {
+        router.push(`${redirectTo}?id=${encodeURIComponent(response.data.id)}`);
+      } else {
+        router.push(
+          `/publicar/exito?id=${encodeURIComponent(response.data.id)}`,
+        );
+      }
       return;
     }
 
     if (response.ok) {
-      onSuccess?.();
-      router.push("/publicar/exito");
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        router.push("/publicar/exito");
+      }
       return;
     }
 
@@ -100,9 +109,8 @@ export const QuickVehicleForm = ({
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const submitter = (event.nativeEvent as SubmitEvent).submitter as
-      | HTMLElement
-      | null;
+    const submitter = (event.nativeEvent as SubmitEvent)
+      .submitter as HTMLElement | null;
     const isExplicitPublish =
       submitter?.getAttribute(QUICK_VEHICLE_SUBMIT_ATTR) === "true";
 

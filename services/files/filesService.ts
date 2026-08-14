@@ -32,19 +32,37 @@ const bucket_names_allowlist: BucketName[] = [
 export const split_storage_compound_path = (
   compound_path: string,
 ): { bucket_name: BucketName; object_key: string } => {
-  const first_slash = compound_path.indexOf("/");
+  const normalized_path = compound_path.replace(/^\/+/, "");
+
+
+  const first_slash = normalized_path.indexOf("/");
+
+
   if (first_slash <= 0) {
-    throw new Error('Ruta de almacén inválida: se esperaba "bucket/clave-del-objeto".');
+    throw new Error(
+      'Ruta de almacén inválida: se esperaba "bucket/clave-del-objeto".',
+    );
   }
-  const bucket_segment = compound_path.slice(0, first_slash);
-  const object_key = compound_path.slice(first_slash + 1);
+
+  const bucket_segment = normalized_path.slice(0, first_slash);
+
+
+  const object_key = normalized_path.slice(first_slash + 1);
+
   if (!object_key) {
     throw new Error("Ruta de almacén inválida: falta la clave del objeto.");
   }
+
   if (!bucket_names_allowlist.includes(bucket_segment as BucketName)) {
-    throw new Error(`Bucket no admitido para esta operación: ${bucket_segment}`);
+    throw new Error(
+      `Bucket no admitido para esta operación: ${bucket_segment}`,
+    );
   }
-  return { bucket_name: bucket_segment as BucketName, object_key };
+
+  return {
+    bucket_name: bucket_segment as BucketName,
+    object_key,
+  };
 };
 
 export type UploadContentType =
@@ -172,6 +190,8 @@ export const filesService = {
     }
     return response.data;
   },
+
+  
 
   async removeStoredFiles(remove_dto: {
     paths: string[];

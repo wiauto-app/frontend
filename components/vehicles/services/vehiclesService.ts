@@ -27,12 +27,10 @@ export const vehiclesService = {
     id: string,
     data: UpdateVehicleSchema,
   ): Promise<ApiResponse<Vehicle>> {
+   
     return apiPatch<Vehicle>(
       `${V1_VEHICLES}/${id}`,
-      serializeVehiclePayload(data, {
-        only_temp_images: true,
-        is_update: true,
-      }),
+      data,
     );
   },
 

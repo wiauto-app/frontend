@@ -104,6 +104,8 @@ export const vehicleService = {
       apiPatch<Vehicle>(`/v1/vehicles/${id}`, data),
     remove: (id: string): Promise<ApiResponse<null>> =>
       apiDelete(`/v1/vehicles/${id}`),
+    removeImage: (id: string): Promise<ApiResponse<null>> =>
+      apiDelete(`/v1/vehicle-images/remove/${id}`),
   },
 
   makes: {

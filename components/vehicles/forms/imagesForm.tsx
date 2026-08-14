@@ -25,6 +25,7 @@ import {
 } from "@/services/files/filesService";
 
 import type { VehicleFormImage } from "../schemas/vehicle.schema";
+import { vehicleService } from "@/services/vehicleService";
 
 /** El backend es la fuente de verdad; aquí solo filtramos lo claramente no-imagen. */
 const file_input_accept = "image/*,.heic,.heif,.avif";
@@ -88,10 +89,9 @@ export const normalize_vehicle_images = (
   [...images]
     .sort((a, b) => a.order - b.order)
     .map((image, index) => ({
-      path: image.path,
+      ...image,
       order: index,
     }));
-
 interface PendingItem {
   temp_key: string;
   file: File;
@@ -305,7 +305,8 @@ export const ImagesForm = ({
   );
 
   const handle_click_remove_committed = useCallback(
-    async (compound_path: string) => {
+    async (compound_path: string,id?: string) => {
+      
       if (locked_remove_paths_ref.current.has(compound_path)) return;
 
       let bucket_name: ReturnType<
@@ -340,6 +341,13 @@ export const ImagesForm = ({
           bucket_name,
           paths: [object_key],
         });
+        if(id){
+          const result = await vehicleService.vehicles.removeImage(id);
+          if(!result.ok){
+            toast.error("No se pudo eliminar la imagen del vehículo.");
+            return;
+          }
+        }
 
         if (!result.ok) {
           console.error(result.message);
@@ -387,7 +395,7 @@ export const ImagesForm = ({
       copy.splice(to_index, 0, moved);
 
       const next = copy.map((image, index) => ({
-        path: image.path,
+        ...image,
         order: index,
       }));
 
@@ -397,7 +405,6 @@ export const ImagesForm = ({
     },
     [onChange],
   );
-
   /**
    * Sube una imagen mientras la preview local ya está visible.
    */
@@ -792,7 +799,7 @@ export const ImagesForm = ({
                   onClick={(e) => {
                     e.stopPropagation();
 
-                    void handle_click_remove_committed(image.path);
+                    void handle_click_remove_committed(image.path,image.id);
                   }}
                   aria-busy={paths_removing.has(image.path)}
                   aria-label={

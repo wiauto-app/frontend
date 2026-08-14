@@ -30,6 +30,7 @@ const optionalUuidArray = z
 
 /** Imagen del vehículo: ruta en almacenamiento y orden de visualización (0 … n-1). */
 export const vehicle_image_schema = z.object({
+  id: z.uuid().optional(),
   path: z.string().min(1, { error: "La ruta de la imagen no es válida." }),
   order: z
     .number({ error: "El orden de la imagen debe ser un número válido." })

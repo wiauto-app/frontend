@@ -14,7 +14,7 @@ export const mapVehicleDetailToQuickFormValues = (
     vehicle_type_id: vehicle.vehicle_type.id ?? "",
     license_plate: vehicle.license_plate || "",
     vin_code: vehicle.vin_code ?? "",
-    images: vehicle.images.map((img, order) => ({ path: img.url, order })),
+    images: vehicle.images.map((img) => ({ id: img.id, path: img.url, order: img.order ?? 0 })),
     videos: [],
     version_id: vehicle.version_id,
     catalog_make_id: version?.make_id,
