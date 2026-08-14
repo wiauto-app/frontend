@@ -53,7 +53,6 @@ export const VehicleDetailBody = ({
             <VehicleDetailGallery
               images={vehicle.images}
               title={displayName}
-              condition_label={vehicle.condition}
             />
             <VehicleDetailTitleSection vehicle={vehicle} />
             <VehicleDetailMobileContactBar

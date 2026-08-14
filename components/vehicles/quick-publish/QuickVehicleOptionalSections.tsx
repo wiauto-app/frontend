@@ -12,7 +12,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { ControllerInput } from "@/components/ui/controllerInput";
 import { WarrantyTypesSelector } from "@/components/dynamicSelectors/warrantyTypesSelector";
-import { featuresService } from "@/components/vehicles/services/featuresService";
 import { catalogServicesService } from "@/components/vehicles/services/catalogServicesService";
 import { cuotasService } from "@/components/vehicles/services/cuotasService";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
@@ -35,11 +34,6 @@ const toggleCuotaIdInList = (
 export const QuickVehicleOptionalSections = () => {
   const form = useFormContext<QuickVehicleSchema>();
 
-  const { data: features } = useQuery({
-    queryKey: ["features"],
-    queryFn: () => featuresService.findAll({ page: 1, limit: 100 }),
-  });
-
   const { data: services } = useQuery({
     queryKey: ["catalog-services"],
     queryFn: () => catalogServicesService.findAll({ page: 1, limit: 100 }),
@@ -56,44 +50,12 @@ export const QuickVehicleOptionalSections = () => {
     <div id="quick-optional-sections" className="flex flex-col gap-3">
       <h3 className="text-sm font-semibold">Añade más detalles (opcional)</h3>
       <Accordion>
-        <AccordionItem value="features">
+        {/* <AccordionItem value="features">
           <AccordionTrigger>Equipamiento y extras (opcional)</AccordionTrigger>
           <AccordionContent>
-            <Controller
-              name="features_ids"
-              control={form.control}
-              render={({ field, fieldState }) => {
-                const ids = field.value ?? [];
-                return (
-                  <div className="grid grid-cols-1 gap-2 pt-2">
-                    {features?.data.map((feature) => {
-                      const checkboxId = `quick-feature-${feature.id}`;
-                      return (
-                        <Field
-                          key={feature.id}
-                          orientation="horizontal"
-                          className="flex-row-reverse items-center gap-3"
-                        >
-                          <FieldLabel htmlFor={checkboxId}>{feature.name}</FieldLabel>
-                          <Checkbox
-                            id={checkboxId}
-                            checked={ids.includes(feature.id)}
-                            onCheckedChange={(checked) =>
-                              field.onChange(
-                                toggleCatalogIdInList(ids, feature.id, checked === true),
-                              )
-                            }
-                          />
-                        </Field>
-                      );
-                    })}
-                    {fieldState.error ? <FieldError errors={[fieldState.error]} /> : null}
-                  </div>
-                );
-              }}
-            />
+           
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
 
         <AccordionItem value="services">
           <AccordionTrigger>Servicios (opcional)</AccordionTrigger>
@@ -113,20 +75,28 @@ export const QuickVehicleOptionalSections = () => {
                           orientation="horizontal"
                           className="flex-row-reverse items-center gap-3"
                         >
-                          <FieldLabel htmlFor={checkboxId}>{service.name}</FieldLabel>
+                          <FieldLabel htmlFor={checkboxId}>
+                            {service.name}
+                          </FieldLabel>
                           <Checkbox
                             id={checkboxId}
                             checked={ids.includes(service.id)}
                             onCheckedChange={(checked) =>
                               field.onChange(
-                                toggleCatalogIdInList(ids, service.id, checked === true),
+                                toggleCatalogIdInList(
+                                  ids,
+                                  service.id,
+                                  checked === true,
+                                ),
                               )
                             }
                           />
                         </Field>
                       );
                     })}
-                    {fieldState.error ? <FieldError errors={[fieldState.error]} /> : null}
+                    {fieldState.error ? (
+                      <FieldError errors={[fieldState.error]} />
+                    ) : null}
                   </div>
                 );
               }}
@@ -160,13 +130,19 @@ export const QuickVehicleOptionalSections = () => {
                             className="flex-row-reverse items-center gap-3"
                             data-invalid={fieldState.invalid}
                           >
-                            <FieldLabel htmlFor={checkbox_id}>{label}</FieldLabel>
+                            <FieldLabel htmlFor={checkbox_id}>
+                              {label}
+                            </FieldLabel>
                             <Checkbox
                               id={checkbox_id}
                               checked={ids.includes(cuota.id)}
                               onCheckedChange={(checked) => {
                                 field.onChange(
-                                  toggleCuotaIdInList(ids, cuota.id, checked === true),
+                                  toggleCuotaIdInList(
+                                    ids,
+                                    cuota.id,
+                                    checked === true,
+                                  ),
                                 );
                               }}
                               aria-invalid={fieldState.invalid}
@@ -180,7 +156,9 @@ export const QuickVehicleOptionalSections = () => {
                         No hay planes configurados.
                       </p>
                     ) : null}
-                    {fieldState.error ? <FieldError errors={[fieldState.error]} /> : null}
+                    {fieldState.error ? (
+                      <FieldError errors={[fieldState.error]} />
+                    ) : null}
                   </>
                 );
               }}

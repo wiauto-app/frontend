@@ -16,7 +16,6 @@ import { cn } from "@/lib/utils";
 type VehicleDetailGalleryProps = {
   images: VehicleImage[];
   title: string;
-  condition_label: string;
 };
 
 const PLACEHOLDER_IMAGE: VehicleImage = {
@@ -28,7 +27,6 @@ const PLACEHOLDER_IMAGE: VehicleImage = {
 export const VehicleDetailGallery = ({
   images,
   title,
-  condition_label,
 }: VehicleDetailGalleryProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -83,14 +81,6 @@ export const VehicleDetailGallery = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-
-          {condition_label ? (
-            <div className="pointer-events-none absolute left-0 top-0 z-10 size-20 overflow-hidden">
-              <span className="absolute left-[-30px] top-[18px] block w-36 -rotate-45 bg-blue-600 py-1 text-center text-[10px] font-bold uppercase tracking-wide text-white">
-                {condition_label}
-              </span>
-            </div>
-          ) : null}
 
           <span className="pointer-events-none absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-black/40 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
             <Camera className="size-3.5" aria-hidden />

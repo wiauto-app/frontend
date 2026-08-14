@@ -24,6 +24,7 @@ import { QuickVehicleTechnicalFields } from "./QuickVehicleTechnicalFields";
 import { GeneratedDescriptionConfig } from "./generatedDescription/generatedDescriptionConfig";
 import { PromotionBanner } from "./promotionBanner";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { EquipmentForm } from "./equipmentForm";
 
 interface QuickVehicleMainSectionsProps {
   vehicleId?: string;
@@ -57,9 +58,12 @@ export const QuickVehicleMainSections = ({
       <VehicleFormStep number={5} label="Ficha técnica">
         <QuickVehicleTechnicalFields />
       </VehicleFormStep>
+      <VehicleFormStep number={6} label="Equipamiento">
+        <EquipmentForm />
+      </VehicleFormStep>
 
       <VehicleFormStep
-        number={6}
+        number={7}
         isOptional
         label="Descripción del vehículo"
         description="Describe el estado, historial y puntos destacados del vehículo."
@@ -89,7 +93,7 @@ export const QuickVehicleMainSections = ({
         </div>
       </VehicleFormStep>
 
-      <VehicleFormStep number={7} label="Ubicación">
+      <VehicleFormStep number={8} label="Ubicación">
         <Controller
           name="lat"
           control={form.control}
@@ -114,7 +118,7 @@ export const QuickVehicleMainSections = ({
         />
       </VehicleFormStep>
 
-      <VehicleFormStep number={8} label="Tu contacto">
+      <VehicleFormStep number={9} label="Tu contacto">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Field>
             <FieldLabel htmlFor="contact-name">Nombre</FieldLabel>
