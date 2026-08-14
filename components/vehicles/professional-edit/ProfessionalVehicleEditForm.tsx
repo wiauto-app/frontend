@@ -13,11 +13,11 @@ import {
   type QuickVehicleSchema,
 } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { vehiclesService } from "@/components/vehicles/services/vehiclesService";
-import { serializeQuickVehiclePayload } from "@/components/vehicles/utils/serializeQuickVehiclePayload";
 import { mapVehicleDetailToQuickFormValues } from "@/components/vehicles/utils/mapVehicleDetailToQuickFormValues";
 import { ProfessionalEditPreview } from "./ProfessionalEditPreview";
 import { ProfessionalEditSections } from "./ProfessionalEditSections";
 import { useUser } from "@/app/contexts/auth/useUser";
+import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
 
 interface ProfessionalVehicleEditFormProps {
   vehicleId: string;
@@ -54,9 +54,9 @@ export const ProfessionalVehicleEditForm = ({
   }, [vehicleDetail, form]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
-    const payload = serializeQuickVehiclePayload(
-      { ...data, publisher_type: "dealership" },
-      { isUpdate: true },
+    const payload = serializeVehiclePayload(
+      data,
+      { is_update: true },
     );
     const response = await vehiclesService.update(vehicleId, payload as never);
 
