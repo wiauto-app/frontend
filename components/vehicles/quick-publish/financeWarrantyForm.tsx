@@ -13,6 +13,7 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 const toggleCuotaIdInList = (
   current_ids: string[],
@@ -115,20 +116,54 @@ export const FinanceWarrantyForm = () => {
           />
         </div>
         <ControllerInput
-          name="by_brand_warranty"
+          name="finance_price"
           control={form.control}
-          label="Garantía de la marca"
-          orientation="horizontal"
+          label="Precio de financiación (€)"
         >
           {({ field, fieldState }) => (
-            <Switch
-              checked={field.value as boolean}
-              onCheckedChange={(checked) => field.onChange(checked as boolean)}
+            <Input
+              {...field}
+              value={field.value == null ? "" : String(field.value)}
+              type="number"
+              min={0}
               aria-invalid={fieldState.invalid}
             />
           )}
         </ControllerInput>
-        )
+        <div className="grid grid-cols-2 gap-3">
+          <ControllerInput
+            name="show_first_cuota"
+            control={form.control}
+            label="Mostrar primera cuota"
+            orientation="horizontal"
+          >
+            {({ field, fieldState }) => (
+              <Switch
+                checked={field.value as boolean}
+                onCheckedChange={(checked) =>
+                  field.onChange(checked as boolean)
+                }
+                aria-invalid={fieldState.invalid}
+              />
+            )}
+          </ControllerInput>
+          <ControllerInput
+            name="by_brand_warranty"
+            control={form.control}
+            label="Garantía de la marca"
+            orientation="horizontal"
+          >
+            {({ field, fieldState }) => (
+              <Switch
+                checked={field.value as boolean}
+                onCheckedChange={(checked) =>
+                  field.onChange(checked as boolean)
+                }
+                aria-invalid={fieldState.invalid}
+              />
+            )}
+          </ControllerInput>
+        </div>
         <Separator />
         {/* Garantía */}
         <ControllerInput

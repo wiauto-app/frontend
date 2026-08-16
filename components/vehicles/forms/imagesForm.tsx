@@ -305,8 +305,7 @@ export const ImagesForm = ({
   );
 
   const handle_click_remove_committed = useCallback(
-    async (compound_path: string,id?: string) => {
-      
+    async (compound_path: string, id?: string) => {
       if (locked_remove_paths_ref.current.has(compound_path)) return;
 
       let bucket_name: ReturnType<
@@ -341,9 +340,9 @@ export const ImagesForm = ({
           bucket_name,
           paths: [object_key],
         });
-        if(id){
+        if (id) {
           const result = await vehicleService.vehicles.removeImage(id);
-          if(!result.ok){
+          if (!result.ok) {
             toast.error("No se pudo eliminar la imagen del vehículo.");
             return;
           }
@@ -411,19 +410,7 @@ export const ImagesForm = ({
   const run_upload = useCallback(
     async (temp_key: string, file: File) => {
       try {
-        const result = await filesService.uploadTempVehicleImage(
-          file,
-          (percentage) => {
-            if (cancelled_upload_keys_ref.current.has(temp_key)) {
-              return;
-            }
-
-            set_upload_progress((prev) => ({
-              ...prev,
-              [temp_key]: percentage,
-            }));
-          },
-        );
+        const result = await filesService.uploadTempVehicleImage(file);
 
         /**
          * La subida terminó pero el usuario ya canceló la imagen.
@@ -799,7 +786,7 @@ export const ImagesForm = ({
                   onClick={(e) => {
                     e.stopPropagation();
 
-                    void handle_click_remove_committed(image.path,image.id);
+                    void handle_click_remove_committed(image.path, image.id);
                   }}
                   aria-busy={paths_removing.has(image.path)}
                   aria-label={
@@ -850,53 +837,7 @@ export const ImagesForm = ({
                   draggable={false}
                 />
 
-                {/*
-                 * Overlay muy sutil mientras se sube.
-                 *
-                 * Ya no sustituimos la imagen por un Skeleton.
-                 */}
-                {!is_uploaded ? (
-                  <div className="absolute inset-x-2 bottom-2 z-10">
-                    <div className="rounded-md bg-background/90 p-2 shadow-sm backdrop-blur-sm">
-                      <div className="mb-1.5 flex items-center justify-between gap-2">
-                        <div className="flex min-w-0 items-center gap-1.5">
-                          <Loader2 className="size-3.5 shrink-0 animate-spin text-primary" />
-
-                          <span className="min-w-0 truncate text-xs font-medium text-foreground">
-                            Subiendo...
-                          </span>
-                        </div>
-
-                        <span className="shrink-0 text-xs font-medium text-foreground">
-                          {progress}%
-                        </span>
-                      </div>
-
-                      <div
-                        className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
-                        role="progressbar"
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={progress}
-                        aria-label={`Progreso de subida de ${item.file.name}: ${progress}%`}
-                      >
-                        <div
-                          className="h-full rounded-full bg-primary transition-[width] duration-150 ease-out"
-                          style={{
-                            width: `${progress}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="absolute bottom-2 left-2 z-10">
-                    <span className="flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm">
-                      <Check className="size-3.5 text-green-600" />
-                      Subida
-                    </span>
-                  </div>
-                )}
+              
 
                 <Button
                   type="button"

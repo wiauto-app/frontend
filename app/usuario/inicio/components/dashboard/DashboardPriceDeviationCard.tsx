@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { OwnerDashboardPriceDeviationItem } from "@/interfaces/owner-dashboard.interface";
 import { formatEuros, formatNumber } from "./dashboard.utils";
+import { Card, CardContent } from "@/components/ui/card";
 
 type DashboardPriceDeviationCardProps = {
   aboveMarket: OwnerDashboardPriceDeviationItem[];
@@ -66,32 +67,35 @@ export const DashboardPriceDeviationCard = ({
   const isEmpty = aboveMarket.length === 0 && belowMarket.length === 0;
 
   return (
-    <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-1">
-        Desviación de precio
-      </h2>
-      <p className="text-sm text-gray-500 mb-5">
-        Comparación con el precio medio de vehículos similares en la plataforma.
-      </p>
-
-      {isEmpty ? (
-        <p className="text-sm text-gray-500">
-          Sin desviaciones de precio detectadas en tu inventario activo.
+    <Card size="sm">
+      <CardContent>
+        <h2 className="text-lg font-semibold text-gray-900 mb-1">
+          Desviación de precio
+        </h2>
+        <p className="text-sm text-gray-500 mb-5">
+          Comparación con el precio medio de vehículos similares en la
+          plataforma.
         </p>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <DeviationList
-            title="Por encima del mercado"
-            items={aboveMarket}
-            tone="above"
-          />
-          <DeviationList
-            title="Por debajo del mercado"
-            items={belowMarket}
-            tone="below"
-          />
-        </div>
-      )}
-    </section>
+
+        {isEmpty ? (
+          <p className="text-sm text-gray-500">
+            Sin desviaciones de precio detectadas en tu inventario activo.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <DeviationList
+              title="Por encima del mercado"
+              items={aboveMarket}
+              tone="above"
+            />
+            <DeviationList
+              title="Por debajo del mercado"
+              items={belowMarket}
+              tone="below"
+            />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };

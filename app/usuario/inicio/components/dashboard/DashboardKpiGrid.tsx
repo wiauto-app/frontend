@@ -16,6 +16,7 @@ import {
   isMetricPositive,
 } from "./dashboard.utils";
 import { TimeSeriesSparkline } from "./TimeSeriesSparkline";
+import { Card, CardContent } from "@/components/ui/card";
 
 type DashboardKpiGridProps = {
   summary: OwnerDashboardResponse["summary"];
@@ -100,29 +101,32 @@ export const DashboardKpiGrid = ({
         const Icon = card.icon;
 
         return (
-          <div
-            key={card.label}
-            className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex flex-col"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Icon className="size-4 text-gray-400" aria-hidden />
-              <h2 className="text-sm font-medium text-gray-500">{card.label}</h2>
-            </div>
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <p className="text-3xl font-bold text-gray-900">{card.value}</p>
-                <p
-                  className={`text-xs font-medium flex items-center gap-1 mt-1 ${
-                    card.positive ? "text-green-600" : "text-red-500"
-                  }`}
-                >
-                  <TrendIcon className="size-3" aria-hidden />
-                  {formatPercentChange(card.changePercent)}
-                </p>
+          <Card size="sm" key={card.label}>
+            <CardContent>
+              <div className="flex items-center gap-2 mb-2">
+                <Icon className="size-4 text-gray-400" aria-hidden />
+                <h2 className="text-sm font-medium text-gray-500">
+                  {card.label}
+                </h2>
               </div>
-              {card.sparkline}
-            </div>
-          </div>
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {card.value}
+                  </p>
+                  <p
+                    className={`text-xs font-medium flex items-center gap-1 mt-1 ${
+                      card.positive ? "text-green-600" : "text-red-500"
+                    }`}
+                  >
+                    <TrendIcon className="size-3" aria-hidden />
+                    {formatPercentChange(card.changePercent)}
+                  </p>
+                </div>
+                {/* {card.sparkline} */}
+              </div>
+            </CardContent>
+          </Card>
         );
       })}
     </div>

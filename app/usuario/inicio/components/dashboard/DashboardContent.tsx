@@ -30,11 +30,12 @@ export const DashboardContent = () => {
   const isDateRangeValid = isValidDateRange(startDate, endDate);
 
   const isAuthenticated = Boolean(user);
-  const { dashboard, isLoading, error, refetch, isFetching } = useOwnerDashboard({
-    startDate,
-    endDate,
-    enabled: isAuthenticated && isDateRangeValid,
-  });
+  const { dashboard, isLoading, error, refetch, isFetching } =
+    useOwnerDashboard({
+      startDate,
+      endDate,
+      enabled: isAuthenticated && isDateRangeValid,
+    });
 
   const headerProps = {
     startDate,
@@ -60,7 +61,8 @@ export const DashboardContent = () => {
           Inicia sesión para ver tu resumen
         </h2>
         <p className="mt-2 text-gray-500">
-          Accede a tus métricas, inventario y oportunidades desde tu panel de inicio.
+          Accede a tus métricas, inventario y oportunidades desde tu panel de
+          inicio.
         </p>
         <Link
           href="/iniciar-sesion"
@@ -130,13 +132,12 @@ export const DashboardContent = () => {
         </p>
       ) : null}
 
-    
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
         <div className="min-w-0 space-y-4">
-        <DashboardKpiGrid
-        summary={dashboard.summary}
-        viewsTimeSeries={dashboard.views_time_series}
-      />
+          <DashboardKpiGrid
+            summary={dashboard.summary}
+            viewsTimeSeries={dashboard.views_time_series}
+          />
 
           <DashboardViewsChart
             data={dashboard.views_time_series}

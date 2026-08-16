@@ -26,8 +26,8 @@ export default async function Layout({
     {
       variants: {
         showProShell: {
-          true: "max-w-[1800px] ",
-          false: "max-w-full p-0 ",
+          false: "max-w-[1800px] ",
+          true: "max-w-full p-0 ",
         },
       },
     },
@@ -46,9 +46,7 @@ export default async function Layout({
             )}
           >
             <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-              {showUserSidebar ? (
-                <UserSidebarSheet />
-              ) : null}
+              {showUserSidebar ? <UserSidebarSheet /> : null}
 
               {showUserSidebar ? (
                 <aside

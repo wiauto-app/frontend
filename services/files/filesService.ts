@@ -248,31 +248,19 @@ export const filesService = {
    */
   async uploadTempVehicleImage(
     file: File,
-    onProgress?: (percentage: number) => void
+    //@deprecate this is not used
   ): Promise<UploadTempVehicleImageResponse | null> {
     const formData = new FormData();
     formData.append("file", file);
-    const { data: response } = await axios.post(`${API_URL}${UPLOAD_TEMP_VEHICLE_IMAGE}`, formData, {
-      withCredentials: true,
-      onUploadProgress: (progressEvent) => {
-      
-        if (!progressEvent.total) return;
-
-        const progress = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total,
-        );
-
-        onProgress?.(progress);
-      },
-    });
-    // const response = await apiPost<UploadTempVehicleImageResponse>(
-    //   UPLOAD_TEMP_VEHICLE_IMAGE,
-    //   formData,
-    // );
+  
+    const response = await apiPost<UploadTempVehicleImageResponse>(
+      UPLOAD_TEMP_VEHICLE_IMAGE,
+      formData,
+    );
 
     if (!response.data?.path) {
       toast.error(
-        response.data.message?.trim() ||
+        response.message?.trim() ||
         `No se pudo subir la imagen (${file.name}). Comprueba el formato e inténtalo de nuevo.`,
       );
       return null;
