@@ -330,7 +330,7 @@ export const HeroFiltersLocationSelector = ({
             <VirtualizedCheckboxList
               items={provinces}
               getItemKey={(province) => province.slug}
-              className="max-h-96 overflow-y-auto"
+              className="max-h-40 overflow-y-auto"
               renderItem={(province) => (
                 <CustomCheckbox
                   checked={selectedSlugs.has(
