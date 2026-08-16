@@ -20,7 +20,7 @@ export const VirtualizedCheckboxList = <T,>({
   estimateSize = 36,
   overscan = 8,
   gap = 8,
-  className = "max-h-56 overflow-y-auto",
+  className = "overflow-y-auto",
 }: VirtualizedCheckboxListProps<T>) => {
   const scroll_ref = useRef<HTMLDivElement>(null);
 

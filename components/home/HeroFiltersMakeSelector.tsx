@@ -225,6 +225,7 @@ export const HeroFiltersMakeSelector = () => {
       />
       <PopoverContent
         align="end"
+        side="bottom"
         className="flex w-full md:w-96  flex-col gap-2 "
       >
         <SearchInput
