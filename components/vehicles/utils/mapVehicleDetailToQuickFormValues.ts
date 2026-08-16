@@ -11,6 +11,10 @@ export const mapVehicleDetailToQuickFormValues = (
     (vehicle.cuota_id ? [vehicle.cuota_id] : []);
 
   return {
+    show_first_cuota: vehicle.show_first_cuota,
+    by_brand_warranty: vehicle.by_brand_warranty,
+    finance_price: vehicle.finance_price,
+    show_exact_location: vehicle.show_exact_location,
     vehicle_type_id: vehicle?.vehicle_type?.id ?? "",
     license_plate: vehicle.license_plate || "",
     vin_code: vehicle.vin_code ?? "",

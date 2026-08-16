@@ -213,6 +213,11 @@ export interface Vehicle {
   dgt_label: DgtLabel | null;
   warranty_type: WarrantyType | null;
   cuota: Cuota | null;
+
+  show_first_cuota: boolean;
+  by_brand_warranty: boolean;
+  show_exact_location: boolean;
+  finance_price: number;
 }
 
 export interface Version {
