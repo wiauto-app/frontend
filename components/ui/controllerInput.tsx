@@ -10,6 +10,10 @@ import {
 import { formatFieldLabel } from "@/components/vehicles/constants/vehicle-form-field-meta";
 import { Input } from "./input";
 import { Field, FieldError, FieldLabel } from "./field";
+import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { Info } from "lucide-react";
+import { Button } from "./button";
 
 type ControllerInputProps<T extends FieldValues> = {
   name: FieldPath<T>;
@@ -22,6 +26,7 @@ type ControllerInputProps<T extends FieldValues> = {
     field: ControllerRenderProps<T, FieldPath<T>>;
     fieldState: ControllerFieldState;
   }) => React.ReactNode;
+  tooltipContent?: string;
 };
 
 export const ControllerInput = <T extends FieldValues>({
@@ -31,6 +36,7 @@ export const ControllerInput = <T extends FieldValues>({
   optional = false,
   children,
   orientation = "vertical",
+  tooltipContent,
 }: ControllerInputProps<T>) => {
   return (
     <Controller
@@ -39,21 +45,38 @@ export const ControllerInput = <T extends FieldValues>({
       render={({ field, fieldState }) => (
         <Field
           data-invalid={fieldState.invalid}
-          orientation={orientation}
-        
+          className="flex flex-col gap-1"
         >
-          {label ? (
-            <FieldLabel htmlFor={name}>
-              {formatFieldLabel(label, optional)}
-            </FieldLabel>
-          ) : null}
+          <div
+            className={cn(
+              "flex flex-col gap-1",
+              orientation === "horizontal" && "flex-row items-center gap-2",
+            )}
+          >
+            {label ? (
+              <FieldLabel className="flex items-center gap-2" htmlFor={name}>
+                {formatFieldLabel(label, optional)}
+                {tooltipContent ? (
+                  <Tooltip>
+                    <TooltipTrigger delay={0} render={
+                      <Button variant="ghost" size="icon">  
+                        <Info className="size-4" />
+                      </Button>
+                    }>
+                      
+                    </TooltipTrigger>
+                    <TooltipContent>{tooltipContent}</TooltipContent>
+                  </Tooltip>
+                ) : null}
+              </FieldLabel>
+            ) : null}
 
-          {children ? (
-            children({ field, fieldState })
-          ) : (
-            <Input {...field} aria-invalid={fieldState.invalid} />
-          )}
-
+            {children ? (
+              children({ field, fieldState })
+            ) : (
+              <Input {...field} aria-invalid={fieldState.invalid} />
+            )}
+          </div>
           {fieldState.error && <FieldError errors={[fieldState.error]} />}
         </Field>
       )}

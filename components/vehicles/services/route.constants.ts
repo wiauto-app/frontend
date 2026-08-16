@@ -16,6 +16,7 @@ export const V1_CATEGORIES = "/v1/categories";
 export const V1_REVIEWS = "/v1/reviews";
 export const V1_CATALOG_MAKES = "/v1/catalog/makes";
 export const V1_CATALOG_VERSIONS = "/v1/catalog/versions";
+export const V1_VEHICLE_SPECS = "/v1/vehicle-specs";
 export const V1_CATALOG_MODELS = "/v1/catalog/models";
 export const V1_CATALOG_BODY_TYPES = "/v1/catalog/body-types";
 export const V1_CATALOG_FUEL_TYPES = "/v1/catalog/fuel-types";

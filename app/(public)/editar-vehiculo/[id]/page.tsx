@@ -19,7 +19,7 @@ export default async function EditarVehiculoPage(props: { params: Promise<{ id: 
     <div className="container-custom mx-auto lg:py-8 py-4 space-y-4">
       <div>
         <Link
-          href="/perfil"
+          href="/usuario/perfil"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />

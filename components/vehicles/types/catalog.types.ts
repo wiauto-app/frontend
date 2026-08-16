@@ -97,3 +97,13 @@ export interface CatalogYearPaginationParams extends PaginationParams {
   model_id?: number;
   body_type_id?: number;
 }
+
+export interface VehicleSpecs {
+  traction_id: number;
+  transmission: string;
+  power: number;
+  displacement: number;
+  autonomy: number;
+  battery_capacity: number;
+  time_to_charge: number;
+}

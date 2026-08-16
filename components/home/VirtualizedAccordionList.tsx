@@ -39,7 +39,7 @@ export const VirtualizedAccordionList = <T,>({
   estimateSize = 56,
   overscan = 6,
   gap = 8,
-  className = "max-h-96 overflow-y-auto",
+  className = "max-h-60 overflow-y-auto",
 }: VirtualizedAccordionListProps<T>) => {
   const scroll_ref = useRef<HTMLDivElement>(null);
   const open_value_set = new Set(openValues);
@@ -93,7 +93,7 @@ export const VirtualizedAccordionList = <T,>({
                   className="rounded-md border px-2"
                   value={item_value}
                 >
-                  <AccordionTrigger className="py-3 **:data-[slot=accordion-trigger-icon]:text-primary!">
+                  <AccordionTrigger className="py-2 **:data-[slot=accordion-trigger-icon]:text-primary!">
                     {renderTrigger(item)}
                   </AccordionTrigger>
                   <AccordionContent>

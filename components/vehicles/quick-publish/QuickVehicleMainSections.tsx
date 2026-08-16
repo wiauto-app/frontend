@@ -72,28 +72,45 @@ export const QuickVehicleMainSections = ({
           <QuickVehicleAiDescriptionCard />
           <GeneratedDescriptionConfig />
 
-          <Controller
+          <ControllerInput
             name="description"
             control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="quick-description">Descripción</FieldLabel>
-                <Textarea
-                  {...field}
-                  id="quick-description"
-                  className="h-72 resize-none whitespace-pre-wrap"
-                  aria-invalid={fieldState.invalid}
-                />
-                {fieldState.error ? (
-                  <FieldError errors={[fieldState.error]} />
-                ) : null}
-              </Field>
+            label="Descripción"
+          >
+            {({ field, fieldState }) => (
+              <Textarea
+                value={field.value as string}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                id="quick-description"
+                className="h-28 md:h-56 resize-none whitespace-pre-wrap"
+                aria-invalid={fieldState.invalid}
+              />
             )}
-          />
+          </ControllerInput>
         </div>
       </VehicleFormStep>
 
       <VehicleFormStep number={8} label="Ubicación">
+        {isSubscribed ? (
+          <ControllerInput
+            tooltipContent="Si lo activas, se mostrará la ubicación exacta del vehículo en el anuncio público."
+            name="show_exact_location"
+            control={form.control}
+            label="Mostrar ubicación exacta"
+            orientation="horizontal"
+          >
+            {({ field, fieldState }) => (
+              <Switch
+                checked={field.value as boolean}
+                onCheckedChange={(checked) =>
+                  field.onChange(checked as boolean)
+                }
+                aria-invalid={fieldState.invalid}
+              />
+            )}
+          </ControllerInput>
+        ) : null}
         <Controller
           name="lat"
           control={form.control}

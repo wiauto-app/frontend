@@ -17,34 +17,15 @@ import { cuotasService } from "@/components/vehicles/services/cuotasService";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { toggleCatalogIdInList } from "@/components/vehicles/utils/toggleCatalogIdInList";
 
-const toggleCuotaIdInList = (
-  current_ids: string[],
-  cuota_id: string,
-  checked: boolean,
-): string[] => {
-  if (checked) {
-    if (current_ids.includes(cuota_id)) {
-      return current_ids;
-    }
-    return [...current_ids, cuota_id];
-  }
-  return current_ids.filter((id) => id !== cuota_id);
-};
 
 export const QuickVehicleOptionalSections = () => {
   const form = useFormContext<QuickVehicleSchema>();
 
-  const { data: services } = useQuery({
-    queryKey: ["catalog-services"],
-    queryFn: () => catalogServicesService.findAll({ page: 1, limit: 100 }),
-  });
+  // const { data: services } = useQuery({
+  //   queryKey: ["catalog-services"],
+  //   queryFn: () => catalogServicesService.findAll({ page: 1, limit: 100 }),
+  // });
 
-  const { data: cuotas_page } = useQuery({
-    queryKey: ["cuotas", "all-plans"],
-    queryFn: () => cuotasService.findAll({ page: 1, limit: 100 }),
-  });
-
-  const cuotas = cuotas_page?.data ?? [];
 
   return (
     <div id="quick-optional-sections" className="flex flex-col gap-3">
@@ -57,7 +38,7 @@ export const QuickVehicleOptionalSections = () => {
           </AccordionContent>
         </AccordionItem> */}
 
-        <AccordionItem value="services">
+        {/* <AccordionItem value="services">
           <AccordionTrigger>Servicios (opcional)</AccordionTrigger>
           <AccordionContent>
             <Controller
@@ -102,88 +83,19 @@ export const QuickVehicleOptionalSections = () => {
               }}
             />
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
 
         <AccordionItem value="cuotas">
           <AccordionTrigger>Cuotas / financiación (opcional)</AccordionTrigger>
           <AccordionContent>
-            <p className="pb-2 text-sm text-muted-foreground">
-              Marca uno o más planes disponibles para este anuncio.
-            </p>
-            <Controller
-              name="cuota_ids"
-              control={form.control}
-              render={({ field, fieldState }) => {
-                const ids = Array.isArray(field.value) ? field.value : [];
-
-                return (
-                  <>
-                    <div className="grid grid-cols-1 gap-2">
-                      {cuotas.map((cuota) => {
-                        const checkbox_id = `quick-cuota-${cuota.id}`;
-                        const label = `${cuota.name} (${cuota.value})`;
-
-                        return (
-                          <Field
-                            key={cuota.id}
-                            orientation="horizontal"
-                            className="flex-row-reverse items-center gap-3"
-                            data-invalid={fieldState.invalid}
-                          >
-                            <FieldLabel htmlFor={checkbox_id}>
-                              {label}
-                            </FieldLabel>
-                            <Checkbox
-                              id={checkbox_id}
-                              checked={ids.includes(cuota.id)}
-                              onCheckedChange={(checked) => {
-                                field.onChange(
-                                  toggleCuotaIdInList(
-                                    ids,
-                                    cuota.id,
-                                    checked === true,
-                                  ),
-                                );
-                              }}
-                              aria-invalid={fieldState.invalid}
-                            />
-                          </Field>
-                        );
-                      })}
-                    </div>
-                    {!cuotas.length ? (
-                      <p className="text-sm text-muted-foreground">
-                        No hay planes configurados.
-                      </p>
-                    ) : null}
-                    {fieldState.error ? (
-                      <FieldError errors={[fieldState.error]} />
-                    ) : null}
-                  </>
-                );
-              }}
-            />
+           
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="warranty">
           <AccordionTrigger>Garantía (opcional)</AccordionTrigger>
           <AccordionContent>
-            <ControllerInput
-              name="warranty_type_id"
-              control={form.control}
-              label="Tipo de garantía"
-              optional
-            >
-              {({ field, fieldState }) => (
-                <WarrantyTypesSelector
-                  value={field.value as string | undefined}
-                  onValueChange={field.onChange}
-                  ariaInvalid={fieldState.invalid}
-                  disabled={field.disabled}
-                />
-              )}
-            </ControllerInput>
+       
           </AccordionContent>
         </AccordionItem>
       </Accordion>

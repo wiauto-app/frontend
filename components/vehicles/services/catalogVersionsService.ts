@@ -1,8 +1,8 @@
 import { objectToQueryString } from "@/lib/utils";
 import { apiGet } from "@/lib/api";
 import type { PaginatedResult } from "@/types/general.types";
-import type { CatalogVersionItem, CatalogVersionPaginationParams } from "../types/catalog.types";
-import { V1_CATALOG_VERSIONS } from "./route.constants";
+import type { CatalogVersionItem, CatalogVersionPaginationParams, VehicleSpecs } from "../types/catalog.types";
+import { V1_CATALOG_VERSIONS, V1_VEHICLE_SPECS } from "./route.constants";
 
 type VersionResponse = { version: CatalogVersionItem };
 
@@ -29,5 +29,10 @@ export const catalogVersionsService = {
   findOne: async (id: number): Promise<CatalogVersionItem> => {
     const response = await apiGet<VersionResponse>(`${V1_CATALOG_VERSIONS}/${id}`);
     return response.data.version;
+  },
+
+  getVehicleSpecs: async (versionId: number): Promise<VehicleSpecs> => {
+    const response = await apiGet<VehicleSpecs>(`${V1_VEHICLE_SPECS}/${versionId}`);
+    return response.data;
   },
 };

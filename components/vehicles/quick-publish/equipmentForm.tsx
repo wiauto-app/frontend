@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FieldError } from "@/components/ui/field";
 import { QuickVehicleSchema } from "../schemas/quick-vehicle.schema";
 import { toggleCatalogIdInList } from "../utils/toggleCatalogIdInList";
+import { Check, Plus } from "lucide-react";
 
 export const EquipmentForm = () => {
   const form = useFormContext<QuickVehicleSchema>();
@@ -79,7 +80,11 @@ export const EquipmentForm = () => {
                           }
                         `}
                       >
-                        {checked ? "✓" : "+"}
+                        {checked ? (
+                          <Check className="size-4" />
+                        ) : (
+                          <Plus className="size-4" />
+                        )}
                       </div>
 
                       <span
@@ -97,6 +102,7 @@ export const EquipmentForm = () => {
                     </div>
 
                     <Checkbox
+                      hidden
                       id={checkboxId}
                       checked={checked}
                       onCheckedChange={(value) => {
@@ -115,9 +121,7 @@ export const EquipmentForm = () => {
               })}
             </div>
 
-            {fieldState.error && (
-              <FieldError errors={[fieldState.error]} />
-            )}
+            {fieldState.error && <FieldError errors={[fieldState.error]} />}
           </div>
         );
       }}

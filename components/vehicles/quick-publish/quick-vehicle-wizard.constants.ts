@@ -22,9 +22,15 @@ export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
     name: "Identificación",
     fields: [],
   },
+  
   {
     id: 3,
     name: "Datos del vehículo",
+    fields: [],
+  },
+  {
+    id: 4,
+    name: "Financiación y garantía",
     fields: [],
   },
 ];

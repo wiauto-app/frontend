@@ -235,7 +235,7 @@ export const HeroFiltersMakeSelector = () => {
           aria-label="Buscar marca"
         />
         {isLoading && (
-          <div className="flex max-h-70 flex-col gap-2 overflow-y-auto">
+          <div className="flex h-60 flex-col gap-2 overflow-y-auto">
             {Array.from({ length: 5 }).map((_, index) => (
               <Skeleton
                 key={index}

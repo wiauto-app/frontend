@@ -72,7 +72,7 @@ export const QuickVehicleTypeStep = () => {
                         </div>
                       ) : null}
 
-                      <div className="flex flex-1 items-center justify-between px-3 py-2.5">
+                      <div className="flex flex-1 items-center justify-between ">
                         <p className="text-sm font-medium">
                           {vehicleType.name}
                         </p>

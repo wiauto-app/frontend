@@ -9,9 +9,13 @@ import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-veh
 import { QuickVehicleElectricFields } from "./QuickVehicleElectricFields";
 import { useCanCharge } from "./hooks/useCanCharge";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { catalogVersionsService } from "../services/catalogVersionsService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const QuickVehicleTechnicalFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
+  const versionId = form.watch("version_id");
   const { canCharge } = useCanCharge();
 
   useEffect(() => {
@@ -20,6 +24,48 @@ export const QuickVehicleTechnicalFields = () => {
       form.setValue("displacement", 0, { shouldDirty: true });
     }
   }, [canCharge, form]);
+
+  const { data: vehicleSpecs, isLoading: isLoadingVehicleSpecs } = useQuery({
+    queryKey: ["vehicleSpecs", versionId],
+    queryFn: () => catalogVersionsService.getVehicleSpecs(versionId),
+    enabled: Boolean(versionId),
+  });
+
+  useEffect(() => {
+    if (vehicleSpecs) {
+      form.setValue("power", vehicleSpecs.power, { shouldDirty: true });
+      form.setValue("displacement", vehicleSpecs.displacement, {
+        shouldDirty: true,
+      });
+      form.setValue(
+        "transmission_type",
+        vehicleSpecs.transmission as "manual" | "automatic",
+        { shouldDirty: true },
+      );
+      form.setValue("traction_id", vehicleSpecs.traction_id.toString(), {
+        shouldDirty: true,
+      });
+      form.setValue("autonomy", vehicleSpecs.autonomy, { shouldDirty: true });
+      form.setValue("battery_capacity", vehicleSpecs.battery_capacity, {
+        shouldDirty: true,
+      });
+      form.setValue("time_to_charge", vehicleSpecs.time_to_charge, {
+        shouldDirty: true,
+      });
+    }
+  }, [vehicleSpecs, form]);
+
+  if (isLoadingVehicleSpecs) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Skeleton key={index} className="h-9 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

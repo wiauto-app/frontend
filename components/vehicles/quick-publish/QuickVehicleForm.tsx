@@ -62,6 +62,7 @@ export const QuickVehicleForm = ({
   }, [user, isEditMode, form]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
+    console.log(data);
     const payload = serializeVehiclePayload(data, {
       is_update: Boolean(vehicleId),
       // only_temp_images: Boolean(vehicleId),
@@ -173,9 +174,9 @@ export const QuickVehicleForm = ({
           </Suspense>
         </div>
 
-        <aside className="flex flex-col gap-6 lg:col-span-1">
+        <aside className="hidden lg:flex flex-col gap-6 lg:col-span-1">
           <QuickVehiclePreview />
-          <QuickVehicleOptionalSections />
+          {/* <QuickVehicleOptionalSections /> */}
           <button
             type="button"
             className="text-left text-sm text-primary hover:underline"

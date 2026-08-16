@@ -16,9 +16,9 @@ import { useGenerationSettingsStore } from "../stores/generationSettingsStore";
 export const GeneratedDescriptionConfig = () => {
   const { settings, setSettings } = useGenerationSettingsStore();
   return (
-    <Accordion className="rounded-lg border">
+    <Accordion className="border-none p-0">
       <AccordionItem value="Configuración de la descripción">
-        <AccordionTrigger className="flex items-center gap-2 px-4">
+        <AccordionTrigger className="flex items-center gap-2  p-0">
           <IconContainer Icon={Settings} />
           Configuración de la descripción
         </AccordionTrigger>
