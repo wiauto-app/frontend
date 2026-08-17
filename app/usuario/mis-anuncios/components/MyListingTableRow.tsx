@@ -99,7 +99,7 @@ const PerformanceCell = ({
   const isPositive = (trend.change_percent ?? 0) >= 0;
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center gap-1 px-2 py-1 text-center">
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-1 bg-card px-2 py-1 text-center last:col-span-2 sm:last:col-span-1">
       <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
         <Icon className="size-4" aria-hidden />
         <span>{label}</span>
@@ -291,7 +291,7 @@ export const MyListingTableRow = ({
         <h3 className="font-heading text-base font-semibold text-foreground">
           Rendimiento
         </h3>
-        <div className="grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-lg border border-border sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-border sm:grid-cols-3 lg:grid-cols-5">
           <PerformanceCell
             label="Visitas"
             trend={listing.stats.views}
