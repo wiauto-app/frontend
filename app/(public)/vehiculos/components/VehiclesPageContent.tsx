@@ -44,7 +44,7 @@ const VehiclesListingView = ({
 }: VehiclesListingViewProps) => {
   const totalPages = Math.ceil(total / pageLimit);
 
-  if (vehicles.length === 0) {
+  if (vehicles?.length === 0) {
     return (
       <div className="rounded-2xl border border-slate-100 bg-white p-12 text-center">
         <Car className="mx-auto size-16 text-slate-300" />

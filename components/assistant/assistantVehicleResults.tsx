@@ -31,7 +31,7 @@ export const AssistantVehicleResults = ({
   const isBusy = status === "submitted" || status === "streaming";
   const canCompare = selectedIds.length >= 2 && selectedIds.length <= 4;
 
-  if (vehicles.length === 0) {
+  if (vehicles?.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
         No se encontraron vehículos con esos criterios.

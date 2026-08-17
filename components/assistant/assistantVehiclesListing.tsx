@@ -33,7 +33,7 @@ export const AssistantVehiclesListing = ({
     );
   }
 
-  if (vehicles.length === 0) {
+  if (vehicles?.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-slate-100 bg-white p-8 text-center">
         <Car className="size-12 text-slate-300" aria-hidden />
