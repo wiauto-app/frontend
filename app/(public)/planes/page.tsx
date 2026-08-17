@@ -57,7 +57,7 @@ export default async function Page() {
       ) : null}
 
       {cms?.caracteristicas ? <PlansFeaturesSection data={cms.caracteristicas} /> : null}
-      <PlansPricingSection plans={plans} catalogError={catalog_error} />
+      {cms?.action_call_section ? <PlansPricingSection actionCallSection={cms.action_call_section} plans={plans} catalogError={catalog_error} /> : null}
 
       {cms?.tech_add ? <PlansTechSection data={cms.tech_add} /> : null}
 

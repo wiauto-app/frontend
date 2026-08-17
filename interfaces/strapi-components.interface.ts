@@ -13,6 +13,7 @@ export interface StrapiLink {
   url: string;
   destacado: boolean | null;
   imagen: StrapiMedia | null;
+  iconName: string | null;
 }
 
 /** Componente `shared.icon-feature` */

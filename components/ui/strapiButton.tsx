@@ -2,6 +2,7 @@ import { StrapiLink } from "@/interfaces/strapi-components.interface";
 import Link from "next/link";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
+import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 
 export const StrapiButton = ({
   button,
@@ -10,6 +11,7 @@ export const StrapiButton = ({
   button: StrapiLink;
   className?: string;
 }) => {
+  const Icon = resolveStrapiIconName(button.iconName ?? "");
   return (
     <Link className="w-full lg:w-auto" href={button.url}>
       <Button

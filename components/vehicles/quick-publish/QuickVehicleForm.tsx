@@ -62,7 +62,6 @@ export const QuickVehicleForm = ({
   }, [user, isEditMode, form]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
-    console.log(data);
     const payload = serializeVehiclePayload(data, {
       is_update: Boolean(vehicleId),
       // only_temp_images: Boolean(vehicleId),

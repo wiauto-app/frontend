@@ -28,6 +28,7 @@ export interface PlanesPageResponse {
   updatedAt: string;
   publishedAt: string;
   hero: PlanesHero | null;
+  action_call_section: StrapiHero;
   estadisticas: PlanesEstadistica[] | null;
   caracteristicas: PlanesCaracteristicasBlock | null;
   tech_add: PlanesTechBlock | null;
