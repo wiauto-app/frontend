@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { SectionContainer } from "@/components/home/SectionContainer";
-import { BRAND_BLUE } from "@/components/home/data/home-data";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +35,7 @@ export const VehiclesListingSection = ({
   seeMoreLabel = "Ver más",
   className,
 }: VehiclesListingSectionProps) => {
-  if (vehicles.length === 0) {
+  if (vehicles?.length === 0) {
     return null;
   }
 

@@ -254,7 +254,7 @@ export const PlansPricingSection = ({
   const features = actionCallSection?.caracteristicas;
   const Icon = resolveStrapiIconName(features?.[0]?.iconName ?? "");
   return (
-    <section className="overflow-hidden  py-20 rounded-3x relative ">
+    <section className="overflow-hidden  rounded-3xl py-20 relative ">
       <Image
         src={actionCallSection?.imagen?.url ?? ""}
         alt={actionCallSection?.imagen?.alternativeText ?? ""}
@@ -273,8 +273,8 @@ export const PlansPricingSection = ({
           </p>
         </div>
 
-        <Card className="overflow-hidden border-2 border-primary max-w-4xl mx-auto" size="sm">
-          <CardContent className="flex items-center gap-5">
+        <Card className="border-2 border-primary max-w-4xl mx-auto" size="sm">
+          <CardContent className="flex items-center ">
             <Image
               src={card?.imagen?.url ?? ""}
               alt={card?.imagen?.alternativeText ?? ""}
