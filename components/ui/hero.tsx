@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 interface HeroProps {
+  id?: string;
   image?: string;
   rightContent?: React.ReactNode;
   leftContent?: React.ReactNode;
@@ -10,6 +11,7 @@ interface HeroProps {
 }
 
 export const Hero = ({
+  id,
   image,
   rightContent,
   leftContent,
@@ -18,6 +20,7 @@ export const Hero = ({
 }: HeroProps) => {
   return (
     <section
+      id={id}
       className={cn(
         "relative lg:h-140  rounded-lg py-6 lg:py-12 px-4 lg:px-10  rounded-b-lg overflow-hidden ",
         className,

@@ -14,7 +14,8 @@ type PlansHeroSectionProps = {
 export const PlansHeroSection = ({ hero }: PlansHeroSectionProps) => {
   return (
     <Hero
-      className="lg:h-150"
+      id="hero"
+      className="lg:h-150 "
       image={hero.imagen?.url}
       leftContent={
         <>
