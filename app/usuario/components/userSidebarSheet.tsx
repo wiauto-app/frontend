@@ -6,7 +6,7 @@ import { UserSidebar, UserSidebarFallback } from "./UserSidebar";
 export const UserSidebarSheet = () => {
   return (
     <div className="flex md:hidden">
-      <Sheet swipeDirection="left">
+      <Sheet >
         <SheetTrigger className="inline-flex items-center justify-center rounded-md border border-border bg-background p-2 shadow-xs hover:bg-muted">
           <Menu className="size-5" aria-hidden />
           <span className="sr-only">Abrir menú de navegación</span>

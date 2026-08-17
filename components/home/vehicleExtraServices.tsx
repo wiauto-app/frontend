@@ -30,7 +30,7 @@ export const VehicleExtraServices = ({
         const isUnPaired = data.length % 2 !== 0;
         return (
           <div key={item.href} className={cn(
-            isLast && isUnPaired ? "col-span-2" : "col-span-1",
+            isLast && isUnPaired ? "col-span-2 md:col-span-1" : "col-span-1",
           )}>
             <ServiceHomeItem item={item} />
           </div>
