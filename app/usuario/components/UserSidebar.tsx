@@ -54,7 +54,11 @@ export const UserSidebarFallback = () => (
   </div>
 );
 
-export function UserSidebar() {
+export function UserSidebar({
+  onSelect,
+}: {
+  onSelect?: () => void;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
@@ -100,6 +104,7 @@ export function UserSidebar() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => onSelect?.()}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? "text-blue-600 bg-blue-50"
@@ -115,7 +120,10 @@ export function UserSidebar() {
             <div className="pt-4 mt-2 border-t border-gray-100">
               <Button
                 variant="ghost"
-                onClick={() => logout()}
+                onClick={() => {
+                  logout();
+                  onSelect?.();
+                }}
                 className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50"
               >
                 <LogOut className="w-5 h-5" />
