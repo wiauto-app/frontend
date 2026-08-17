@@ -151,7 +151,7 @@ export const PhoneInput = ({
   return (
     <div
       className={cn(
-        "flex w-full flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-2",
+        "flex w-full  gap-1.5 flex-row items-start sm:gap-2",
         className,
       )}
     >
