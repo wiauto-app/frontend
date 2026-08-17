@@ -1,3 +1,4 @@
+"use client";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Suspense, useState } from "react";
 import { SheetTrigger } from "@/components/ui/sheet";

@@ -191,7 +191,7 @@ export const NavLinkItem = ({
     if (variant === "mobile") {
       return (
         <div className="border-b border-slate-100">
-          <p className="px-1 py-3 text-base font-semibold text-slate-900">
+          <p className="mb-3 text-base font-semibold text-slate-900">
             {label}
           </p>
           {hasGroups ? (

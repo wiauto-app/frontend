@@ -45,7 +45,7 @@ export const NavbarMobileMenu = () => {
 
         <SheetContent
           side="right"
-          className="flex w-full flex-col sm:max-w-sm"
+          className="flex w-full flex-col sm:max-w-sm gap-0"
           showCloseButton={false}
         >
           <SheetHeader className="flex flex-row items-center justify-between">
@@ -72,7 +72,7 @@ export const NavbarMobileMenu = () => {
 
           <nav
             aria-label="Navegación móvil"
-            className="flex flex-1 flex-col overflow-y-auto "
+            className="flex flex-1 flex-col overflow-y-auto px-5 "
           >
             {NAV_LINKS.map((link) => (
               <NavLinkItem
