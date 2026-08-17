@@ -89,17 +89,11 @@ export const VehiclesFiltersPanel = ({
   );
 
   const price_value = useMemo((): PriceFilterValue => {
-    const has_cuota = Boolean(filters.cuota_slugs?.length);
     return {
-      since: has_cuota
-        ? filters.since_price
-        : (filters.since_price ?? undefined),
-      until: has_cuota
-        ? filters.until_price
-        : (filters.until_price ?? undefined),
-      cuota_slug: filters.cuota_slugs?.[0],
+      since: filters.since_price,
+      until: filters.until_price,
     };
-  }, [filters.cuota_slugs, filters.since_price, filters.until_price]);
+  }, [filters.since_price, filters.until_price]);
 
   const battery_range = useMemo(
     () => ({
@@ -110,18 +104,12 @@ export const VehiclesFiltersPanel = ({
   );
 
   const handlePriceChange = (next: PriceFilterValue) => {
-    const has_cuota = Boolean(next.cuota_slug);
     commitFilters({
       ...filters,
       since_price: next.since,
       until_price: next.until,
-      cuota_slugs: next.cuota_slug ? [next.cuota_slug] : undefined,
+      cuota_slugs: undefined,
       page: 1,
-      ...(has_cuota
-        ? {}
-        : {
-            cuota_slugs: undefined,
-          }),
     });
   };
 
@@ -185,7 +173,6 @@ export const VehiclesFiltersPanel = ({
         Icon={<HiOutlineCurrencyEuro size={iconSize} />}
       >
         <PriceSelector
-          cuotas={catalog.cuotas}
           value={price_value}
           onChange={handlePriceChange}
         />
