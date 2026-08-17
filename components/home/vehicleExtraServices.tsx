@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 
 import {
@@ -22,13 +21,21 @@ export const VehicleExtraServices = ({
   return (
     <div
       className={cn(
-        "grid w-full grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5",
+        "grid w-full gap-3 md:gap-8 grid-cols-2 lg:grid-cols-5",
         className,
       )}
     >
-      {data.map((item) => (
-        <ServiceHomeItem key={item.href} item={item} />
-      ))}
+      {data.map((item) => {
+        const isLast = item === data[data.length - 1];
+        const isUnPaired = data.length % 2 !== 0;
+        return (
+          <div key={item.href} className={cn(
+            isLast && isUnPaired ? "col-span-2" : "col-span-1",
+          )}>
+            <ServiceHomeItem item={item} />
+          </div>
+        );
+      })}
     </div>
   );
 };
