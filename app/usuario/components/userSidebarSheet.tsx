@@ -15,7 +15,10 @@ export const UserSidebarSheet = () => {
         </SheetTrigger>
         <SheetContent side="left" className=" p-2" showCloseButton={false}>
           <Suspense fallback={<UserSidebarFallback />}>
-            <UserSidebar onSelect={() => setIsOpen(false)} />
+            <UserSidebar onSelect={() => {
+              console.log("onSelect");
+              setIsOpen(false);
+            }} />
           </Suspense>
         </SheetContent>
       </Sheet>

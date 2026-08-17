@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sheet";
 
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
 
 function getDisplayName(name?: string, lastName?: string, email?: string) {
   const fullName = [name, lastName].filter(Boolean).join(" ").trim();
@@ -40,7 +41,7 @@ export function UserDropdown() {
   const { user, logout } = useUser();
   const { has, planName } = useEntitlements();
   const isMobile = useIsMobile();
-
+  const [isOpen, setIsOpen] = useState(false);
   if (!user) {
     return (
       <Link
@@ -65,7 +66,7 @@ export function UserDropdown() {
    */
   if (isMobile) {
     return (
-      <Sheet>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger
           render={
             <button
@@ -145,6 +146,7 @@ export function UserDropdown() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={() => setIsOpen(false)}
                     className="flex py-2 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950 active:bg-slate-100"
                   >
                     <Icon className="size-5 shrink-0" />
@@ -159,7 +161,10 @@ export function UserDropdown() {
           <div className="border-t p-2">
             <button
               type="button"
-              onClick={logout}
+              onClick={() => {
+                logout();
+                setIsOpen(false);
+              }}
               className="flex py-2 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
             >
               <LogOut className="size-5 shrink-0" />

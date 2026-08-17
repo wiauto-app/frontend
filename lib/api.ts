@@ -1,5 +1,4 @@
 import { API_URL } from "@/constants";
-import { AUTH_ROUTES } from "@/constants/auth.constants";
 import { isPublicAuthRoute } from "@/lib/publicAuthRoutes";
 import qs from "qs";
 
@@ -235,18 +234,9 @@ export const fetchWithAuth = async <T>(
     };
   }
 
-  const body = await res.json();
-  if (!res.ok && !body.message) {
-    console.log("body", body);
-    body.message = res.statusText;
-  }
+  const body = (await res.json()) as BackendJsonBody<T> | null;
 
-  if (!res.ok) {
-    console.error(body);
-  }
-
-
-  return body;
+  return toApiResponse<T>(res, body);
 };
 
 export const fetchOptionalAuth = async <T>(
