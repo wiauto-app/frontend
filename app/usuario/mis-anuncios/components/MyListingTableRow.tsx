@@ -4,8 +4,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { Car, Star } from "lucide-react";
+import {
+  Car,
+  Eye,
+  Heart,
+  MessageCircle,
+  Pencil,
+  Phone,
+  Star,
+  type LucideIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   get_vehicle_status_label,
   type VehicleStatus,
@@ -46,19 +58,11 @@ const formatMileage = (mileage: number): string =>
   `${new Intl.NumberFormat("es-ES").format(mileage)} km`;
 
 const statusBadgeClass: Record<VehicleStatus, string> = {
-  active: "bg-green-100 text-green-700 border-green-200",
-  pending: "bg-amber-100 text-amber-700 border-amber-200",
-  inactive: "bg-gray-100 text-gray-700 border-gray-200",
-  sold: "bg-blue-100 text-blue-700 border-blue-200",
-  archived: "bg-slate-100 text-slate-700 border-slate-200",
-};
-
-const statusDotClass: Record<VehicleStatus, string> = {
-  active: "bg-green-500",
-  pending: "bg-amber-500",
-  inactive: "bg-gray-400",
-  sold: "bg-blue-500",
-  archived: "bg-slate-400",
+  active: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  pending: "border-amber-200 bg-amber-50 text-amber-700",
+  inactive: "border-border bg-muted text-muted-foreground",
+  sold: "border-blue-200 bg-blue-50 text-blue-700",
+  archived: "border-border bg-muted text-muted-foreground",
 };
 
 const getTransmissionLabel = (transmissionType?: string | null): string | null => {
@@ -86,19 +90,26 @@ const getPublishedReferenceDate = (listing: OwnerVehicleListItem): Date => {
 const PerformanceCell = ({
   label,
   trend,
+  icon: Icon,
 }: {
   label: string;
   trend: OwnerVehicleStatTrend;
+  icon: LucideIcon;
 }) => {
   const isPositive = (trend.change_percent ?? 0) >= 0;
 
   return (
-    <div className="flex flex-col items-center gap-1 min-w-[72px]">
-      <span className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</span>
-      <span className="text-sm font-semibold text-gray-900">{trend.current}</span>
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-1 px-2 py-1 text-center">
+      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <Icon className="size-4" aria-hidden />
+        <span>{label}</span>
+      </div>
+      <span className="text-xl font-semibold tracking-tight text-foreground">
+        {new Intl.NumberFormat("es-ES").format(trend.current)}
+      </span>
       <ListingPerformanceSparkline
         positive={isPositive}
-        className="w-12 h-6"
+        className="h-6 w-16"
         ariaLabel={`Tendencia de ${label}`}
       />
     </div>
@@ -124,65 +135,109 @@ export const MyListingTableRow = ({
     addSuffix: true,
     locale: es,
   });
+  const publishedDate = publishedReference.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
   const specs = [formatMileage(listing.mileage), transmissionLabel, listing.fuel_type]
     .filter(Boolean)
     .join(" · ");
 
   return (
-    <tr className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50/60 transition-colors">
-      <td className="p-4 align-top">
-        <div className="flex gap-3 min-w-0">
-          <div className="w-20 h-14 bg-gray-200 rounded-lg overflow-hidden relative shrink-0">
+    <Card className="gap-0 overflow-hidden py-0 transition-shadow hover:shadow-md">
+      <CardContent className="p-4 sm:p-5">
+        <div className="grid gap-5 md:grid-cols-[minmax(220px,1.05fr)_minmax(260px,0.95fr)] md:items-stretch">
+          <Link
+            href={`/vehiculo/${listing.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/image relative aspect-[16/10] min-h-52 overflow-hidden rounded-xl bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={`Ver anuncio ${listing.display_name}`}
+          >
             {imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={listing.display_name}
                 fill
-                className="object-cover"
-                sizes="80px"
+                className="object-cover transition-transform duration-500 group-hover/image:scale-[1.025]"
+                sizes="(max-width: 768px) 100vw, 45vw"
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                <Car className="size-5" aria-hidden />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                <Car className="size-10" aria-hidden />
+                <span className="text-sm">Sin imagen</span>
               </div>
             )}
-          </div>
+            <span className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover/image:opacity-100" />
+          </Link>
 
-          <div className="min-w-0 space-y-1.5">
-            <Link
-              href={`/vehiculo/${listing.id}`}
-              target="_blank"
-              className="font-semibold text-gray-900 hover:text-blue-600 hover:underline line-clamp-2"
-            >
-              {listing.display_name}
-            </Link>
+          <div className="flex min-w-0 flex-col gap-4 py-1">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 flex-col gap-2">
+                <Link
+                  href={`/vehiculo/${listing.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-heading text-xl font-semibold leading-tight text-foreground transition-colors hover:text-primary sm:text-2xl"
+                >
+                  {listing.display_name}
+                </Link>
 
-            <div className="flex flex-wrap items-center gap-1.5">
-              <Badge variant="outline" className={statusBadgeClass[listing.status]}>
-                {get_vehicle_status_label(listing.status)}
-              </Badge>
-              {listing.is_featured_active ? (
-                <Badge className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100">
-                  <Star className="mr-1 size-3 fill-amber-500 text-amber-500" aria-hidden />
-                  Destacado
-                </Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={statusBadgeClass[listing.status]}
+                  >
+                    {get_vehicle_status_label(listing.status)}
+                  </Badge>
+                  {listing.is_featured_active ? (
+                    <Badge variant="secondary">
+                      <Star
+                        data-icon="inline-start"
+                        className="fill-current text-amber-500"
+                        aria-hidden
+                      />
+                      Destacado
+                    </Badge>
+                  ) : null}
+                </div>
+              </div>
+
+              <MyListingActionsMenu
+                listing={listing}
+                onDuplicate={onDuplicate}
+                onSchedule={onSchedule}
+                onRemove={onRemove}
+                onToggleStatus={onToggleStatus}
+                canUseAdvancedEditor={canUseAdvancedEditor}
+                disabled={isMutating}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <p className="text-2xl font-bold tracking-tight text-foreground">
+                {formatPrice(listing.price)}
+              </p>
+              {specs ? (
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {specs}
+                </p>
+              ) : null}
+              <p className="text-sm text-muted-foreground">
+                Publicado el {publishedDate} · {publishedAgo}
+              </p>
+              {listing.scheduled_publish_at ? (
+                <p className="text-sm font-medium text-primary">
+                  Programado para el{" "}
+                  {new Date(listing.scheduled_publish_at).toLocaleString("es-ES")}
+                </p>
               ) : null}
             </div>
 
-            {specs ? <p className="text-xs text-gray-500">{specs}</p> : null}
-
-            <p className="text-xs text-gray-400">
-              Creado:{" "}
-              {new Date(listing.created_at).toLocaleDateString("es-ES", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
-            </p>
-
             {listing.is_featured_active && listing.featured_expires_at ? (
-              <p className="text-xs text-amber-700">
+              <p className="text-xs font-medium text-amber-700">
                 Destacado hasta{" "}
                 {new Date(listing.featured_expires_at).toLocaleDateString("es-ES", {
                   day: "numeric",
@@ -191,74 +246,79 @@ export const MyListingTableRow = ({
                 })}
               </p>
             ) : null}
+
+            <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
+              <Button
+                nativeButton={false}
+                render={
+                  <Link
+                    href={`/vehiculo/${listing.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+              >
+                <Eye data-icon="inline-start" aria-hidden />
+                Ver anuncio
+              </Button>
+              <Button
+                variant="outline"
+                nativeButton={false}
+                render={<Link href={`/editar-vehiculo/${listing.id}`} />}
+              >
+                <Pencil data-icon="inline-start" aria-hidden />
+                Editar
+              </Button>
+              <RenewListingButton
+                listing={listing}
+                onRenew={onRenew}
+                disabled={isMutating}
+              />
+              <FeatureListingButton
+                listing={listing}
+                onFeature={onFeature}
+                disabled={isMutating}
+                priceLabel={featurePriceLabel}
+              />
+            </div>
           </div>
         </div>
-      </td>
+      </CardContent>
 
-      <td className="p-4 align-top hidden lg:table-cell">
-        <div className="flex items-start justify-center gap-3">
-          <PerformanceCell label="Visitas" trend={listing.stats.views} />
-          <PerformanceCell label="Contactos" trend={listing.stats.leads} />
-          <PerformanceCell label="Teléfono" trend={listing.stats.phone_clicks} />
+      <Separator />
+
+      <CardFooter className="flex-col items-stretch gap-4 px-4 py-4 sm:px-5">
+        <h3 className="font-heading text-base font-semibold text-foreground">
+          Rendimiento
+        </h3>
+        <div className="grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-lg border border-border sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
+          <PerformanceCell
+            label="Visitas"
+            trend={listing.stats.views}
+            icon={Eye}
+          />
+          <PerformanceCell
+            label="Contactos"
+            trend={listing.stats.leads}
+            icon={MessageCircle}
+          />
+          <PerformanceCell
+            label="Teléfono"
+            trend={listing.stats.phone_clicks}
+            icon={Phone}
+          />
           <PerformanceCell
             label="WhatsApp"
             trend={listing.stats.whatsapp_clicks}
+            icon={MessageCircle}
           />
-          <PerformanceCell label="Favoritos" trend={listing.stats.favorites} />
-        </div>
-      </td>
-
-      <td className="p-4 align-top">
-        <p className="font-semibold text-gray-900 whitespace-nowrap">
-          {formatPrice(listing.price)}
-        </p>
-      </td>
-
-      <td className="p-4 align-top">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span
-              className={`size-2 rounded-full shrink-0 ${statusDotClass[listing.status]}`}
-              aria-hidden
-            />
-            <span className="text-sm text-gray-700">
-              {get_vehicle_status_label(listing.status)}
-            </span>
-          </div>
-          <p className="text-xs text-gray-500">Publicado {publishedAgo}</p>
-          {listing.scheduled_publish_at ? (
-            <p className="text-xs text-blue-600">
-              Programado:{" "}
-              {new Date(listing.scheduled_publish_at).toLocaleString("es-ES")}
-            </p>
-          ) : null}
-        </div>
-      </td>
-
-      <td className="p-4 align-top">
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <RenewListingButton
-            listing={listing}
-            onRenew={onRenew}
-            disabled={isMutating}
-          />
-          <FeatureListingButton
-            listing={listing}
-            onFeature={onFeature}
-            disabled={isMutating}
-            priceLabel={featurePriceLabel}
-          />
-          <MyListingActionsMenu
-            listing={listing}
-            onDuplicate={onDuplicate}
-            onSchedule={onSchedule}
-            onRemove={onRemove}
-            onToggleStatus={onToggleStatus}
-            canUseAdvancedEditor={canUseAdvancedEditor}
-            disabled={isMutating}
+          <PerformanceCell
+            label="Favoritos"
+            trend={listing.stats.favorites}
+            icon={Heart}
           />
         </div>
-      </td>
-    </tr>
+      </CardFooter>
+    </Card>
   );
 };
