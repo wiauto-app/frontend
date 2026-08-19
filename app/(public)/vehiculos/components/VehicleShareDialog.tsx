@@ -1,10 +1,19 @@
 "use client";
 
-import { Check, Share2 } from "lucide-react";
 import { useState } from "react";
+import { Check, Copy, Link2, Share2 } from "lucide-react";
+import { FaFacebook, FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { toast } from "sonner";
 
 import { useUser } from "@/app/contexts/auth/useUser";
+import {
+  FACEBOOK_COLOR,
+  LINKEDIN_COLOR,
+  TWITTER_COLOR,
+  WHATSAPP_COLOR,
+} from "@/components/home/footer/footer.constants";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import {
   VEHICLE_SHARE_PLATFORMS,
   VEHICLE_SHARE_SOURCE,
@@ -23,18 +33,12 @@ import {
   openVehicleShareWindow,
 } from "@/lib/share/build-vehicle-share-url";
 import { vehicleShareService } from "@/services/vehicleShareService";
-import { FaWhatsapp, FaFacebook, FaLinkedin } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { FaCopy } from "react-icons/fa6";
-import { FACEBOOK_COLOR, LINKEDIN_COLOR, TWITTER_COLOR, WHATSAPP_COLOR } from "@/components/home/footer/footer.constants";
-import { cn } from "@/lib/utils";
 
 type ShareOption = {
   platform: VehicleSharePlatform;
   color: string;
   label: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 };
 
 const SHARE_OPTIONS: ShareOption[] = [
@@ -42,28 +46,24 @@ const SHARE_OPTIONS: ShareOption[] = [
     platform: VEHICLE_SHARE_PLATFORMS.WHATSAPP,
     color: WHATSAPP_COLOR,
     label: "WhatsApp",
-    description: "Envía por chat",
     icon: FaWhatsapp,
   },
   {
     platform: VEHICLE_SHARE_PLATFORMS.FACEBOOK,
     color: FACEBOOK_COLOR,
     label: "Facebook",
-    description: "Comparte en tu muro",
     icon: FaFacebook,
   },
   {
     platform: VEHICLE_SHARE_PLATFORMS.TWITTER,
     color: TWITTER_COLOR,
-    label: "X / Twitter",
-    description: "Publica un tweet",
+    label: "X",
     icon: FaXTwitter,
   },
   {
     platform: VEHICLE_SHARE_PLATFORMS.LINKEDIN,
     color: LINKEDIN_COLOR,
     label: "LinkedIn",
-    description: "Comparte en tu red",
     icon: FaLinkedin,
   },
 ];
@@ -83,6 +83,14 @@ export const VehicleShareDialog = ({
 }: VehicleShareDialogProps) => {
   const { user } = useUser();
   const [copied, setCopied] = useState(false);
+  const visibleUrl = `/vehiculo/${vehicleId}`;
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setCopied(false);
+    }
+    onOpenChange(nextOpen);
+  };
 
   const recordShare = (platform: VehicleSharePlatform) => {
     void vehicleShareService
@@ -96,111 +104,106 @@ export const VehicleShareDialog = ({
       });
   };
 
-  const handleShare = async (platform: VehicleSharePlatform) => {
-    const params = { vehicleId, vehicleTitle };
+  const handleShare = (platform: VehicleSharePlatform) => {
+    const shareUrl = buildVehicleShareActionUrl(platform, {
+      vehicleId,
+      vehicleTitle,
+    });
 
-    if (platform === VEHICLE_SHARE_PLATFORMS.COPY_LINK) {
-      const copiedOk = await copyVehicleShareUrl(params);
-      if (copiedOk) {
-        setCopied(true);
-        toast.success("Enlace copiado");
-        recordShare(platform);
-        setTimeout(() => {
-          setCopied(false);
-          onOpenChange(false);
-        }, 700);
-        return;
-      }
-      toast.error("No se pudo copiar el enlace");
-      return;
-    }
-
-    const shareUrl = buildVehicleShareActionUrl(platform, params);
     if (!shareUrl) {
-      toast.error("No se pudo abrir la opción de compartir");
+      toast.error("No se pudo abrir esta opción");
       return;
     }
 
     openVehicleShareWindow(shareUrl);
     recordShare(platform);
-    toast.success("Compartido correctamente");
-    onOpenChange(false);
+    handleOpenChange(false);
+  };
+
+  const handleCopy = async () => {
+    const copiedOk = await copyVehicleShareUrl({ vehicleId, vehicleTitle });
+
+    if (!copiedOk) {
+      toast.error("No se pudo copiar el enlace");
+      return;
+    }
+
+    setCopied(true);
+    recordShare(VEHICLE_SHARE_PLATFORMS.COPY_LINK);
+    toast.success("Enlace copiado");
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md overflow-hidden p-0">
-        {/* Header con acento de marca */}
-        <div className="relative bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-6 pt-6 pb-5">
-          <div className="mb-3 flex size-11 items-center justify-center rounded-full bg-primary/10">
-            <Share2 className="size-5 text-primary" aria-hidden />
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="gap-5 sm:max-w-xl">
+        <DialogHeader className="pr-8">
+          <div className="mb-1 flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Share2 className="size-5" aria-hidden />
           </div>
-          <DialogHeader className="space-y-1">
-            <DialogTitle className="text-lg">Compartir vehículo</DialogTitle>
-            <DialogDescription className="line-clamp-1">
+          <DialogTitle>Compartir vehículo</DialogTitle>
+          <DialogDescription>
+            Envía este anuncio a quien quieras.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex items-center gap-3 rounded-lg bg-muted/60 p-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-background text-muted-foreground ring-1 ring-border">
+            <Link2 className="size-4" aria-hidden />
+          </div>
+          <div className="min-w-0">
+            <p className="truncate font-medium text-foreground">
               {vehicleTitle}
-            </DialogDescription>
-          </DialogHeader>
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              {visibleUrl}
+            </p>
+          </div>
         </div>
 
-        {/* Grid de redes sociales */}
-        <div className="grid grid-cols-2 gap-3 px-6 pt-5">
-          {SHARE_OPTIONS.map(({ platform, label, description, color, icon: Icon }) => (
-            <button
-              key={platform}
-              type="button"
-              onClick={() => void handleShare(platform)}
-              className="group relative flex flex-col items-start gap-2.5 overflow-hidden rounded-xl border border-border/60 p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-transparent hover:shadow-md active:translate-y-0 active:shadow-sm"
-              style={{ "--brand": color } as React.CSSProperties}
-            >
-              <span
-                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-[0.08]"
-                style={{ backgroundColor: color }}
-                aria-hidden
-              />
-              <span
-                className="flex size-14 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-110"
-                style={{ backgroundColor: `${color}1a`,color: color }}
+        <div className="flex flex-col gap-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Compartir en
+          </p>
+          <div className="grid grid-cols-4 gap-2">
+            {SHARE_OPTIONS.map(({ platform, label, color, icon: Icon }) => (
+              <Button
+                key={platform}
+                type="button"
+                variant="ghost"
+                className="group/button h-auto flex-col gap-2 py-3"
+                aria-label={`Compartir en ${label}`}
+                onClick={() => handleShare(platform)}
               >
-                <Icon className="size-8" 
-                 aria-hidden />
-              </span>
-              <span className="relative">
-                <span className="block text-sm font-semibold text-foreground">
-                  {label}
+                <span
+                  className="flex size-10 items-center justify-center rounded-full transition-transform duration-200 group-hover/button:scale-105"
+                  style={{ backgroundColor: `${color}18`, color }}
+                >
+                  <Icon className="size-5" aria-hidden />
                 </span>
-                <span className="block text-xs text-muted-foreground">
-                  {description}
-                </span>
-              </span>
-            </button>
-          ))}
+                <span className="text-xs">{label}</span>
+              </Button>
+            ))}
+          </div>
         </div>
 
-        {/* Copiar enlace, destacado como acción secundaria */}
-        <div className="px-6 pb-6 pt-4">
-          <button
+        <Separator />
+
+        <div className="flex items-center gap-2 rounded-lg bg-muted/60 p-1.5 pl-3">
+          <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
+            {visibleUrl}
+          </p>
+          <Button
             type="button"
-            onClick={() => void handleShare(VEHICLE_SHARE_PLATFORMS.COPY_LINK)}
-            className={cn(
-              "flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border py-3 text-sm font-medium transition-all duration-200",
-              copied
-                ? "border-solid border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
-                : "text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-            )}
+            variant={copied ? "secondary" : "default"}
+            onClick={() => void handleCopy()}
           >
             {copied ? (
-              <>
-                <Check className="size-4" aria-hidden />
-                Enlace copiado
-              </>
+              <Check data-icon="inline-start" aria-hidden />
             ) : (
-              <>
-                <FaCopy className="size-3.5" aria-hidden />
-                Copiar enlace
-              </>
+              <Copy data-icon="inline-start" aria-hidden />
             )}
-          </button>
+            {copied ? "Copiado" : "Copiar"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
