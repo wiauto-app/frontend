@@ -1,7 +1,9 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import { ChevronLeft, ChevronRight, Loader2, Send } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/stepper";
@@ -13,6 +15,7 @@ import { QuickVehicleTypeStep } from "./QuickVehicleTypeStep";
 import { FinanceWarrantyForm } from "./financeWarrantyForm";
 
 import {
+  findQuickVehicleErrorStep,
   parseQuickVehicleStep,
   QUICK_VEHICLE_INTRO_STEPS,
   QUICK_VEHICLE_STEP_QUERY_PARAM,
@@ -34,7 +37,6 @@ export const QuickVehicleIntroWizard = ({
   isEditMode = false,
 }: QuickVehicleIntroWizardProps) => {
   const form = useFormContext<QuickVehicleSchema>();
-
   const { values, handleChange } = useFiltersManager({
     keys: [QUICK_VEHICLE_STEP_QUERY_PARAM],
   });
@@ -44,17 +46,51 @@ export const QuickVehicleIntroWizard = ({
       values[QUICK_VEHICLE_STEP_QUERY_PARAM]?.toString() ?? null,
     ) ?? 1;
 
-  const totalSteps = QUICK_VEHICLE_INTRO_STEPS.length;
+  const { isSubscribed } = useEntitlements();
+
+  const stepItems = useMemo(
+    () =>
+      QUICK_VEHICLE_INTRO_STEPS.filter(step => {
+        if (step.id === 4) {
+          return isSubscribed;
+        }
+
+        return true;
+      }),
+    [isSubscribed],
+  );
+  const totalSteps = stepItems.length;
+  const handledSubmitCountRef = useRef(0);
+  const { errors, submitCount } = form.formState;
 
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === totalSteps;
 
-  const navigateToStep = (step: number) => {
-    handleChange(
-      QUICK_VEHICLE_STEP_QUERY_PARAM,
-      String(step),
-    );
-  };
+  const navigateToStep = useCallback(
+    (step: number) => {
+      handleChange(QUICK_VEHICLE_STEP_QUERY_PARAM, String(step));
+    },
+    [handleChange],
+  );
+
+  useEffect(() => {
+    if (submitCount === 0 || submitCount <= handledSubmitCountRef.current) {
+      return;
+    }
+
+    handledSubmitCountRef.current = submitCount;
+    const errorStep = findQuickVehicleErrorStep(errors, stepItems);
+
+    if (!errorStep) {
+      return;
+    }
+
+    if (errorStep.id !== currentStep) {
+      navigateToStep(errorStep.id);
+    }
+
+    toast.error(`Revisa los campos del paso «${errorStep.name}».`);
+  }, [currentStep, errors, navigateToStep, stepItems, submitCount]);
 
   const handleStepClick = (step: number) => {
     if (step < currentStep) {
@@ -108,16 +144,6 @@ export const QuickVehicleIntroWizard = ({
     }
   };
 
-  const { isSubscribed } = useEntitlements();
-
-  const stepItems = QUICK_VEHICLE_INTRO_STEPS.filter((step) => {
-    if (step.id === 4) {
-      return isSubscribed;
-    }
-
-    return true;
-  });
-
   return (
     <div className="flex flex-col gap-4 lg:gap-6">
       {!isEditMode ? (
@@ -169,9 +195,7 @@ export const QuickVehicleIntroWizard = ({
               <Send className="size-4" />
             )}
 
-            {isEditMode
-              ? "Actualizar anuncio"
-              : "Publicar anuncio ahora"}
+            {isEditMode ? "Actualizar anuncio" : "Publicar anuncio ahora"}
           </Button>
         ) : null}
       </div>

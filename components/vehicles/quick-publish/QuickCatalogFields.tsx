@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { MakeSelector } from "@/components/dynamicSelectors/makeSelector";
 import { ModelSelector } from "@/components/dynamicSelectors/modelSelector";
 import { QuickYearSelector } from "@/components/dynamicSelectors/quickYearSelector";
 import { VersionSelector } from "@/components/dynamicSelectors/versionSelector";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
-import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
 import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
 import { BodyTypeSelector } from "@/components/dynamicSelectors/bodyTypeSelector";
 import { FuelTypeSelector } from "@/components/dynamicSelectors/fuelTypeSelector";
