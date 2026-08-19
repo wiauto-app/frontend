@@ -1,7 +1,6 @@
 import { vehicleService } from "@/services/vehicleService";
 
 import { VehiclesListingSection } from "../vehicles/listing/VehiclesListingSection";
-import { MotionSection } from "./motion";
 
 export const VehiclesSuggestions = async () => {
   const data = await vehicleService.vehicles.findAll({
@@ -11,7 +10,6 @@ export const VehiclesSuggestions = async () => {
   const vehicles = data.data ?? [];
 
   return (
-    <MotionSection>
       <VehiclesListingSection
         title={{ lead: "Vehículos", highlight: "destacados" }}
         variant="carousel"
@@ -19,6 +17,5 @@ export const VehiclesSuggestions = async () => {
         total={vehicles.total}
         pageSize={4}
       />
-    </MotionSection>
   );
 };

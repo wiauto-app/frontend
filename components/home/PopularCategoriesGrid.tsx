@@ -1,4 +1,3 @@
-import { MotionSection } from "./motion";
 import { SectionContainer } from "./SectionContainer";
 import { SectionHeading } from "./SectionHeading";
 import { categoriesService } from "./services/categoriesService";
@@ -13,11 +12,9 @@ export async function PopularCategoriesGrid() {
   }
 
   return (
-    <MotionSection>
-      <SectionContainer className=" flex flex-col ">
-        <SectionHeading lead="Categorías" highlight="populares" />
-        <PopularCategoriesSlider categories={categories} />
-      </SectionContainer>
-    </MotionSection>
+    <SectionContainer className=" flex flex-col ">
+      <SectionHeading lead="Categorías" highlight="populares" />
+      <PopularCategoriesSlider categories={categories} />
+    </SectionContainer>
   );
 }
