@@ -5,30 +5,25 @@ import { VehicleDetailGallery } from "./VehicleDetailGallery";
 import { VehicleDetailFeatures } from "./VehicleDetailFeatures";
 import { VehicleDetailLocationSection } from "./VehicleDetailLocationSection";
 import { VehicleDetailMobileContactBar } from "./VehicleDetailMobileContactBar";
-import { VehicleDetailReviewsSection } from "./VehicleDetailReviewsSection";
 import { VehicleDetailSaveSearchSection } from "./VehicleDetailSaveSearchSection";
 import { VehicleDetailDescription } from "./VehicleDetailDescription";
 import { VehicleDetailServicesSection } from "./VehicleDetailServicesSection";
 import { VehicleDetailTitleSection } from "./VehicleDetailTitleSection";
 import { VehicleDetailTopBar } from "./VehicleDetailTopBar";
-import { VehicleDetailReviewForm } from "./VehicleDetailReviewForm";
 import { VehicleDetailAdvertiserSection } from "./VehicleDetailAdvertiserSection";
 import { VehicleSimilarVehiclesSection } from "./VehicleSimilarVehiclesSection";
 import { VehicleDetailViewTracker } from "./VehicleDetailViewTracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
-import type { VehicleDetailReview } from "../types/vehicle-detail.types";
 
 interface VehicleDetailBodyProps {
   vehicle: Vehicle;
-  reviews: VehicleDetailReview[];
   breadcrumbItems: BreadcrumbItem[];
 }
 
 export const VehicleDetailBody = ({
   vehicle,
-  reviews,
   breadcrumbItems,
 }: VehicleDetailBodyProps) => {
   const displayName = getVehicleDisplayName(vehicle);
@@ -69,8 +64,6 @@ export const VehicleDetailBody = ({
             /> */}
             <VehicleDetailFeatures features={vehicle.features} />
             <VehicleDetailAdvertiserSection vehicle={vehicle} />
-            <VehicleDetailReviewForm vehicle_id={vehicle.id} />
-            <VehicleDetailReviewsSection reviews={reviews} />
             <VehicleDetailLocationSection vehicle={vehicle} />
           </div>
 

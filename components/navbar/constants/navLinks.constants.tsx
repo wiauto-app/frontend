@@ -50,10 +50,6 @@ export const NAV_LINKS: NavLink[] = [
         Icon: TrendingUp,
         items: [
           {
-            href: "/vehiculos?orden=rating-desc",
-            label: "Más valorados",
-          },
-          {
             label: "Recién publicados",
             href: "/vehiculos",
           },

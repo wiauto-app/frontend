@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, ShieldCheck, Car, Heart } from "lucide-react";
+import { MapPin, ShieldCheck, Car, Heart, MessageSquarePlus } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -67,9 +67,10 @@ function DealerImage({ dealer }: DealerImageProps) {
 
 type ConcesionariaCardProps = {
   dealer: DealershipListItem;
+  onReview: (dealer: DealershipListItem) => void;
 };
 
-export function ConcesionariaCard({ dealer }: ConcesionariaCardProps) {
+export function ConcesionariaCard({ dealer, onReview }: ConcesionariaCardProps) {
   const dealerHref = `/concesionaria/${dealer.slug}`;
 
   return (
@@ -157,6 +158,18 @@ export function ConcesionariaCard({ dealer }: ConcesionariaCardProps) {
             </button>
 
             <div className="order-1 flex gap-2 sm:order-2 sm:flex-col sm:gap-2">
+              <button
+                type="button"
+                onClick={() => onReview(dealer)}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "min-w-[130px] rounded-lg border-slate-200 text-xs font-semibold text-slate-700 hover:border-[#0061F2]/40 hover:bg-[#EBF2FF] hover:text-[#0061F2]",
+                )}
+                id={`dealer-review-btn-${dealer.id}`}
+              >
+                <MessageSquarePlus className="size-3.5" />
+                Dejar reseña
+              </button>
               <Link
                 href={`/vehiculos?dealer=${dealer.slug}`}
                 className={cn(

@@ -1,6 +1,4 @@
-import { getImageUrl } from "@/app/(public)/vehiculos/utils";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
+import { UserAvatar } from "../navbar/components/userAvatar";
 
 type ProfileProps = {
   name: string;
@@ -17,20 +15,7 @@ export const Profile = ({
 }: ProfileProps) => {
   return (
     <div className="flex items-center gap-2">
-      <div
-        className={cn(
-          "relative rounded-full overflow-hidden",
-          size === "sm" ? "size-10" : size === "md" ? "size-12" : "size-14",
-        )}
-      >
-        <Image
-          src={getImageUrl(avatar_url ?? "")}
-          unoptimized
-          alt={name}
-          fill
-          className="object-cover"
-        />
-      </div>
+      <UserAvatar imageUrl={avatar_url} name={name} />
       <div className="flex flex-col ">
         <h3 className="font-bold text-foreground text-sm">{name}</h3>
         <p className="text-muted-foreground text-xs">{description}</p>

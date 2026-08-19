@@ -15,6 +15,9 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { accountService } from "@/services/accountService";
+import { HiMail, HiOutlineMail } from "react-icons/hi";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple } from "react-icons/fa";
 import type {
   AccountSettings,
   AuthProvider,
@@ -23,16 +26,32 @@ import {
   updateEmailSchema,
   type UpdateEmailFormValues,
 } from "../schemas/update-email.schema";
+import { Check } from "lucide-react";
 
 interface EmailSettingsSectionProps {
   account: AccountSettings;
   onUpdated: () => Promise<void>;
 }
 
-const providerLabel: Record<AuthProvider, string> = {
-  local: "Email y contraseña",
-  google: "Google",
-  apple: "Apple",
+const providerLabel: Record<
+  AuthProvider,
+  {
+    label: string;
+    icon: React.ReactNode;
+  }
+> = {
+  local: {
+    label: "Email y contraseña",
+    icon: <HiMail className="size-5" />,
+  },
+  google: {
+    label: "Google",
+    icon: <FcGoogle />,
+  },
+  apple: {
+    label: "Apple",
+    icon: <FaApple />,
+  },
 };
 
 export const EmailSettingsSection = ({
@@ -90,8 +109,9 @@ export const EmailSettingsSection = ({
         {account.providers.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">
             {account.providers.map((provider) => (
-              <Badge key={provider} variant="secondary">
-                {providerLabel[provider] ?? provider}
+              <Badge key={provider} variant="secondary" className="h-auto">
+                {providerLabel[provider].icon}
+                {providerLabel[provider].label}
               </Badge>
             ))}
             {!hasPassword && (
@@ -101,22 +121,16 @@ export const EmailSettingsSection = ({
             )}
           </div>
         )}
-
-        {linkedProviders.length > 0 && hasPassword && (
-          <p className="text-xs text-muted-foreground">
-            También puedes iniciar sesión con{" "}
-            {linkedProviders
-              .map((provider) => providerLabel[provider] ?? provider)
-              .join(" o ")}
-            .
-          </p>
-        )}
-
         {hasPassword && (
           <>
             <div className="flex flex-wrap items-center gap-2">
               {account.is_email_verified ? (
-                <Badge variant="secondary">Correo verificado</Badge>
+                <Badge
+                  variant="secondary"
+                  className="bg-green-500/10 border border-green-500 text-green-500"
+                >
+                  Correo verificado <Check />
+                </Badge>
               ) : (
                 <Badge variant="outline">Verificación pendiente</Badge>
               )}

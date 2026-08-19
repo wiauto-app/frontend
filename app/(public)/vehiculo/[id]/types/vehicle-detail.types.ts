@@ -1,10 +1,3 @@
-export type VehicleDetailReview = {
-  id: string;
-  author: string;
-  rating: number;
-  comment: string;
-};
-
 export type VehicleDetailSellerComments = {
   description: string;
   equipment_title: string;
@@ -39,4 +32,3 @@ export type VehicleDetailVerifiedSeller = {
   response_time: string;
   whatsapp_verified: boolean;
 };
-

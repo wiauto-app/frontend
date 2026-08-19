@@ -7,9 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/navbar/components/userAvatar";
-import { getUserSidebarLinks } from "../constants/user.constants";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { useUserSidebarItems } from "@/hooks/useUserSidebarItems";
 
 const USER_AREA_BASE_PATH = "/usuario";
 const PERFIL_PATH = `${USER_AREA_BASE_PATH}/perfil`;
@@ -54,29 +54,27 @@ export const UserSidebarFallback = () => (
   </div>
 );
 
-export function UserSidebar({
-  onSelect,
-}: {
-  onSelect?: () => void;
-}) {
+export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
 
   const { user, logout } = useUser();
-  const { has } = useEntitlements();
+  const { isSubscribed } = useEntitlements();
+  const sidebarItems = useUserSidebarItems();
 
-  const sidebarLinks = getUserSidebarLinks({
-    dealershipMembership: user?.dealership_membership,
-    hasDismissedVehicles: has("dismissed_vehicles"),
-  });
   return (
     <div className="w-full  flex flex-col gap-4">
       {/* User Info Card */}
       <Card size="sm">
         <CardContent className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <UserAvatar className="size-9" />
+            <UserAvatar
+              className="size-9"
+              imageUrl={user?.avatar_url}
+              name={user?.name}
+              highlighted={isSubscribed}
+            />
             <div>
               <h3 className="font-semibold text-gray-900">
                 {user?.name || "Usuario"}
@@ -97,7 +95,7 @@ export function UserSidebar({
       <Card size="sm">
         <CardContent>
           <nav className="flex flex-col space-y-1">
-            {sidebarLinks.map((link) => {
+            {sidebarItems.map((link) => {
               const isActive = isSidebarLinkActive(link.href, pathname, tab);
               const Icon = link.icon;
               return (

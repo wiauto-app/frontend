@@ -24,7 +24,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { PhoneInput, DEFAULT_PHONE_CODE } from "@/components/forms/phoneInput";
 import { ImageInput } from "@/components/ui/imageInput";
 import { CreateTicketDialog } from "@/components/support/CreateTicketDialog";
-import { getImageUrl } from "@/lib/utils";
+import { cn, getImageUrl } from "@/lib/utils";
 import {
   mapProfileFormToPayload,
   updateProfileFormSchema,
@@ -36,6 +36,7 @@ import { PasswordSettingsSection } from "./PasswordSettingsSection";
 import { TwoFactorSettingsSection } from "./TwoFactorSettingsSection";
 import { DealershipProfileTabContent } from "./DealershipProfileTabContent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 const EMPTY_PROFILE_FORM: UpdateProfileFormValues = {
   name: "",
@@ -47,6 +48,7 @@ const EMPTY_PROFILE_FORM: UpdateProfileFormValues = {
 
 export const PerfilContent = () => {
   const { user, isLoading, refreshUser } = useUser();
+  const { isSubscribed } = useEntitlements();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -154,9 +156,18 @@ export const PerfilContent = () => {
   return (
     <div className="space-y-6 pb-20">
       <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList
+          className={cn(
+            "grid w-full ",
+            isSubscribed ? "grid-cols-2" : "grid-cols-1",
+          )}
+        >
           <TabsTrigger value="profile">Mi perfil</TabsTrigger>
-          <TabsTrigger value="dealership">Perfil de concesionaria</TabsTrigger>
+          {isSubscribed && (
+            <TabsTrigger value="dealership">
+              Perfil de concesionaria
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
@@ -347,12 +358,13 @@ export const PerfilContent = () => {
                 <h3 className="text-sm font-bold text-gray-900">
                   Envía un ticket
                 </h3>
-                <p className="mt-1 text-xs text-gray-500">
-                  ayuda@wiauto.es
-                </p>
+                <p className="mt-1 text-xs text-gray-500">ayuda@wiauto.es</p>
               </button>
 
-              <a href="mailto:ayuda@wiauto.es" className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
+              <a
+                href="mailto:ayuda@wiauto.es"
+                className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50"
+              >
                 <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
                   <Mail className="size-5" />
                 </div>
@@ -362,7 +374,11 @@ export const PerfilContent = () => {
                 <p className="mt-1 text-xs text-gray-500">ayuda@wiauto.es</p>
               </a>
 
-              <a target="_blank" href="/preguntas-frecuentes" className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50">
+              <a
+                target="_blank"
+                href="/preguntas-frecuentes"
+                className="flex cursor-pointer flex-col items-start rounded-xl border border-blue-100 bg-blue-50/30 p-5 transition-colors hover:bg-blue-50"
+              >
                 <div className="mb-3 rounded-lg bg-blue-100 p-2 text-blue-600">
                   <BookOpen className="size-5" />
                 </div>
@@ -377,9 +393,11 @@ export const PerfilContent = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="dealership">
-          <DealershipProfileTabContent />
-        </TabsContent>
+        {isSubscribed && (
+          <TabsContent value="dealership">
+            <DealershipProfileTabContent />
+          </TabsContent>
+        )}
       </Tabs>
 
       <CreateTicketDialog

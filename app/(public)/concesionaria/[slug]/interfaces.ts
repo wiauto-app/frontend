@@ -5,30 +5,11 @@ export interface DealerProfileContact {
   schedule?: string;
 }
 
-export interface DealerProfileStats {
-  score: number;
-  completedSales?: number;
-  responseTime?: string;
-}
-
 export interface DealerQuickStats {
   publishedVehicles: number;
-  positiveReviewsPercent?: number;
+  reviewCount: number;
   transactions?: number;
-  yearsOnPlatform?: number;
-}
-
-export interface DealerProfileReview {
-  id: string;
-  author: string;
-  avatar?: string;
-  rating: number;
-  comment: string;
-}
-
-export interface DealerRatingDistribution {
-  stars: number;
-  count: number;
+  yearsOnPlatform?: { years: number; months: number } | undefined;
 }
 
 export interface DealerProfile {
@@ -47,8 +28,5 @@ export interface DealerProfile {
   about: string;
   highlights?: string[];
   contact: DealerProfileContact;
-  stats: DealerProfileStats;
   quickStats: DealerQuickStats;
-  reviews: DealerProfileReview[];
-  ratingDistribution: DealerRatingDistribution[];
 }

@@ -1,4 +1,4 @@
-import { apiGet } from "@/lib/api";
+import { apiGet, apiPost, type ApiResponse } from "@/lib/api";
 import type { PaginatedResult, PaginationParams } from "@/types/general.types";
 import { V1_DEALERSHIP_REVIEWS } from "../dealerships/route.constants";
 
@@ -12,28 +12,60 @@ export type DealershipReview = {
   dealership_id: string;
 };
 
+export type DealershipReviewListItem = DealershipReview & {
+  author: string;
+  avatar_url: string | null;
+};
+
 export type FindDealershipReviewsParams = PaginationParams & {
   dealership_id: string;
 };
 
-export const dealershipReviewService = {
-  findAll: async (
-    params: FindDealershipReviewsParams,
-  ): Promise<PaginatedResult<DealershipReview>> => {
-    const search = new URLSearchParams();
-    search.set("dealership_id", params.dealership_id);
-    search.set("page", String(params.page ?? 1));
-    search.set("limit", String(params.limit ?? 5));
-    if (params.order_by) {
-      search.set("order_by", params.order_by);
-    }
-    if (params.order_direction) {
-      search.set("order_direction", params.order_direction);
-    }
+export type CreateDealershipReviewInput = {
+  dealership_id: string;
+  rating: number;
+  comment: string;
+};
 
-    const response = await apiGet<PaginatedResult<DealershipReview>>(
-      `${V1_DEALERSHIP_REVIEWS}?${search.toString()}`,
-    );
-    return response.data;
+export type DealershipReviewsPage = PaginatedResult<DealershipReviewListItem> & {
+  average_rating: number | null;
+};
+
+type CreateDealershipReviewResponse = {
+  review: DealershipReview;
+};
+
+export const dealershipReviewService = {
+  create: (
+    input: CreateDealershipReviewInput,
+  ): Promise<ApiResponse<CreateDealershipReviewResponse>> =>
+    apiPost<CreateDealershipReviewResponse>(V1_DEALERSHIP_REVIEWS, input),
+
+  getByDealershipId: async (
+    params: FindDealershipReviewsParams,
+  ): Promise<DealershipReviewsPage> => {
+    const page = params.page ?? 1;
+    const limit = params.limit ?? 5;
+
+    try {
+      const response = await apiGet<DealershipReviewsPage>(
+        V1_DEALERSHIP_REVIEWS,
+        {
+          dealership_id: params.dealership_id,
+          page,
+          limit,
+          order_by: params.order_by,
+          order_direction: params.order_direction,
+        },
+      );
+
+      if (!response.ok || !response.data) {
+        return { data: [], total: 0, page, limit, average_rating: null };
+      }
+
+      return response.data;
+    } catch {
+      return { data: [], total: 0, page, limit, average_rating: null };
+    }
   },
 };

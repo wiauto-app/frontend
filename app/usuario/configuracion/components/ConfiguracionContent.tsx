@@ -90,52 +90,7 @@ export const ConfiguracionContent = () => {
 
   return (
     <div className="space-y-6 pb-20">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
-        <h2 className="text-lg font-bold text-gray-900 mb-6">Idioma y región</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div>
-            <Label className="mb-1.5 text-gray-500">Idioma</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                <SelectItem value="es">Español</SelectItem>
-                <SelectItem value="en">English</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label className="mb-1.5 text-gray-500">Moneda</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                <SelectItem value="usd">USD ($)</SelectItem>
-                <SelectItem value="eur">EUR (€)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label className="mb-1.5 text-gray-500">Zona Horaria</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona" className="w-full" />
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                <SelectItem value="gmt-5">GMT-5 (Lima, Bogotá)</SelectItem>
-                <SelectItem value="gmt+1">GMT+1 (Madrid, París)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <Button className="w-full">Actualizar</Button>
-      </div>
+      
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
         <h2 className="text-lg font-bold text-gray-900 mb-6">Visibilidad</h2>

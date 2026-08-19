@@ -26,7 +26,7 @@ export default async function VehicleDetailPage({
   params,
 }: VehicleDetailPageProps) {
   const { id } = await params;
-  const { data, reviews } = await getVehicleData(id);
+  const { data } = await getVehicleData(id);
   if (!data.ok || !data.data) {
     notFound();
   }
@@ -39,7 +39,6 @@ export default async function VehicleDetailPage({
       <JsonLdScript data={jsonLdGraph} />
       <VehicleDetailBody
         vehicle={vehicle}
-        reviews={reviews}
         breadcrumbItems={breadcrumbItems}
       />
     </div>

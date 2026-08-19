@@ -3,7 +3,6 @@ export const BRAND_BLUE_LIGHT = "#EBF2FF";
 
 export const SORT_OPTIONS = [
   { value: "created_at-desc", label: "Más recientes" },
-  { value: "rating-desc", label: "Más valorados" },
   { value: "price-asc", label: "Más baratos" },
   { value: "price-desc", label: "Más caros" },
   { value: "mileage-asc", label: "Menor kilometraje" },

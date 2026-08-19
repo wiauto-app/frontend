@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BRAND_BLUE } from "@/app/(public)/concesionarias/constants";
 import type { DealerProfile } from "../interfaces";
 import { WiautoImage } from "@/components/ui/wiautoImage";
+import { Card, CardContent } from "@/components/ui/card";
 
 const BRAND_BLUE_TEXT = BRAND_BLUE;
 
@@ -25,8 +26,8 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
 
   return (
     <div className="relative z-20 -mt-20 space-y-4 sm:-mt-24">
-      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-        <div className="relative flex flex-col items-center px-5 pb-5 text-center">
+      <Card size="sm">
+        <CardContent>
           <div className="absolute inset-x-0 top-0 h-28 overflow-hidden rounded-t-2xl">
             <div
               className="absolute inset-x-[-10%] top-[-50%] h-[150%] w-[120%] rounded-[50%]"
@@ -113,23 +114,23 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
               ></Button>
             ) : null}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {dealer.about ? (
-        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-          <div className="p-5 sm:p-6">
+        <Card>
+          <CardContent >
             <SectionTitle>Sobre nosotros</SectionTitle>
             <p className="text-sm leading-relaxed text-slate-600">
               {dealer.about}
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       ) : null}
 
       {has_contact ? (
-        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-          <div className="p-5 sm:p-6">
+        <Card >
+          <CardContent >
             <SectionTitle>Contacto</SectionTitle>
             <ul className="space-y-3.5 text-sm text-slate-600">
               {dealer.contact.phone ? (
@@ -159,8 +160,8 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
                 </li>
               ) : null}
             </ul>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       ) : null}
 
       {dealer.isVerified ? (
@@ -186,58 +187,6 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
         </div>
       ) : null}
 
-      {dealer.reviewCount > 0 ? (
-        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-          <div className="p-5 sm:p-6">
-            <SectionTitle>Valoración</SectionTitle>
-
-            <div className="mb-4 mt-2 text-center">
-              <div className="flex items-center justify-center gap-1">
-                <Star className="size-3.5 fill-[#0061F2] text-[#0061F2]" />
-                <p className="text-base font-bold text-slate-900">
-                  {dealer.stats.score.toFixed(1)}
-                </p>
-              </div>
-              <p className="mt-1 text-[10px] font-medium text-slate-500">
-                Puntuación media
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              {[5, 4, 3, 2, 1].map((stars) => {
-                const item = dealer.ratingDistribution?.find(
-                  (entry) => entry.stars === stars,
-                );
-                const count = item?.count ?? 0;
-                const max_count = Math.max(
-                  ...(dealer.ratingDistribution?.map(
-                    (entry) => entry.count,
-                  ) ?? [1]),
-                  1,
-                );
-                const width = `${(count / max_count) * 100}%`;
-                return (
-                  <div
-                    key={stars}
-                    className="flex items-center gap-2 text-xs text-slate-500"
-                  >
-                    <span className="w-2.5 shrink-0 text-right font-medium">
-                      {stars}
-                    </span>
-                    <Star className="size-3 shrink-0 fill-[#0061F2] text-[#0061F2]" />
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width, backgroundColor: BRAND_BLUE }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

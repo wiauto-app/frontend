@@ -26,7 +26,7 @@ import { BuyAssistantBannerCard } from "./buyAssistantBannerCard";
 interface VehiclesListingViewProps {
   vehicles: VehicleListItem[];
   total: number;
-  onDismissed: (vehicleId: string) => void;
+  onDismissed?: (vehicleId: string) => void;
   goToPage: (page: number) => void;
   resetFilters: () => void;
   pageLimit: number;
@@ -98,18 +98,19 @@ export interface VehiclesPageContentProps {
 }
 
 export const VehiclesPageContent = ({
-  vehicles: initialVehicles,
-  total: initialTotal,
+  vehicles,
+  total,
   isMapVisible = false,
   titleNode,
   activeFiltersNode,
 }: VehiclesPageContentProps) => {
-  const { resetFilters, goToPage } = useVehiclesListingFilters();
-  const { vehicles, total, handleDismissed, filters } =
-    useAuthenticatedVehiclesListing({
-      initialVehicles,
-      initialTotal,
-    });
+  const { resetFilters, goToPage,filters } = useVehiclesListingFilters();
+  // const { vehicles, total, handleDismissed, filters } =
+  //   useAuthenticatedVehiclesListing({
+  //     initialVehicles,
+  //     initialTotal,
+  //   });
+  
   const { handleChange } = useFiltersManager({
     keys: [SHOW_MAP_KEY],
   });
@@ -140,7 +141,7 @@ export const VehiclesPageContent = ({
         <VehiclesListingView
           vehicles={vehicles}
           total={total}
-          onDismissed={handleDismissed}
+          // onDismissed={handleDismissed}
           goToPage={goToPage}
           resetFilters={resetFilters}
           pageLimit={filters.limit || 12}

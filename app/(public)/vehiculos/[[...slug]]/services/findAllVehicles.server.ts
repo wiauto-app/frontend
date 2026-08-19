@@ -17,6 +17,7 @@ export interface VehiclesListingResult {
 
 export const findAllVehicles = async (
   params: FindAllVehiclesParams,
+  accessToken?:string,
 ): Promise<VehiclesListingResult> => {
   const empty: VehiclesListingResult = {
     vehicles: [],
@@ -33,6 +34,9 @@ export const findAllVehicles = async (
       next: {
         revalidate: CACHE_ONE_HOUR,
         tags: [CACHE_TAGS.VEHICLES],
+      },
+      headers:{
+        Authorization:`Bearer ${accessToken}`
       }
     });
 

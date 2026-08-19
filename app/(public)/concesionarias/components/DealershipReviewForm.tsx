@@ -1,28 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Loader2, Star } from "lucide-react";
 import { toast } from "sonner";
 
 import { useUser } from "@/app/contexts/auth/useUser";
+import { SignInDialog } from "@/components/auth/signInDialog";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { CustomSeparator } from "@/components/ui/customSeparator";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { reviewService } from "@/services/reviewService";
-import { SignInDialog } from "@/components/auth/signInDialog";
-import { VehicleDetailCard } from "./VehicleDetailCard";
+import { dealershipReviewService } from "@/services/dealerships/dealershipReviewService";
 
-type VehicleDetailReviewFormProps = {
-  vehicle_id: string;
+type DealershipReviewFormProps = {
+  dealership_id: string;
+  dealership_name?: string;
+  onCreated?: () => void;
 };
 
 const RATING_OPTIONS = [1, 2, 3, 4, 5] as const;
 
-export const VehicleDetailReviewForm = ({
-  vehicle_id,
-}: VehicleDetailReviewFormProps) => {
+export function DealershipReviewForm({
+  dealership_id,
+  dealership_name,
+  onCreated,
+}: DealershipReviewFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, isLoading } = useUser();
@@ -30,24 +35,20 @@ export const VehicleDetailReviewForm = ({
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleRatingSelect = (value: number) => {
-    setRating(value);
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (rating === null || !comment.trim()) {
+    const normalized_comment = comment.trim();
+    if (rating === null || normalized_comment.length === 0) {
       return;
     }
 
     setIsSubmitting(true);
-
     try {
-      const response = await reviewService.create({
-        vehicle_id,
+      const response = await dealershipReviewService.create({
+        dealership_id,
         rating,
-        comment: comment.trim(),
+        comment: normalized_comment,
       });
 
       if (!response.ok) {
@@ -58,6 +59,7 @@ export const VehicleDetailReviewForm = ({
       toast.success("Reseña enviada correctamente");
       setRating(null);
       setComment("");
+      onCreated?.();
       router.refresh();
     } catch {
       toast.error("No se pudo enviar la reseña");
@@ -68,7 +70,7 @@ export const VehicleDetailReviewForm = ({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-4 text-sm text-gray-500">
+      <div className="flex items-center justify-center py-8 text-sm text-slate-500">
         <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
         Cargando...
       </div>
@@ -77,13 +79,26 @@ export const VehicleDetailReviewForm = ({
 
   const isSubmitDisabled =
     isSubmitting || rating === null || comment.trim().length === 0;
+  const dealership_label = dealership_name
+    ? ` sobre ${dealership_name}`
+    : " sobre esta concesionaria";
 
   return (
-    <VehicleDetailCard title="Deja tu reseña">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {!isAuthenticated && (
-          <div className="space-y-3 text-sm text-gray-600">
-            <p>Inicia sesión para dejar una reseña sobre este vehículo.</p>
+    <Card size="sm" className="border-slate-200 shadow-none">
+      <CardContent className="space-y-5">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-900">
+            Deja tu reseña
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Comparte tu experiencia{dealership_label}.
+          </p>
+        </div>
+        <CustomSeparator />
+
+        {!isAuthenticated ? (
+          <div className="space-y-3 text-sm text-slate-600">
+            <p>Inicia sesión para publicar una reseña.</p>
             <SignInDialog
               returnTo={pathname}
               onSuccess={() => router.refresh()}
@@ -94,11 +109,12 @@ export const VehicleDetailReviewForm = ({
               }
             />
           </div>
-        )}
-        {isAuthenticated && (
-          <>
-            <div className="space-y-2">
-              <Label>Valoración</Label>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <fieldset disabled={isSubmitting} className="space-y-2">
+              <legend className="text-sm font-medium text-slate-900">
+                Valoración
+              </legend>
               <div className="flex items-center gap-1">
                 {RATING_OPTIONS.map((value) => (
                   <button
@@ -106,42 +122,39 @@ export const VehicleDetailReviewForm = ({
                     type="button"
                     aria-label={`Valorar con ${value} ${value === 1 ? "estrella" : "estrellas"}`}
                     aria-pressed={rating === value}
-                    disabled={isSubmitting}
-                    onClick={() => handleRatingSelect(value)}
-                    className="rounded p-1 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={() => setRating(value)}
+                    className="rounded-md p-1 transition-colors hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Star
                       className={cn(
-                        "size-6",
+                        "size-7 transition-colors",
                         rating !== null && value <= rating
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300",
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-slate-300",
                       )}
                       aria-hidden
                     />
                   </button>
                 ))}
               </div>
-            </div>
+            </fieldset>
 
             <div className="space-y-2">
-              <Label htmlFor="review-comment">Comentario</Label>
+              <Label htmlFor={`dealership-review-comment-${dealership_id}`}>
+                Comentario
+              </Label>
               <Textarea
-                id="review-comment"
+                id={`dealership-review-comment-${dealership_id}`}
                 value={comment}
                 onChange={(event) => setComment(event.target.value)}
-                placeholder="Cuéntanos tu experiencia con este vehículo"
-                rows={3}
+                placeholder="Cuéntanos cómo fue tu experiencia"
+                rows={4}
                 disabled={isSubmitting}
                 required
               />
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isSubmitDisabled}
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitDisabled}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="animate-spin" aria-hidden />
@@ -151,9 +164,9 @@ export const VehicleDetailReviewForm = ({
                 "Enviar reseña"
               )}
             </Button>
-          </>
+          </form>
         )}
-      </form>
-    </VehicleDetailCard>
+      </CardContent>
+    </Card>
   );
-};
+}

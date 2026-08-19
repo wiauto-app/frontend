@@ -13,7 +13,7 @@ export default async function VehicleDetailModalPage({
   params,
 }: VehicleDetailModalPageProps) {
   const { id } = await params;
-  const { data, reviews } = await getVehicleData(id);
+  const { data } = await getVehicleData(id);
 
   if (!data.ok || !data.data) {
     notFound();
@@ -26,7 +26,6 @@ export default async function VehicleDetailModalPage({
     <VehicleDetailModalShell>
       <VehicleDetailBody
         vehicle={vehicle}
-        reviews={reviews}
         breadcrumbItems={breadcrumbItems}
       />
     </VehicleDetailModalShell>

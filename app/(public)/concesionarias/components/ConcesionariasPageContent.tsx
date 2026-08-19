@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2 } from "lucide-react";
 import type { DealershipListItem } from "@/services/dealerships/types/dealership.types";
@@ -7,11 +8,19 @@ import { ConcesionariaCard } from "./ConcesionariaCard";
 import { DealersPagination } from "./DealersPagination";
 import { ConcesionariasToolbar } from "./ConcesionariasToolbar";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
   DEALER_FILTER_KEYS,
   DEALER_FILTER_KEYS_LIST,
 } from "../constants/filterKeys.constants";
+import { DealershipReviewForm } from "./DealershipReviewForm";
 
 type ConcesionariasPageContentProps = {
   dealers: DealershipListItem[];
@@ -27,6 +36,8 @@ export function ConcesionariasPageContent({
   limit,
 }: ConcesionariasPageContentProps) {
   const router = useRouter();
+  const [reviewDealer, setReviewDealer] =
+    useState<DealershipListItem | null>(null);
   const { applyUrlUpdates, handleClearAll } = useFiltersManager({
     keys: DEALER_FILTER_KEYS_LIST,
   });
@@ -70,7 +81,11 @@ export function ConcesionariasPageContent({
         <>
           <div className="flex flex-col gap-4">
             {dealers.map((dealer) => (
-              <ConcesionariaCard key={dealer.id} dealer={dealer} />
+              <ConcesionariaCard
+                key={dealer.id}
+                dealer={dealer}
+                onReview={setReviewDealer}
+              />
             ))}
           </div>
 
@@ -79,6 +94,31 @@ export function ConcesionariasPageContent({
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
+
+          <Dialog
+            open={reviewDealer !== null}
+            onOpenChange={(open) => {
+              if (!open) {
+                setReviewDealer(null);
+              }
+            }}
+          >
+            <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto p-3 sm:max-w-lg">
+              <DialogHeader className="sr-only">
+                <DialogTitle>Dejar reseña</DialogTitle>
+                <DialogDescription>
+                  Valora tu experiencia con la concesionaria seleccionada.
+                </DialogDescription>
+              </DialogHeader>
+              {reviewDealer && (
+                <DealershipReviewForm
+                  dealership_id={reviewDealer.id}
+                  dealership_name={reviewDealer.name}
+                  onCreated={() => setReviewDealer(null)}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </div>

@@ -17,12 +17,12 @@ export const VehicleDetailFeatures = ({
 }: VehicleDetailGeneralSpecsSectionProps) => {
   const [expanded, setExpanded] = useState(false);
 
-  const visibleFeatures = expanded
-    ? features
-    : features.slice(0, MAX_VISIBLE);
-
+  const visibleFeatures = expanded ? features : features.slice(0, MAX_VISIBLE);
   const hasMore = features.length > MAX_VISIBLE;
 
+  if (visibleFeatures.length === 0) {
+    return null;
+  }
   return (
     <VehicleDetailCard title="Equipamiento">
       <div className="flex flex-wrap gap-3">
@@ -41,9 +41,7 @@ export const VehicleDetailFeatures = ({
             "
           >
             <CheckCircle2 className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">
-              {feature.name}
-            </span>
+            <span className="text-sm font-medium">{feature.name}</span>
           </div>
         ))}
       </div>

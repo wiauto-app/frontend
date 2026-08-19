@@ -15,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { getUserSidebarLinks } from "@/app/usuario/constants/user.constants";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -30,6 +29,7 @@ import {
 
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
+import { useUserSidebarItems } from "@/hooks/useUserSidebarItems";
 
 function getDisplayName(name?: string, lastName?: string, email?: string) {
   const fullName = [name, lastName].filter(Boolean).join(" ").trim();
@@ -39,9 +39,10 @@ function getDisplayName(name?: string, lastName?: string, email?: string) {
 
 export function UserDropdown() {
   const { user, logout } = useUser();
-  const { has, planName } = useEntitlements();
+  const { planName, isSubscribed } = useEntitlements();
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
+  const sidebarItems = useUserSidebarItems();
   if (!user) {
     return (
       <Link
@@ -56,11 +57,6 @@ export function UserDropdown() {
 
   const displayName = getDisplayName(user.name, user.last_name, user.email);
 
-  const sidebarLinks = getUserSidebarLinks({
-    dealershipMembership: user.dealership_membership,
-    hasDismissedVehicles: has("dismissed_vehicles"),
-  });
-
   /*
    * MOBILE
    */
@@ -74,7 +70,11 @@ export function UserDropdown() {
               className="flex items-center rounded-lg p-1 transition-colors hover:bg-slate-50"
               aria-label="Abrir menú de usuario"
             >
-              <UserAvatar />
+              <UserAvatar
+                imageUrl={user?.avatar_url}
+                name={user?.name}
+                highlighted={isSubscribed}
+              />
             </button>
           }
         />
@@ -86,7 +86,11 @@ export function UserDropdown() {
           {/* Header */}
           <SheetHeader className="px-5 py-3 text-left">
             <div className="flex items-center gap-3">
-              <UserAvatar />
+              <UserAvatar
+                imageUrl={user?.avatar_url}
+                name={user?.name}
+                highlighted={isSubscribed}
+              />
 
               <div className="min-w-0 flex-1">
                 <SheetTitle className="truncate text-base">
@@ -139,7 +143,7 @@ export function UserDropdown() {
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-2">
             <div className="space-y-1">
-              {sidebarLinks.map((item) => {
+              {sidebarItems.map((item) => {
                 const Icon = item.icon;
 
                 return (
@@ -187,7 +191,11 @@ export function UserDropdown() {
             type="button"
             className="flex items-center gap-3 rounded-lg py-1 pr-1 transition-colors hover:bg-slate-50"
           >
-            <UserAvatar />
+            <UserAvatar
+              imageUrl={user?.avatar_url}
+              name={user?.name}
+              highlighted={isSubscribed}
+            />
 
             <div className="flex flex-col items-start">
               <p className="hidden max-w-[160px] truncate text-sm font-bold text-slate-900 sm:inline">
@@ -227,7 +235,7 @@ export function UserDropdown() {
 
         <DropdownMenuSeparator />
 
-        {sidebarLinks.map((item) => {
+        {sidebarItems.map((item) => {
           const Icon = item.icon;
 
           return (

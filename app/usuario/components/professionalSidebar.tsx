@@ -11,7 +11,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useUser } from "@/app/contexts/auth/useUser";
-import { getUserSidebarLinks } from "../constants/user.constants";
 import { ProfessionalSidebarItem } from "./professionalSidebarItem";
 import { BrandLogo } from "@/components/ui/brandLogo";
 import { Separator } from "@/components/ui/separator";
@@ -20,6 +19,7 @@ import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { useUserSidebarItems } from "@/hooks/useUserSidebarItems";
 
 const SIDEBAR_SKELETON_ITEMS = 8;
 
@@ -78,7 +78,7 @@ export function ProfessionalSidebar({
 
   const isOnUsuarioPath = pathname.includes("usuario");
   const isSidebarLoading = isLoading;
-
+  const sidebarItems = useUserSidebarItems()
   if (!isOnUsuarioPath) {
     return null;
   }
@@ -91,10 +91,7 @@ export function ProfessionalSidebar({
     return null;
   }
 
-  const sidebarLinks = getUserSidebarLinks({
-    dealershipMembership: user?.dealership_membership,
-    hasDismissedVehicles: has("dismissed_vehicles"),
-  });
+
 
   return (
     <Sidebar
@@ -110,7 +107,7 @@ export function ProfessionalSidebar({
       <Separator />
       <SidebarContent className="p-2">
         <SidebarMenu className="gap-2">
-          {sidebarLinks.map((item) => (
+          {sidebarItems.map((item) => (
             <ProfessionalSidebarItem
               className={cn(
                 "text-primary-foreground hover:bg-white/10 hover:text-primary-foreground active:bg-white/15 active:text-primary-foreground",

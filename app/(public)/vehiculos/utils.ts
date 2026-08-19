@@ -55,14 +55,14 @@ export const getVehicleDisplayPrices = (
 
 export const getVehicleFinancingQuote = (
   price: number,
-  cuotas: { value: number }[] | undefined,
+  months: number,
 ): { monthly_label: string; months: number } | null => {
-  if (!cuotas?.length) {
-    return null;
-  }
-
-  const months = Math.min(...cuotas.map((cuota) => cuota.value));
-  if (!Number.isFinite(months) || months <= 0) {
+  if (
+    !Number.isFinite(price) ||
+    price <= 0 ||
+    !Number.isFinite(months) ||
+    months <= 0
+  ) {
     return null;
   }
 
@@ -71,7 +71,6 @@ export const getVehicleFinancingQuote = (
     months,
   };
 };
-
 export function formatMonthlyPrice(price: number, cuotas?: number): string {
   const cuotaPrice = cuotas ? price / cuotas : price;
   return (

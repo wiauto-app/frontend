@@ -29,8 +29,6 @@ describe("mapDealershipToDealerProfile", () => {
   it("expone teléfono cuando show_phone es true", () => {
     const profile = mapDealershipToDealerProfile({
       dealership: buildMockDealership({ show_phone: true }),
-      reviews: [],
-      reviewTotal: 0,
       publishedVehicles: 0,
     });
 
@@ -40,8 +38,6 @@ describe("mapDealershipToDealerProfile", () => {
   it("oculta teléfono cuando show_phone es false", () => {
     const profile = mapDealershipToDealerProfile({
       dealership: buildMockDealership({ show_phone: false }),
-      reviews: [],
-      reviewTotal: 0,
       publishedVehicles: 0,
     });
 
@@ -65,8 +61,6 @@ describe("mapDealershipToDealerProfile", () => {
           },
         ],
       }),
-      reviews: [],
-      reviewTotal: 0,
       publishedVehicles: 0,
     });
 
@@ -83,8 +77,6 @@ describe("mapDealershipToDealerProfile", () => {
       dealership: buildMockDealership({
         schedules: [{ day: 1, open_times: [] }],
       }),
-      reviews: [],
-      reviewTotal: 0,
       publishedVehicles: 0,
     });
 

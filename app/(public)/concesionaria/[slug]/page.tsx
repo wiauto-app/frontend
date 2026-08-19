@@ -16,18 +16,30 @@ import { DealerProfileHero } from "./components/DealerProfileHero";
 import { DealerProfileSidebar } from "./components/DealerProfileSidebar";
 import { DealerQuickStatsBar } from "./components/DealerQuickStatsBar";
 import { DealerReviewsSection } from "./components/DealerReviewsSection";
+import { DealerReviewsSkeleton } from "./components/DealerReviewsSkeleton";
 import { DealerVehiclesSection } from "./components/DealerVehiclesSection";
 import { DealershipVehiclesListingShell } from "./components/DealershipVehiclesListingShell";
-import {
-  getDealershipDetailBySlug,
-  getDealershipReviewsByDealershipId,
-} from "./services/getDealerBySlug.server";
+import { getDealershipDetailBySlug } from "./services/getDealerBySlug.server";
 import { mapDealershipToDealerProfile } from "./utils/mapDealershipToDealerProfile";
 import { parseDealershipVehicleFilters } from "./utils/parseDealershipVehicleFilters";
+import { cookies } from "next/headers";
+import { cookiesConfig } from "@/config/cookies.config";
+import { DealershipReviewForm } from "../../concesionarias/components/DealershipReviewForm";
 
 type DealerProfilePageProps = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+const parseReviewsPage = (
+  value: string | string[] | undefined,
+): number => {
+  const raw_value = Array.isArray(value) ? value[0] : value;
+  const parsed_value = Number(raw_value);
+
+  return Number.isInteger(parsed_value) && parsed_value > 0
+    ? parsed_value
+    : 1;
 };
 
 export async function generateMetadata({
@@ -49,6 +61,9 @@ export default async function DealerProfilePage({
 }: DealerProfilePageProps) {
   const { slug } = await params;
   const resolved_search_params = await searchParams;
+  const reviews_page = parseReviewsPage(
+    resolved_search_params.reviews_page,
+  );
 
   const dealership = await getDealershipDetailBySlug(slug);
   if (!dealership) {
@@ -62,23 +77,20 @@ export default async function DealerProfilePage({
     ...url_filters,
     dealership_ids: [dealership.id],
   };
-
-  const [listing, active_filters, reviews_data] = await Promise.all([
-    findAllVehicles(vehicle_filters),
+  const cookiesStore = await cookies()
+  const access_token = cookiesStore.get(cookiesConfig.accessToken.name)
+  const [listing, active_filters] = await Promise.all([
+    findAllVehicles(vehicle_filters,access_token?.value),
     activeFiltersService.getActiveFilters(vehicle_filters),
-    getDealershipReviewsByDealershipId(dealership.id),
   ]);
-
   const dealer = mapDealershipToDealerProfile({
     dealership,
-    reviews: reviews_data.reviews,
-    reviewTotal: reviews_data.total,
     publishedVehicles: listing.total,
   });
 
   const { breadcrumbItems, jsonLdGraph } = buildDealershipDetailSeo({
     dealership,
-    reviewCount: reviews_data.total,
+    reviewCount: dealership.reviews_count,
     rating: dealership.rating ?? 0,
   });
 
@@ -118,13 +130,26 @@ export default async function DealerProfilePage({
                     <VehiclesPageContent
                       vehicles={listing.vehicles}
                       total={listing.total}
-                       
                     />
                   </Suspense>
                 </div>
               </DealershipVehiclesListingShell>
 
-              <DealerReviewsSection dealer={dealer} />
+              <div className="mb-6">
+                <DealershipReviewForm
+                  dealership_id={dealership.id}
+                  dealership_name={dealership.name}
+                />
+              </div>
+              <Suspense
+                key={`${dealership.id}-${reviews_page}`}
+                fallback={<DealerReviewsSkeleton />}
+              >
+                <DealerReviewsSection
+                  dealershipId={dealership.id}
+                  page={reviews_page}
+                />
+              </Suspense>
             </div>
           </main>
         </div>
