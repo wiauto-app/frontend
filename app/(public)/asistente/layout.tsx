@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { AssistantChatProvider } from "@/components/assistant/assistantChatProvider";
 import { AssistantLayoutHeader } from "@/components/assistant/assistantLayoutHeader";
 import { AssistantLayoutPreview } from "@/components/assistant/AssistantLayoutPreview";
 import { AssistantMainArea } from "@/components/assistant/assistantMainArea";
@@ -19,7 +18,7 @@ const AssistantLayoutContent = ({
   modal,
 }: AssistantLayoutContentProps) => {
   return (
-    <AssistantChatProvider>
+    <>
       <SidebarProvider defaultOpen>
         <AssistantSidebar />
         <SidebarInset className="flex h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] flex-col overflow-hidden max-md:h-[calc(100dvh-7rem)] max-md:max-h-[calc(100dvh-7rem)]">
@@ -28,7 +27,7 @@ const AssistantLayoutContent = ({
         </SidebarInset>
       </SidebarProvider>
       {modal}
-    </AssistantChatProvider>
+    </>
   );
 };
 

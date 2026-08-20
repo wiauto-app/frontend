@@ -1,197 +1,141 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import {
-  Car,
-  ChevronUp,
-  CreditCard,
-  MessageCircle,
-  Search,
-  X,
-  Zap,
-} from "lucide-react";
-
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { ArrowUpRight, Bot, ChevronUp, LoaderCircle, MessageCircle, Send, Sparkles, X } from "lucide-react";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
+import { AssistantMessages } from "./assistantMessages";
+import { useAssistantChat } from "./assistantChatProvider";
+import { useAssistantSuggestions } from "./hooks/useAssistantSuggestions";
 import { useCardOpenStatusStore } from "./stores/cardOpenStatusStore";
-
-const ASSISTANT_OPTIONS = [
-  {
-    label: "Buscar vehículos según mis preferencias",
-    icon: Search,
-  },
-  {
-    label: "Comparar modelos",
-    icon: Car,
-  },
-  {
-    label: "Opciones de financiación",
-    icon: CreditCard,
-  },
-] as const;
+import { resolveAssistantPageRoute } from "./utils/assistantPageContext";
 
 const gradientClasses = "bg-linear-to-r from-purple to-primary-soft";
-const RENDER_DELAY_MS = 1000;
+const RENDER_DELAY_MS = 700;
+const SECTION_COPY = {
+  "/": "Pregúntame cómo aprovechar WiAuto",
+  "/vehiculos": "Te ayudo a encontrar y comparar coches",
+  "/concesionarias": "Encuentra la concesionaria adecuada",
+  "/noticias": "Descubre lo más relevante del motor",
+} as const;
 
 export const AssistantDialog = () => {
+  const pathname = usePathname();
+  const route = resolveAssistantPageRoute(pathname);
   const { isOpen, setIsOpen } = useCardOpenStatusStore();
-  const { user } = useUser();
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useUser();
+  const { messages, sendMessage, ensureConversationId, conversationId, status, quota, isQuotaLoading } = useAssistantChat();
+  const { data, isLoading: areSuggestionsLoading } = useAssistantSuggestions(route);
   const [isReady, setIsReady] = useState(false);
+  const [input, setInput] = useState("");
+
+  const isBusy = status === "submitted" || status === "streaming";
+  const hasNoQuota = !isQuotaLoading && isAuthenticated && (quota?.totalRemaining ?? 0) <= 0;
+  const fullChatHref = conversationId ? `/asistente/chat/${conversationId}` : "/asistente/chat";
+  const suggestions = data?.suggestions ?? [];
+  const subtitle = useMemo(() => SECTION_COPY[route], [route]);
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      setIsReady(true);
-    }, RENDER_DELAY_MS);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
+    const timeoutId = window.setTimeout(() => setIsReady(true), RENDER_DELAY_MS);
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
-  const handleOpen = () => {
-    setIsOpen(true);
+  const submitPrompt = async (prompt: string) => {
+    const trimmed = prompt.trim();
+    if (!trimmed || isBusy || hasNoQuota || !isAuthenticated) return;
+    await ensureConversationId();
+    await sendMessage({ text: trimmed });
+    setInput("");
   };
 
-  const handleClose = () => {
-    setIsOpen(false);
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void submitPrompt(input);
   };
 
-  if (!isReady) {
-    return null;
+  if (!isReady || pathname.startsWith("/asistente")) return null;
+
+  if (!isOpen) {
+    return (
+      <>
+        <Button type="button" onClick={() => setIsOpen(true)} aria-label="Abrir asistente IA" aria-controls="assistant-dialog-card" className={cn("fixed right-3 bottom-20 z-40 size-15 rounded-full shadow-lg md:hidden", gradientClasses)}>
+          <MessageCircle className="size-7" />
+        </Button>
+        <button type="button" onClick={() => setIsOpen(true)} className={cn("fixed right-4 bottom-4 z-40 hidden w-80 items-center justify-between rounded-2xl px-4 py-3 text-left shadow-xl transition hover:-translate-y-0.5 md:flex", gradientClasses)} aria-label="Abrir asistente IA" aria-controls="assistant-dialog-card">
+          <span>
+            <span className="block text-sm font-semibold text-white">WiAuto AI</span>
+            <span className="block text-xs text-white/85">{subtitle}</span>
+          </span>
+          <ChevronUp className="size-5 text-white" />
+        </button>
+      </>
+    );
   }
 
   return (
-    <>
-      {!isOpen && (
-        <>
-          <Button
-            type="button"
-            onClick={handleOpen}
-            size="4xl"
-            aria-label="Abrir asistente IA"
-            aria-expanded={false}
-            aria-controls="assistant-dialog-card"
-            className="fixed right-2 bottom-20 z-10 h-16 w-16 rounded-full border bg-linear-to-r from-purple to-primary md:hidden"
-          >
-            <MessageCircle className="size-8" aria-hidden />
+    <Card id="assistant-dialog-card" role="dialog" aria-label="Asistente WiAuto AI" className="fixed right-3 bottom-19 z-40 flex h-[min(76dvh,42rem)] w-[calc(100%-1.5rem)] max-w-md flex-col overflow-hidden border bg-background p-0 shadow-2xl md:right-4 md:bottom-4 md:h-[min(72dvh,42rem)] md:border-none">
+      <CardHeader className={cn("flex shrink-0 flex-row items-center justify-between px-4 py-3", gradientClasses)}>
+        <div className="flex items-center gap-3">
+          <span className="grid size-9 place-items-center rounded-full bg-white/15 text-white"><Bot className="size-5" /></span>
+          <div>
+            <p className="font-semibold text-white">WiAuto AI</p>
+            <p className="text-xs text-white/85">{subtitle}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button nativeButton={false} render={<Link href={fullChatHref} aria-label="Abrir el chat completo" />} variant="ghost" size="icon" className="text-white hover:bg-white/15 hover:text-white">
+            <ArrowUpRight className="size-4" />
           </Button>
+          <Button type="button" onClick={() => setIsOpen(false)} variant="ghost" size="icon" className="text-white hover:bg-white/15 hover:text-white" aria-label="Cerrar asistente"><X className="size-4" /></Button>
+        </div>
+      </CardHeader>
 
-          <button
-            type="button"
-            onClick={handleOpen}
-            aria-label="Abrir asistente IA"
-            aria-expanded={false}
-            aria-controls="assistant-dialog-card"
-            className={cn(
-              "fixed right-4 bottom-4 z-10 hidden w-sm items-center justify-between rounded-xl px-4 py-3 text-left shadow-sm transition-opacity hover:opacity-95 md:flex",
-              gradientClasses,
-            )}
-          >
-            <div>
-              <p className="text-sm font-semibold text-white">Asistente IA</p>
-              <p className="flex items-center gap-1.5 text-xs text-white/90">
-                <span
-                  className="inline-block size-2 rounded-full bg-green-500"
-                  aria-hidden
-                />
-                En línea
-              </p>
+      <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3">
+        {messages.length > 0 && isAuthenticated ? (
+          <AssistantMessages />
+        ) : (
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-1">
+            <div className="rounded-2xl rounded-tl-sm bg-muted p-3 text-sm leading-relaxed">
+              <p className="font-semibold">Hola{user?.name ? `, ${user.name}` : ""} 👋</p>
+              <p className="mt-1 text-muted-foreground">{subtitle}. Puedes empezar con una de estas ideas:</p>
             </div>
-            <ChevronUp className="size-6 text-white" aria-hidden />
-          </button>
-        </>
-      )}
-
-      {isOpen && (
-        <Card
-          id="assistant-dialog-card"
-          className="fixed right-4 bottom-16 z-10 w-[min(100%-2rem,24rem)] bg-white pt-0 md:bottom-4 md:w-sm border"
-          role="dialog"
-          aria-label="Asistente IA"
-        >
-          <CardHeader
-            className={cn(
-              "flex flex-row items-center justify-between py-3",
-              gradientClasses,
-            )}
-          >
-            <div>
-              <CardTitle className="font-semibold text-white">
-                Asistente IA
-              </CardTitle>
-              <CardDescription className="text-white">
-                <span
-                  className="mr-1.5 inline-block size-2 rounded-full bg-green-500"
-                  aria-hidden
-                />
-                En línea
-              </CardDescription>
-            </div>
-            <Button
-              type="button"
-              onClick={handleClose}
-              variant="ghost"
-              size="icon"
-              aria-label="Cerrar asistente IA"
-            >
-              <X className="size-4 text-white" aria-hidden />
-            </Button>
-          </CardHeader>
-
-          <CardContent className="flex flex-col gap-2">
-            <div className="w-fit rounded-xl border p-3">
-              <span className="font-bold">
-                Hola{user?.name ? ` ${user.name}` : ""}!
-              </span>
-              <br />
-              <div className="mt-2 ml-5">
-                Soy tu asistente de WiAuto.
-                <br />
-                <span className="font-bold">¿En qué te puedo ayudar?</span>
-              </div>
-            </div>
-            {ASSISTANT_OPTIONS.map((option) => {
-              const Icon = option.icon;
-              return (
-                <Button
-                  key={option.label}
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  className="w-fit text-start text-xs text-primary hover:text-primary"
-                >
-                  <Icon className="size-4" aria-hidden />
-                  {option.label}
+            <div className="grid gap-2">
+              {areSuggestionsLoading ? (
+                <div className="flex items-center gap-2 px-2 py-4 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" /> Preparando sugerencias…</div>
+              ) : suggestions.map((suggestion) => (
+                <Button key={suggestion.prompt} type="button" variant="outline" disabled={isBusy || hasNoQuota || isAuthLoading} onClick={() => void submitPrompt(suggestion.prompt)} className="h-auto justify-start gap-2 whitespace-normal rounded-xl px-3 py-2.5 text-left text-xs">
+                  <Sparkles className="size-4 shrink-0 text-primary" />{suggestion.label}
                 </Button>
-              );
-            })}
-          </CardContent>
+              ))}
+            </div>
+            {!isAuthenticated && !isAuthLoading ? (
+              <div className="mt-auto rounded-xl border border-primary/15 bg-primary/5 p-3 text-sm">
+                <p className="font-medium">Inicia sesión para conversar con WiAuto AI.</p>
+                <Button nativeButton={false} render={<Link href="/asistente/chat" />} size="sm" className={cn("mt-2 w-full", gradientClasses)}>Iniciar conversación</Button>
+              </div>
+            ) : null}
+          </div>
+        )}
+      </CardContent>
 
-          <CardFooter className="flex flex-col gap-2">
-            <Link className="w-full" href="/asistente/chat">
-              <Button type="button" className={cn("w-full", gradientClasses)}>
-                <MessageCircle className="size-4" aria-hidden />
-                <span>Chat</span>
+      {isAuthenticated ? (
+        <CardFooter className="shrink-0 border-t p-3">
+          {hasNoQuota ? (
+            <Button nativeButton={false} render={<Link href={fullChatHref} />} className="w-full" variant="outline">Obtener más consultas</Button>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex w-full items-end gap-2 rounded-2xl border bg-muted/40 p-2 focus-within:ring-2 focus-within:ring-primary/20">
+              <textarea value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} disabled={isBusy} rows={1} aria-label="Mensaje para WiAuto AI" placeholder="Escribe tu pregunta…" className="max-h-28 min-h-9 flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground" />
+              <Button type="submit" size="icon" disabled={!input.trim() || isBusy} className="shrink-0 rounded-xl">
+                {isBusy ? <LoaderCircle className="size-4 animate-spin" /> : <Send className="size-4" />}
               </Button>
-            </Link>
-            <span className="flex items-center gap-2 text-xs text-gray-500">
-              <Zap className="size-4 text-primary" aria-hidden />
-              Respuestas en segundos
-            </span>
-          </CardFooter>
-        </Card>
-      )}
-    </>
+            </form>
+          )}
+        </CardFooter>
+      ) : null}
+    </Card>
   );
 };

@@ -21,7 +21,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
@@ -36,6 +36,8 @@ import {
   readBuyAssistantInitialFilters,
   unmarkConversationAsBuyAssistant,
 } from "./utils/buyAssistantSessionStorage";
+import { useUser } from "@/app/contexts/auth/useUser";
+import { resolveAssistantPageContext } from "./utils/assistantPageContext";
 
 const ASSISTANT_CHAT_API_URL = `${API_URL}/v1/assistant/chat`;
 const QUOTA_EXCEEDED_ERROR = "ASSISTANT_QUOTA_EXCEEDED";
@@ -93,6 +95,8 @@ export const AssistantChatProvider = ({
   children,
 }: AssistantChatProviderProps) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const { isAuthenticated } = useUser();
   const params = useParams<{ conversationId?: string }>();
 
   const { values, handleRemove } = useFiltersManager({
@@ -117,6 +121,7 @@ export const AssistantChatProvider = ({
   const [isConversationsLoading, setIsConversationsLoading] = useState(true);
 
   const conversationIdRef = useRef(resolvedConversationId);
+  const pageContextRef = useRef(resolveAssistantPageContext(pathname));
   const buyAssistantRequestRef = useRef<BuyAssistantRequestState>({});
   const buyAssistantBootstrapDoneRef = useRef(false);
   const buyAssistantBootstrapPendingRef = useRef(false);
@@ -131,6 +136,14 @@ export const AssistantChatProvider = ({
   useEffect(() => {
     conversationIdRef.current = resolvedConversationId;
   }, [resolvedConversationId]);
+
+  useEffect(() => {
+    if (pathname.startsWith("/asistente")) {
+      return;
+    }
+
+    pageContextRef.current = resolveAssistantPageContext(pathname);
+  }, [pathname]);
 
   useEffect(() => {
     if (!resolvedConversationId) {
@@ -158,6 +171,7 @@ export const AssistantChatProvider = ({
   } = useQuery({
     queryKey: ["assistant-quota"],
     queryFn: () => assistantQuotaService.getQuota(),
+    enabled: isAuthenticated,
   });
 
   const refreshQuota = useCallback(async () => {
@@ -243,6 +257,7 @@ export const AssistantChatProvider = ({
               trigger,
               messageId,
               conversation_id: activeConversationId,
+              page_context: pageContextRef.current,
               ...(buyAssistant.mode ? { mode: buyAssistant.mode } : {}),
               ...(initialFilters ? { initial_filters: initialFilters } : {}),
             },
@@ -262,6 +277,11 @@ export const AssistantChatProvider = ({
   );
 
   const refreshConversations = useCallback(async () => {
+    if (!isAuthenticated) {
+      setConversations([]);
+      setIsConversationsLoading(false);
+      return;
+    }
     setIsConversationsLoading(true);
     try {
       const items = await assistantConversationService.findAll();
@@ -271,7 +291,7 @@ export const AssistantChatProvider = ({
     } finally {
       setIsConversationsLoading(false);
     }
-  }, [setConversations, setIsConversationsLoading]);
+  }, [isAuthenticated, setConversations, setIsConversationsLoading]);
 
   const chat = useChat({
     id: conversationId ?? "assistant-new-chat",
@@ -298,8 +318,10 @@ export const AssistantChatProvider = ({
   }, [chat.sendMessage]);
 
   useEffect(() => {
-    void refreshConversations();
-  }, [refreshConversations]);
+    if (isAuthenticated) {
+      void refreshConversations();
+    }
+  }, [isAuthenticated, refreshConversations]);
 
   useEffect(() => {
     if (checkout === "success") {
@@ -377,13 +399,17 @@ export const AssistantChatProvider = ({
       const query = checkout ? `?checkout=${checkout}` : "";
 
       if (nextConversationId) {
-        router.replace(`/asistente/chat/${nextConversationId}${query}`);
+        if (pathname.startsWith("/asistente")) {
+          router.replace(`/asistente/chat/${nextConversationId}${query}`);
+        }
         return;
       }
 
-      router.replace(`/asistente/chat${query}`);
+      if (pathname.startsWith("/asistente")) {
+        router.replace(`/asistente/chat${query}`);
+      }
     },
-    [router, checkout],
+    [router, checkout, pathname],
   );
 
   const handleNewConversation = useCallback(async () => {
@@ -576,7 +602,7 @@ export const AssistantChatProvider = ({
   const contextValue = useMemo(
     () => ({
       ...chat,
-      conversationId,
+      conversationId: resolvedConversationId,
       conversations,
       isConversationLoading,
       isConversationsLoading,
@@ -596,7 +622,7 @@ export const AssistantChatProvider = ({
     [
       chat,
       closePurchaseDialog,
-      conversationId,
+      resolvedConversationId,
       conversations,
       ensureConversationId,
       handleDeleteConversation,
