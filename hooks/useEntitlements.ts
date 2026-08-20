@@ -10,7 +10,11 @@ export const useEntitlements = () => {
   const entitlements = user?.billing_summary?.entitlements ?? {};
   const isPrivileged =
     user?.billing_summary?.source === "admin" || user?.isAdmin === true;
-  const isSubscribed = billingSummary?.subscription?.status === "active" || user?.isAdmin;
+  const isSubscribed =
+    billingSummary?.source === "subscription" ||
+    billingSummary?.source === "admin_grant" ||
+    billingSummary?.source === "dealership_owner" ||
+    user?.isAdmin === true;
   const has = (feature: string): boolean => {
     if (isPrivileged) {
       return true;
@@ -58,7 +62,7 @@ export const useEntitlements = () => {
     billingSummary,
     has,
     getLimit,
-    planName: billingSummary?.subscription?.plan_name ?? null,
+    planName: billingSummary?.plan_name ?? billingSummary?.subscription?.plan_name ?? null,
     isSubscribed,
     isPrivileged,
   };

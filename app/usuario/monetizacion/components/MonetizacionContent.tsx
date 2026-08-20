@@ -187,7 +187,7 @@ export const MonetizacionContent = () => {
           <LayoutGrid className="w-6 h-6 text-gray-700" />
           <h1 className="text-2xl font-bold text-gray-900">Planes y palancas premium</h1>
         </div>
-        {billing_me?.stripe_customer_id ? (
+        {billing_me?.subscription && billing_me?.stripe_customer_id ? (
           <Button type="button" variant="outline" onClick={handlePortal}>
             Gestionar suscripción
           </Button>
@@ -210,13 +210,20 @@ export const MonetizacionContent = () => {
             <p>
               Suscripción: {billing_me.subscription.plan_name} ({billing_me.subscription.status})
             </p>
+          ) : billing_me.access_grant ? (
+            <p>
+              Plan concedido: {billing_me.access_grant.plan_name}
+              {billing_me.access_grant.expires_at
+                ? ` · válido hasta ${new Date(billing_me.access_grant.expires_at).toLocaleDateString("es-ES")}`
+                : " · sin vencimiento"}
+            </p>
           ) : null}
         </div>
       ) : null}
 
       <PlanesGrid
         plans={recurring_plans}
-        active_plan_id={billing_me?.subscription?.plan_id ?? null}
+        active_plan_id={billing_me?.plan_id ?? billing_me?.subscription?.plan_id ?? null}
         loading={catalog_loading || is_checkout_loading}
         onSelectPlan={handleSubscriptionCheckout}
         formatPrice={formatEuros}

@@ -150,8 +150,17 @@ export interface BillingMeSubscription {
   cancel_at_period_end: boolean;
 }
 
+export interface BillingMeAccessGrant {
+  id: string;
+  plan_id: string;
+  plan_name: string;
+  plan_version_id: string;
+  expires_at: string | null;
+}
+
 export interface BillingMeResponse {
   subscription: BillingMeSubscription | null;
+  access_grant?: BillingMeAccessGrant | null;
   entitlements?: Record<string, BillingMeEntitlementEntry>;
   /** @deprecated Preferir `entitlements.vehicles.used` */
   vehicle_listings_used: number;
@@ -160,8 +169,15 @@ export interface BillingMeResponse {
   /** @deprecated Preferir `entitlements` */
   quotas?: PlanQuotas;
   usage?: BillingMeUsage;
-  source?: "subscription" | "dealership_owner" | "free" | "admin" | "dealership";
+  source?:
+    | "subscription"
+    | "admin_grant"
+    | "dealership_owner"
+    | "free"
+    | "admin"
+    | "dealership";
   plan_id?: string | null;
+  plan_name?: string | null;
   stripe_customer_id: string | null;
 }
 
