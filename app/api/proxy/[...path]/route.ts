@@ -2,7 +2,7 @@ import { API_URL } from '@/constants'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-type ProxyParams = Promise<{ path: string[] }> | { path: string[] }
+type ProxyParams = Promise<{ path: string[] }>
 
 const resolvePathSegments = async (params: ProxyParams) => {
   const resolved = await Promise.resolve(params)
@@ -125,4 +125,3 @@ export async function HEAD(req: Request, ctx: { params: ProxyParams }) {
     headers: res.headers,
   })
 }
-

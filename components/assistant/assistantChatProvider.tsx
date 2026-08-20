@@ -23,7 +23,6 @@ import {
 } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
   ASSISTANT_KEYS,
   BUY_ASSISTANT_BOOTSTRAP_MESSAGE,
@@ -99,17 +98,31 @@ export const AssistantChatProvider = ({
   const { isAuthenticated } = useUser();
   const params = useParams<{ conversationId?: string }>();
 
-  const { values, handleRemove } = useFiltersManager({
-    keys: [ASSISTANT_KEYS.BUY_ASSISTANT_KEY, ASSISTANT_KEYS.CHECKOUT_KEY],
-  });
-
-  const buyerAssistantKey = Boolean(values[ASSISTANT_KEYS.BUY_ASSISTANT_KEY]);
-  const checkout = values[ASSISTANT_KEYS.CHECKOUT_KEY];
+  const [buyerAssistantKey, setBuyerAssistantKey] = useState(false);
+  const [checkout, setCheckout] = useState<string | undefined>();
   const conversationId =
     typeof params.conversationId === "string" ? params.conversationId : undefined;
   const [resolvedConversationId, setResolvedConversationId] =
     useState(conversationId);
   const [isPurchaseDialogOpen, setIsPurchaseDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setBuyerAssistantKey(params.has(ASSISTANT_KEYS.BUY_ASSISTANT_KEY));
+    setCheckout(params.get(ASSISTANT_KEYS.CHECKOUT_KEY) ?? undefined);
+  }, [pathname]);
+
+  const handleRemove = useCallback(
+    (key: string) => {
+      const params = new URLSearchParams(window.location.search);
+      params.delete(key);
+      const query = params.toString();
+      router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+      if (key === ASSISTANT_KEYS.BUY_ASSISTANT_KEY) setBuyerAssistantKey(false);
+      if (key === ASSISTANT_KEYS.CHECKOUT_KEY) setCheckout(undefined);
+    },
+    [pathname, router],
+  );
 
   const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
   const [isConversationLoading, setIsConversationLoading] = useState(
@@ -130,8 +143,10 @@ export const AssistantChatProvider = ({
   );
 
   useEffect(() => {
-    setResolvedConversationId(conversationId);
-  }, [conversationId]);
+    if (conversationId || pathname.startsWith("/asistente")) {
+      setResolvedConversationId(conversationId);
+    }
+  }, [conversationId, pathname]);
 
   useEffect(() => {
     conversationIdRef.current = resolvedConversationId;
