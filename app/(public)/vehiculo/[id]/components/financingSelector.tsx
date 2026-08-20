@@ -27,15 +27,17 @@ export const FinancingSelector = ({
   }
 
   return (
-    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-      <span>Financiamiento desde {financing.monthly_label} a</span>
+    <div className="flex items-start gap-1 text-sm text-muted-foreground">
+      <span>
+        Financiamiento desde <span className="text-primary font-semibold">{financing.monthly_label}</span> a
+      </span>
 
       <select
         value={String(selectedCuota)}
         onChange={(event) => {
           setSelectedCuota(Number(event.target.value));
         }}
-        className="w-auto"
+        className="w-auto text-primary font-semibold"
       >
         {sortedCuotas.map((cuota) => (
           <option key={cuota.value} value={String(cuota.value)}>

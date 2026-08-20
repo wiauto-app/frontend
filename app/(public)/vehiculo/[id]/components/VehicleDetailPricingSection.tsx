@@ -25,7 +25,7 @@ export const VehicleDetailPricingSection = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="text-3xl font-bold tracking-tight text-gray-900">
+        <span className="text-3xl font-bold tracking-tight ">
           {formatPrice(current_price)}
         </span>
         {previous_price ? (
@@ -35,7 +35,16 @@ export const VehicleDetailPricingSection = ({
         ) : null}
       </div>
 
-      <FinancingSelector current_price={current_price} cuotas={vehicle.cuotas} />
+      <div className="flex items-center gap-5 text-muted-foreground">
+        <FinancingSelector
+          current_price={current_price}
+          cuotas={vehicle.cuotas}
+        />
+        •
+        {vehicle.by_brand_warranty && (
+          <span className="">Garantía por la marca</span>
+        )}
+      </div>
     </div>
   );
 };

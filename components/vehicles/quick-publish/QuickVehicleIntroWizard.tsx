@@ -50,7 +50,7 @@ export const QuickVehicleIntroWizard = ({
 
   const stepItems = useMemo(
     () =>
-      QUICK_VEHICLE_INTRO_STEPS.filter(step => {
+      QUICK_VEHICLE_INTRO_STEPS.filter((step) => {
         if (step.id === 4) {
           return isSubscribed;
         }
@@ -146,19 +146,17 @@ export const QuickVehicleIntroWizard = ({
 
   return (
     <div className="flex flex-col gap-4 lg:gap-6">
-      {!isEditMode ? (
-        <Stepper
-          steps={stepItems}
-          currentStep={currentStep}
-          onStepClick={handleStepClick}
-          className="overflow-x-auto pb-2"
-        />
-      ) : null}
+      <Stepper
+        steps={stepItems}
+        currentStep={currentStep}
+        onStepClick={handleStepClick}
+        className="overflow-x-auto pb-2"
+      />
 
       {renderStep()}
 
       <div className="flex items-center gap-3">
-        {!isEditMode && !isFirstStep ? (
+        {!isFirstStep ? (
           <Button
             type="button"
             variant="outline"
@@ -170,7 +168,7 @@ export const QuickVehicleIntroWizard = ({
           </Button>
         ) : null}
 
-        {!isEditMode && !isLastStep ? (
+        {!isLastStep ? (
           <Button
             type="button"
             className="flex-1 sm:flex-none"
