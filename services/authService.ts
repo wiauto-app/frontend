@@ -18,6 +18,7 @@ export interface MeResponseDto extends User {
   vehicle_lists: VehicleList[];
   dealership_membership?: DealershipMembership | null;
   billing_summary: BillingMeResponse;
+  province_id?: number | null;
 }
 
 export const authService = {

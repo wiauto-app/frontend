@@ -15,6 +15,7 @@ export const updateProfileFormSchema = z.object({
   }),
 
   avatar_url: z.string().nullable().optional(),
+  province_id: z.string().optional(),
 });
 
 export type UpdateProfileFormValues = z.infer<typeof updateProfileFormSchema>;
@@ -25,6 +26,7 @@ export type UpdateProfilePayload = {
   phone_code?: string;
   phone?: string;
   avatar_url?: string;
+  province_id?: number;
 };
 
 export const mapProfileFormToPayload = (
@@ -35,4 +37,5 @@ export const mapProfileFormToPayload = (
   phone_code: values.phone?.phone_code ?? undefined,
   phone: values.phone?.phone ?? undefined,
   avatar_url: values.avatar_url ?? undefined,
+  province_id: values.province_id ? parseInt(values.province_id) : undefined,
 });

@@ -16,6 +16,8 @@ import {
   updateProfileFormSchema,
   type UpdateProfileFormValues,
 } from "../schemas/update-profile.schema";
+import { ProfileProvinceSelector } from "./profileProvinceSelector";
+import { ControllerInput } from "@/components/ui/controllerInput";
 
 const EMPTY_PROFILE_FORM: UpdateProfileFormValues = {
   name: "",
@@ -26,7 +28,6 @@ const EMPTY_PROFILE_FORM: UpdateProfileFormValues = {
 
 export const ProfileDataForm = () => {
   const { user, refreshUser } = useUser();
-
   const form = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(updateProfileFormSchema),
     defaultValues: EMPTY_PROFILE_FORM,
@@ -53,6 +54,7 @@ export const ProfileDataForm = () => {
         phone: user.phone ?? "",
       },
       avatar_url: user.avatar_url ?? null,
+      province_id: user.province_id?.toString() ?? "",
     });
   }, [user, reset]);
 
@@ -77,7 +79,7 @@ export const ProfileDataForm = () => {
       <CardContent>
         <form
           onSubmit={handleSubmit(handleSaveProfile)}
-          className="flex flex-col gap-5 md:flex-row"
+          className="flex flex-col gap-5 xl:flex-row"
         >
           <Controller
             name="avatar_url"
@@ -142,6 +144,14 @@ export const ProfileDataForm = () => {
                 </Field>
               )}
             />
+            <ControllerInput control={control} name="province_id">
+              {({ field }) => (
+                <ProfileProvinceSelector
+                  value={field.value as string}
+                  onChange={field.onChange}
+                />
+              )}
+            </ControllerInput>
             <Button type="submit" disabled={isSubmitting} className="w-full">
               {isSubmitting ? "Guardando..." : "Guardar cambios"}
             </Button>
