@@ -144,7 +144,7 @@ export const ProfileDataForm = () => {
                 </Field>
               )}
             />
-            <ControllerInput control={control} name="province_id">
+            <ControllerInput label="Provincia" control={control} name="province_id">
               {({ field }) => (
                 <ProfileProvinceSelector
                   value={field.value as string}

@@ -1,8 +1,12 @@
 import { InputSkeleton } from "@/components/ui/inputSkeleton";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { provincesCatalogService } from "@/services/locations/provincesCatalogService";
 import { useQuery } from "@tanstack/react-query";
 
@@ -23,17 +27,24 @@ export const ProfileProvinceSelector = ({
     return <InputSkeleton />;
   }
   return (
-    <NativeSelect
-      className="w-full"
+    <Select
+      items={provinces.map((province) => ({
+        label: province.name,
+        value: province.id,
+      }))}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onValueChange={(value) => onChange(value ?? "")}
     >
-      <NativeSelectOption value="">Selecciona una provincia</NativeSelectOption>
-      {provinces.map((province) => (
-        <NativeSelectOption key={province.id} value={province.id}>
-          {province.name}
-        </NativeSelectOption>
-      ))}
-    </NativeSelect>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder="Selecciona una provincia" />
+      </SelectTrigger>
+      <SelectContent className="max-h-[200px] overflow-y-auto">
+        {provinces.map((province) => (
+          <SelectItem key={province.id} value={province.id}>
+            {province.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
