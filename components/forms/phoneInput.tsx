@@ -26,8 +26,8 @@ const COUNTRY_ROWS = [...countryCodes]
   .sort((a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" }));
 
 export type PhoneFieldValue = {
-  phone_code: string;
-  phone: string;
+  phone_code?: string;
+  phone?: string;
 };
 
 export type PhoneInputProps = {

@@ -95,7 +95,7 @@ export const EmailSettingsSection = ({
   };
 
   return (
-    <Card>
+    <Card size="sm">
       <CardHeader>
         <CardTitle>Cuenta</CardTitle>
         <CardDescription>

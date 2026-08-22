@@ -10,16 +10,10 @@ export const updateProfileFormSchema = z.object({
       "El apellido debe tener al menos 2 caracteres",
     ),
   phone: z.object({
-    phone_code: z.string().min(1, "El prefijo telefónico es obligatorio"),
-    phone: z.string().min(6, "El teléfono debe tener al menos 6 dígitos"),
+    phone_code: z.string().optional(),
+    phone: z.string().optional(),
   }),
-  dni: z
-    .string()
-    .trim()
-    .refine(
-      (value) => value.length === 0 || /^[0-9]{8}[A-Za-z]?$/.test(value),
-      "El DNI debe tener 8 dígitos y, opcionalmente, una letra",
-    ),
+
   avatar_url: z.string().nullable().optional(),
 });
 
@@ -30,7 +24,6 @@ export type UpdateProfilePayload = {
   last_name?: string;
   phone_code?: string;
   phone?: string;
-  dni?: string;
   avatar_url?: string;
 };
 
@@ -39,8 +32,7 @@ export const mapProfileFormToPayload = (
 ): UpdateProfilePayload => ({
   name: values.name,
   last_name: values.last_name?.trim() || undefined,
-  phone_code: values.phone.phone_code,
-  phone: values.phone.phone,
-  dni: values.dni?.trim() || undefined,
+  phone_code: values.phone?.phone_code ?? undefined,
+  phone: values.phone?.phone ?? undefined,
   avatar_url: values.avatar_url ?? undefined,
 });

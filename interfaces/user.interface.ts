@@ -17,6 +17,5 @@ export interface User {
   image_url?: string;
   phone_code?: string;
   phone?: string;
-  dni?: string;
   isAdmin?: boolean;
 }

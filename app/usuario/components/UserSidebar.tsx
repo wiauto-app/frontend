@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LogOut, Edit } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/navbar/components/userAvatar";
@@ -103,7 +103,7 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
                   key={link.href}
                   href={link.href}
                   onClick={() => onSelect?.()}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? "text-blue-600 bg-blue-50"
                       : "text-gray-600 hover:text-blue-600 hover:bg-blue-50/50"
@@ -114,22 +114,22 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
                 </Link>
               );
             })}
-
-            <div className="pt-4 mt-2 border-t border-gray-100">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  logout();
-                  onSelect?.();
-                }}
-                className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50"
-              >
-                <LogOut className="w-5 h-5" />
-                Cerrar sesión
-              </Button>
-            </div>
           </nav>
         </CardContent>
+
+        <CardFooter>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              logout();
+              onSelect?.();
+            }}
+            className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="w-5 h-5" />
+            Cerrar sesión
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   );

@@ -45,7 +45,7 @@ export default async function Layout({
               }),
             )}
           >
-            <div className="flex flex-col gap-4 md:flex-row md:gap-8">
+            <div className="flex flex-col gap-4 md:flex-row md:gap-5">
               {showUserSidebar ? <UserSidebarSheet /> : null}
 
               {showUserSidebar ? (

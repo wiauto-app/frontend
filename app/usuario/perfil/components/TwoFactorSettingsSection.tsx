@@ -109,7 +109,7 @@ export const TwoFactorSettingsSection = ({
 
   return (
     <>
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Autenticación en dos pasos (2FA)</CardTitle>
           <CardDescription>

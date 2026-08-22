@@ -51,7 +51,7 @@ export const PasswordSettingsSection = () => {
   };
 
   return (
-    <Card>
+    <Card size="sm">
       <CardHeader>
         <CardTitle>Contraseña</CardTitle>
         <CardDescription>
