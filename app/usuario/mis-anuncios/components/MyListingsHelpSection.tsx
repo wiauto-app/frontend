@@ -4,15 +4,21 @@ import { HelpCircle, Star, RefreshCw, BarChart3 } from "lucide-react";
 
 interface MyListingsHelpSectionProps {
   featureDurationDays?: number | null;
+  canFeatureIncluded?: boolean;
 }
 
 export const MyListingsHelpSection = ({
   featureDurationDays = null,
+  canFeatureIncluded = false,
 }: MyListingsHelpSectionProps) => {
-  const featuredDescription =
+  const paidFeaturedDescription =
     featureDurationDays != null
-      ? `El destacado es un servicio premium de pago único. Tu anuncio aparecerá primero en los listados durante ${featureDurationDays} días.`
-      : "El destacado es un servicio premium de pago único. Tu anuncio aparecerá primero en los listados durante el periodo de la oferta contratada.";
+      ? `Si no te quedan huecos incluidos, el destacado es un servicio de pago único. Tu anuncio aparecerá primero en los listados durante ${featureDurationDays} días.`
+      : "Si no te quedan huecos incluidos, el destacado es un servicio de pago único. Tu anuncio aparecerá primero en los listados durante el periodo de la oferta contratada.";
+
+  const featuredDescription = canFeatureIncluded
+    ? "Tu plan incluye huecos para destacar anuncios. Mientras quede alguno, puedes destacar sin coste. Si se agotan, puedes contratar un destacado de pago."
+    : paidFeaturedDescription;
 
   const helpItems = [
     {

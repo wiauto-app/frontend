@@ -4,16 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import type { IconType } from "react-icons";
 import {
-  Car,
-  Eye,
-  Heart,
-  MessageCircle,
-  Pencil,
-  Phone,
-  Star,
-  type LucideIcon,
-} from "lucide-react";
+  FaCar,
+  FaComment,
+  FaEye,
+  FaHeart,
+  FaPencilAlt,
+  FaPhone,
+  FaStar,
+  FaWhatsapp,
+} from "react-icons/fa";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -26,7 +27,6 @@ import { VEHICLE_TRANSMISSION_TYPE_OPTIONS } from "@/components/vehicles/constan
 import { getImageUrl } from "@/lib/utils";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import type { OwnerVehicleStatTrend } from "@/interfaces/owner-vehicle.interface";
-import { ListingPerformanceSparkline } from "./ListingPerformanceSparkline";
 import { RenewListingButton } from "./RenewListingButton";
 import { FeatureListingButton } from "./FeatureListingButton";
 import { MyListingActionsMenu } from "./MyListingActionsMenu";
@@ -38,10 +38,7 @@ interface MyListingTableRowProps {
   onDuplicate: (id: string) => Promise<void>;
   onSchedule: (listing: OwnerVehicleListItem) => void;
   onRemove: (id: string) => Promise<void>;
-  onToggleStatus: (
-    id: string,
-    nextStatus: VehicleStatus,
-  ) => Promise<void>;
+  onToggleStatus: (id: string, nextStatus: VehicleStatus) => Promise<void>;
   isMutating?: boolean;
   canUseAdvancedEditor?: boolean;
   featurePriceLabel?: string | null;
@@ -65,14 +62,17 @@ const statusBadgeClass: Record<VehicleStatus, string> = {
   archived: "border-border bg-muted text-muted-foreground",
 };
 
-const getTransmissionLabel = (transmissionType?: string | null): string | null => {
+const getTransmissionLabel = (
+  transmissionType?: string | null,
+): string | null => {
   if (!transmissionType) {
     return null;
   }
 
   return (
-    VEHICLE_TRANSMISSION_TYPE_OPTIONS.find((option) => option.value === transmissionType)
-      ?.label ?? transmissionType
+    VEHICLE_TRANSMISSION_TYPE_OPTIONS.find(
+      (option) => option.value === transmissionType,
+    )?.label ?? transmissionType
   );
 };
 
@@ -87,21 +87,23 @@ const getPublishedReferenceDate = (listing: OwnerVehicleListItem): Date => {
   return createdAt;
 };
 
+interface PerformanceCellProps {
+  label: string;
+  trend: OwnerVehicleStatTrend;
+  icon: IconType;
+  iconClassName: string;
+}
+
 const PerformanceCell = ({
   label,
   trend,
   icon: Icon,
-}: {
-  label: string;
-  trend: OwnerVehicleStatTrend;
-  icon: LucideIcon;
-}) => {
-  const isPositive = (trend.change_percent ?? 0) >= 0;
-
+  iconClassName,
+}: PerformanceCellProps) => {
   return (
     <div className="flex min-w-0 flex-1 flex-col items-center gap-1 bg-card px-2 py-1 text-center last:col-span-2 sm:last:col-span-1">
       <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <Icon className="size-4" aria-hidden />
+        <Icon className={`size-4 ${iconClassName}`} aria-hidden />
         <span>{label}</span>
       </div>
       <span className="text-xl font-semibold tracking-tight text-foreground">
@@ -141,7 +143,11 @@ export const MyListingTableRow = ({
     year: "numeric",
   });
 
-  const specs = [formatMileage(listing.mileage), transmissionLabel, listing.fuel_type]
+  const specs = [
+    formatMileage(listing.mileage),
+    transmissionLabel,
+    listing.fuel_type,
+  ]
     .filter(Boolean)
     .join(" · ");
 
@@ -166,7 +172,7 @@ export const MyListingTableRow = ({
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                <Car className="size-10" aria-hidden />
+                <FaCar className="size-10" aria-hidden />
                 <span className="text-sm">Sin imagen</span>
               </div>
             )}
@@ -194,9 +200,9 @@ export const MyListingTableRow = ({
                   </Badge>
                   {listing.is_featured_active ? (
                     <Badge variant="secondary">
-                      <Star
+                      <FaStar
                         data-icon="inline-start"
-                        className="fill-current text-amber-500"
+                        className="text-amber-500"
                         aria-hidden
                       />
                       Destacado
@@ -231,7 +237,9 @@ export const MyListingTableRow = ({
               {listing.scheduled_publish_at ? (
                 <p className="text-sm font-medium text-primary">
                   Programado para el{" "}
-                  {new Date(listing.scheduled_publish_at).toLocaleString("es-ES")}
+                  {new Date(listing.scheduled_publish_at).toLocaleString(
+                    "es-ES",
+                  )}
                 </p>
               ) : null}
             </div>
@@ -239,11 +247,14 @@ export const MyListingTableRow = ({
             {listing.is_featured_active && listing.featured_expires_at ? (
               <p className="text-xs font-medium text-amber-700">
                 Destacado hasta{" "}
-                {new Date(listing.featured_expires_at).toLocaleDateString("es-ES", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
+                {new Date(listing.featured_expires_at).toLocaleDateString(
+                  "es-ES",
+                  {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  },
+                )}
               </p>
             ) : null}
 
@@ -258,7 +269,11 @@ export const MyListingTableRow = ({
                   />
                 }
               >
-                <Eye data-icon="inline-start" aria-hidden />
+                <FaEye
+                  data-icon="inline-start"
+                  className="text-sky-600"
+                  aria-hidden
+                />
                 Ver anuncio
               </Button>
               <Button
@@ -266,7 +281,11 @@ export const MyListingTableRow = ({
                 nativeButton={false}
                 render={<Link href={`/editar-vehiculo/${listing.id}`} />}
               >
-                <Pencil data-icon="inline-start" aria-hidden />
+                <FaPencilAlt
+                  data-icon="inline-start"
+                  className="text-amber-600"
+                  aria-hidden
+                />
                 Editar
               </Button>
               <RenewListingButton
@@ -295,27 +314,32 @@ export const MyListingTableRow = ({
           <PerformanceCell
             label="Visitas"
             trend={listing.stats.views}
-            icon={Eye}
+            icon={FaEye}
+            iconClassName="text-sky-600"
           />
           <PerformanceCell
             label="Contactos"
             trend={listing.stats.leads}
-            icon={MessageCircle}
+            icon={FaComment}
+            iconClassName="text-violet-600"
           />
           <PerformanceCell
             label="Teléfono"
             trend={listing.stats.phone_clicks}
-            icon={Phone}
+            icon={FaPhone}
+            iconClassName="text-blue-600"
           />
           <PerformanceCell
             label="WhatsApp"
             trend={listing.stats.whatsapp_clicks}
-            icon={MessageCircle}
+            icon={FaWhatsapp}
+            iconClassName="text-green-600"
           />
           <PerformanceCell
             label="Favoritos"
             trend={listing.stats.favorites}
-            icon={Heart}
+            icon={FaHeart}
+            iconClassName="text-rose-500"
           />
         </div>
       </CardFooter>

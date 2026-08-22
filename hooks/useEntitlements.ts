@@ -1,8 +1,8 @@
 "use client";
 
-
 import { useUser } from "@/app/contexts/auth/useUser";
 import type { BillingMeEntitlementEntry } from "@/interfaces/billing.interface";
+import { resolveLimitUsage } from "@/lib/billing/entitlements";
 
 export const useEntitlements = () => {
   const { user } = useUser();
@@ -11,6 +11,7 @@ export const useEntitlements = () => {
   const isPrivileged =
     user?.billing_summary?.source === "admin" || user?.isAdmin === true;
   const isSubscribed = billingSummary?.subscription?.status === "active";
+
   const has = (feature: string): boolean => {
     if (isPrivileged) {
       return true;
@@ -50,14 +51,34 @@ export const useEntitlements = () => {
       return null;
     }
 
+    if (entry.type === "boolean") {
+      return entry.value === true ? 1 : 0;
+    }
+
     return entry.limit ?? 0;
   };
+
+  const getUsed = (feature: string): number => {
+    const entry = entitlements[feature];
+    return entry?.used ?? 0;
+  };
+
+  const getRemaining = (feature: string): number | null => {
+    const snapshot = resolveLimitUsage(entitlements[feature], { isPrivileged });
+    return snapshot.remaining;
+  };
+
+  const getLimitUsage = (feature: string) =>
+    resolveLimitUsage(entitlements[feature], { isPrivileged });
 
   return {
     entitlements,
     billingSummary,
     has,
     getLimit,
+    getUsed,
+    getRemaining,
+    getLimitUsage,
     planName: billingSummary?.subscription?.plan_name ?? null,
     isSubscribed,
     isPrivileged,

@@ -4,13 +4,13 @@ import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 
-type FeatureListingButtonProps = {
+interface FeatureListingButtonProps {
   listing: OwnerVehicleListItem;
   onFeature: (id: string) => Promise<void>;
   disabled?: boolean;
   variant?: "outline" | "default";
   priceLabel?: string | null;
-};
+}
 
 export const FeatureListingButton = ({
   listing,

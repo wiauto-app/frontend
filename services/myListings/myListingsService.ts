@@ -46,6 +46,15 @@ export const myListingsService = {
     return apiPost(`${V1_VEHICLES}/${id}/renew`, {});
   },
 
+  feature(id: string): Promise<
+    ApiResponse<{
+      is_featured: boolean;
+      featured_expires_at: string | null;
+    }>
+  > {
+    return apiPost(`${V1_VEHICLES}/${id}/feature`, {});
+  },
+
   schedule(
     id: string,
     scheduled_publish_at: string,

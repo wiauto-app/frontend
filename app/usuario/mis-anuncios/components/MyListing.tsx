@@ -18,6 +18,7 @@ import { aggregateListingStats } from "../utils/aggregateListingStats";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { resolveLimitUsage } from "@/lib/billing/entitlements";
 import { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 
 const formatEuros = (amountCents: number): string =>
@@ -28,7 +29,7 @@ const formatEuros = (amountCents: number): string =>
 
 export const MyListing = () => {
   const { user, isLoading: isUserLoading } = useUser();
-  const { has } = useEntitlements();
+  const { has, getLimitUsage, isPrivileged,entitlements } = useEntitlements();
   const searchParams = useSearchParams();
   const [scheduleListing, setScheduleListing] = useState<OwnerVehicleListItem | null>(
     null,
@@ -58,6 +59,7 @@ export const MyListing = () => {
     refetchBillingMe,
     duplicate,
     renew,
+    featureIncluded,
     featureListing,
     schedule,
     updateStatus,
@@ -85,9 +87,22 @@ export const MyListing = () => {
       filters.untilCreatedAt,
   );
 
-  const featurePriceLabel = featureOffer
-    ? formatEuros(featureOffer.amount_cents)
-    : null;
+  // Preferir billing/me de la página (incluye used/remaining frescos).
+  const featuredSlots = billingMe?.entitlements?.featured_listings
+    ? resolveLimitUsage(billingMe.entitlements.featured_listings, {
+        isPrivileged,
+      })
+    : getLimitUsage("featured_listings");
+  const canFeatureIncluded = featuredSlots.canUseIncluded;
+  const featurePriceLabel =
+    canFeatureIncluded || !featureOffer
+      ? null
+      : formatEuros(featureOffer.amount_cents);
+
+  const showFeaturedCard =
+    isPrivileged ||
+    featuredSlots.unlimited ||
+    (typeof featuredSlots.limit === "number" && featuredSlots.limit > 0);
 
   const isMutating =
     isDuplicating ||
@@ -117,26 +132,6 @@ export const MyListing = () => {
     );
   }
 
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="text-center bg-white p-8 rounded-xl shadow-sm border border-gray-100 max-w-md mx-auto mt-10">
-        <Car className="mx-auto h-12 w-12 text-gray-300" aria-hidden />
-        <h2 className="mt-4 text-lg font-semibold text-gray-900">
-          Inicia sesión para ver tus anuncios
-        </h2>
-        <p className="mt-2 text-gray-500">
-          Debes iniciar sesión para gestionar tus publicaciones
-        </p>
-        <Link
-          href="/iniciar-sesion"
-          className="mt-4 inline-flex items-center bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-        >
-          Iniciar sesión
-        </Link>
-      </div>
-    );
-  }
-
   const handleRenew = async (id: string) => {
     try {
       await renew(id);
@@ -147,6 +142,16 @@ export const MyListing = () => {
   };
 
   const handleFeature = async (vehicleId: string, offerId?: string) => {
+    if (canFeatureIncluded && !offerId) {
+      try {
+        await featureIncluded(vehicleId);
+        toast.success("Anuncio destacado correctamente");
+      } catch {
+        toast.error("No se pudo destacar el anuncio");
+      }
+      return;
+    }
+
     const selectedOfferId = offerId ?? featureOffer?.id;
     if (!selectedOfferId) {
       toast.error("No hay ofertas de destacado disponibles");
@@ -210,8 +215,7 @@ export const MyListing = () => {
         stats={aggregatedStats}
         listingsUsed={
           billingMe?.entitlements?.vehicles?.used ??
-          billingMe?.usage?.listings_used ??
-          billingMe?.vehicle_listings_used
+          billingMe?.usage?.listings_used
         }
         listingsMax={
           billingMe?.entitlements?.vehicles?.unlimited
@@ -220,6 +224,10 @@ export const MyListing = () => {
               billingMe?.quotas?.max_listings ??
               billingMe?.vehicle_listings_max)
         }
+        showFeaturedCard={showFeaturedCard}
+        featuredUsed={featuredSlots.used}
+        featuredMax={featuredSlots.limit}
+        featuredUnlimited={featuredSlots.unlimited}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
@@ -301,7 +309,10 @@ export const MyListing = () => {
         />
       </div>
 
-      <MyListingsHelpSection featureDurationDays={featureDurationDays} />
+      <MyListingsHelpSection
+        featureDurationDays={featureDurationDays}
+        canFeatureIncluded={canFeatureIncluded}
+      />
 
       <ScheduleListingDialog
         listing={scheduleListing}

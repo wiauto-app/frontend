@@ -236,7 +236,21 @@ export const useMyListingsPage = ({
     onSuccess: invalidateListings,
   });
 
-  const featureMutation = useMutation({
+  const featureIncludedMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await myListingsService.feature(id);
+      if (!response.ok) {
+        throw new Error(response.message || "No se pudo destacar el anuncio");
+      }
+      return response.data;
+    },
+    onSuccess: async () => {
+      await invalidateListings();
+      await refetchBillingMe();
+    },
+  });
+
+  const featureCheckoutMutation = useMutation({
     mutationFn: async ({
       vehicleId,
       offerId,
@@ -330,8 +344,10 @@ export const useMyListingsPage = ({
     isDuplicating: duplicateMutation.isPending,
     renew: renewMutation.mutateAsync,
     isRenewing: renewMutation.isPending,
-    featureListing: featureMutation.mutateAsync,
-    isFeaturing: featureMutation.isPending,
+    featureIncluded: featureIncludedMutation.mutateAsync,
+    featureListing: featureCheckoutMutation.mutateAsync,
+    isFeaturing:
+      featureIncludedMutation.isPending || featureCheckoutMutation.isPending,
     schedule: scheduleMutation.mutateAsync,
     isScheduling: scheduleMutation.isPending,
     updateStatus: updateStatusMutation.mutateAsync,

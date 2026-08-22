@@ -23,7 +23,7 @@ const FEATURE_LABELS: Record<string, string> = {
   video_upload: "Subida de vídeos",
   ai_generation: "Generación con IA",
   statistics: "Estadísticas avanzadas",
-  featured_listings: "Anuncios destacados",
+  featured_listings: "Vehículos destacados",
   dismissed_vehicles: "Vehículos descartados",
   advanced_listing_editor: "Editor avanzado de anuncios",
 };
@@ -137,6 +137,83 @@ export const listCatalogEntitlementDisplays = (
   }
 
   return items;
+};
+
+export interface LimitUsageSnapshot {
+  used: number;
+  limit: number | null;
+  remaining: number | null;
+  unlimited: boolean;
+  /** Hay cupo incluido usable (ilimitado o remaining > 0). */
+  canUseIncluded: boolean;
+}
+
+/**
+ * Normaliza un entitlement de tipo límite (p. ej. featured_listings, vehicles)
+ * a used / limit / remaining. Trata boolean legacy como sin cupo numérico.
+ */
+export const resolveLimitUsage = (
+  entry: BillingMeEntitlementEntry | undefined,
+  options?: { isPrivileged?: boolean },
+): LimitUsageSnapshot => {
+  if (options?.isPrivileged) {
+    return {
+      used: entry?.used ?? 0,
+      limit: null,
+      remaining: null,
+      unlimited: true,
+      canUseIncluded: true,
+    };
+  }
+
+  if (!entry) {
+    return {
+      used: 0,
+      limit: 0,
+      remaining: 0,
+      unlimited: false,
+      canUseIncluded: false,
+    };
+  }
+
+  if (entry.type === "boolean") {
+    const included = entry.value === true;
+    return {
+      used: entry.used ?? 0,
+      limit: included ? 1 : 0,
+      remaining: included ? Math.max(0, 1 - (entry.used ?? 0)) : 0,
+      unlimited: false,
+      canUseIncluded: included && (entry.used ?? 0) < 1,
+    };
+  }
+
+  if (entry.type === "unlimited" || entry.unlimited) {
+    return {
+      used: entry.used ?? 0,
+      limit: null,
+      remaining: null,
+      unlimited: true,
+      canUseIncluded: true,
+    };
+  }
+
+  const used = entry.used ?? 0;
+  const limit =
+    typeof entry.limit === "number" ? entry.limit : entry.limit === null ? null : 0;
+  const remaining =
+    typeof entry.remaining === "number"
+      ? entry.remaining
+      : limit == null
+        ? null
+        : Math.max(0, limit - used);
+
+  return {
+    used,
+    limit,
+    remaining,
+    unlimited: false,
+    canUseIncluded: limit == null || (typeof remaining === "number" && remaining > 0),
+  };
 };
 
 export const formatUsageVsLimit = (
