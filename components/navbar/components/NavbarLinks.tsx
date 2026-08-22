@@ -17,7 +17,7 @@ export function NavbarLinks() {
 
   return (
     <NavigationMenu className="hidden max-w-none lg:flex" align="start">
-      <NavigationMenuList className="gap-5">
+      <NavigationMenuList className="gap-3">
         {NAV_LINKS.map((link) => (
           <NavLinkItem
             key={link.href ?? link.label}

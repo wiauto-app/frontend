@@ -151,7 +151,7 @@ export const PhoneInput = ({
   return (
     <div
       className={cn(
-        "flex w-full  gap-1.5 flex-row items-start sm:gap-2",
+        "flex w-full  gap-1.5 flex-row items-start ",
         className,
       )}
     >
@@ -161,7 +161,7 @@ export const PhoneInput = ({
       >
         <PopoverTrigger
           disabled={disabled}
-          className="shrink-0 sm:min-w-20"
+          className="shrink-0 "
           render={
             <Button
               id={dialTriggerId}
@@ -173,7 +173,7 @@ export const PhoneInput = ({
               aria-expanded={dialPopoverOpen}
               aria-label="Prefijo internacional del teléfono"
               title={triggerHint}
-              className="h-9 justify-between gap-2 bg-transparent font-normal tabular-nums"
+              className="h-9 justify-between gap-1 bg-transparent font-normal tabular-nums "
             >
               <span className="min-w-0 flex-1 truncate text-left">
                 <span
@@ -187,10 +187,6 @@ export const PhoneInput = ({
                 </span>
               </span>
 
-              <ChevronDown
-                className="size-4 shrink-0 opacity-50"
-                aria-hidden
-              />
             </Button>
           }
         />
@@ -200,7 +196,7 @@ export const PhoneInput = ({
           align="start"
           sideOffset={4}
         >
-          <div className="flex max-h-[min(24rem,70vh)] flex-col">
+          <div className="flex max-h-56 flex-col">
             <div className="border-b p-2">
               <Input
                 id={searchInputId}

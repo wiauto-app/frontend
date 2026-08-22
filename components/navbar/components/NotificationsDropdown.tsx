@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { InAppNotification } from "@/interfaces/notification.interface";
 import { cn } from "@/lib/utils";
 import { useNavbarNotifications } from "../hooks/useNavbarNotifications";
+import { Button } from "@/components/ui/button";
 
 const formatNotificationTime = (isoDate: string): string => {
   const date = new Date(isoDate);
@@ -120,9 +121,10 @@ export const NotificationsDropdown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button
+          <Button
             type="button"
-            className="relative inline-flex size-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-50 hover:text-primary"
+            variant="ghost"
+            size="icon-sm"
             aria-label={
               unreadCount > 0
                 ? `Notificaciones, ${unreadCount} sin leer`
@@ -135,7 +137,7 @@ export const NotificationsDropdown = () => {
                 {badgeLabel}
               </span>
             ) : null}
-          </button>
+          </Button>
         }
       />
 
@@ -163,7 +165,10 @@ export const NotificationsDropdown = () => {
               <Skeleton className="h-12 w-full" />
             </div>
           ) : isError ? (
-            <p className="px-3 py-6 text-center text-sm text-red-600" role="alert">
+            <p
+              className="px-3 py-6 text-center text-sm text-red-600"
+              role="alert"
+            >
               {errorMessage}
             </p>
           ) : notifications.length === 0 ? (

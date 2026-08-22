@@ -7,7 +7,7 @@ import { getServerSession } from "@/lib/ensure-session.server";
 import { UserSidebarSheet } from "./components/userSidebarSheet";
 import { Suspense } from "react";
 
-const USER_SIDEBAR_WIDTH = "w-72 lg:w-80";
+const USER_SIDEBAR_WIDTH = "w-56 lg:w-64";
 
 export default async function Layout({
   children,

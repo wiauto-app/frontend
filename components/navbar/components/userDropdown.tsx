@@ -189,7 +189,7 @@ export function UserDropdown() {
         render={
           <button
             type="button"
-            className="flex items-center gap-3 rounded-lg py-1 pr-1 transition-colors hover:bg-slate-50"
+            className="flex items-center gap-1 rounded-lg py-1 pr-1 transition-colors hover:bg-slate-50"
           >
             <UserAvatar
               imageUrl={user?.avatar_url}

@@ -85,6 +85,7 @@ export const ProfileDataForm = () => {
             render={({ field }) => (
               <Field className="w-fit">
                 <ImageInput
+                  orientation="vertical"
                   value={field.value}
                   onChange={field.onChange}
                   bucketName="profile-images"

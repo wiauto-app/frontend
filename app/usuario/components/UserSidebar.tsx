@@ -68,7 +68,7 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
       {/* User Info Card */}
       <Card size="sm">
         <CardContent className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <UserAvatar
               className="size-9"
               imageUrl={user?.avatar_url}
@@ -79,7 +79,7 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
               <h3 className="font-semibold text-gray-900">
                 {user?.name || "Usuario"}
               </h3>
-              <p className="text-sm text-gray-500">{user?.email || "---"}</p>
+              <p className="text-xs text-gray-500">{user?.email || "---"}</p>
             </div>
           </div>
           <Link

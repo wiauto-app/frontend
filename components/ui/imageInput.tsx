@@ -3,7 +3,9 @@ import { ImagePlus, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { filesService, type BucketName } from "@/services/files/filesService";
-import { getImageUrl } from "@/lib/utils";
+import { cn, getImageUrl } from "@/lib/utils";
+import { Button } from "./button";
+import { FieldLabel } from "./field";
 
 type ImageInputProps = {
   value?: string | null;
@@ -11,7 +13,7 @@ type ImageInputProps = {
 
   label?: string;
   description?: string;
-
+  orientation?: "vertical" | "horizontal";
   bucketName: BucketName;
   path: string;
 
@@ -26,7 +28,7 @@ export const ImageInput = ({
 
   label = "Imagen",
   description = "PNG, JPG o WEBP",
-
+  orientation = "vertical",
   bucketName,
   path,
   referenceId,
@@ -105,14 +107,14 @@ export const ImageInput = ({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        {/* <label className="text-sm font-medium">{label}</label> */}
+        <FieldLabel className="text-sm font-medium">{label}</FieldLabel>
 
-        <p className="text-muted-foreground text-sm">{description}</p>
+        <p className="text-muted-foreground text-xs">{description}</p>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className={cn("flex items-center gap-4", orientation === "horizontal" ? "flex-row" : "flex-col")}>
         <div className="relative">
-          <div className="bg-muted flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border">
+          <div className={cn("bg-muted flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border")}>
             {preview ? (
               <img
                 src={preview}
@@ -154,11 +156,12 @@ export const ImageInput = ({
             }}
           />
 
-          <button
+          <Button
+            variant="outline"
             type="button"
+            size="sm"
             disabled={isUploading}
             onClick={() => inputRef.current?.click()}
-            className="inline-flex h-10 items-center justify-center rounded-xl border px-4 text-sm font-medium transition hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
           >
             {isUploading ? (
               <div className="flex items-center gap-2">
@@ -170,7 +173,7 @@ export const ImageInput = ({
             ) : (
               "Subir imagen"
             )}
-          </button>
+          </Button>
 
           {preview && !isUploading && (
             <button
