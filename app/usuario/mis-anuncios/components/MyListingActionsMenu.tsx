@@ -99,7 +99,7 @@ export const MyListingActionsMenu = ({
             <Pencil className="size-4" aria-hidden />
             Editar
           </DropdownMenuItem>
-          {canUseAdvancedEditor ? (
+          {/* {canUseAdvancedEditor ? (
             <DropdownMenuItem
               render={
                 <Link href={`/editar-vehiculo-profesional/${listing.id}`} />
@@ -108,7 +108,7 @@ export const MyListingActionsMenu = ({
               <FormInput className="size-4" aria-hidden />
               Edición completa
             </DropdownMenuItem>
-          ) : null}
+          ) : null} */}
           {/* <DropdownMenuItem onClick={handleDuplicate}>
             <Copy className="size-4" aria-hidden />
             Duplicar

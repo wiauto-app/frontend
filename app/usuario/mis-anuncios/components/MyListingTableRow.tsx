@@ -107,11 +107,11 @@ const PerformanceCell = ({
       <span className="text-xl font-semibold tracking-tight text-foreground">
         {new Intl.NumberFormat("es-ES").format(trend.current)}
       </span>
-      <ListingPerformanceSparkline
+      {/* <ListingPerformanceSparkline
         positive={isPositive}
         className="h-6 w-16"
         ariaLabel={`Tendencia de ${label}`}
-      />
+      /> */}
     </div>
   );
 };
@@ -146,14 +146,14 @@ export const MyListingTableRow = ({
     .join(" · ");
 
   return (
-    <Card className="gap-0 overflow-hidden py-0 transition-shadow hover:shadow-md">
+    <Card className="gap-0 overflow-hidden py-0 ">
       <CardContent className="p-4 sm:p-5">
-        <div className="grid gap-5 md:grid-cols-[minmax(220px,1.05fr)_minmax(260px,0.95fr)] md:items-stretch">
+        <div className="grid gap-5 xl:grid-cols-2">
           <Link
             href={`/vehiculo/${listing.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="group/image relative aspect-[16/10] min-h-52 overflow-hidden rounded-xl bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group/image relative w-full h-52 xl:h-full rounded-xl overflow-hidden"
             aria-label={`Ver anuncio ${listing.display_name}`}
           >
             {imageUrl ? (

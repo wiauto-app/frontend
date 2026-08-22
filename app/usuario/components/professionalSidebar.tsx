@@ -68,30 +68,18 @@ export function ProfessionalSidebar({
   className,
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const { user, logout, isLoading } = useUser();
+  const { logout, isLoading } = useUser();
   const pathname = usePathname();
-  const {
-    has,
-    isSubscribed,
-    isPrivileged,
-  } = useEntitlements();
 
   const isOnUsuarioPath = pathname.includes("usuario");
-  const isSidebarLoading = isLoading;
-  const sidebarItems = useUserSidebarItems()
+  const sidebarItems = useUserSidebarItems();
   if (!isOnUsuarioPath) {
     return null;
   }
 
-  if (isSidebarLoading) {
+  if (isLoading) {
     return <ProfessionalSidebarSkeleton className={className} {...props} />;
   }
-
-  if (!(isSubscribed || isPrivileged)) {
-    return null;
-  }
-
-
 
   return (
     <Sidebar

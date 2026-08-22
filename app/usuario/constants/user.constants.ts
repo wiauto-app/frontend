@@ -11,7 +11,6 @@ import {
   Bell,
   Newspaper,
   User as UserIcon,
-  Settings,
   CreditCard,
   Users,
   Building2,
@@ -28,6 +27,7 @@ export interface UserSidebarLink {
 }
 
 export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
+  { href: `${basePath}/inicio`, label: "Inicio", icon: LayoutGrid },
   { href: `${basePath}/mis-anuncios`, label: "Mis anuncios", icon: Car },
   { href: `${basePath}/favoritos`, label: "Favoritos", icon: Heart },
   {
@@ -39,18 +39,22 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
   { href: `${basePath}/contactos`, label: "Contactos / Leads", icon: ContactRound },
   { href: `${basePath}/notificaciones`, label: "Notificaciones", icon: Bell },
   { href: `${basePath}/perfil`, label: "Mi perfil", icon: UserIcon },
+  {
+    href: `${basePath}/descartados`,
+    label: "Descartados",
+    icon: EyeOff,
+  },
   // { href: `${basePath}/configuracion`, label: "Configuración", icon: Settings },
 ];
 
 
 export const USER_SIDEBAR_PRO_LINKS = [
-  { href: `${basePath}/inicio`, label: "Inicio", icon: LayoutGrid },
 
   { href: `${basePath}/estadisticas`, label: "Estadísticas", icon: BarChart3 },
 
   { href: `${basePath}/mi-tasador`, label: "Tasador", icon: Calculator }, {
     href: `${basePath}/perfil?tab=dealership`,
-    label: "Perfil de concesionaria",
+    label: "Concesionario",
     icon: Building2,
   },
   {
@@ -58,11 +62,7 @@ export const USER_SIDEBAR_PRO_LINKS = [
     label: "Monetización",
     icon: CreditCard,
   },
-  {
-    href: `${basePath}/descartados`,
-    label: "Descartados",
-    icon: EyeOff,
-  },
+
   {
     href: `${basePath}/equipo`,
     label: "Equipo",

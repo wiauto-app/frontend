@@ -58,7 +58,7 @@ export default async function Layout({
                 </aside>
               ) : null}
 
-              <main className="min-w-0 w-full flex-1">{children}</main>
+              <main className="min-w-0 w-full flex-1 container mx-auto px-5 xl:px-0">{children}</main>
             </div>
           </div>
         </div>

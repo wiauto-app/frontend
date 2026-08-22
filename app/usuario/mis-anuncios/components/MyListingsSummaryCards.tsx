@@ -42,7 +42,7 @@ const SummaryCard = ({
   const TrendIcon = isPositive ? TrendingUp : TrendingDown;
 
   return (
-    <Card >
+    <Card size="sm">
       <CardContent>
         <div className="flex items-center gap-2 mb-2">
           <Icon className="size-4 text-gray-400" aria-hidden />
@@ -60,7 +60,7 @@ const SummaryCard = ({
               {formatChangeLabel(changePercent)}
             </p>
           </div>
-          <ListingPerformanceSparkline positive={isPositive} />
+          {/* <ListingPerformanceSparkline positive={isPositive} /> */}
         </div>
       </CardContent>
     </Card>
@@ -107,7 +107,7 @@ export const MyListingsSummaryCards = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
       {cards.map((card) => (
         <SummaryCard key={card.label} {...card} />
       ))}
