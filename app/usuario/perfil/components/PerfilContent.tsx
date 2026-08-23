@@ -21,6 +21,7 @@ import { PasswordSettingsSection } from "./PasswordSettingsSection";
 import { TwoFactorSettingsSection } from "./TwoFactorSettingsSection";
 import { DealershipProfileTabContent } from "./DealershipProfileTabContent";
 import { ProfileDataForm } from "./profileDataForm";
+import { DeleteAccountSection } from "./DeleteAccountSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import {
@@ -236,6 +237,10 @@ export const PerfilContent = () => {
                 </a>
               </CardContent>
             </Card>
+
+            <div className="md:col-span-2">
+              <DeleteAccountSection />
+            </div>
           </div>
         </TabsContent>
 
