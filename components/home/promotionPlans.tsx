@@ -12,7 +12,6 @@ import { HeroTitle } from "../ui/heroTitle";
 import { IconContainer } from "../ui/iconContainer";
 import { StrapiButton } from "../ui/strapiButton";
 import { HeroFeatures } from "./heroFeatures";
-import { CardBody, CardContainer, CardItem } from "../ui/3d-card";
 
 export const PromotionPlans = ({
   data,
@@ -28,7 +27,7 @@ export const PromotionPlans = ({
 
   return (
     <Hero
-      className="lg:h-auto gap-5 overflow-visible"
+      className="lg:h-auto gap-5 overflow-visible lg:px-0"
       contentClassName="gap-3 lg:gap-5"
       leftContent={
         <>

@@ -153,20 +153,38 @@ const NavLinkGroups = ({
   return (
     <div
       className={cn(
-        "grid gap-4 p-1",
-        itemsGroups.length > 1 ? "min-w-md grid-cols-2" : "min-w-80 grid-cols-1",
+        "flex gap-8 p-1",
+        itemsGroups.length > 1 ? "min-w-2xl justify-between" : "min-w-80",
       )}
     >
-      {itemsGroups.map((group) => (
-        <div key={group.label} className="min-w-0">
-          {renderGroupLabel(group)}
-          <NavLinkItemsList
-            items={group.items}
-            variant={variant}
-            onNavigate={onNavigate}
-          />
+      <div className="min-w-0 shrink-0">
+        {renderGroupLabel(itemsGroups[0]!)}
+        <NavLinkItemsList
+          items={itemsGroups[0]!.items}
+          variant={variant}
+          onNavigate={onNavigate}
+        />
+      </div>
+
+      {itemsGroups.length > 1 ? (
+        <div
+          className={cn(
+            "flex min-w-0 gap-8",
+            itemsGroups.length > 2 ? "justify-end" : null,
+          )}
+        >
+          {itemsGroups.slice(1).map((group) => (
+            <div key={group.label} className="min-w-0">
+              {renderGroupLabel(group)}
+              <NavLinkItemsList
+                items={group.items}
+                variant={variant}
+                onNavigate={onNavigate}
+              />
+            </div>
+          ))}
         </div>
-      ))}
+      ) : null}
     </div>
   );
 };
@@ -218,7 +236,7 @@ export const NavLinkItem = ({
         <NavigationMenuTrigger
           className={cn(
             getNavLinkItemClassName(variant, isActive),
-            "h-auto rounded-none bg-transparent px-0 py-0 shadow-none hover:bg-transparent focus:bg-transparent focus-visible:ring-0 data-open:bg-transparent data-popup-open:bg-transparent",
+            "h-auto rounded-none bg-transparent px-0 py-0 shadow-none hover:bg-transparent focus:bg-transparent focus-visible:ring-0 data-open:bg-transparent data-popup-open:bg-transparent text-[13px]",
           )}
           style={isActive ? { color: BRAND_BLUE } : undefined}
         >
@@ -269,7 +287,7 @@ export const NavLinkItem = ({
         render={<Link href={href} />}
         className={cn(
           getNavLinkItemClassName(variant, isActive),
-          "bg-transparent px-0 py-0 hover:bg-transparent focus:bg-transparent data-[active=true]:bg-transparent",
+          "bg-transparent px-0 py-0 hover:bg-transparent focus:bg-transparent data-[active=true]:bg-transparent text-[13px]",
         )}
         style={isActive ? { color: BRAND_BLUE } : undefined}
         aria-current={isActive ? "page" : undefined}

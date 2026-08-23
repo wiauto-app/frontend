@@ -46,24 +46,6 @@ export const NAV_LINKS: NavLink[] = [
     label: "Comprar",
     itemsGroups: [
       {
-        label: "Tendencias",
-        Icon: TrendingUp,
-        items: [
-          {
-            label: "Recién publicados",
-            href: "/vehiculos",
-          },
-          {
-            label: "Más vistos",
-            href: "/vehiculos?orden=views-desc",
-          },
-          {
-            label: "Más baratos",
-            href: "/vehiculos?orden=price-asc",
-          },
-        ],
-      },
-      {
         label: "Vehículos",
         Icon: Car,
         items: [
@@ -99,6 +81,24 @@ export const NAV_LINKS: NavLink[] = [
           },
         ],
       },
+      {
+        label: "Tendencias",
+        Icon: TrendingUp,
+        items: [
+          {
+            label: "Recién publicados",
+            href: "/vehiculos",
+          },
+          {
+            label: "Más vistos",
+            href: "/vehiculos?orden=views-desc",
+          },
+          {
+            label: "Más baratos",
+            href: "/vehiculos?orden=price-asc",
+          },
+        ],
+      },
     ],
   },
   {
@@ -122,6 +122,36 @@ export const NAV_LINKS: NavLink[] = [
         Icon: Percent,
         description: "Calcula cuotas y compara opciones de pago",
       },
+    ],
+  },
+  {
+    label: "Servicios",
+    items: [
+      {
+        href: "/informe-historial-vehiculo",
+        label: "Informe del historial del vehículo",
+        Icon: Car,
+        description: "Conoce el historial del vehículo",
+      },
+      {
+        href: "/revision-vehiculo",
+        label: "Revisa tu vehículo por un profesional",
+        Icon: Scale,
+        description: "Revisa tu vehículo por un profesional",
+      },
+      {
+        href: "/garantia-mecanica",
+        label: "Solicita una garantía mecánica",
+        Icon: CreditCard,
+        description: "Solicita una garantía mecánica",
+      },
+      {
+        href: "/transferir-vehiculo",
+        label: "Transferir coche",
+        Icon: CreditCard,
+        description: "Transferir coche",
+      },
+     
     ],
   },
   {

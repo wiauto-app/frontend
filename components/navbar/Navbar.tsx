@@ -17,13 +17,14 @@ export const Navbar = () => {
         aria-label="Navegación principal"
         className={cn(
           " mx-auto flex h-20 w-full items-center justify-between gap-4 px-4 sm:px-6 lg:px-8",
-          pathname.includes("usuario") ? "container-full":"container-custom",
+          pathname.includes("usuario") ? "container-full" : "container-custom",
         )}
       >
         <BrandLogo variant={isSubscribed ? "pro" : "primary"} />
         <NavbarLinks />
-        <NavbarActions />
-        <NavbarMobileMenu />
+        <NavbarActions>
+          <NavbarMobileMenu />
+        </NavbarActions>
       </nav>
     </header>
   );

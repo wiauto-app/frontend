@@ -189,7 +189,7 @@ export function UserDropdown() {
         render={
           <button
             type="button"
-            className="flex items-center gap-1 rounded-lg py-1 pr-1 transition-colors hover:bg-slate-50"
+            className="flex items-center gap-1 rounded-lg py-1 pr-1 transition-colors hover:bg-muted-foreground/10"
           >
             <UserAvatar
               imageUrl={user?.avatar_url}
@@ -198,7 +198,7 @@ export function UserDropdown() {
             />
 
             <div className="flex flex-col items-start">
-              <p className="hidden max-w-[160px] truncate text-sm font-bold text-slate-900 sm:inline">
+              <p className="hidden max-w-[160px] truncate text-sm font-bold text-slate-900 lg:inline">
                 {displayName}
               </p>
 

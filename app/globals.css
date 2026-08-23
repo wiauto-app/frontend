@@ -156,13 +156,13 @@
 
 @media (min-width: 1024px) {
   .container-custom {
-    max-width: 900px;
+    max-width: 1100px;
   }
 }
 
 @media (min-width: 1280px) {
   .container-custom {
-    max-width: 900px;
+    max-width: 1100px;
 
   }
 }
