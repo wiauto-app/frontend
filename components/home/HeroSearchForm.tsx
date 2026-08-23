@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 // import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { FileText, Filter, Search, SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -50,36 +50,42 @@ const SEARCH_BUTTON_LABEL = "Buscar coches";
 const HeroModeToggle = ({ mode, onModeChange }: HeroModeToggleProps) => {
   return (
     <div
-      className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1"
+      className="grid grid-cols-2"
       role="tablist"
       aria-label="Modo de búsqueda"
     >
-      <Button
+      <button
         type="button"
         role="tab"
         aria-selected={mode === "filters"}
-        variant={mode === "filters" ? "default" : "ghost"}
         className={cn(
-          "rounded-md",
-          mode !== "filters" && "text-muted-foreground",
+          "py-2 flex items-center gap-2 justify-center relative rounded-none border-b-2 border-transparent bg-transparent",
+          "hover:bg-transparent hover:text-primary",
+          mode === "filters"
+            ? "border-primary text-primary"
+            : "text-muted-foreground",
         )}
         onClick={() => onModeChange("filters")}
       >
+        <SlidersHorizontal className="size-4" />
         Filtros
-      </Button>
-      <Button
-        type="button"
+      </button>
+
+      <button
         role="tab"
         aria-selected={mode === "reference"}
-        variant={mode === "reference" ? "default" : "ghost"}
         className={cn(
-          "rounded-md",
-          mode !== "reference" && "text-muted-foreground",
+          "py-2 flex items-center gap-2 justify-center relative rounded-none  border-b-2 border-transparent bg-transparent",
+          "hover:bg-transparent hover:text-primary",
+          mode === "reference"
+            ? "border-primary text-primary"
+            : "text-muted-foreground",
         )}
         onClick={() => onModeChange("reference")}
       >
+        <FileText className="size-4" />
         Referencia
-      </Button>
+      </button>
     </div>
   );
 };
@@ -110,7 +116,7 @@ const HeroFiltersSearchForm = () => {
 
   return (
     <form
-      className="grid grid-cols-1 gap-4 md:w-84 w-full"
+      className="grid grid-cols-1 gap-4  w-full"
       onSubmit={(event) => {
         event.preventDefault();
         handleSearch();
@@ -145,8 +151,8 @@ const HeroSearchFormContent = () => {
   };
 
   return (
-    <div className="min-w-xs space-y-2">
-      <div className="grid w-full grid-cols-2 gap-1 rounded-xl bg-white p-2 lg:w-fit">
+    <div className=" w-full md:w-xs space-y-2">
+      <div className="grid w-full grid-cols-2 gap-1  lg:w-fit">
         <Button className="rounded-lg">Comprar</Button>
         <NavbarPublishButton variant="outline" className="rounded-lg w-full h-full"  />
       </div>

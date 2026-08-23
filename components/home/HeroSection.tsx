@@ -1,4 +1,3 @@
-
 import type { StrapiHomeHero } from "@/interfaces/strapi-components.interface";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
@@ -20,34 +19,39 @@ export function HeroSection({ data }: HeroSectionProps) {
     return null;
   }
 
-  const background_image_url = getStrapiMediaUrl(
-    data.backgroundImage?.url,
-  );
-
-  if (!background_image_url) {
-    return null;
-  }
-
   const title = data.title?.trim() || "";
   const features = data.caracteristicas ?? [];
 
   return (
     <Hero
+      className="px-3"
       leftContent={
         <div className="flex flex-col">
-          <div className="flex flex-col px-4 text-white lg:gap-5 2xl:px-14">
+          <div className="flex flex-col  text-white gap-2 lg:gap-5 2xl:px-14">
             <div>
-              <HeroTitle>{title}</HeroTitle>
+              <HeroTitle
+                highlight
+                className="text-black text-start  max-w-[75%] lg:max-w-full" 
+              >
+                {title}
+              </HeroTitle>
             </div>
 
             {data.subtitle ? (
               <div>
-                <HeroDescription>{data.subtitle}</HeroDescription>
+                <HeroDescription className="text-black block text-start  text-xs max-w-[65%] lg:max-w-full">
+                  {data.subtitle}
+                </HeroDescription>
               </div>
             ) : null}
 
             <div>
-              <HeroFeatures features={features} />
+              <HeroFeatures
+                className="text-black text-xs "
+                features={features}
+                orientation="horizontal"
+                containerClassName="gap-2 flex flex-wrap"
+              />
             </div>
           </div>
         </div>
@@ -63,14 +67,10 @@ export function HeroSection({ data }: HeroSectionProps) {
             <StoreButtons className="flex flex-col gap-1" />
           </div>
 
-          <HeroBackdrop />
+          {/* <HeroBackdrop /> */}
 
           <div className="absolute inset-0 z-0">
-            <HeroBackgroundCarousel
-              images={data.heroImages}
-              fallbackUrl={background_image_url}
-              title={title}
-            />
+            <HeroBackgroundCarousel images={data.heroImages} />
           </div>
         </>
       }

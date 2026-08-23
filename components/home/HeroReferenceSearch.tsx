@@ -65,7 +65,7 @@ export const HeroReferenceSearch = () => {
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-4 " onSubmit={handleSubmit}>
       <div className="space-y-2">
         <label
           htmlFor="hero-vehicle-ref"
@@ -75,7 +75,7 @@ export const HeroReferenceSearch = () => {
         </label>
         <div className="relative">
           <Hash
-            className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 text-primary"
+            className="pointer-events-none absolute top-1/2 left-3 size-3 -translate-y-1/2 text-primary"
             aria-hidden
           />
           <Input
@@ -90,7 +90,7 @@ export const HeroReferenceSearch = () => {
             aria-describedby={
               errorMessage ? "hero-vehicle-ref-error" : "hero-vehicle-ref-hint"
             }
-            className="h-12 pl-10 text-lg tracking-wide tabular-nums"
+            className="pl-8  "
           />
         </div>
         <p

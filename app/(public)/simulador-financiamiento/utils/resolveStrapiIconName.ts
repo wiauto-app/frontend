@@ -1,8 +1,9 @@
 import type { LucideIcon } from "lucide-react";
+import { CarFront } from "lucide-react";
 import type { IconType } from "react-icons";
-
 import {
   BiSupport,
+  BiSolidCar
 } from "react-icons/bi";
 
 import {
@@ -47,6 +48,7 @@ import {
   HiOutlineChip,
   HiOutlineCollection,
   HiOutlineSupport,
+  HiOutlineStar
 } from "react-icons/hi";
 
 import {
@@ -58,6 +60,7 @@ import {
 
 import {
   IoMdDocument,
+  IoMdSpeedometer
 } from "react-icons/io";
 import { IoDocumentTextOutline, IoHappyOutline } from "react-icons/io5";
 
@@ -70,12 +73,15 @@ import {
 import {
   MdCarRepair,
   MdCalculate,
+  MdOutlineDiscount
 } from "react-icons/md";
 
-const STRAPI_ICONS = {
+const STRAPI_ICONS = {  
+  // Lucide
+  CarFront,
   // Bootstrap Icons
   BiSupport,
-
+  BiSolidCar,
   // Font Awesome
   FaCrown,
   FaQuoteLeft,
@@ -118,7 +124,7 @@ const STRAPI_ICONS = {
   HiOutlineChip,
   HiOutlineCollection,
   HiOutlineSupport,
-
+  HiOutlineStar,
   // Heroicons 2
   HiMiniReceiptPercent,
   HiCalendarDays,
@@ -127,7 +133,7 @@ const STRAPI_ICONS = {
   IoMdDocument,
   IoDocumentTextOutline,
   IoHappyOutline,
-
+  IoMdSpeedometer,
   // Lucide
   LuMonitorDot,
   LuTicketMinus,
@@ -135,6 +141,7 @@ const STRAPI_ICONS = {
   // Material Design
   MdCarRepair,
   MdCalculate,
+  MdOutlineDiscount,
 } satisfies Record<string, IconType>;
 
 export type ResolvedStrapiIcon = IconType | LucideIcon;
