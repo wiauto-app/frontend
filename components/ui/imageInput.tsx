@@ -32,7 +32,7 @@ export const ImageInput = ({
   bucketName,
   path,
   referenceId,
-  accept = "image/png,image/jpeg,image/jpg,image/webp,image/avif,image/heic,image/heif,.heic,.heif",
+  accept = "image/png,image/jpeg,image/jpg,image/webp",
 }: ImageInputProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 

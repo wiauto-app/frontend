@@ -17,7 +17,7 @@ interface VehicleImageCarouselProps {
 
 const resolveCarouselImageUrl = (image: VehicleImage | undefined): string => {
   if (!image?.url) {
-    return "/placeholder-car.jpg";
+    return "/placeholder-car.webp";
   }
   return getImageUrl(image.url);
 };

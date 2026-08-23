@@ -30,9 +30,9 @@ export const ProfileProvinceSelector = ({
     <Select
       items={provinces.map((province) => ({
         label: province.name,
-        value: province.id,
+        value: province.id.toString(),
       }))}
-      value={value}
+      value={value ?? undefined}
       onValueChange={(value) => onChange(value ?? "")}
     >
       <SelectTrigger className="w-full">
@@ -40,7 +40,7 @@ export const ProfileProvinceSelector = ({
       </SelectTrigger>
       <SelectContent className="max-h-[200px] overflow-y-auto">
         {provinces.map((province) => (
-          <SelectItem key={province.id} value={province.id}>
+          <SelectItem key={province.id} value={province.id.toString()}>
             {province.name}
           </SelectItem>
         ))}

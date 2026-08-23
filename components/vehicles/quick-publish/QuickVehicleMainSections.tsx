@@ -29,11 +29,13 @@ import { EquipmentForm } from "./equipmentForm";
 interface QuickVehicleMainSectionsProps {
   vehicleId?: string;
   contactName: string;
+  onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
 }
 
 export const QuickVehicleMainSections = ({
   vehicleId,
   contactName,
+  onImageUploadStatusChange,
 }: QuickVehicleMainSectionsProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const phoneValue = form.watch("phone");
@@ -41,7 +43,10 @@ export const QuickVehicleMainSections = ({
   return (
     <div className="flex flex-col gap-12">
       {!isSubscribed ? <PromotionBanner /> : null}
-      <QuickVehicleMediaStep vehicleId={vehicleId} />
+      <QuickVehicleMediaStep
+        vehicleId={vehicleId}
+        onImageUploadStatusChange={onImageUploadStatusChange}
+      />
 
       <VehicleFormStep number={2} label="¿Qué vehículo vendes?">
         <QuickCatalogFields />

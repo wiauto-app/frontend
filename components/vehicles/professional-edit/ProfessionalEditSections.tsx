@@ -51,6 +51,7 @@ import {
 interface ProfessionalEditSectionsProps {
   vehicleId: string;
   contactName: string;
+  onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
 }
 
 interface SectionShellProps {
@@ -89,6 +90,7 @@ const toggleCuotaIdInList = (
 export const ProfessionalEditSections = ({
   vehicleId,
   contactName,
+  onImageUploadStatusChange,
 }: ProfessionalEditSectionsProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const phoneValue = form.watch("phone");
@@ -557,6 +559,7 @@ export const ProfessionalEditSections = ({
                 value={field.value}
                 onChange={field.onChange}
                 reference_id={vehicleId}
+                onUploadStatusChange={onImageUploadStatusChange}
               />
               {fieldState.error ? (
                 <p className="mt-2 text-sm text-destructive">

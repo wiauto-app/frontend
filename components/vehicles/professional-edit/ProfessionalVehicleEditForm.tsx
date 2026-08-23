@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm, type Resolver } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +28,9 @@ export const ProfessionalVehicleEditForm = ({
   vehicleId,
   onSuccess,
 }: ProfessionalVehicleEditFormProps) => {
+  const [hasIncompleteImageUploads, setHasIncompleteImageUploads] =
+    useState(false);
+
   const { data: vehicleDetail, isLoading: isLoadingVehicle } = useQuery({
     queryKey: ["vehicle", vehicleId],
     queryFn: () => vehiclesService.findOne(vehicleId),
@@ -54,10 +57,14 @@ export const ProfessionalVehicleEditForm = ({
   }, [vehicleDetail, form]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
-    const payload = serializeVehiclePayload(
-      data,
-      { is_update: true },
-    );
+    if (hasIncompleteImageUploads) {
+      toast.error(
+        "Espera a que terminen de subirse todas las imágenes antes de guardar.",
+      );
+      return;
+    }
+
+    const payload = serializeVehiclePayload(data, { is_update: true });
     const response = await vehiclesService.update(vehicleId, payload as never);
 
     if (response.ok) {
@@ -92,18 +99,26 @@ export const ProfessionalVehicleEditForm = ({
           <ProfessionalEditSections
             vehicleId={vehicleId}
             contactName={contactName}
+            onImageUploadStatusChange={setHasIncompleteImageUploads}
           />
           <div className="sticky bottom-4 z-10 flex justify-end rounded-xl border border-gray-100 bg-white/95 p-3 shadow-sm backdrop-blur">
             <Button
               type="submit"
-              disabled={form.formState.isSubmitting}
+              disabled={
+                form.formState.isSubmitting || hasIncompleteImageUploads
+              }
               aria-label="Guardar cambios del anuncio"
+              aria-disabled={
+                form.formState.isSubmitting || hasIncompleteImageUploads
+              }
             >
               {form.formState.isSubmitting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" aria-hidden />
                   Guardando…
                 </>
+              ) : hasIncompleteImageUploads ? (
+                "Subiendo imágenes…"
               ) : (
                 "Guardar cambios"
               )}

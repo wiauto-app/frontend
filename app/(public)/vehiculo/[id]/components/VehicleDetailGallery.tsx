@@ -20,7 +20,7 @@ type VehicleDetailGalleryProps = {
 
 const PLACEHOLDER_IMAGE: VehicleImage = {
   id: "placeholder",
-  url: "/placeholder-car.jpg",
+  url: "/placeholder-car.webp",
   order: 0,
 };
 

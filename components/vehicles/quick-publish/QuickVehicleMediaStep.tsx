@@ -12,10 +12,12 @@ import { cn } from "@/lib/utils";
 
 interface QuickVehicleMediaStepProps {
   vehicleId?: string;
+  onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
 }
 
 export const QuickVehicleMediaStep = ({
   vehicleId,
+  onImageUploadStatusChange,
 }: QuickVehicleMediaStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
 
@@ -62,6 +64,7 @@ export const QuickVehicleMediaStep = ({
                   onChange={field.onChange}
                   reference_id={vehicleId}
                   maxImages={limit}
+                  onUploadStatusChange={onImageUploadStatusChange}
                 />
                 {fieldState.error ? (
                   <p className="mt-2 text-sm text-destructive">

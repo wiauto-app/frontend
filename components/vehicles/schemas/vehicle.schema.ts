@@ -28,15 +28,21 @@ const optionalUuidArray = z
   .optional()
   .default([]);
 
-/** Imagen del vehículo: ruta en almacenamiento y orden de visualización (0 … n-1). */
+/** Imagen del vehículo: upload_id (nuevo flujo) o path (legacy) + orden de visualización (0 … n-1). */
 export const vehicle_image_schema = z.object({
   id: z.uuid().optional(),
-  path: z.string().min(1, { error: "La ruta de la imagen no es válida." }),
+  upload_id: z.string().min(1).optional(),
+  path: z.string().min(1).optional(),
+  /** Solo UI: blob local o URL pública; no se envía al API. */
+  preview_url: z.string().min(1).optional(),
   order: z
     .number({ error: "El orden de la imagen debe ser un número válido." })
     .int({ error: "El orden de la imagen debe ser un número entero." })
     .min(0, { error: "El orden de la imagen no puede ser negativo." }),
-});
+}).refine(
+  (data) => data.upload_id || data.path,
+  { message: "Debe proporcionar upload_id o path.", path: ["upload_id"] }
+);
 
 export type VehicleFormImage = z.infer<typeof vehicle_image_schema>;
 

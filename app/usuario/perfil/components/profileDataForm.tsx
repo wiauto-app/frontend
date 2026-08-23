@@ -71,7 +71,7 @@ export const ProfileDataForm = () => {
     }
 
     toast.success("Perfil actualizado correctamente");
-    await refreshUser();
+    // await refreshUser();
   };
 
   return (
@@ -99,7 +99,7 @@ export const ProfileDataForm = () => {
             )}
           />
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3  w-full">
             <Field data-invalid={Boolean(errors.name)}>
               <FieldLabel htmlFor="name">Nombre</FieldLabel>
               <Input

@@ -1,6 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, type FormEvent, type KeyboardEvent } from "react";
+import {
+  Suspense,
+  useEffect,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm, type Resolver } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
@@ -15,7 +21,6 @@ import {
 import { vehiclesService } from "@/components/vehicles/services/vehiclesService";
 import { mapVehicleDetailToQuickFormValues } from "@/components/vehicles/utils/mapVehicleDetailToQuickFormValues";
 import { QuickVehiclePreview } from "./QuickVehiclePreview";
-import { QuickVehicleOptionalSections } from "./QuickVehicleOptionalSections";
 import { QuickVehicleIntroWizard } from "./QuickVehicleIntroWizard";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { QUICK_VEHICLE_SUBMIT_ATTR } from "./quick-vehicle-wizard.constants";
@@ -33,6 +38,8 @@ export const QuickVehicleForm = ({
   const router = useRouter();
   const { user } = useUser();
   const isEditMode = Boolean(vehicleId);
+  const [hasIncompleteImageUploads, setHasIncompleteImageUploads] =
+    useState(false);
 
   const { data: vehicleDetail, isLoading: isLoadingVehicle } = useQuery({
     queryKey: ["vehicle", vehicleId],
@@ -62,9 +69,15 @@ export const QuickVehicleForm = ({
   }, [user, isEditMode, form]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
+    if (hasIncompleteImageUploads) {
+      toast.error(
+        "Espera a que terminen de subirse todas las imágenes antes de publicar.",
+      );
+      return;
+    }
+
     const payload = serializeVehiclePayload(data, {
       is_update: Boolean(vehicleId),
-      // only_temp_images: Boolean(vehicleId),
     });
     if (vehicleId) {
       const response = await vehiclesService.update(
@@ -114,7 +127,6 @@ export const QuickVehicleForm = ({
     const isExplicitPublish =
       submitter?.getAttribute(QUICK_VEHICLE_SUBMIT_ATTR) === "true";
 
-    // Enter en un input dispara submit implícito (GET nativo) y borra ?step=…
     if (!isExplicitPublish) {
       return;
     }
@@ -130,7 +142,6 @@ export const QuickVehicleForm = ({
     if (target.tagName === "BUTTON" || target.closest("button")) return;
     if (target.closest(`[${QUICK_VEHICLE_SUBMIT_ATTR}="true"]`)) return;
 
-    // Enter en inputs dispara submit implícito (GET) y pierde ?step=… + estado del form.
     event.preventDefault();
   };
 
@@ -169,13 +180,14 @@ export const QuickVehicleForm = ({
               vehicleId={vehicleId}
               contactName={contactName}
               isEditMode={isEditMode}
+              hasIncompleteImageUploads={hasIncompleteImageUploads}
+              onImageUploadStatusChange={setHasIncompleteImageUploads}
             />
           </Suspense>
         </div>
 
         <aside className="hidden lg:flex flex-col gap-6 lg:col-span-1">
           <QuickVehiclePreview />
-          {/* <QuickVehicleOptionalSections /> */}
           <button
             type="button"
             className="text-left text-sm text-primary hover:underline"

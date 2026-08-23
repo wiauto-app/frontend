@@ -29,12 +29,16 @@ interface QuickVehicleIntroWizardProps {
   vehicleId?: string;
   contactName: string;
   isEditMode?: boolean;
+  hasIncompleteImageUploads?: boolean;
+  onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
 }
 
 export const QuickVehicleIntroWizard = ({
   vehicleId,
   contactName,
   isEditMode = false,
+  hasIncompleteImageUploads = false,
+  onImageUploadStatusChange,
 }: QuickVehicleIntroWizardProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const { values, handleChange } = useFiltersManager({
@@ -133,6 +137,7 @@ export const QuickVehicleIntroWizard = ({
           <QuickVehicleMainSections
             vehicleId={vehicleId}
             contactName={contactName}
+            onImageUploadStatusChange={onImageUploadStatusChange}
           />
         );
 
@@ -183,9 +188,14 @@ export const QuickVehicleIntroWizard = ({
           <Button
             type="submit"
             size="lg"
-            disabled={form.formState.isSubmitting}
+            disabled={
+              form.formState.isSubmitting || hasIncompleteImageUploads
+            }
             className="w-full sm:w-auto"
             data-quick-vehicle-submit="true"
+            aria-disabled={
+              form.formState.isSubmitting || hasIncompleteImageUploads
+            }
           >
             {form.formState.isSubmitting ? (
               <Loader2 className="size-4 animate-spin" />
@@ -193,7 +203,11 @@ export const QuickVehicleIntroWizard = ({
               <Send className="size-4" />
             )}
 
-            {isEditMode ? "Actualizar anuncio" : "Publicar anuncio ahora"}
+            {hasIncompleteImageUploads
+              ? "Subiendo imágenes…"
+              : isEditMode
+                ? "Actualizar anuncio"
+                : "Publicar anuncio ahora"}
           </Button>
         ) : null}
       </div>

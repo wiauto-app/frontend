@@ -6,7 +6,11 @@ import { OPTIONAL_FIELD_SUFFIX } from "../constants/vehicle-form-field-meta";
 import { ImagesForm } from "./imagesForm";
 import { VideosForm } from "./videosForm";
 
-export const MediaForm = () => {
+interface MediaFormProps {
+  onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
+}
+
+export const MediaForm = ({ onImageUploadStatusChange }: MediaFormProps) => {
   const form = useFormContext<VehicleSchema>();
 
   return (
@@ -30,6 +34,7 @@ export const MediaForm = () => {
               <ImagesForm
                 value={field.value ?? []}
                 onChange={field.onChange}
+                onUploadStatusChange={onImageUploadStatusChange}
               />
             )}
           />

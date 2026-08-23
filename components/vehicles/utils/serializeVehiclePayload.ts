@@ -40,11 +40,21 @@ export const serializeVehiclePayload = (
 
   if (images !== undefined) {
     const filtered_images = options?.only_temp_images
-      ? images.filter((image) => is_temp_storage_path(image.path))
+      ? images.filter((image) => is_temp_storage_path(image.path ?? ""))
       : images;
 
     if (filtered_images.length > 0) {
-      payload.images = filtered_images;
+      payload.images = filtered_images.map((image) => {
+        if (image.upload_id) {
+          return { upload_id: image.upload_id, order: image.order };
+        }
+        return {
+          ...(image.id ? { id: image.id } : {}),
+          path: image.path,
+          order: image.order,
+        };
+      });
+      // preview_url (blob) nunca va al API
     }
   }
 

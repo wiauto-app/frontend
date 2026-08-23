@@ -8,7 +8,6 @@ import {
 } from "react";
 import {
   Camera,
-  Check,
   GripVertical,
   ImagePlus,
   Loader2,
@@ -27,8 +26,8 @@ import {
 import type { VehicleFormImage } from "../schemas/vehicle.schema";
 import { vehicleService } from "@/services/vehicleService";
 
-/** El backend es la fuente de verdad; aquí solo filtramos lo claramente no-imagen. */
-const file_input_accept = "image/*,.heic,.heif,.avif";
+/** El backend acepta: JPEG, PNG, WebP, AVIF (sin HEIC). */
+const file_input_accept = "image/jpeg,image/jpg,image/png,image/webp,image/avif";
 
 const known_image_extensions = [
   ".jpg",
@@ -36,12 +35,6 @@ const known_image_extensions = [
   ".png",
   ".webp",
   ".avif",
-  ".heic",
-  ".heif",
-  ".gif",
-  ".bmp",
-  ".tif",
-  ".tiff",
 ] as const;
 
 const blocked_non_image_extensions = [
@@ -101,6 +94,16 @@ interface PendingItem {
    * Se utiliza inmediatamente para mostrar la imagen.
    */
   preview_url: string;
+
+  /**
+   * ID de subida temporal obtenido del backend.
+   */
+  upload_id?: string;
+
+  /**
+   * Estado de la subida: 'uploading' | 'confirming' | 'completed' | 'failed'
+   */
+  status: "uploading" | "confirming" | "completed" | "failed";
 }
 
 const is_valid_image_file = (file: File) => {
@@ -117,7 +120,7 @@ const is_valid_image_file = (file: File) => {
     return true;
   }
 
-  // HEIC en Safari/Chrome a menudo llega con type vacío u octet-stream.
+  // Extensión conocida sin MIME válido (fallback)
   if (
     (!mime || mime === "application/octet-stream") &&
     (known_image_extensions as readonly string[]).includes(extension)
@@ -135,13 +138,13 @@ const is_valid_image_file = (file: File) => {
   }
 
   toast.error(
-    `${file.name}: formato no reconocido. Prueba JPG, PNG, WebP, AVIF o HEIC.`,
+    `${file.name}: formato no reconocido. Prueba JPG, PNG, WebP o AVIF.`,
   );
 
   return false;
 };
 
-export type ImagesFormProps = {
+export interface ImagesFormProps {
   /** Imágenes confirmadas (ruta + orden), persistidas en el formulario. */
   value?: VehicleFormImage[];
 
@@ -155,13 +158,20 @@ export type ImagesFormProps = {
   reference_id?: string;
   featureFirstImage?: boolean;
   maxImages?: number | null;
-};
+
+  /**
+   * Callback que se ejecuta cuando hay uploads incompletos o fallidos.
+   * Útil para bloquear el botón de publicar.
+   */
+  onUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
+}
 
 export const ImagesForm = ({
   value: value_prop,
   onChange,
   featureFirstImage = false,
   maxImages,
+  onUploadStatusChange,
 }: ImagesFormProps) => {
   const committed_sorted = useMemo(
     () => normalize_vehicle_images(value_prop ?? []),
@@ -188,6 +198,16 @@ export const ImagesForm = ({
   const [upload_progress, set_upload_progress] = useState<
     Record<string, number>
   >({});
+
+  /**
+   * Notifica al padre cuando hay uploads incompletos.
+   */
+  useEffect(() => {
+    const has_incomplete_uploads = pending_items.some(
+      (item) => item.status === "uploading" || item.status === "confirming" || item.status === "failed"
+    );
+    onUploadStatusChange?.(has_incomplete_uploads);
+  }, [pending_items, onUploadStatusChange]);
 
   const [is_dragging, setIsDragging] = useState(false);
 
@@ -261,25 +281,37 @@ export const ImagesForm = ({
     [remove_pending_item],
   );
 
+  const pending_items_ref = useRef(pending_items);
+  pending_items_ref.current = pending_items;
+
   /**
-   * Limpieza de todas las object URLs cuando el componente se desmonta.
+   * Limpieza de blob URLs solo al desmontar (no al cambiar pending_items).
    */
   useEffect(() => {
     return () => {
-      for (const item of pending_items) {
+      for (const item of pending_items_ref.current) {
         revoke_preview_url(item.preview_url);
       }
+      for (const image of value_ref.current) {
+        if (image.preview_url?.startsWith("blob:")) {
+          revoke_preview_url(image.preview_url);
+        }
+      }
     };
-  }, [pending_items, revoke_preview_url]);
+  }, [revoke_preview_url]);
 
-  const append_committed_path = useCallback(
-    (path: string) => {
+  const append_committed_image = useCallback(
+    (image: {
+      path?: string;
+      upload_id?: string;
+      preview_url?: string;
+    }) => {
       const sorted = normalize_vehicle_images(value_ref.current);
 
       const next: VehicleFormImage[] = [
         ...sorted,
         {
-          path,
+          ...image,
           order: sorted.length,
         },
       ];
@@ -291,10 +323,18 @@ export const ImagesForm = ({
     [onChange],
   );
 
-  const commit_remove_committed_path = useCallback(
-    (path: string) => {
+  const commit_remove_committed = useCallback(
+    (matcher: { path?: string; upload_id?: string }) => {
       const next = normalize_vehicle_images(
-        value_ref.current.filter((image) => image.path !== path),
+        value_ref.current.filter((image) => {
+          if (matcher.upload_id) {
+            return image.upload_id !== matcher.upload_id;
+          }
+          if (matcher.path) {
+            return image.path !== matcher.path;
+          }
+          return true;
+        }),
       );
 
       value_ref.current = next;
@@ -305,9 +345,37 @@ export const ImagesForm = ({
   );
 
   const handle_click_remove_committed = useCallback(
-    async (compound_path: string, id?: string) => {
-      if (locked_remove_paths_ref.current.has(compound_path)) return;
+    async (image: VehicleFormImage) => {
+      const lock_key = image.upload_id ?? image.path ?? "";
+      if (!lock_key || locked_remove_paths_ref.current.has(lock_key)) {
+        return;
+      }
 
+      // Solo upload_id: aún no hay path público; quitar del form y liberar blob.
+      if (image.upload_id && !image.path) {
+        locked_remove_paths_ref.current.add(lock_key);
+        set_paths_removing((previous) => {
+          const next = new Set(previous);
+          next.add(lock_key);
+          return next;
+        });
+        try {
+          if (image.preview_url) {
+            revoke_preview_url(image.preview_url);
+          }
+          commit_remove_committed({ upload_id: image.upload_id });
+        } finally {
+          locked_remove_paths_ref.current.delete(lock_key);
+          set_paths_removing((previous) => {
+            const next = new Set(previous);
+            next.delete(lock_key);
+            return next;
+          });
+        }
+        return;
+      }
+
+      const compound_path = image.path ?? "";
       let bucket_name: ReturnType<
         typeof split_storage_compound_path
       >["bucket_name"];
@@ -325,12 +393,12 @@ export const ImagesForm = ({
         return;
       }
 
-      locked_remove_paths_ref.current.add(compound_path);
+      locked_remove_paths_ref.current.add(lock_key);
 
       set_paths_removing((previous) => {
         const next = new Set(previous);
 
-        next.add(compound_path);
+        next.add(lock_key);
 
         return next;
       });
@@ -340,9 +408,11 @@ export const ImagesForm = ({
           bucket_name,
           paths: [object_key],
         });
-        if (id) {
-          const result = await vehicleService.vehicles.removeImage(id);
-          if (!result.ok) {
+        if (image.id) {
+          const remove_result = await vehicleService.vehicles.removeImage(
+            image.id,
+          );
+          if (!remove_result.ok) {
             toast.error("No se pudo eliminar la imagen del vehículo.");
             return;
           }
@@ -356,20 +426,23 @@ export const ImagesForm = ({
           return;
         }
 
-        commit_remove_committed_path(compound_path);
+        if (image.preview_url) {
+          revoke_preview_url(image.preview_url);
+        }
+        commit_remove_committed({ path: compound_path });
       } finally {
-        locked_remove_paths_ref.current.delete(compound_path);
+        locked_remove_paths_ref.current.delete(lock_key);
 
         set_paths_removing((previous) => {
           const next = new Set(previous);
 
-          next.delete(compound_path);
+          next.delete(lock_key);
 
           return next;
         });
       }
     },
-    [commit_remove_committed_path],
+    [commit_remove_committed, revoke_preview_url],
   );
 
   const reorder_committed = useCallback(
@@ -405,57 +478,124 @@ export const ImagesForm = ({
     [onChange],
   );
   /**
-   * Sube una imagen mientras la preview local ya está visible.
+   * Sube una imagen usando el nuevo flujo: signed URL → PUT → confirm → commit upload_id.
    */
   const run_upload = useCallback(
     async (temp_key: string, file: File) => {
       try {
-        const result = await filesService.uploadTempVehicleImage(file);
-
-        /**
-         * La subida terminó pero el usuario ya canceló la imagen.
-         *
-         * En ese caso NO añadimos el path al formulario.
-         */
+        // 1. Solicitar signed URL + upload_id
+        const upload_response = await filesService.requestTempImageUpload({
+          mime_type: file.type || "image/jpeg",
+          original_filename: file.name,
+          size_bytes: file.size,
+        });
         if (cancelled_upload_keys_ref.current.has(temp_key)) {
           cancelled_upload_keys_ref.current.delete(temp_key);
-
-          /**
-           * El archivo remoto puede haber llegado a subirse.
-           *
-           * Si tu backend permite borrar inmediatamente el temporal,
-           * aquí podrías llamar a removeStoredFiles().
-           */
           return;
         }
 
-        if (!result?.path) {
-          remove_pending_item(temp_key);
-
-          toast.error(`No se pudo obtener la ruta de ${file.name}`);
-
+        if (!upload_response) {
+          setPendingItems((prev) =>
+            prev.map((item) =>
+              item.temp_key === temp_key
+                ? { ...item, status: "failed" }
+                : item
+            )
+          );
+          toast.error(`No se pudo iniciar la subida de ${file.name}`);
           return;
         }
 
-        /**
-         * Guardamos el path real en el formulario.
-         */
-        append_committed_path(result.path);
+        // Actualizar pending item con upload_id
+        setPendingItems((prev) =>
+          prev.map((item) =>
+            item.temp_key === temp_key
+              ? { ...item, upload_id: upload_response.upload_id }
+              : item
+          )
+        );
 
-        /**
-         * Ahora que el servidor confirmó la imagen,
-         * eliminamos la preview local.
-         */
-        remove_pending_item(temp_key);
+        // 2. PUT con progreso
+        const upload_success = await filesService.uploadToSignedUrl(
+          upload_response.signed_url,
+          file,
+          file.type || "image/jpeg",
+          (progress) => {
+            set_upload_progress((prev) => ({ ...prev, [temp_key]: progress }));
+          }
+        );
+        if (cancelled_upload_keys_ref.current.has(temp_key)) {
+          cancelled_upload_keys_ref.current.delete(temp_key);
+          return;
+        }
+
+        if (!upload_success) {
+          setPendingItems((prev) =>
+            prev.map((item) =>
+              item.temp_key === temp_key
+                ? { ...item, status: "failed" }
+                : item
+            )
+          );
+          toast.error(`No se pudo subir ${file.name}`);
+          return;
+        }
+
+        // 3. Confirmar
+        setPendingItems((prev) =>
+          prev.map((item) =>
+            item.temp_key === temp_key
+              ? { ...item, status: "confirming" }
+              : item
+          )
+        );
+
+        const confirm_success = await filesService.confirmTempImageUpload(
+          upload_response.upload_id
+        );
+        if (cancelled_upload_keys_ref.current.has(temp_key)) {
+          cancelled_upload_keys_ref.current.delete(temp_key);
+          return;
+        }
+
+        if (!confirm_success) {
+          setPendingItems((prev) =>
+            prev.map((item) =>
+              item.temp_key === temp_key
+                ? { ...item, status: "failed" }
+                : item
+            )
+          );
+          toast.error(`No se pudo confirmar ${file.name}`);
+          return;
+        }
+
+        // 4. Commit: conservar blob local (TEMP en R2 no es público).
+        const pending = pending_items_ref.current.find(
+          (item) => item.temp_key === temp_key,
+        );
+        append_committed_image({
+          upload_id: upload_response.upload_id,
+          preview_url: pending?.preview_url,
+        });
+
+        // 5. Quitar de pending sin revocar el blob (ahora lo usa committed).
+        remove_pending_item(temp_key, false);
       } catch (error) {
         console.error(error);
 
-        toast.error(`No se pudo subir ${file.name}`);
+        setPendingItems((prev) =>
+          prev.map((item) =>
+            item.temp_key === temp_key
+              ? { ...item, status: "failed" }
+              : item
+          )
+        );
 
-        remove_pending_item(temp_key);
+        toast.error(`No se pudo subir ${file.name}`);
       }
     },
-    [append_committed_path, remove_pending_item],
+    [append_committed_image, remove_pending_item],
   );
 
   /**
@@ -488,6 +628,8 @@ export const ImagesForm = ({
          * absolutamente nada del servidor.
          */
         preview_url: URL.createObjectURL(file),
+
+        status: "uploading",
       }));
 
       /**
@@ -515,7 +657,7 @@ export const ImagesForm = ({
         void run_upload(item.temp_key, item.file);
       });
     },
-    [run_upload],
+    [run_upload, maxImages],
   );
 
   const handle_drop = useCallback(
@@ -704,7 +846,7 @@ export const ImagesForm = ({
           </div>
 
           <div className="flex flex-wrap justify-center gap-2">
-            {["JPG", "PNG", "WEBP", "AVIF", "HEIC", "GIF"].map((label) => (
+            {["JPG", "PNG", "WEBP", "AVIF"].map((label) => (
               <span
                 key={label}
                 className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground"
@@ -723,10 +865,15 @@ export const ImagesForm = ({
         >
           {committed_sorted.map((image, index) => {
             const is_first_image = featureFirstImage && index === 0;
+            const image_key =
+              image.upload_id ?? image.path ?? image.id ?? `order-${image.order}`;
+            const image_src =
+              image.preview_url || getImageUrl(image.path ?? "");
+            const is_removing = paths_removing.has(image_key);
 
             return (
               <li
-                key={image.path}
+                key={image_key}
                 onDragOver={handle_committed_drag_over_item(index)}
                 onDragLeave={handle_committed_drag_leave_item}
                 onDrop={handle_committed_drop_on_item(index)}
@@ -741,7 +888,7 @@ export const ImagesForm = ({
                 )}
               >
                 <img
-                  src={getImageUrl(image.path)}
+                  src={image_src}
                   alt=""
                   className="pointer-events-none size-full object-cover"
                   draggable={false}
@@ -781,21 +928,19 @@ export const ImagesForm = ({
                   type="button"
                   size="icon-sm"
                   variant="outline"
-                  disabled={paths_removing.has(image.path)}
+                  disabled={is_removing}
                   className="absolute right-2 top-2 text-destructive hover:text-destructive-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
 
-                    void handle_click_remove_committed(image.path, image.id);
+                    void handle_click_remove_committed(image);
                   }}
-                  aria-busy={paths_removing.has(image.path)}
+                  aria-busy={is_removing}
                   aria-label={
-                    paths_removing.has(image.path)
-                      ? "Eliminando imagen…"
-                      : "Quitar imagen"
+                    is_removing ? "Eliminando imagen…" : "Quitar imagen"
                   }
                 >
-                  {paths_removing.has(image.path) ? (
+                  {is_removing ? (
                     <Loader2 className="size-4 animate-spin" aria-hidden />
                   ) : (
                     <Trash2 className="size-4" aria-hidden />
@@ -808,36 +953,67 @@ export const ImagesForm = ({
           {pending_items.map((item) => {
             const progress = upload_progress[item.temp_key] ?? 0;
 
-            const is_uploaded = progress >= 100;
+            const is_uploading = item.status === "uploading";
+            const is_confirming = item.status === "confirming";
+            const is_failed = item.status === "failed";
 
             return (
               <li
                 key={item.temp_key}
                 className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted"
-                aria-busy={!is_uploaded}
+                aria-busy={is_uploading || is_confirming}
                 aria-label={
-                  is_uploaded
-                    ? `${item.file.name} subida`
-                    : `Subiendo ${item.file.name}`
+                  is_failed
+                    ? `Error al subir ${item.file.name}`
+                    : is_confirming
+                      ? `Confirmando ${item.file.name}`
+                      : is_uploading
+                        ? `Subiendo ${item.file.name}`
+                        : `${item.file.name} subida`
                 }
               >
-                {/*
-                 * ESTA ES LA PARTE IMPORTANTE:
-                 *
-                 * La imagen se muestra inmediatamente desde el navegador.
-                 * No esperamos al servidor.
-                 */}
                 <img
                   src={item.preview_url}
                   alt={item.file.name}
                   className={cn(
                     "size-full object-cover transition-all duration-300",
-                    !is_uploaded && "scale-[1.01]",
+                    (is_uploading || is_confirming) && "scale-[1.01]",
+                    is_failed && "opacity-50 grayscale"
                   )}
                   draggable={false}
                 />
 
-              
+                {/* Barra de progreso */}
+                {is_uploading && (
+                  <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full bg-primary transition-all duration-300"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <p className="mt-1 text-center text-xs text-white">
+                      {progress}%
+                    </p>
+                  </div>
+                )}
+
+                {/* Indicador de confirmación */}
+                {is_confirming && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                    <div className="flex flex-col items-center gap-2 text-white">
+                      <Loader2 className="size-6 animate-spin" aria-hidden />
+                      <p className="text-xs">Confirmando...</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Indicador de error */}
+                {is_failed && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-red-900/60">
+                    <p className="text-xs font-semibold text-white">Error</p>
+                  </div>
+                )}
 
                 <Button
                   type="button"

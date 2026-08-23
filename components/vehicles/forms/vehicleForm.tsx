@@ -29,6 +29,8 @@ type VehicleFormProps = {
 
 export const VehicleForm = ({ vehicleId, onSuccess }: VehicleFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [hasIncompleteImageUploads, setHasIncompleteImageUploads] =
+    useState(false);
   const isEditMode = Boolean(vehicleId);
   const formSchema = isEditMode ? updateVehicleSchema : vehicleSchema;
 
@@ -75,6 +77,13 @@ export const VehicleForm = ({ vehicleId, onSuccess }: VehicleFormProps) => {
   const hasPreviousStep = useMemo(() => currentStep > 1, [currentStep]);
 
   const handleSubmit = async (data: VehicleSchema) => {
+    if (hasIncompleteImageUploads) {
+      toast.error(
+        "Espera a que terminen de subirse todas las imágenes antes de guardar.",
+      );
+      return;
+    }
+
     if (vehicleId) {
       const response = await vehiclesService.update(
         vehicleId,
@@ -130,7 +139,11 @@ export const VehicleForm = ({ vehicleId, onSuccess }: VehicleFormProps) => {
             isEditMode={isEditMode}
           />
         )}
-        {currentStep === 4 && <MediaForm />}
+        {currentStep === 4 && (
+          <MediaForm
+            onImageUploadStatusChange={setHasIncompleteImageUploads}
+          />
+        )}
         {currentStep === 5 && <VehicleSummaryForm />}
         <div className="col-span-2 flex items-center justify-between">
           <Button
@@ -148,8 +161,17 @@ export const VehicleForm = ({ vehicleId, onSuccess }: VehicleFormProps) => {
             </Button>
           )}
           {currentStep === 5 && (
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              {isEditMode ? "Actualizar anuncio" : "Guardar"}
+            <Button
+              type="submit"
+              disabled={
+                form.formState.isSubmitting || hasIncompleteImageUploads
+              }
+            >
+              {hasIncompleteImageUploads
+                ? "Subiendo imágenes…"
+                : isEditMode
+                  ? "Actualizar anuncio"
+                  : "Guardar"}
             </Button>
           )}
         </div>
