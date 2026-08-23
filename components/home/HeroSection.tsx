@@ -1,8 +1,6 @@
 import type { StrapiHomeHero } from "@/interfaces/strapi-components.interface";
-import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
 import { Hero } from "../ui/hero";
-import { HeroBackdrop } from "../ui/heroBackdrop";
 import { HeroDescription } from "../ui/heroDescription";
 import { HeroTitle } from "../ui/heroTitle";
 import { HeroBackgroundCarousel } from "./HeroBackgroundCarousel";
@@ -24,14 +22,15 @@ export function HeroSection({ data }: HeroSectionProps) {
 
   return (
     <Hero
-      className="px-3"
+      className="px-3 h-80 sm:h-auto overflow-visible "
+      image="https://media.wiauto.es/wiauto-strapi/41_C5_DDB_7_9_D8_F_4_ACE_82_CC_BE_887_E4_CBFEC_e38f248f10.jpeg"
       leftContent={
         <div className="flex flex-col">
           <div className="flex flex-col  text-white gap-2 lg:gap-5 2xl:px-14">
             <div>
               <HeroTitle
                 highlight
-                className="text-black text-start  max-w-[75%] lg:max-w-full" 
+                className="text-black text-start  text-2xl max-w-[75%] lg:max-w-full"
               >
                 {title}
               </HeroTitle>
@@ -57,7 +56,7 @@ export function HeroSection({ data }: HeroSectionProps) {
         </div>
       }
       rightContent={
-        <div className="flex h-full items-end justify-center">
+        <div className="flex h-full items-end justify-center absolute sm:static -bottom-60 left-0 right-0 ">
           <HeroSearchForm />
         </div>
       }
@@ -69,7 +68,7 @@ export function HeroSection({ data }: HeroSectionProps) {
 
           {/* <HeroBackdrop /> */}
 
-          <div className="absolute inset-0 z-0">
+          <div className=" hidden lg:block absolute inset-0 z-0">
             <HeroBackgroundCarousel images={data.heroImages} />
           </div>
         </>

@@ -9,6 +9,7 @@ interface HeroProps {
   floatingContent?: React.ReactNode;
   className?: string;
   fade?: boolean;
+  imageClassName?: string;
 }
 
 export const Hero = ({
@@ -18,7 +19,8 @@ export const Hero = ({
   leftContent,
   floatingContent,
   className,
-  fade = true,
+  imageClassName,
+  fade = false,
 }: HeroProps) => {
   return (
     <section
@@ -33,7 +35,7 @@ export const Hero = ({
           src={image}
           alt="Hero Background"
           fill
-          className="object-cover"
+          className={cn("object-cover", imageClassName)}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 960px, 1300px"
           priority
         />

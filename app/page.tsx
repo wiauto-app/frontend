@@ -60,7 +60,7 @@ export default async function Home() {
     <>
       <LandingContainer>
         <HeroSection data={home_data.homeHero} />
-
+        <div className="block sm:hidden h-50" />
         <StoreButtons className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden" />
         <SearchForm />
 
