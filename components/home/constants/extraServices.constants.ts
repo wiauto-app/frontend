@@ -8,7 +8,7 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
     color:"#0F45CA",
     icon: Landmark,
     href: "/simulador-financiamiento",
-    description: "Calcula tu cuota online en segundos y ofrece las mejores opciones a tus clientes.",
+    description: "Calcula tu cuota online en segundos.",
   },
   {
     name: "Vender vehículo",

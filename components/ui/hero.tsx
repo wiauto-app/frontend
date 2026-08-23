@@ -10,6 +10,7 @@ interface HeroProps {
   className?: string;
   fade?: boolean;
   imageClassName?: string;
+  contentClassName?: string;
 }
 
 export const Hero = ({
@@ -20,6 +21,7 @@ export const Hero = ({
   floatingContent,
   className,
   imageClassName,
+  contentClassName,
   fade = false,
 }: HeroProps) => {
   return (
@@ -50,7 +52,7 @@ export const Hero = ({
         />
       ) : null}
 
-      <div className="relative z-[2] mx-auto flex h-full flex-col gap-4 lg:grid lg:grid-cols-2 lg:gap-10">
+      <div className={cn("relative z-[2] mx-auto flex h-full flex-col gap-4 lg:grid lg:grid-cols-2 lg:gap-10", contentClassName)}>
         <div className="flex w-full flex-col items-center justify-center gap-4 lg:items-start">
           {leftContent}
         </div>
