@@ -1,11 +1,9 @@
 import Image from 'next/image';
-import { Search } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 
-import { BRAND_BLUE, CTA_BACKGROUND } from '../constants';
-
-export const CheckCarCard = () => {
+export const InspectionCtaCard = () => {
   return (
-    <section className='relative overflow-hidden rounded-3xl bg-[#0052CC] shadow-xl my-4'>
+    <section className='relative overflow-hidden rounded-3xl bg-[#0052CC] shadow-xl '>
       <div className='absolute inset-y-0 right-0 w-full md:w-3/5 overflow-hidden'>
         <Image
           src='/cta-rear-car.jpg'
@@ -15,31 +13,26 @@ export const CheckCarCard = () => {
           sizes='100vw'
           aria-hidden
         />
-
-        <div className='absolute inset-0 bg-gradient-to-r from-[#0052CC] via-[#0052CC]/85 to-transparent md:via-[#0052CC]/60' />
+        <div className='absolute inset-0 bg-linear-to-r from-[#0052CC] via-[#0052CC]/85 to-transparent md:via-[#0052CC]/60' />
       </div>
 
-      <div className='relative z-10 grid grid-cols-1 items-center gap-8 px-6 py-12 sm:px-12 sm:py-4 lg:grid-cols-[1.2fr_auto]'>
+      <div className='relative z-10 grid grid-cols-1 items-center gap-8 px-6 py-12 sm:px-12 sm:py-4 lg:grid-cols-[1.3fr_auto]'>
         <div className='max-w-xl text-white'>
-          <h2 className='text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl text-white'>
-            Verifica hoy. Compra con tranquilidad.
+          <h2 className='text-md font-extrabold tracking-tight sm:text-xl lg:text-2xl text-white'>
+            Compra con confianza. Conduce tranquilo.
           </h2>
-          <p className='mt-4 text-xs leading-relaxed text-blue-100/90 sm:text-sm max-w-md'>
-            No te arriesgues a sorpresas. Consulta el historial del vehículo y
-            compra con total seguridad.
+          <p className='mt-3 text-xs leading-relaxed text-blue-100/90 sm:text-sm max-w-md'>
+            Una pequeña inversión ahora puede ahorrarte miles de euros después.
+            Deja que un profesional revise el coche por ti.
           </p>
           <div className='flex flex-col sm:flex-row items-center gap-4 mt-6'>
-            <button
-              type='button'
-              className='inline-flex h-12 items-center gap-2.5 rounded-full bg-white px-6 text-sm font-bold text-slate-800 shadow-xl transition-all hover:bg-blue-50 active:scale-95'
+            <a
+              href='#solicitar-inspeccion'
+              className='inline-flex h-12 items-center gap-2 rounded-md bg-white px-6 text-sm font-bold text-primary shadow-xl transition-all hover:bg-blue-50 active:scale-95'
             >
-              <Search
-                className='size-4 shrink-0 text-primary'
-                strokeWidth={2.5}
-                aria-hidden
-              />
-              Consultar vehículo ahora
-            </button>
+              Solicita tu inspección ahora
+              <ArrowRight className='size-4 shrink-0 text-primary' />
+            </a>
 
             <div className='flex items-center gap-2 text-white/90'>
               <svg
@@ -64,7 +57,7 @@ export const CheckCarCard = () => {
                 />
               </svg>
               <span className='text-xs font-medium text-white/90 whitespace-nowrap'>
-                Es rápido, fácil y seguro
+                Fácil, rápido y seguro
               </span>
             </div>
           </div>
