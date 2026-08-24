@@ -1,11 +1,7 @@
-import type { LucideIcon } from "lucide-react";
 import {
   Activity,
-  AlertCircle,
   Calendar,
   Car,
-  CheckCircle2,
-  ChevronDown,
   CircleDot,
   FileCheck2,
   FileText,
@@ -13,27 +9,26 @@ import {
   Handshake,
   Layers,
   MapPin,
-  PenTool,
   Search,
   Settings,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  Sparkles,
-  TrendingDown,
   UserCheck,
-  Users,
-  Wrench,
   Zap,
 } from "lucide-react";
 
-export const HERO_BADGES = [
+import type {
+  HowItWorksStep,
+  InspectionBenefit,
+  InspectionPointsSection,
+  TrustBadge,
+} from "./interfaces/revision-vehiculo.interface";
+
+export const HERO_BADGES: TrustBadge[] = [
   { icon: UserCheck, label: "Técnicos expertos a tu servicio" },
   { icon: MapPin, label: "Cobertura nacional en toda España" },
   { icon: FileText, label: "Informe claro con fotos y recomendaciones" },
 ];
 
-export const INSPECTION_POINTS = {
+export const INSPECTION_POINTS: InspectionPointsSection = {
   left: [
     {
       icon: Settings,
@@ -88,7 +83,7 @@ export const INSPECTION_POINTS = {
   ],
 };
 
-export const BUY_BENEFITS = [
+export const BUY_BENEFITS: InspectionBenefit[] = [
   {
     icon: Search,
     title: "Detectamos problemas",
@@ -109,7 +104,7 @@ export const BUY_BENEFITS = [
   },
 ];
 
-export const HOW_IT_WORKS_STEPS = [
+export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
   {
     step: 1,
     icon: Search,
@@ -140,7 +135,7 @@ export const HOW_IT_WORKS_STEPS = [
   },
 ];
 
-export const SPANISH_PROVINCES = [
+export const SPANISH_PROVINCES: string[] = [
   "Álava",
   "Albacete",
   "Alicante",

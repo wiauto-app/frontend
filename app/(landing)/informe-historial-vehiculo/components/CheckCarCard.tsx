@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import { Search } from 'lucide-react';
 
-import { BRAND_BLUE, CTA_BACKGROUND } from '../constants';
-
 export const CheckCarCard = () => {
   return (
     <section className='relative overflow-hidden rounded-3xl bg-[#0052CC] shadow-xl my-4'>
@@ -16,7 +14,7 @@ export const CheckCarCard = () => {
           aria-hidden
         />
 
-        <div className='absolute inset-0 bg-gradient-to-r from-[#0052CC] via-[#0052CC]/85 to-transparent md:via-[#0052CC]/60' />
+        <div className='absolute inset-0 bg-linear-to-r from-[#0052CC] via-[#0052CC]/85 to-transparent md:via-[#0052CC]/60' />
       </div>
 
       <div className='relative z-10 grid grid-cols-1 items-center gap-8 px-6 py-12 sm:px-12 sm:py-4 lg:grid-cols-[1.2fr_auto]'>

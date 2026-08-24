@@ -37,7 +37,7 @@ export const InspectionPoints = () => {
             </div>
 
             <div className='relative mx-auto flex items-center justify-center py-4'>
-              <div className='relative h-[320px] w-[150px] sm:h-[360px] sm:w-[170px]'>
+              <div className='relative h-80 w-37.5 sm:h-90 sm:w-42.5'>
                 <svg
                   viewBox='0 0 160 340'
                   className='h-full w-full drop-shadow-md'

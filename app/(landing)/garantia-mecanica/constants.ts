@@ -1,26 +1,24 @@
-import type { LucideIcon } from "lucide-react";
 import {
   BatteryCharging,
   Car,
   CheckCircle2,
   Clock,
-  Coins,
-  Cpu,
   Gauge,
-  HelpCircle,
   PiggyBank,
   PlusCircle,
-  Shield,
   ShieldCheck,
   Snowflake,
-  Sparkles,
-  Tool,
   Truck,
   Wrench,
-  Zap,
 } from "lucide-react";
 
-export const HERO_TRUST_BADGES = [
+import type {
+  GuaranteeBenefit,
+  GuaranteeTrustBadge,
+  ProtectedPart,
+} from "./interfaces/garantia-mecanica.interface";
+
+export const HERO_TRUST_BADGES: GuaranteeTrustBadge[] = [
   {
     icon: ShieldCheck,
     label: "Cobertura nacional en talleres concertados",
@@ -35,7 +33,7 @@ export const HERO_TRUST_BADGES = [
   },
 ];
 
-export const PROTECTED_PARTS = [
+export const PROTECTED_PARTS: ProtectedPart[] = [
   {
     icon: Wrench,
     title: "Motor",
@@ -74,7 +72,7 @@ export const PROTECTED_PARTS = [
   },
 ];
 
-export const GUARANTEE_BENEFITS = [
+export const GUARANTEE_BENEFITS: GuaranteeBenefit[] = [
   {
     icon: ShieldCheck,
     title: "Protección real",

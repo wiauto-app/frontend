@@ -1,4 +1,3 @@
-import type { LucideIcon } from "lucide-react";
 import {
   AlertTriangle,
   Car,
@@ -13,10 +12,18 @@ import {
   Zap,
 } from "lucide-react";
 
+import type {
+  DiscoveryFeature,
+  HowItWorksStep,
+  ReportCheck,
+  SampleVehicle,
+  TrustItem,
+} from "./interfaces/informe-historial-vehiculo.interface";
+
 export const BRAND_BLUE = "#0061F2";
 export const BRAND_BLUE_LIGHT = "#EBF2FF";
 
-export const SAMPLE_VEHICLE = {
+export const SAMPLE_VEHICLE: SampleVehicle = {
   make: "Toyota",
   model: "Corolla",
   variant: "1.8 Hybrid Active",
@@ -33,17 +40,13 @@ export const SAMPLE_VEHICLE = {
   lastUpdate: "20/05/2024",
 };
 
-export const HERO_TRUST_ITEMS: { icon: LucideIcon; label: string }[] = [
+export const HERO_TRUST_ITEMS: TrustItem[] = [
   { icon: Database, label: "Datos de fuentes oficiales" },
   { icon: Zap, label: "Informe rápido y fiable" },
   { icon: ShieldCheck, label: "Compra con confianza" },
 ];
 
-export const DISCOVERY_FEATURES: {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-}[] = [
+export const DISCOVERY_FEATURES: DiscoveryFeature[] = [
   {
     icon: Users,
     title: "Historial de propietarios",
@@ -76,18 +79,14 @@ export const DISCOVERY_FEATURES: {
   },
 ];
 
-export const REPORT_CHECKS = [
-  { label: "Identificación verificada", status: "ok" as const },
-  { label: "Registros de kilometraje", status: "ok" as const },
-  { label: "Datos técnicos disponibles", status: "ok" as const },
-  { label: "1 incidencia encontrada", status: "warning" as const },
+export const REPORT_CHECKS: ReportCheck[] = [
+  { label: "Identificación verificada", status: "ok" },
+  { label: "Registros de kilometraje", status: "ok" },
+  { label: "Datos técnicos disponibles", status: "ok" },
+  { label: "1 incidencia encontrada", status: "warning" },
 ];
 
-export const HOW_IT_WORKS_STEPS: {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-}[] = [
+export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
   {
     icon: Car,
     title: "Introduce la matrícula",

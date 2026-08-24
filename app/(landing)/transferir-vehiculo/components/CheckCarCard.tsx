@@ -1,10 +1,9 @@
 import Image from 'next/image';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 
-export const GuaranteeCtaCard = () => {
+export const CheckCarCard = () => {
   return (
     <section className='relative overflow-hidden rounded-3xl bg-[#0052CC] shadow-xl my-4'>
-      {/* Background highway image */}
       <div className='absolute inset-y-0 right-0 w-full md:w-3/5 overflow-hidden'>
         <Image
           src='/cta-rear-car.jpg'
@@ -17,23 +16,26 @@ export const GuaranteeCtaCard = () => {
         <div className='absolute inset-0 bg-linear-to-r from-[#0052CC] via-[#0052CC]/85 to-transparent md:via-[#0052CC]/60' />
       </div>
 
-      <div className='relative z-10 grid grid-cols-1 items-center gap-8 px-6 py-12 sm:px-12 sm:py-6 lg:grid-cols-[1.2fr_auto]'>
+      <div className='relative z-10 grid grid-cols-1 items-center gap-8 px-6 py-12 sm:px-12 sm:py-10 lg:grid-cols-[1.2fr_auto]'>
         <div className='max-w-xl text-white'>
           <h2 className='text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl text-white'>
-            Protege tu coche hoy y ahorra mañana.
+            Vende con tranquilidad. Transfiere con WiAuto.
           </h2>
           <p className='mt-3 text-xs leading-relaxed text-blue-100/90 sm:text-sm max-w-md'>
-            Calcula tu garantía en menos de 1 minuto.
+            Nos encargamos de todo para que el cambio de titularidad sea rápido,
+            seguro y sin complicaciones.
           </p>
-          <div className='flex flex-col sm:flex-row items-center gap-4 mt-6'>
+
+          <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6'>
             <button
               type='button'
               className='inline-flex h-12 items-center gap-2.5 rounded-full bg-white px-6 text-sm font-bold text-slate-800 shadow-xl transition-all hover:bg-blue-50 active:scale-95'
             >
               <ShieldCheck className='size-4.5 shrink-0 text-primary' />
-              Calcular mi garantía ahora
+              Empezar transferencia ahora
             </button>
 
+            {/* Curved arrow + text */}
             <div className='flex items-center gap-2 text-white/90'>
               <svg
                 className='h-5 w-8 text-white/80'
@@ -57,7 +59,7 @@ export const GuaranteeCtaCard = () => {
                 />
               </svg>
               <span className='text-xs font-medium text-white/90 whitespace-nowrap'>
-                Es rápido, fácil y seguro
+                Tranquilidad para ambas partes
               </span>
             </div>
           </div>

@@ -38,7 +38,6 @@ export const CarPartsGrid = () => {
         })}
       </div>
 
-      {/* Link to detail */}
       <div className='mt-6 text-center'>
         <button
           type='button'
