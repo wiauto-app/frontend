@@ -58,6 +58,9 @@ export const QuickVehicleIntroWizard = ({
         if (step.id === 4) {
           return isSubscribed;
         }
+        if (step.id === 2) {
+          return isSubscribed;
+        }
 
         return true;
       }),

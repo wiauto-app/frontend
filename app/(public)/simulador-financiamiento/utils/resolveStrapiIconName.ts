@@ -13,6 +13,8 @@ import {
   FaClipboardList,
   FaUsersCog,
   FaPhoneAlt,
+  FaCarCrash,
+  FaHandsHelping
 } from "react-icons/fa";
 
 import {
@@ -48,7 +50,10 @@ import {
   HiOutlineChip,
   HiOutlineCollection,
   HiOutlineSupport,
-  HiOutlineStar
+  HiOutlineStar,
+  HiOutlineIdentification,
+  HiArrowRight,
+  HiArrowDown
 } from "react-icons/hi";
 
 import {
@@ -56,13 +61,15 @@ import {
   HiBolt,
   HiMiniReceiptPercent,
   HiCalendarDays,
+  HiMagnifyingGlass,
 } from "react-icons/hi2";
 
 import {
   IoMdDocument,
-  IoMdSpeedometer
+  IoMdSpeedometer,
 } from "react-icons/io";
-import { IoDocumentTextOutline, IoHappyOutline } from "react-icons/io5";
+
+import { IoDocumentTextOutline, IoHappyOutline, IoDocumentLockOutline } from "react-icons/io5";
 
 
 import {
@@ -76,7 +83,7 @@ import {
   MdOutlineDiscount
 } from "react-icons/md";
 
-const STRAPI_ICONS = {  
+const STRAPI_ICONS = {
   // Lucide
   CarFront,
   // Bootstrap Icons
@@ -89,7 +96,8 @@ const STRAPI_ICONS = {
   FaClipboardList,
   FaUsersCog,
   FaPhoneAlt,
-
+  FaCarCrash,
+  FaHandsHelping,
   // GitHub Octicons
   GoShieldCheck,
   GoGitCompare,
@@ -110,6 +118,7 @@ const STRAPI_ICONS = {
   HiOutlineColorSwatch,
   HiOutlineCheckCircle,
   HiOutlineCog,
+  HiOutlineIdentification,
   HiBolt,
   HiWifi,
   HiOutlineMapPin,
@@ -123,8 +132,11 @@ const STRAPI_ICONS = {
   HiOutlineCash,
   HiOutlineChip,
   HiOutlineCollection,
+  HiMagnifyingGlass,
   HiOutlineSupport,
   HiOutlineStar,
+  HiArrowRight,
+  HiArrowDown,
   // Heroicons 2
   HiMiniReceiptPercent,
   HiCalendarDays,
@@ -134,6 +146,7 @@ const STRAPI_ICONS = {
   IoDocumentTextOutline,
   IoHappyOutline,
   IoMdSpeedometer,
+  IoDocumentLockOutline,
   // Lucide
   LuMonitorDot,
   LuTicketMinus,

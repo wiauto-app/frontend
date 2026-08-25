@@ -154,7 +154,7 @@ const HeroSearchFormContent = () => {
     <div className=" w-full md:w-xs space-y-2">
       <div className="grid w-full grid-cols-2 gap-1  lg:w-fit">
         <Button className="rounded-lg">Comprar</Button>
-        <NavbarPublishButton variant="outline" className="rounded-lg w-full h-full"  />
+        <NavbarPublishButton variant="outline" className="rounded-lg w-full h-full text-foreground"  />
       </div>
       <Card size="sm" className="w-full">
         <CardContent className="space-y-4">
