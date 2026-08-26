@@ -8,7 +8,6 @@ import {
 } from "react";
 import {
   Camera,
-  GripVertical,
   ImagePlus,
   Loader2,
   Trash2,
@@ -25,6 +24,8 @@ import {
 
 import type { VehicleFormImage } from "../schemas/vehicle.schema";
 import { vehicleService } from "@/services/vehicleService";
+import Image from "next/image";
+import { FaArrowsAlt } from "react-icons/fa";
 
 /** El backend acepta: JPEG, PNG, WebP, AVIF (sin HEIC). */
 const file_input_accept = "image/jpeg,image/jpg,image/png,image/webp,image/avif";
@@ -921,7 +922,7 @@ export const ImagesForm = ({
                     }
                   }}
                 >
-                  <GripVertical className="size-4" aria-hidden />
+                  <FaArrowsAlt className="size-4" aria-hidden />
                 </Button>
 
                 <Button
@@ -972,7 +973,10 @@ export const ImagesForm = ({
                         : `${item.file.name} subida`
                 }
               >
-                <img
+                <Image
+                  width={100}
+                  height={100}
+                  unoptimized
                   src={item.preview_url}
                   alt={item.file.name}
                   className={cn(

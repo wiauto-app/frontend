@@ -41,7 +41,7 @@ export function Stepper({ steps, currentStep, onStepClick, className }: StepperP
                   isPending && "bg-gray-100 text-gray-400",
                 )}
               >
-                {isCompleted ? <Check className="h-4 w-4" /> : step.id}
+                {isCompleted ? <Check className="h-4 w-4" /> : idx + 1}
               </span>
               <span
                 className={cn(

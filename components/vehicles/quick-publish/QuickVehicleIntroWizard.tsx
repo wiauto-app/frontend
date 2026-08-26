@@ -19,6 +19,7 @@ import {
   parseQuickVehicleStep,
   QUICK_VEHICLE_INTRO_STEPS,
   QUICK_VEHICLE_STEP_QUERY_PARAM,
+  type QuickVehicleIntroStep,
 } from "./quick-vehicle-wizard.constants";
 
 import { cn } from "@/lib/utils";
@@ -33,6 +34,9 @@ interface QuickVehicleIntroWizardProps {
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
 }
 
+const is_subscriber_only_step = (step_id: number) =>
+  step_id === 2 || step_id === 4;
+
 export const QuickVehicleIntroWizard = ({
   vehicleId,
   contactName,
@@ -45,7 +49,7 @@ export const QuickVehicleIntroWizard = ({
     keys: [QUICK_VEHICLE_STEP_QUERY_PARAM],
   });
 
-  const currentStep =
+  const requested_step =
     parseQuickVehicleStep(
       values[QUICK_VEHICLE_STEP_QUERY_PARAM]?.toString() ?? null,
     ) ?? 1;
@@ -55,10 +59,7 @@ export const QuickVehicleIntroWizard = ({
   const stepItems = useMemo(
     () =>
       QUICK_VEHICLE_INTRO_STEPS.filter((step) => {
-        if (step.id === 4) {
-          return isSubscribed;
-        }
-        if (step.id === 2) {
+        if (is_subscriber_only_step(step.id)) {
           return isSubscribed;
         }
 
@@ -66,12 +67,21 @@ export const QuickVehicleIntroWizard = ({
       }),
     [isSubscribed],
   );
-  const totalSteps = stepItems.length;
+
+  const current_step_index = useMemo(() => {
+    const index = stepItems.findIndex((step) => step.id === requested_step);
+    return index >= 0 ? index : 0;
+  }, [requested_step, stepItems]);
+
+  const currentStep = stepItems[current_step_index]?.id ?? stepItems[0]?.id ?? 1;
+  const current_step_config: QuickVehicleIntroStep | undefined =
+    stepItems[current_step_index];
+
   const handledSubmitCountRef = useRef(0);
   const { errors, submitCount } = form.formState;
 
-  const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === totalSteps;
+  const isFirstStep = current_step_index === 0;
+  const isLastStep = current_step_index === stepItems.length - 1;
 
   const navigateToStep = useCallback(
     (step: number) => {
@@ -79,6 +89,19 @@ export const QuickVehicleIntroWizard = ({
     },
     [handleChange],
   );
+
+  // Si la URL apunta a un paso no disponible (p. ej. sin suscripción), corrige.
+  useEffect(() => {
+    const is_available = stepItems.some((step) => step.id === requested_step);
+    if (is_available) {
+      return;
+    }
+
+    const fallback = stepItems[0]?.id;
+    if (fallback != null) {
+      navigateToStep(fallback);
+    }
+  }, [navigateToStep, requested_step, stepItems]);
 
   useEffect(() => {
     if (submitCount === 0 || submitCount <= handledSubmitCountRef.current) {
@@ -100,30 +123,45 @@ export const QuickVehicleIntroWizard = ({
   }, [currentStep, errors, navigateToStep, stepItems, submitCount]);
 
   const handleStepClick = (step: number) => {
-    if (step < currentStep) {
-      navigateToStep(step);
+    const target_index = stepItems.findIndex((item) => item.id === step);
+    if (target_index < 0 || target_index >= current_step_index) {
+      return;
     }
+
+    navigateToStep(step);
   };
 
   const handlePrevious = () => {
-    if (!isFirstStep) {
-      navigateToStep(currentStep - 1);
+    if (isFirstStep) {
+      return;
+    }
+
+    const previous = stepItems[current_step_index - 1];
+    if (previous) {
+      navigateToStep(previous.id);
     }
   };
 
   const handleNext = async () => {
-    const stepConfig = QUICK_VEHICLE_INTRO_STEPS[currentStep - 1];
+    if (!current_step_config) {
+      return;
+    }
 
-    if (stepConfig.fields.length > 0) {
-      const isValid = await form.trigger(stepConfig.fields);
+    if (current_step_config.fields.length > 0) {
+      const isValid = await form.trigger(current_step_config.fields);
 
       if (!isValid) {
         return;
       }
     }
 
-    if (!isLastStep) {
-      navigateToStep(currentStep + 1);
+    if (isLastStep) {
+      return;
+    }
+
+    const next = stepItems[current_step_index + 1];
+    if (next) {
+      navigateToStep(next.id);
     }
   };
 
