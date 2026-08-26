@@ -7,6 +7,7 @@ import { HeroBackgroundCarousel } from "./HeroBackgroundCarousel";
 import { HeroFeatures } from "./heroFeatures";
 import { HeroSearchForm } from "./HeroSearchForm";
 import { StoreButtons } from "./StoreButtons";
+import { HeroBackdrop } from "../ui/heroBackdrop";
 
 interface HeroSectionProps {
   data: StrapiHomeHero | null | undefined;
@@ -22,16 +23,21 @@ export function HeroSection({ data }: HeroSectionProps) {
 
   return (
     <Hero
-      className="px-3 h-80 sm:h-auto lg:h-auto overflow-visible "
+      className="px-3 h-80 sm:h-140 lg:h-140 overflow-visible "
       contentClassName="lg:grid-cols-1"
       image="https://media.wiauto.es/wiauto-strapi/41_C5_DDB_7_9_D8_F_4_ACE_82_CC_BE_887_E4_CBFEC_e38f248f10.jpeg"
+      rightContent={
+        <div className="flex md:hidden h-full items-end justify-center absolute sm:static -bottom-60 left-0 right-0 ">
+          <HeroSearchForm />
+        </div>
+      }
       leftContent={
-        <div className="flex flex-col">
-          <div className="flex flex-col  text-white gap-2 lg:gap-5 2xl:px-14">
+        <div className="flex flex-col  w-full">
+          <div className="flex flex-col items-center  text-white gap-2 lg:gap-5 2xl:px-14">
             <div>
               <HeroTitle
                 highlight
-                className="text-black text-start  text-2xl max-w-[55%] lg:max-w-[75%]"
+                className="text-center lg:text-center mx-auto  text-2xl max-w-[55%] "
               >
                 {title}
               </HeroTitle>
@@ -39,25 +45,20 @@ export function HeroSection({ data }: HeroSectionProps) {
 
             {data.subtitle ? (
               <div>
-                <HeroDescription className="text-black block text-start  text-xs max-w-[65%] lg:max-w-full">
+                <HeroDescription className=" block text-center lg:text-center mx-auto  text-xs max-w-[65%] lg:max-w-full">
                   {data.subtitle}
                 </HeroDescription>
               </div>
             ) : null}
 
             <HeroFeatures
-              className="text-black text-xs "
+              className="text-xs "
               features={features}
               orientation="horizontal"
               containerClassName="gap-2 flex flex-wrap"
             />
             <HeroSearchForm />
           </div>
-        </div>
-      }
-      rightContent={
-        <div className="flex md:hidden h-full items-end justify-center absolute sm:static -bottom-60 left-0 right-0 ">
-          <HeroSearchForm />
         </div>
       }
       floatingContent={

@@ -65,7 +65,7 @@ export const HeroReferenceSearch = () => {
   };
 
   return (
-    <form className="flex flex-col gap-4 " onSubmit={handleSubmit}>
+    <form className="grid grid-cols-1 gap-4 " onSubmit={handleSubmit}>
       <div className="space-y-2">
         <label
           htmlFor="hero-vehicle-ref"

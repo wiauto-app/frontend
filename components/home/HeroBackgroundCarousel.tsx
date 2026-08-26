@@ -54,6 +54,7 @@ export const HeroBackgroundCarousel = ({
       className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden rounded-b-lg [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-content]>div]:h-full"
       aria-label="Imágenes del hero"
     >
+
       <CarouselContent className="ml-0 h-full">
         {slides.map((slide, index) => (
           <CarouselItem
@@ -69,12 +70,11 @@ export const HeroBackgroundCarousel = ({
               fill
               quality={50}
               sizes="(max-width: 639px) 90vw, (max-width: 767px) 619px, (max-width: 1023px) 727px, (max-width: 1279px) 835px, 961px"
-              className="object-cover"
+              className="object-cover brightness-[0.65]"
             />
           </CarouselItem>
         ))}
       </CarouselContent>
-
     </Carousel>
   );
 };

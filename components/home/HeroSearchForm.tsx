@@ -116,7 +116,7 @@ const HeroFiltersSearchForm = () => {
 
   return (
     <form
-      className="grid grid-cols-1 gap-4  w-full"
+      className="grid grid-cols-1 lg:grid-cols-4 gap-4  w-full"
       onSubmit={(event) => {
         event.preventDefault();
         handleSearch();
@@ -151,8 +151,8 @@ const HeroSearchFormContent = () => {
   };
 
   return (
-    <div className=" w-full md:w-xs space-y-2">
-      <div className="grid w-full grid-cols-2 gap-1  lg:w-fit">
+    <div className=" w-full  space-y-2">
+      <div className="grid w-full grid-cols-2 gap-1  lg:w-80 lg:mx-auto ">
         <Button className="rounded-lg">Comprar</Button>
         <NavbarPublishButton variant="outline" className="rounded-lg w-full h-full text-foreground"  />
       </div>

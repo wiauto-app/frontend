@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import BillTable from "./billTable";
 import AddonsGrid from "./addonsGrid";
 import PlanesGrid from "./planesGrid";
+import { Card, CardContent } from "@/components/ui/card";
+import { SectionHeading } from "@/components/home/SectionHeading";
 
 const formatEuros = (amount_cents: number) =>
   new Intl.NumberFormat("es-ES", {
@@ -40,19 +42,13 @@ export const MonetizacionContent = () => {
     enabled: !!user,
   });
 
-  const {
-    data: assistant_packs = [],
-    isLoading: packs_loading,
-  } = useQuery({
+  const { data: assistant_packs = [], isLoading: packs_loading } = useQuery({
     queryKey: ["assistant-credit-packs-catalog"],
     queryFn: () => billingService.getAssistantCreditPacksCatalog(),
     enabled: !!user,
   });
 
-  const {
-    data: featured_offers = [],
-    isLoading: offers_loading,
-  } = useQuery({
+  const { data: featured_offers = [], isLoading: offers_loading } = useQuery({
     queryKey: ["featured-listing-offers-catalog"],
     queryFn: () => billingService.getFeaturedListingOffersCatalog(),
     enabled: !!user,
@@ -119,7 +115,9 @@ export const MonetizacionContent = () => {
     billing_me?.quotas?.max_listings ?? billing_me?.vehicle_listings_max,
   );
 
-  const aiRequestsUsage = formatUsageVsLimit(billing_me?.entitlements?.ai_requests);
+  const aiRequestsUsage = formatUsageVsLimit(
+    billing_me?.entitlements?.ai_requests,
+  );
 
   const addons_loading = packs_loading || offers_loading;
 
@@ -157,10 +155,13 @@ export const MonetizacionContent = () => {
 
     set_is_checkout_loading(true);
     try {
-      const url = await billingService.createAssistantCreditsCheckout(addon.id, {
-        success_url: absoluteUrl("/usuario/monetizacion?checkout=success"),
-        cancel_url: absoluteUrl("/usuario/monetizacion?checkout=cancel"),
-      });
+      const url = await billingService.createAssistantCreditsCheckout(
+        addon.id,
+        {
+          success_url: absoluteUrl("/usuario/monetizacion?checkout=success"),
+          cancel_url: absoluteUrl("/usuario/monetizacion?checkout=cancel"),
+        },
+      );
       if (!url) {
         toast.error("No se pudo iniciar el checkout");
         return;
@@ -184,8 +185,7 @@ export const MonetizacionContent = () => {
     <div className="space-y-6 pb-20">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
         <div className="flex items-center gap-2">
-          <LayoutGrid className="w-6 h-6 text-gray-700" />
-          <h1 className="text-2xl font-bold text-gray-900">Planes y palancas premium</h1>
+          <SectionHeading lead="Selecciona tu" highlight="plan Profesional" />
         </div>
         {billing_me?.subscription && billing_me?.stripe_customer_id ? (
           <Button type="button" variant="outline" onClick={handlePortal}>
@@ -195,46 +195,57 @@ export const MonetizacionContent = () => {
       </div>
 
       {billing_me ? (
-        <div className="rounded-xl border border-gray-100 bg-white p-4 text-sm text-gray-700 space-y-1">
-          {vehiclesUsage ? (
-            <p>
-              {getEntitlementFeatureLabel("vehicles")}: <strong>{vehiclesUsage}</strong>
-            </p>
-          ) : null}
-          {aiRequestsUsage && billing_me.entitlements?.ai_requests ? (
-            <p>
-              {getEntitlementFeatureLabel("ai_requests")}: <strong>{aiRequestsUsage}</strong>
-            </p>
-          ) : null}
-          {billing_me.subscription ? (
-            <p>
-              Suscripción: {billing_me.subscription.plan_name} ({billing_me.subscription.status})
-            </p>
-          ) : billing_me.access_grant ? (
-            <p>
-              Plan concedido: {billing_me.access_grant.plan_name}
-              {billing_me.access_grant.expires_at
-                ? ` · válido hasta ${new Date(billing_me.access_grant.expires_at).toLocaleDateString("es-ES")}`
-                : " · sin vencimiento"}
-            </p>
-          ) : null}
-        </div>
+        <Card>
+          <CardContent>
+            {vehiclesUsage ? (
+              <p>
+                {getEntitlementFeatureLabel("vehicles")}:{" "}
+                <strong>{vehiclesUsage}</strong>
+              </p>
+            ) : null}
+            {aiRequestsUsage && billing_me.entitlements?.ai_requests ? (
+              <p>
+                {getEntitlementFeatureLabel("ai_requests")}:{" "}
+                <strong>{aiRequestsUsage}</strong>
+              </p>
+            ) : null}
+            {billing_me.subscription ? (
+              <p>
+                Suscripción: {billing_me.subscription.plan_name} (
+                {billing_me.subscription.status})
+              </p>
+            ) : billing_me.access_grant ? (
+              <p>
+                Plan concedido: {billing_me.access_grant.plan_name}
+                {billing_me.access_grant.expires_at
+                  ? ` · válido hasta ${new Date(billing_me.access_grant.expires_at).toLocaleDateString("es-ES")}`
+                  : " · sin vencimiento"}
+              </p>
+            ) : null}
+          </CardContent>
+        </Card>
       ) : null}
 
       <PlanesGrid
         plans={recurring_plans}
-        active_plan_id={billing_me?.plan_id ?? billing_me?.subscription?.plan_id ?? null}
+        active_plan_id={
+          billing_me?.plan_id ?? billing_me?.subscription?.plan_id ?? null
+        }
         loading={catalog_loading || is_checkout_loading}
         onSelectPlan={handleSubscriptionCheckout}
         formatPrice={formatEuros}
       />
-      <AddonsGrid
+      {/* <AddonsGrid
         addons={addons}
         loading={addons_loading || is_checkout_loading}
         onSelectAddon={handleAddonCheckout}
         formatPrice={formatEuros}
+      /> */}
+      <BillTable
+        bills={invoices}
+        loading={invoices_loading}
+        formatPrice={formatEuros}
       />
-      <BillTable bills={invoices} loading={invoices_loading} formatPrice={formatEuros} />
     </div>
   );
 };
