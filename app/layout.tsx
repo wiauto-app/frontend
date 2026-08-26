@@ -8,6 +8,7 @@ import { AssistantDialog } from "@/components/assistant/assistantDialog";
 import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
 import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
 import { AssistantChatProvider } from "@/components/assistant/assistantChatProvider";
+import { MetaPixel } from "@/components/metaPixel";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -40,14 +41,19 @@ export default async function RootLayout({
       >
         <body className="flex flex-col relative">
           <AssistantChatProvider>
-          <Navbar />
-          <main className="flex flex-1 flex-col pb-14 md:pb-0 mb-10">{children}</main>
-          <ConditionalWrapper hideOnPaths={["/usuario","/publicar","/editar-vehiculo"]}>
-            <NewsletterSection />
-            <Footer />
-          </ConditionalWrapper>
-          <AssistantDialog />
-          <MobileNavbar />
+            <Navbar />
+            <main className="flex flex-1 flex-col pb-14 md:pb-0 mb-10">
+              <MetaPixel />
+              {children}
+            </main>
+            <ConditionalWrapper
+              hideOnPaths={["/usuario", "/publicar", "/editar-vehiculo"]}
+            >
+              <NewsletterSection />
+              <Footer />
+            </ConditionalWrapper>
+            <AssistantDialog />
+            <MobileNavbar />
           </AssistantChatProvider>
         </body>
       </html>

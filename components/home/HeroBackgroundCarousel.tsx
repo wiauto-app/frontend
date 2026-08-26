@@ -70,7 +70,7 @@ export const HeroBackgroundCarousel = ({
               fill
               quality={50}
               sizes="(max-width: 639px) 90vw, (max-width: 767px) 619px, (max-width: 1023px) 727px, (max-width: 1279px) 835px, 961px"
-              className="object-cover brightness-[0.65]"
+              className="object-cover"
             />
           </CarouselItem>
         ))}

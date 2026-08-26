@@ -59,7 +59,7 @@ const HeroModeToggle = ({ mode, onModeChange }: HeroModeToggleProps) => {
         role="tab"
         aria-selected={mode === "filters"}
         className={cn(
-          "py-2 flex items-center gap-2 justify-center relative rounded-none border-b-2 border-transparent bg-transparent",
+          "py-1 flex items-center gap-2 justify-center relative rounded-none border-b-2 border-transparent bg-transparent",
           "hover:bg-transparent hover:text-primary",
           mode === "filters"
             ? "border-primary text-primary"
@@ -152,12 +152,12 @@ const HeroSearchFormContent = () => {
 
   return (
     <div className=" w-full  space-y-2">
-      <div className="grid w-full grid-cols-2 gap-1  lg:w-80 lg:mx-auto ">
+      <div className="grid w-full grid-cols-2 gap-1  lg:w-80 ">
         <Button className="rounded-lg">Comprar</Button>
         <NavbarPublishButton variant="outline" className="rounded-lg w-full h-full text-foreground"  />
       </div>
-      <Card size="sm" className="w-full">
-        <CardContent className="space-y-4">
+      <Card className="w-full pt-1 pb-4">
+        <CardContent className="space-y-2 px-4">
           <HeroModeToggle mode={mode} onModeChange={handleModeChange} />
           {mode === "filters" ? (
             <HeroFiltersSearchForm />
