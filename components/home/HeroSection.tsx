@@ -25,11 +25,11 @@ export function HeroSection({ data }: HeroSectionProps) {
       className="px-3 h-80  lg:h-auto overflow-visible "
       contentClassName="lg:grid-cols-1"
       image="https://media.wiauto.es/wiauto-strapi/41_C5_DDB_7_9_D8_F_4_ACE_82_CC_BE_887_E4_CBFEC_e38f248f10.jpeg"
-      rightContent={
-        <div className="flex md:hidden h-full items-end justify-center absolute sm:static -bottom-60 left-0 right-0 ">
-          <HeroSearchForm />
-        </div>
-      }
+      // rightContent={
+      //   <div className="flex md:hidden h-full items-end justify-center absolute sm:static -bottom-60 left-0 right-0 ">
+      //     <HeroSearchForm />
+      //   </div>
+      // }
       leftContent={
         <div className="flex flex-col  w-full">
           <div className="flex flex-col  gap-2 lg:gap-5 2xl:px-14">
