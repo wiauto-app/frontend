@@ -22,7 +22,7 @@ export function HeroSection({ data }: HeroSectionProps) {
 
   return (
     <Hero
-      className="px-3 h-80  lg:h-auto overflow-visible "
+      className="px-3 h-auto  lg:h-auto overflow-visible "
       contentClassName="lg:grid-cols-1"
       image="https://media.wiauto.es/wiauto-strapi/41_C5_DDB_7_9_D8_F_4_ACE_82_CC_BE_887_E4_CBFEC_e38f248f10.jpeg"
       // rightContent={
@@ -36,7 +36,7 @@ export function HeroSection({ data }: HeroSectionProps) {
             <div>
               <HeroTitle
                 highlight
-                className="text-center text-black text-2xl max-w-[55%] "
+                className=" text-start text-black text-2xl max-w-[55%] "
               >
                 {title}
               </HeroTitle>
@@ -44,7 +44,7 @@ export function HeroSection({ data }: HeroSectionProps) {
 
             {data.subtitle ? (
               <div>
-                <HeroDescription className=" block text-center text-black  text-xs max-w-[65%] lg:max-w-full">
+                <HeroDescription className=" block text-start  text-black  text-xs max-w-[65%] lg:max-w-full">
                   {data.subtitle}
                 </HeroDescription>
               </div>
@@ -54,9 +54,9 @@ export function HeroSection({ data }: HeroSectionProps) {
               className="text-xs text-black"
               features={features}
               orientation="horizontal"
-              containerClassName="gap-2 flex flex-wrap"
+              containerClassName="gap-2 flex flex-wrap max-w-[60%]"
             />
-            <br />
+            <br className="hidden md:block"/>
             <HeroSearchForm />
           </div>
         </div>
