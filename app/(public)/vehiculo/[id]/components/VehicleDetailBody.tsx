@@ -16,6 +16,7 @@ import { VehicleDetailViewTracker } from "./VehicleDetailViewTracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
+import { NeedCarHelpBanner } from "@/components/collabs/needCarHelpBanner";
 
 interface VehicleDetailBodyProps {
   vehicle: Vehicle;
@@ -45,10 +46,7 @@ export const VehicleDetailBody = ({
       <div className="mx-auto container-custom space-y-6 py-6">
         <div className="relative grid grid-cols-1 gap-6 lg:grid-cols-4">
           <div className="space-y-6 lg:col-span-3">
-            <VehicleDetailGallery
-              images={vehicle.images}
-              title={displayName}
-            />
+            <VehicleDetailGallery images={vehicle.images} title={displayName} />
             <VehicleDetailTitleSection vehicle={vehicle} />
             <VehicleDetailMobileContactBar
               vehicleId={vehicle.id}
@@ -58,8 +56,9 @@ export const VehicleDetailBody = ({
               publisherProfileId={publisherProfileId}
             />
             <VehicleDetailServicesSection services={vehicle.services} />
-            <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
+            <NeedCarHelpBanner />
             <VehicleDetailDescription description={vehicle.description} />
+            <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
             {/* <VehicleDetailPriceAnalysisSection
             /> */}
             <VehicleDetailFeatures features={vehicle.features} />
