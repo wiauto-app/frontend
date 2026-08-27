@@ -22,7 +22,7 @@ import { QuickVehicleAiDescriptionCard } from "./QuickVehicleAiDescriptionCard";
 import { QuickVehiclePricingFields } from "./QuickVehiclePricingFields";
 import { QuickVehicleTechnicalFields } from "./QuickVehicleTechnicalFields";
 import { GeneratedDescriptionConfig } from "./generatedDescription/generatedDescriptionConfig";
-import { PromotionBanner } from "./promotionBanner";
+// import { PromotionBanner } from "./promotionBanner";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { EquipmentForm } from "./equipmentForm";
 
@@ -42,7 +42,7 @@ export const QuickVehicleMainSections = ({
   const { isSubscribed } = useEntitlements();
   return (
     <div className="flex flex-col gap-12">
-      {!isSubscribed ? <PromotionBanner /> : null}
+      {/* {!isSubscribed ? <PromotionBanner /> : null} */}
       <QuickVehicleMediaStep
         vehicleId={vehicleId}
         onImageUploadStatusChange={onImageUploadStatusChange}
@@ -225,6 +225,32 @@ export const QuickVehicleMainSections = ({
                   onCheckedChange={field.onChange}
                   disabled={!phoneValue?.phone?.trim()}
                   aria-label="Disponible por WhatsApp"
+                />
+              </div>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="show_review_collab"
+          control={form.control}
+          render={({ field }) => (
+            <Field>
+              <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
+                <div className="space-y-1">
+                  <FieldLabel htmlFor="quick-has-whatsapp">
+                    Mostrar revisión de colaboración
+                  </FieldLabel>
+                  <FieldDescription>
+                    Si lo activas, se mostrará la revisión de colaboración en el
+                    anuncio público.
+                  </FieldDescription>
+                </div>
+                <Switch
+                  id="quick-show-review-collab"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  aria-label="Mostrar revisión de colaboración"
                 />
               </div>
             </Field>

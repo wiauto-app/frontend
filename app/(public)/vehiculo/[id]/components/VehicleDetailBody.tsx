@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
 import { NeedCarHelpBanner } from "@/components/collabs/needCarHelpBanner";
+import { Suspense } from "react";
 
 interface VehicleDetailBodyProps {
   vehicle: Vehicle;
@@ -56,7 +57,9 @@ export const VehicleDetailBody = ({
               publisherProfileId={publisherProfileId}
             />
             <VehicleDetailServicesSection services={vehicle.services} />
-            <NeedCarHelpBanner />
+            <Suspense fallback={<div>Loading...</div>}>
+              <NeedCarHelpBanner />
+            </Suspense>
             <VehicleDetailDescription description={vehicle.description} />
             <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
             {/* <VehicleDetailPriceAnalysisSection
