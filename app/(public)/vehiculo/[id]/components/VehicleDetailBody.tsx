@@ -39,6 +39,9 @@ export const VehicleDetailBody = ({
       <VehicleDetailViewTracker
         vehicleId={vehicle.id}
         ownerProfileId={ownerProfileId}
+        vehicleName={displayName}
+        vehiclePrice={vehicle.price ?? null}
+        vehicleCategory={vehicle.version.make.name ?? null}
       />
       <VehicleDetailTopBar
         vehicle={vehicle}

@@ -8,6 +8,7 @@ import type { FeaturedListingOffer } from "@/interfaces/billing.interface";
 import { myListingsService } from "@/services/myListings/myListingsService";
 import { billingService } from "@/services/billingService";
 import { absoluteUrl } from "@/lib/seo/absolute-url";
+import { rememberPendingMetaPurchase } from "@/lib/analytics/metaPixel";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
   DEFAULT_MY_LISTINGS_ORDER_VALUE,
@@ -271,6 +272,17 @@ export const useMyListingsPage = ({
       if (!checkoutUrl) {
         throw new Error("No se pudo iniciar el checkout de destacado");
       }
+
+      const offer = featureOffers.find((item) => item.id === offerId);
+      if (offer) {
+        rememberPendingMetaPurchase({
+          value: offer.amount_cents / 100,
+          currency: offer.currency.toUpperCase(),
+          contentName: offer.title,
+          contentIds: [offer.id],
+        });
+      }
+
       window.location.assign(checkoutUrl);
     },
   });

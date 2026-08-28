@@ -5,15 +5,9 @@ import { MetaPixelPageView } from "@/components/metaPixelPageView";
 import { META_PIXEL_ID } from "@/constants";
 
 
-export type MetaPixelType = "pageView" | "viewContent" | "search";
-
-export const MetaPixel = ({
-  type = "pageView",
-}: {
-  type?: MetaPixelType;
-}) => {
+export const MetaPixel = () => {
   if (!META_PIXEL_ID) {
-    throw new Error("META_PIXEL_ID is not set");
+    return null;
   }
 
   return (

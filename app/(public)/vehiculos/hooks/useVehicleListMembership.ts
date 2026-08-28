@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { VehicleList } from "@/interfaces/vehicle-list.interface";
 import { vehicleListService } from "@/services/vehicleListService";
+import { trackMetaAddToWishlist } from "@/lib/analytics/metaPixel";
 import { useFavoriteIds } from "./useFavoriteIds";
 
 const VEHICLE_LISTS_QUERY_KEY = ["vehicle-lists"] as const;
@@ -83,11 +84,12 @@ export const useVehicleListMembership = ({
     mutationFn: async (listId: string) => {
       const response = await vehicleListService.addItem(listId, vehicleId);
       if (response.status === 409) {
-        return;
+        return { alreadyInList: true };
       }
       if (!response.ok) {
         throw new Error(response.message || "No se pudo agregar a la lista");
       }
+      return { alreadyInList: false };
     },
     onMutate: async (listId) => {
       await queryClient.cancelQueries({ queryKey: membershipQueryKey });
@@ -102,6 +104,11 @@ export const useVehicleListMembership = ({
       });
 
       return { previousMembership };
+    },
+    onSuccess: (result) => {
+      if (!result.alreadyInList) {
+        trackMetaAddToWishlist({ id: vehicleId });
+      }
     },
     onError: (_error, _listId, context) => {
       if (context?.previousMembership) {
@@ -176,6 +183,7 @@ export const useVehicleListMembership = ({
       return createResponse.data;
     },
     onSuccess: () => {
+      trackMetaAddToWishlist({ id: vehicleId });
       queryClient.invalidateQueries({ queryKey: VEHICLE_LISTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: membershipQueryKey });
     },

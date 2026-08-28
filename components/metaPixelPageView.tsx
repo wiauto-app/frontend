@@ -3,15 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-declare global {
-  interface Window {
-    fbq?: (
-      action: string,
-      event: string,
-      params?: Record<string, unknown>,
-    ) => void;
-  }
-}
+import { trackMetaEvent } from "@/lib/analytics/metaPixel";
 
 /** Dispara PageView en navegaciones del App Router (evita duplicar el del script inicial). */
 export const MetaPixelPageView = () => {
@@ -25,7 +17,7 @@ export const MetaPixelPageView = () => {
       return;
     }
 
-    window.fbq?.("track", "PageView");
+    trackMetaEvent("PageView");
   }, [pathname, searchParams]);
 
   return null;

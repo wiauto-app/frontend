@@ -14,6 +14,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 import type { HierarchyMultiValue } from "@/components/selectors/types";
 import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
+import { trackMetaSearch } from "@/lib/analytics/metaPixel";
 import {
   buildVehicleListingHref,
   orderDirectionFromUrlSegment,
@@ -195,9 +196,13 @@ export const VehiclesListingFiltersProvider = ({
   const handleSearch = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
+      const query = searchInput.trim() || undefined;
+
+      trackMetaSearch({ searchString: query, filters });
+
       pushFilters({
         ...filters,
-        query: searchInput.trim() || undefined,
+        query,
         page: 1,
       });
     },

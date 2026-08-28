@@ -3,26 +3,26 @@ import type { NextConfig } from "next";
 const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const strapiRemote = strapiUrl
   ? (() => {
-      const url = new URL(strapiUrl);
-      return {
-        protocol: url.protocol.replace(":", "") as "http" | "https",
-        hostname: url.hostname,
-        ...(url.port ? { port: url.port } : {}),
-        pathname: "/uploads/**",
-      };
-    })()
+    const url = new URL(strapiUrl);
+    return {
+      protocol: url.protocol.replace(":", "") as "http" | "https",
+      hostname: url.hostname,
+      ...(url.port ? { port: url.port } : {}),
+      pathname: "/uploads/**",
+    };
+  })()
   : null;
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  experimental:{
+  experimental: {
     optimizePackageImports: ['package-name'],
   },
-  logging:{
-    browserToTerminal:false
+  logging: {
+    browserToTerminal: false
   },
   images: {
-    qualities: [40,50,60,70,80, 90, 100],
+    qualities: [40, 50, 60, 70, 80, 90, 100],
     remotePatterns: [
       {
         protocol: "https",
@@ -41,10 +41,25 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "media.wiauto.es",
-      
+
       },
       ...(strapiRemote ? [strapiRemote] : []),
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "wiauto.es",
+          },
+        ],
+        destination: "https://www.wiauto.es/:path*",
+        permanent: true,
+      },
+    ];
   },
 };
 

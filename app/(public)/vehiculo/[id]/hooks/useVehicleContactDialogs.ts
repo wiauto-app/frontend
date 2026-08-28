@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { vehicleContactClickService } from "@/services/vehicleContactClickService";
+import { trackMetaContact } from "@/lib/analytics/metaPixel";
 
 interface UseVehicleContactDialogsOptions {
   vehicleId: string;
@@ -55,6 +56,11 @@ export const useVehicleContactDialogs = ({
           return;
         }
 
+        trackMetaContact({
+          channel: "phone",
+          vehicle: { id: vehicleId, name: vehicleTitle },
+        });
+
         setPhoneCode(response.data.phone_code);
         setPhone(response.data.phone);
         setPhoneDialogOpen(true);
@@ -76,6 +82,11 @@ export const useVehicleContactDialogs = ({
           toast.error(response.message || "No se pudo abrir WhatsApp");
           return;
         }
+
+        trackMetaContact({
+          channel: "whatsapp",
+          vehicle: { id: vehicleId, name: vehicleTitle },
+        });
 
         setWhatsappUrl(response.data.whatsapp_url);
         setWhatsappDialogOpen(true);

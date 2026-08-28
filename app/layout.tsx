@@ -9,8 +9,13 @@ import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
 import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
 import { AssistantChatProvider } from "@/components/assistant/assistantChatProvider";
 import { MetaPixel } from "@/components/metaPixel";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans", weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,6 +60,7 @@ export default async function RootLayout({
             <AssistantDialog />
             <MobileNavbar />
           </AssistantChatProvider>
+          <GoogleAnalytics gaId="G-XYZ" />
         </body>
       </html>
     </Providers>

@@ -4,22 +4,30 @@ import { useEffect, useRef } from "react";
 
 import { useUser } from "@/app/contexts/auth/useUser";
 import { vehiclesService } from "@/components/vehicles/services/vehiclesService";
+import { trackMetaViewContent } from "@/lib/analytics/metaPixel";
 
 interface VehicleDetailViewTrackerProps {
   vehicleId: string;
   ownerProfileId: string | null;
+  vehicleName: string;
+  vehiclePrice: number | null;
+  vehicleCategory: string | null;
 }
 
 const sessionKey = (vehicleId: string) => `wiauto:vehicle-view:${vehicleId}`;
 
 /**
- * Registra una visita a POST /v1/vehicles/:id/views (público).
+ * Registra una visita a POST /v1/vehicles/:id/views (público) y el ViewContent
+ * de Meta.
  * - No cuenta si el visitante es el dueño del anuncio.
  * - Deduplica por pestaña/sesión con sessionStorage.
  */
 export const VehicleDetailViewTracker = ({
   vehicleId,
   ownerProfileId,
+  vehicleName,
+  vehiclePrice,
+  vehicleCategory,
 }: VehicleDetailViewTrackerProps) => {
   const { user, isLoading } = useUser();
   const didRequestRef = useRef(false);
@@ -48,7 +56,22 @@ export const VehicleDetailViewTracker = ({
       ...(user?.id ? { user_id: user.id } : {}),
       metadata: { source: "vehicle_detail" },
     });
-  }, [vehicleId, ownerProfileId, user?.id, isLoading]);
+
+    trackMetaViewContent({
+      id: vehicleId,
+      name: vehicleName,
+      price: vehiclePrice,
+      category: vehicleCategory,
+    });
+  }, [
+    vehicleId,
+    ownerProfileId,
+    user?.id,
+    isLoading,
+    vehicleName,
+    vehiclePrice,
+    vehicleCategory,
+  ]);
 
   return null;
 };

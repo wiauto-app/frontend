@@ -17,6 +17,11 @@ import {
   getEntitlementFeatureLabel,
 } from "@/lib/billing/entitlements";
 import { absoluteUrl } from "@/lib/seo/absolute-url";
+import {
+  consumePendingMetaPurchase,
+  rememberPendingMetaPurchase,
+  trackMetaPurchase,
+} from "@/lib/analytics/metaPixel";
 import { Button } from "@/components/ui/button";
 import BillTable from "./billTable";
 import AddonsGrid from "./addonsGrid";
@@ -69,6 +74,10 @@ export const MonetizacionContent = () => {
   useEffect(() => {
     const checkout = search_params.get("checkout");
     if (checkout === "success") {
+      const pending = consumePendingMetaPurchase();
+      if (pending) {
+        trackMetaPurchase(pending);
+      }
       toast.success(
         "Pago completado correctamente. Revisa tu correo si acabas de crear tu cuenta.",
       );
@@ -127,6 +136,7 @@ export const MonetizacionContent = () => {
   ) => {
     set_is_checkout_loading(true);
     try {
+      const price = plan.prices.find((item) => item.id === price_id);
       const result = await billingService.createSubscriptionCheckout(price_id);
       if (!result.checkoutUrl) {
         if (result.status === 403) {
@@ -138,6 +148,16 @@ export const MonetizacionContent = () => {
         toast.error(result.message ?? "No se pudo iniciar el checkout");
         return;
       }
+
+      if (price) {
+        rememberPendingMetaPurchase({
+          value: price.amount_cents / 100,
+          currency: price.currency.toUpperCase(),
+          contentName: plan.name,
+          contentIds: [plan.id],
+        });
+      }
+
       window.location.href = result.checkoutUrl;
     } finally {
       set_is_checkout_loading(false);
@@ -166,6 +186,14 @@ export const MonetizacionContent = () => {
         toast.error("No se pudo iniciar el checkout");
         return;
       }
+
+      rememberPendingMetaPurchase({
+        value: addon.amount_cents / 100,
+        currency: addon.currency.toUpperCase(),
+        contentName: addon.title,
+        contentIds: [addon.id],
+      });
+
       window.location.href = url;
     } finally {
       set_is_checkout_loading(false);
