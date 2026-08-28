@@ -1,4 +1,3 @@
-"use client";
 
 import Image from "next/image";
 
@@ -62,7 +61,7 @@ export const PromotionPlans = ({
         </>
       }
       rightContent={
-        <div className="overflow-hidden rounded-xl shadow-2xl ring-1 ring-black/10">
+        <div className="hidden lg:block overflow-hidden rounded-xl shadow-2xl ring-1 ring-black/10">
           <Image
             className="h-auto w-xs object-cover transition-transform duration-500 ease-out hover:scale-110 lg:w-md xl:w-xl"
             src={image_url ?? ""}
