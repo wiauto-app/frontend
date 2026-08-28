@@ -10,7 +10,7 @@ import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
 import { AssistantChatProvider } from "@/components/assistant/assistantChatProvider";
 import { MetaPixel } from "@/components/metaPixel";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans", weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"] });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

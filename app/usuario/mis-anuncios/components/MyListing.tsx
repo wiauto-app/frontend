@@ -20,6 +20,7 @@ import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { resolveLimitUsage } from "@/lib/billing/entitlements";
 import { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
+import { UpgradeListingAdd } from "./upgradeListingAdd";
 
 const formatEuros = (amountCents: number): string =>
   new Intl.NumberFormat("es-ES", {
@@ -298,6 +299,7 @@ export const MyListing = () => {
               />
             </>
           )}
+          <UpgradeListingAdd />
         </div>
 
         <MyListingsPromoSidebar

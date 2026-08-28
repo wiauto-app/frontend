@@ -30,6 +30,7 @@ export type BrandLogoVariants =
 interface BrandLogoProps {
   variant?: BrandLogoVariants;
   className?: string;
+  sizes?: string;
 }
 
 const LEGACY_VARIANT_ALIASES: Record<
@@ -65,16 +66,14 @@ const resolveCanonicalVariant = (
   return variant as BrandLogoCanonicalVariant;
 };
 
-const isCompactVariant = (variant: BrandLogoCanonicalVariant): boolean =>
-  variant.startsWith("pro-sm-") || variant === "normal-white";
 
 export const BrandLogo = ({
   variant = "primary",
   className,
+  sizes = "176px",
 }: BrandLogoProps) => {
   const canonicalVariant = resolveCanonicalVariant(variant);
   const logoUrl = LOGO_URL_BY_VARIANT[canonicalVariant];
-  const sizes = isCompactVariant(canonicalVariant) ? "80px" : "176px";
   return (
     <Link
       href="/"

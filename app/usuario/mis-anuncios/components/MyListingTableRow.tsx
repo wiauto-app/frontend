@@ -30,6 +30,7 @@ import type { OwnerVehicleStatTrend } from "@/interfaces/owner-vehicle.interface
 import { RenewListingButton } from "./RenewListingButton";
 import { FeatureListingButton } from "./FeatureListingButton";
 import { MyListingActionsMenu } from "./MyListingActionsMenu";
+import { Eye, Pencil } from "lucide-react";
 
 interface MyListingTableRowProps {
   listing: OwnerVehicleListItem;
@@ -265,59 +266,47 @@ export const MyListingTableRow = ({
             ) : null}
 
             <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-0.5 sm:gap-2 sm:pt-1">
-              <Button
-                nativeButton={false}
-                className="h-8 text-xs sm:h-9 sm:text-sm"
-                render={
-                  <Link
-                    href={`/vehiculo/${listing.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  />
-                }
-              >
-                <FaEye
-                  data-icon="inline-start"
-                  className="text-sky-600"
-                  aria-hidden
-                />
-                Ver anuncio
-              </Button>
-              <Button
-                variant="outline"
-                nativeButton={false}
-                className="h-8 text-xs sm:h-9 sm:text-sm"
-                render={<Link href={`/editar-vehiculo/${listing.id}`} />}
-              >
-                <FaPencilAlt
-                  data-icon="inline-start"
-                  className="text-amber-600"
-                  aria-hidden
-                />
-                Editar
-              </Button>
-              <RenewListingButton
-                listing={listing}
-                onRenew={onRenew}
-                disabled={isMutating}
-              />
               <FeatureListingButton
                 listing={listing}
                 onFeature={onFeature}
                 disabled={isMutating}
                 priceLabel={featurePriceLabel}
               />
+              <RenewListingButton
+                listing={listing}
+                onRenew={onRenew}
+                disabled={isMutating}
+              />
+              <Link
+                href={`/vehiculo/${listing.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline">
+                  <Eye data-icon="inline-start" aria-hidden />
+                  Ver anuncio
+                </Button>
+              </Link>
+
+              <Button
+                variant="outline"
+                nativeButton={false}
+                className="h-8 text-xs sm:h-9 sm:text-sm"
+                render={<Link href={`/editar-vehiculo/${listing.id}`} />}
+              >
+                <Pencil
+                  data-icon="inline-start"
+                  className="text-amber-600"
+                  aria-hidden
+                />
+                Editar
+              </Button>
             </div>
           </div>
         </div>
       </CardContent>
 
-      <Separator />
-
-      <CardFooter className="flex-col items-stretch gap-2 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
-        <h3 className="sr-only font-heading text-base font-semibold text-foreground sm:not-sr-only">
-          Rendimiento
-        </h3>
+      <CardFooter className="flex-col items-stretch gap-2 ">
         <div className="grid grid-cols-5 gap-px overflow-hidden rounded-lg bg-border">
           <PerformanceCell
             label="Visitas"

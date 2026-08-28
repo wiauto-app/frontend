@@ -20,7 +20,7 @@ export const Navbar = () => {
           pathname.includes("usuario") ? "container-full" : "container-custom",
         )}
       >
-        <BrandLogo variant={isSubscribed ? "pro" : "primary"} />
+        <BrandLogo sizes="130px" variant={isSubscribed ? "pro" : "primary"} />
         <NavbarLinks />
         <NavbarActions>
           <NavbarMobileMenu />

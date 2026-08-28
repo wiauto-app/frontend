@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
+import { RefreshCcw } from "lucide-react";
 
 type RenewListingButtonProps = {
   listing: OwnerVehicleListItem;
@@ -32,6 +33,7 @@ export const RenewListingButton = ({
       onClick={handleClick}
       aria-label={`Renovar anuncio ${listing.display_name}`}
     >
+      <RefreshCcw data-icon="inline-start" aria-hidden />
       Renovar
     </Button>
   );

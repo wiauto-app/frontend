@@ -49,13 +49,11 @@ export const FeatureListingButton = ({
     <Button
       type="button"
       size="sm"
-      variant="outline"
-      className="border-gray-200 text-gray-700 hover:bg-gray-50"
       disabled={disabled}
       onClick={handleClick}
       aria-label={`Destacar anuncio ${listing.display_name}`}
     >
-      <Star className="mr-1.5 size-3.5 text-amber-500" aria-hidden />
+      <Star aria-hidden className=" fill-current" />
       {label}
     </Button>
   );
