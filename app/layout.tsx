@@ -9,7 +9,8 @@ import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
 import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
 import { AssistantChatProvider } from "@/components/assistant/assistantChatProvider";
 import { MetaPixel } from "@/components/metaPixel";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
+import { GOOGLE_ANALYTICS_ID, GOOGLE_TAG_MANAGER_ID } from "@/constants/external.constant";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,6 +33,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (!GOOGLE_ANALYTICS_ID || !GOOGLE_TAG_MANAGER_ID) {
+    throw new Error("GOOGLE_ANALYTICS_ID or GOOGLE_TAG_MANAGER_ID is not set");
+  }
   return (
     <Providers>
       <html
@@ -60,7 +64,8 @@ export default async function RootLayout({
             <AssistantDialog />
             <MobileNavbar />
           </AssistantChatProvider>
-          <GoogleAnalytics gaId="G-XYZ" />
+          <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
+          <GoogleTagManager gtmId={GOOGLE_TAG_MANAGER_ID} />
         </body>
       </html>
     </Providers>
