@@ -8,7 +8,6 @@ import {
 import type { Vehicle } from "@/interfaces/vehicle.interface";
 import type { UpdateVehicleSchema, VehicleSchema } from "../types/vehicles.types";
 import { V1_VEHICLES } from "./route.constants";
-import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
 
 export const vehiclesService = {
   async findOne(id: string): Promise<Vehicle> {

@@ -98,7 +98,7 @@ const quickVehicleBaseSchema = z.object({
   cuota_ids: optionalUuidArray,
   warranty_type_id: optionalUuid,
   publisher_type: z.enum(["dealership", "particular"]).default("particular"),
-  show_review_collab: z.boolean().default(false),
+  show_review_collab: z.boolean().default(true),
 });
 
 export const quickVehicleSchema = quickVehicleBaseSchema.superRefine((data, ctx) => {
@@ -159,5 +159,5 @@ export const createQuickVehicleDefaultValues: QuickVehicleSchema = {
   dgt_label_id: undefined,
   warranty_type_id: undefined,
   publisher_type: "particular",
-  show_review_collab: false,
+  show_review_collab: true,
 };

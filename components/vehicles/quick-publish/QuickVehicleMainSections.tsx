@@ -231,31 +231,33 @@ export const QuickVehicleMainSections = ({
           )}
         />
 
-        <Controller
-          name="show_review_collab"
-          control={form.control}
-          render={({ field }) => (
-            <Field>
-              <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
-                <div className="space-y-1">
-                  <FieldLabel htmlFor="quick-has-whatsapp">
-                    Mostrar revisión de colaboración
-                  </FieldLabel>
-                  <FieldDescription>
-                    Si lo activas, se mostrará la revisión de colaboración en el
-                    anuncio público.
-                  </FieldDescription>
+        {isSubscribed && (
+          <Controller
+            name="show_review_collab"
+            control={form.control}
+            render={({ field }) => (
+              <Field>
+                <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
+                  <div className="space-y-1">
+                    <FieldLabel htmlFor="quick-has-whatsapp">
+                      Mostrar revisión de colaboración
+                    </FieldLabel>
+                    <FieldDescription>
+                      Si lo activas, se mostrará la revisión de colaboración en
+                      el anuncio público.
+                    </FieldDescription>
+                  </div>
+                  <Switch
+                    id="quick-show-review-collab"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    aria-label="Mostrar revisión de colaboración"
+                  />
                 </div>
-                <Switch
-                  id="quick-show-review-collab"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  aria-label="Mostrar revisión de colaboración"
-                />
-              </div>
-            </Field>
-          )}
-        />
+              </Field>
+            )}
+          />
+        )}
       </VehicleFormStep>
     </div>
   );

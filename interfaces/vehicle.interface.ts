@@ -217,6 +217,8 @@ export interface Vehicle {
   show_first_cuota: boolean;
   by_brand_warranty: boolean;
   show_exact_location: boolean;
+  show_review_collab: boolean;
+  
   finance_price: number;
 }
 

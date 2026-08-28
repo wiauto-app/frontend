@@ -47,6 +47,8 @@ export const QuickVehicleForm = ({
     enabled: isEditMode,
   });
 
+  console.log(vehicleDetail);
+
   const form = useForm<QuickVehicleSchema>({
     resolver: standardSchemaResolver(
       quickVehicleSchema,
@@ -79,6 +81,7 @@ export const QuickVehicleForm = ({
     const payload = serializeVehiclePayload(data, {
       is_update: Boolean(vehicleId),
     });
+    console.log(payload);
     if (vehicleId) {
       const response = await vehiclesService.update(
         vehicleId,

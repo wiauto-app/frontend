@@ -37,6 +37,11 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
   },
   { href: `${basePath}/mensajes`, label: "Mensajes (chat)", icon: MessageSquare },
   { href: `${basePath}/contactos`, label: "Contactos / Leads", icon: ContactRound },
+  {
+    href: `${basePath}/monetizacion`,
+    label: "Monetización",
+    icon: CreditCard,
+  },
   { href: `${basePath}/notificaciones`, label: "Notificaciones", icon: Bell },
   { href: `${basePath}/perfil`, label: "Mi perfil", icon: UserIcon },
   {
@@ -57,11 +62,7 @@ export const USER_SIDEBAR_PRO_LINKS = [
     label: "Concesionario",
     icon: Building2,
   },
-  {
-    href: `${basePath}/monetizacion`,
-    label: "Monetización",
-    icon: CreditCard,
-  },
+
 
   {
     href: `${basePath}/equipo`,

@@ -11,6 +11,7 @@ export const mapVehicleDetailToQuickFormValues = (
     (vehicle.cuota_id ? [vehicle.cuota_id] : []);
 
   return {
+    show_review_collab: vehicle.show_review_collab === undefined ? true : vehicle.show_review_collab,
     show_first_cuota: vehicle.show_first_cuota,
     by_brand_warranty: vehicle.by_brand_warranty,
     finance_price: vehicle.finance_price,

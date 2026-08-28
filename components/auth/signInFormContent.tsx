@@ -55,7 +55,6 @@ export const SignInFormContent = ({
     const resumePendingChallenge = async () => {
       try {
         const response = await authService.getTwoFactorChallenge();
-        console.log(response);
         if (response.ok && response.data?.type === "2fa_required") {
           setPendingEmail(response.data.email);
           setStep("two_factor");

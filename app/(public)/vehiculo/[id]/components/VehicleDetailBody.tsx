@@ -57,9 +57,12 @@ export const VehicleDetailBody = ({
               publisherProfileId={publisherProfileId}
             />
             <VehicleDetailServicesSection services={vehicle.services} />
-            <Suspense fallback={<div>Loading...</div>}>
-              <NeedCarHelpBanner />
-            </Suspense>
+
+            {vehicle.show_review_collab && (
+              <Suspense fallback={<div>Loading...</div>}>
+                <NeedCarHelpBanner />
+              </Suspense>
+            )}
             <VehicleDetailDescription description={vehicle.description} />
             <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
             {/* <VehicleDetailPriceAnalysisSection

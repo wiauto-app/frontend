@@ -29,11 +29,10 @@ const formatEuros = (amountCents: number): string =>
 
 export const MyListing = () => {
   const { user, isLoading: isUserLoading } = useUser();
-  const { has, getLimitUsage, isPrivileged,entitlements } = useEntitlements();
+  const { has, getLimitUsage, isPrivileged, isSubscribed } = useEntitlements();
   const searchParams = useSearchParams();
-  const [scheduleListing, setScheduleListing] = useState<OwnerVehicleListItem | null>(
-    null,
-  );
+  const [scheduleListing, setScheduleListing] =
+    useState<OwnerVehicleListItem | null>(null);
   const [featuringOfferId, setFeaturingOfferId] = useState<string | null>(null);
 
   const isAuthenticated = Boolean(user);
@@ -81,10 +80,10 @@ export const MyListing = () => {
 
   const hasActiveFilters = Boolean(
     filters.status ||
-      filters.makeId ||
-      filters.modelId ||
-      filters.sinceCreatedAt ||
-      filters.untilCreatedAt,
+    filters.makeId ||
+    filters.modelId ||
+    filters.sinceCreatedAt ||
+    filters.untilCreatedAt,
   );
 
   // Preferir billing/me de la página (incluye used/remaining frescos).
@@ -186,13 +185,9 @@ export const MyListing = () => {
     }
   };
 
-  const handleToggleStatus = async (
-    id: string,
-    nextStatus: VehicleStatus,
-  ) => {
+  const handleToggleStatus = async (id: string, nextStatus: VehicleStatus) => {
     try {
       await updateStatus({ id, status: nextStatus });
-   
     } catch {
       toast.error("No se pudo cambiar el estado del anuncio");
     }
@@ -232,15 +227,20 @@ export const MyListing = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         <div className="min-w-0 space-y-4">
-          <MyListingsFiltersBar
-            filters={filters}
-            onChange={updateFilters}
-            onReset={resetFilters}
-          />
+          {isSubscribed && (
+            <MyListingsFiltersBar
+              filters={filters}
+              onChange={updateFilters}
+              onReset={resetFilters}
+            />
+          )}
 
           {isLoading || isBillingLoading ? (
             <div className="flex items-center justify-center py-16 bg-white rounded-xl border border-gray-100 shadow-sm">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" aria-hidden />
+              <Loader2
+                className="w-8 h-8 animate-spin text-blue-600"
+                aria-hidden
+              />
             </div>
           ) : error ? (
             <div className="p-8 text-center text-red-600 bg-white rounded-xl border border-gray-100 shadow-sm">
@@ -264,7 +264,9 @@ export const MyListing = () => {
                 </>
               ) : (
                 <>
-                  <p className="mt-4 text-gray-600">Aún no tienes anuncios publicados</p>
+                  <p className="mt-4 text-gray-600">
+                    Aún no tienes anuncios publicados
+                  </p>
                   <Link
                     href="/publicar"
                     className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80"
