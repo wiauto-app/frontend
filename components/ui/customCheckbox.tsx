@@ -74,7 +74,7 @@ export const CustomCheckbox = ({
         />
       </span>
       {label ? (
-        <span className={cn("text-sm text-slate-700 select-none flex-1", labelClassName)}>
+        <span className={cn("text-xs text-muted-foreground select-none flex-1", labelClassName)}>
           {label}
         </span>
       ) : null}
