@@ -99,11 +99,11 @@ export interface CatalogYearPaginationParams extends PaginationParams {
 }
 
 export interface VehicleSpecs {
-  traction_id: number;
-  transmission: string;
+  traction_id: string;
+  transmission: "manual" | "automatic";
   power: number;
   displacement: number;
-  autonomy: number;
-  battery_capacity: number;
-  time_to_charge: number;
+  autonomy: number | null;
+  battery_capacity: number | null;
+  time_to_charge: number | null;
 }

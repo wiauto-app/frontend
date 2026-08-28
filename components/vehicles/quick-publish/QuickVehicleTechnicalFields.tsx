@@ -16,44 +16,63 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const QuickVehicleTechnicalFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
   const versionId = form.watch("version_id");
+  const tractionId = form.watch("traction_id");
   const { canCharge } = useCanCharge();
 
+  // Un eléctrico no tiene cilindrada, pero sí potencia en CV.
   useEffect(() => {
     if (canCharge) {
-      form.setValue("power", 0, { shouldDirty: true });
       form.setValue("displacement", 0, { shouldDirty: true });
     }
   }, [canCharge, form]);
 
-  const { data: vehicleSpecs, isLoading: isLoadingVehicleSpecs } = useQuery({
+  /**
+   * La ficha técnica la infiere un LLM con búsqueda web, así que solo se pide
+   * cuando el usuario elige otra versión o cuando el anuncio todavía no tiene
+   * ficha. Al editar un vehículo ya registrado se reutiliza lo guardado.
+   */
+  const hasStoredSpecs = Boolean(tractionId);
+  const isVersionChangedByUser = Boolean(form.formState.dirtyFields.version_id);
+  const shouldFetchSpecs =
+    Boolean(versionId) && (isVersionChangedByUser || !hasStoredSpecs);
+
+  const { data: vehicleSpecs, isFetching: isLoadingVehicleSpecs } = useQuery({
     queryKey: ["vehicleSpecs", versionId],
     queryFn: () => catalogVersionsService.getVehicleSpecs(versionId),
-    enabled: Boolean(versionId),
+    enabled: shouldFetchSpecs,
+    // Las specs de una versión del catálogo no cambian: evita repetir la
+    // llamada al volver a este paso del asistente.
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
-    if (vehicleSpecs) {
-      form.setValue("power", vehicleSpecs.power, { shouldDirty: true });
-      form.setValue("displacement", vehicleSpecs.displacement, {
-        shouldDirty: true,
-      });
-      form.setValue(
-        "transmission_type",
-        vehicleSpecs.transmission as "manual" | "automatic",
-        { shouldDirty: true },
-      );
-      form.setValue("traction_id", vehicleSpecs.traction_id.toString(), {
-        shouldDirty: true,
-      });
-      form.setValue("autonomy", vehicleSpecs.autonomy, { shouldDirty: true });
-      form.setValue("battery_capacity", vehicleSpecs.battery_capacity, {
-        shouldDirty: true,
-      });
-      form.setValue("time_to_charge", vehicleSpecs.time_to_charge, {
-        shouldDirty: true,
-      });
+    if (!shouldFetchSpecs || !vehicleSpecs) {
+      return;
     }
-  }, [vehicleSpecs, form]);
+
+    form.setValue("power", vehicleSpecs.power, { shouldDirty: true });
+    form.setValue("displacement", vehicleSpecs.displacement, {
+      shouldDirty: true,
+    });
+    form.setValue("transmission_type", vehicleSpecs.transmission, {
+      shouldDirty: true,
+    });
+    form.setValue("traction_id", vehicleSpecs.traction_id, {
+      shouldDirty: true,
+    });
+    form.setValue("autonomy", vehicleSpecs.autonomy ?? undefined, {
+      shouldDirty: true,
+    });
+    form.setValue(
+      "battery_capacity",
+      vehicleSpecs.battery_capacity ?? undefined,
+      { shouldDirty: true },
+    );
+    form.setValue("time_to_charge", vehicleSpecs.time_to_charge ?? undefined, {
+      shouldDirty: true,
+    });
+  }, [shouldFetchSpecs, vehicleSpecs, form]);
 
   if (isLoadingVehicleSpecs) {
     return (
