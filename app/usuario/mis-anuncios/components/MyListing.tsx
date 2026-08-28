@@ -203,7 +203,7 @@ export const MyListing = () => {
   };
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6">
       <MyListingsHeader />
 
       <MyListingsSummaryCards
@@ -278,9 +278,7 @@ export const MyListing = () => {
             </div>
           ) : (
             <>
-              <p className="text-sm text-gray-500">
-                {total} anuncio{total === 1 ? "" : "s"}
-              </p>
+             
               <MyListingsTable
                 listings={listings}
                 onRenew={handleRenew}

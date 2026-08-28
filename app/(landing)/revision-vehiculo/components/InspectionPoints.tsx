@@ -1,223 +1,82 @@
-import { ShieldCheck } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Check, FileText, ShieldCheck } from 'lucide-react';
+
 import { INSPECTION_POINTS } from '../constants';
 
 export const InspectionPoints = () => {
+  const points = [...INSPECTION_POINTS.left, ...INSPECTION_POINTS.right];
+
   return (
-    <section id='puntos-revision' className='py-6 lg:py-2'>
-      <div className='grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]'>
-        <Card className='rounded-3xl border-0 bg-white shadow-[0_4px_25px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 p-6 sm:p-8'>
-          <h2 className='text-xl font-bold tracking-tight text-slate-900 sm:text-2xl'>
-            Una revisión de más de 200 puntos
-          </h2>
+    <section id='puntos-revision' className='relative bg-[#07122f] py-20 text-white sm:py-28'>
+      <div className='absolute inset-0 opacity-10 [background-image:radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:24px_24px]' />
+      <div className='container-custom relative'>
+        <div className='flex flex-col justify-between gap-8 lg:flex-row lg:items-end'>
+          <div>
+            <p className='mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#ff8b37]'>
+              Nada se queda en la superficie
+            </p>
+            <h2 className='max-w-2xl text-3xl font-black leading-[1.05] tracking-[-0.045em] text-white sm:text-5xl'>
+              Más de 200 comprobaciones. Una respuesta sencilla.
+            </h2>
+          </div>
+          <p className='max-w-sm text-sm leading-6 text-white/55'>
+            De la diagnosis electrónica a la prueba de conducción: revisamos el
+            vehículo como si fuéramos a comprarlo nosotros.
+          </p>
+        </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-6 sm:gap-8'>
-            <div className='space-y-6'>
-              {INSPECTION_POINTS.left.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div
-                    key={item.title}
-                    className='flex items-center gap-3.5 group'
-                  >
-                    <div className='flex size-11 shrink-0 items-center justify-center rounded-2xl border border-blue-100/80 bg-blue-50/50 text-primary transition-colors group-hover:bg-primary group-hover:text-white'>
-                      <Icon className='size-5' />
-                    </div>
-                    <div>
-                      <h3 className='text-sm font-bold text-slate-900'>
-                        {item.title}
-                      </h3>
-                      <p className='text-xs text-slate-500 mt-0.5'>
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className='relative mx-auto flex items-center justify-center py-4'>
-              <div className='relative h-80 w-37.5 sm:h-90 sm:w-42.5'>
-                <svg
-                  viewBox='0 0 160 340'
-                  className='h-full w-full drop-shadow-md'
-                  fill='none'
-                >
-                  <rect
-                    x='18'
-                    y='10'
-                    width='124'
-                    height='320'
-                    rx='36'
-                    fill='#F1F5F9'
-                  />
-
-                  <path
-                    d='M32 40 C32 15, 128 15, 128 40 L136 100 C140 120, 140 220, 136 260 L128 310 C128 328, 32 328, 32 310 L24 260 C20 220, 20 120, 24 100 Z'
-                    fill='#FFFFFF'
-                    stroke='#CBD5E1'
-                    strokeWidth='2.5'
-                  />
-
-                  <path
-                    d='M38 75 Q80 65 122 75 L116 115 Q80 110 44 115 Z'
-                    fill='#E2E8F0'
-                    stroke='#94A3B8'
-                    strokeWidth='1.5'
-                  />
-
-                  <rect
-                    x='42'
-                    y='125'
-                    width='76'
-                    height='85'
-                    rx='10'
-                    fill='#F8FAFC'
-                    stroke='#E2E8F0'
-                    strokeWidth='1.5'
-                  />
-
-                  <path
-                    d='M42 220 Q80 225 118 220 L122 250 Q80 255 38 250 Z'
-                    fill='#E2E8F0'
-                    stroke='#94A3B8'
-                    strokeWidth='1.5'
-                  />
-
-                  <path
-                    d='M20 90 Q12 90 14 105 Q22 105 24 95 Z'
-                    fill='#FFFFFF'
-                    stroke='#94A3B8'
-                    strokeWidth='1.5'
-                  />
-                  <path
-                    d='M140 90 Q148 90 146 105 Q138 105 136 95 Z'
-                    fill='#FFFFFF'
-                    stroke='#94A3B8'
-                    strokeWidth='1.5'
-                  />
-
-                  <path
-                    d='M34 32 Q46 28 52 38 Z'
-                    fill='#93C5FD'
-                    stroke='#60A5FA'
-                    strokeWidth='1'
-                  />
-                  <path
-                    d='M126 32 Q114 28 108 38 Z'
-                    fill='#93C5FD'
-                    stroke='#60A5FA'
-                    strokeWidth='1'
-                  />
-
-                  <path
-                    d='M34 318 Q46 322 50 312 Z'
-                    fill='#FCA5A5'
-                    stroke='#F87171'
-                    strokeWidth='1'
-                  />
-                  <path
-                    d='M126 318 Q114 322 110 312 Z'
-                    fill='#FCA5A5'
-                    stroke='#F87171'
-                    strokeWidth='1'
-                  />
-
-                  <rect
-                    x='12'
-                    y='55'
-                    width='10'
-                    height='35'
-                    rx='3'
-                    fill='#1E293B'
-                  />
-                  <rect
-                    x='138'
-                    y='55'
-                    width='10'
-                    height='35'
-                    rx='3'
-                    fill='#1E293B'
-                  />
-                  <rect
-                    x='12'
-                    y='240'
-                    width='10'
-                    height='35'
-                    rx='3'
-                    fill='#1E293B'
-                  />
-                  <rect
-                    x='138'
-                    y='240'
-                    width='10'
-                    height='35'
-                    rx='3'
-                    fill='#1E293B'
-                  />
-                </svg>
-
-                <div className='absolute left-[38%] top-[20%] flex size-4 items-center justify-center'>
-                  <span className='absolute size-4 animate-ping rounded-full bg-primary/40' />
-                  <span className='size-2.5 rounded-full bg-primary ring-2 ring-white' />
+        <div className='mt-14 grid overflow-hidden border border-white/15 sm:grid-cols-2 lg:grid-cols-4'>
+          {points.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <article
+                key={item.title}
+                className='group relative min-h-44 border-b border-white/15 p-6 transition-colors hover:bg-white/[.07] sm:border-r lg:min-h-48 [&:nth-child(2n)]:sm:border-r-0 [&:nth-child(4n)]:lg:border-r-0 [&:nth-last-child(-n+2)]:sm:border-b-0 [&:nth-last-child(-n+4)]:lg:border-b-0'
+              >
+                <div className='flex items-start justify-between'>
+                  <span className='text-[10px] font-bold tracking-[0.2em] text-white/30'>
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <Icon className='size-6 text-[#ff8b37] transition-transform duration-300 group-hover:scale-110' />
                 </div>
-                <div className='absolute left-[18%] top-[38%] flex size-4 items-center justify-center'>
-                  <span className='size-2.5 rounded-full bg-primary ring-2 ring-white' />
-                </div>
-                <div className='absolute left-[18%] top-[76%] flex size-4 items-center justify-center'>
-                  <span className='size-2.5 rounded-full bg-primary ring-2 ring-white' />
-                </div>
-                <div className='absolute right-[18%] top-[20%] flex size-4 items-center justify-center'>
-                  <span className='size-2.5 rounded-full bg-primary ring-2 ring-white' />
-                </div>
-                <div className='absolute right-[18%] top-[76%] flex size-4 items-center justify-center'>
-                  <span className='size-2.5 rounded-full bg-primary ring-2 ring-white' />
-                </div>
-                <div className='absolute left-[50%] top-[48%] -translate-x-1/2 flex size-4 items-center justify-center'>
-                  <span className='size-2.5 rounded-full bg-primary ring-2 ring-white' />
-                </div>
+                <h3 className='mt-10 text-lg font-black text-white'>{item.title}</h3>
+                <p className='mt-1 text-xs leading-5 text-white/50'>{item.description}</p>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className='mt-8 grid gap-4 lg:grid-cols-[1.2fr_.8fr]'>
+          <div className='flex flex-col justify-between gap-8 bg-[#0d2353] p-7 sm:flex-row sm:items-center sm:p-9'>
+            <div className='flex items-start gap-4'>
+              <FileText className='mt-1 size-7 shrink-0 text-[#ff8b37]' />
+              <div>
+                <h3 className='text-lg font-black'>Un informe pensado para decidir</h3>
+                <p className='mt-2 max-w-xl text-sm leading-6 text-white/55'>
+                  Hallazgos clasificados, fotografías, estimación de próximos gastos
+                  y una recomendación final sin letra pequeña.
+                </p>
               </div>
             </div>
-
-            <div className='space-y-6'>
-              {INSPECTION_POINTS.right.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div
-                    key={item.title}
-                    className='flex items-center gap-3.5 group'
-                  >
-                    <div className='flex size-11 shrink-0 items-center justify-center rounded-2xl border border-blue-100/80 bg-blue-50/50 text-primary transition-colors group-hover:bg-primary group-hover:text-white'>
-                      <Icon className='size-5' />
-                    </div>
-                    <div>
-                      <h3 className='text-sm font-bold text-slate-900'>
-                        {item.title}
-                      </h3>
-                      <p className='text-xs text-slate-500 mt-0.5'>
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className='flex shrink-0 flex-wrap gap-3'>
+              {['Fotos', 'Prioridades', 'Conclusión'].map((label) => (
+                <span key={label} className='flex items-center gap-1.5 border border-white/15 px-3 py-2 text-[11px] font-bold text-white/70'>
+                  <Check className='size-3 text-[#ff8b37]' /> {label}
+                </span>
+              ))}
             </div>
           </div>
-        </Card>
 
-        <div className='flex flex-col justify-center items-center rounded-3xl h-fit my-auto border border-blue-100/70 bg-linear-to-b from-[#F3F8FF] to-white p-7 text-center shadow-xs'>
-          <div className='flex size-14 items-center justify-center rounded-2xl border border-primary/20 bg-white text-primary shadow-xs'>
-            <ShieldCheck className='size-7 stroke-[1.75]' />
+          <div className='flex items-center gap-5 border border-white/15 p-7 sm:p-9'>
+            <div className='flex size-14 shrink-0 items-center justify-center rounded-full bg-[#ff7517]'>
+              <ShieldCheck className='size-7' />
+            </div>
+            <div>
+              <h3 className='text-base font-black'>Independiente y objetiva</h3>
+              <p className='mt-2 text-xs leading-5 text-white/50'>
+                La revisión no depende del vendedor ni del concesionario.
+              </p>
+            </div>
           </div>
-
-          <h3 className='mt-5 text-base font-bold text-slate-900'>
-            Revisión independiente y objetiva
-          </h3>
-
-          <p className='mt-3 text-xs leading-relaxed text-slate-500'>
-            Nuestros técnicos no tienen vinculación con vendedores o
-            concesionarios.
-          </p>
         </div>
       </div>
     </section>

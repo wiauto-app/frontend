@@ -94,6 +94,11 @@ interface PerformanceCellProps {
   iconClassName: string;
 }
 
+/**
+ * En móvil la celda es una columna estrecha de icono + cifra (la etiqueta se
+ * expone solo a lectores de pantalla) para que las cinco métricas quepan en una
+ * única fila. Desde `sm` se recupera la etiqueta visible.
+ */
 const PerformanceCell = ({
   label,
   trend,
@@ -101,19 +106,17 @@ const PerformanceCell = ({
   iconClassName,
 }: PerformanceCellProps) => {
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center gap-1 bg-card px-2 py-1 text-center last:col-span-2 sm:last:col-span-1">
-      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <Icon className={`size-4 ${iconClassName}`} aria-hidden />
-        <span>{label}</span>
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-0.5 bg-card px-1 py-2 text-center sm:gap-1 sm:px-2 sm:py-2.5">
+      <div className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <Icon
+          className={`size-3.5 shrink-0 sm:size-4 ${iconClassName}`}
+          aria-hidden
+        />
+        <span className="sr-only sm:not-sr-only sm:truncate">{label}</span>
       </div>
-      <span className="text-xl font-semibold tracking-tight text-foreground">
+      <span className="text-base font-semibold tracking-tight text-foreground sm:text-xl">
         {new Intl.NumberFormat("es-ES").format(trend.current)}
       </span>
-      {/* <ListingPerformanceSparkline
-        positive={isPositive}
-        className="h-6 w-16"
-        ariaLabel={`Tendencia de ${label}`}
-      /> */}
     </div>
   );
 };
@@ -153,13 +156,13 @@ export const MyListingTableRow = ({
 
   return (
     <Card className="gap-0 overflow-hidden py-0 ">
-      <CardContent className="p-4 sm:p-5">
-        <div className="grid gap-5 xl:grid-cols-2">
+      <CardContent className="p-3 sm:p-5">
+        <div className="grid gap-3 sm:gap-5 xl:grid-cols-2">
           <Link
             href={`/vehiculo/${listing.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="group/image relative w-full h-52 xl:h-full rounded-xl overflow-hidden"
+            className="group/image relative h-36 w-full overflow-hidden rounded-xl sm:h-52 xl:h-full"
             aria-label={`Ver anuncio ${listing.display_name}`}
           >
             {imageUrl ? (
@@ -179,14 +182,14 @@ export const MyListingTableRow = ({
             <span className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover/image:opacity-100" />
           </Link>
 
-          <div className="flex min-w-0 flex-col gap-4 py-1">
+          <div className="flex min-w-0 flex-col gap-2.5 sm:gap-4 sm:py-1">
             <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 flex-col gap-2">
+              <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
                 <Link
                   href={`/vehiculo/${listing.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-heading text-xl font-semibold leading-tight text-foreground transition-colors hover:text-primary sm:text-2xl"
+                  className="font-heading text-base font-semibold leading-tight text-foreground transition-colors hover:text-primary sm:text-2xl"
                 >
                   {listing.display_name}
                 </Link>
@@ -222,17 +225,20 @@ export const MyListingTableRow = ({
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <p className="text-2xl font-bold tracking-tight text-foreground">
+            <div className="flex flex-col gap-1 sm:gap-1.5">
+              <p className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                 {formatPrice(listing.price)}
               </p>
               {specs ? (
-                <p className="text-sm leading-relaxed text-muted-foreground">
+                <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
                   {specs}
                 </p>
               ) : null}
-              <p className="text-sm text-muted-foreground">
-                Publicado el {publishedDate} · {publishedAgo}
+              <p className="text-xs text-muted-foreground sm:text-sm">
+                <span className="sm:hidden">Publicado {publishedAgo}</span>
+                <span className="hidden sm:inline">
+                  Publicado el {publishedDate} · {publishedAgo}
+                </span>
               </p>
               {listing.scheduled_publish_at ? (
                 <p className="text-sm font-medium text-primary">
@@ -258,9 +264,10 @@ export const MyListingTableRow = ({
               </p>
             ) : null}
 
-            <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
+            <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-0.5 sm:gap-2 sm:pt-1">
               <Button
                 nativeButton={false}
+                className="h-8 text-xs sm:h-9 sm:text-sm"
                 render={
                   <Link
                     href={`/vehiculo/${listing.id}`}
@@ -279,6 +286,7 @@ export const MyListingTableRow = ({
               <Button
                 variant="outline"
                 nativeButton={false}
+                className="h-8 text-xs sm:h-9 sm:text-sm"
                 render={<Link href={`/editar-vehiculo/${listing.id}`} />}
               >
                 <FaPencilAlt
@@ -306,11 +314,11 @@ export const MyListingTableRow = ({
 
       <Separator />
 
-      <CardFooter className="flex-col items-stretch gap-4 px-4 py-4 sm:px-5">
-        <h3 className="font-heading text-base font-semibold text-foreground">
+      <CardFooter className="flex-col items-stretch gap-2 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
+        <h3 className="sr-only font-heading text-base font-semibold text-foreground sm:not-sr-only">
           Rendimiento
         </h3>
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-border sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-5 gap-px overflow-hidden rounded-lg bg-border">
           <PerformanceCell
             label="Visitas"
             trend={listing.stats.views}

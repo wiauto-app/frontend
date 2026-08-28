@@ -46,8 +46,6 @@ export default async function Layout({
             )}
           >
             <div className="flex flex-col gap-4 md:flex-row md:gap-5">
-              {showUserSidebar ? <UserSidebarSheet /> : null}
-
               {showUserSidebar ? (
                 <aside
                   className={`hidden shrink-0 md:block ${USER_SIDEBAR_WIDTH}`}
@@ -58,7 +56,9 @@ export default async function Layout({
                 </aside>
               ) : null}
 
-              <main className="min-w-0 w-full flex-1 container mx-auto px-5 xl:px-0">{children}</main>
+              <main className="min-w-0 w-full flex-1 container mx-auto px-0">
+                {children}
+              </main>
             </div>
           </div>
         </div>

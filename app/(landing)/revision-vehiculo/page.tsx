@@ -1,12 +1,9 @@
 import type { Metadata } from 'next';
 
-import { LandingContainer } from '@/components/ui/landingContainer';
-
 import { BuyBenefits } from './components/BuyBenefits';
 import { HeroInspection } from './components/HeroInspection';
 import { HowItWorks } from './components/HowItWorks';
 import { InspectionCtaCard } from './components/InspectionCtaCard';
-import { InspectionForm } from './components/InspectionForm';
 import { InspectionPoints } from './components/InspectionPoints';
 
 export const metadata: Metadata = {
@@ -17,15 +14,16 @@ export const metadata: Metadata = {
 
 export default function RevisionVehiculoPage() {
   return (
-    <>
+    <div className='overflow-hidden bg-[#f5f7fa] text-[#0b1739]'>
       <HeroInspection />
-      <LandingContainer className='py-6 md:py-10 space-y-2'>
-        <InspectionPoints />
+      <main>
         <BuyBenefits />
+        <InspectionPoints />
         <HowItWorks />
-        <InspectionForm />
-        <InspectionCtaCard />
-      </LandingContainer>
-    </>
+        <div className='container-custom py-16 sm:py-20'>
+          <InspectionCtaCard />
+        </div>
+      </main>
+    </div>
   );
 }
