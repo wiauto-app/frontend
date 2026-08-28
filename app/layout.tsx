@@ -33,9 +33,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  if (!GOOGLE_ANALYTICS_ID || !GOOGLE_TAG_MANAGER_ID) {
-    throw new Error("GOOGLE_ANALYTICS_ID or GOOGLE_TAG_MANAGER_ID is not set");
-  }
   return (
     <Providers>
       <html
@@ -64,8 +61,12 @@ export default async function RootLayout({
             <AssistantDialog />
             <MobileNavbar />
           </AssistantChatProvider>
-          <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
-          <GoogleTagManager gtmId={GOOGLE_TAG_MANAGER_ID} />
+          {GOOGLE_ANALYTICS_ID ? (
+            <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
+          ) : null}
+          {GOOGLE_TAG_MANAGER_ID ? (
+            <GoogleTagManager gtmId={GOOGLE_TAG_MANAGER_ID} />
+          ) : null}
         </body>
       </html>
     </Providers>

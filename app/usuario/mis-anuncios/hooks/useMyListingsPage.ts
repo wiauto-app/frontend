@@ -8,7 +8,7 @@ import type { FeaturedListingOffer } from "@/interfaces/billing.interface";
 import { myListingsService } from "@/services/myListings/myListingsService";
 import { billingService } from "@/services/billingService";
 import { absoluteUrl } from "@/lib/seo/absolute-url";
-import { rememberPendingMetaPurchase } from "@/lib/analytics/metaPixel";
+import { rememberPendingPurchase } from "@/lib/analytics/events";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
   DEFAULT_MY_LISTINGS_ORDER_VALUE,
@@ -275,7 +275,7 @@ export const useMyListingsPage = ({
 
       const offer = featureOffers.find((item) => item.id === offerId);
       if (offer) {
-        rememberPendingMetaPurchase({
+        rememberPendingPurchase({
           value: offer.amount_cents / 100,
           currency: offer.currency.toUpperCase(),
           contentName: offer.title,

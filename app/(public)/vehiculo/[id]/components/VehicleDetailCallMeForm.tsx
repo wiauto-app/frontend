@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { ControlledInput } from "@/components/forms/controlledInput";
 import { CustomCheckbox } from "@/components/ui/customCheckbox";
 import { leadService } from "@/services/leadService";
-import { trackMetaLead } from "@/lib/analytics/metaPixel";
+import { trackLead } from "@/lib/analytics/events";
 import {
   authenticatedCallMeFormSchema,
   guestCallMeFormSchema,
@@ -89,7 +89,7 @@ export const VehicleDetailCallMeForm = ({
       return;
     }
 
-    trackMetaLead({ contentName: "Solicitud de llamada", vehicleId });
+    trackLead({ contentName: "Solicitud de llamada", vehicleId });
     toast.success("Solicitud de llamada enviada");
     guestForm.reset(defaultGuestValues);
   };
@@ -110,7 +110,7 @@ export const VehicleDetailCallMeForm = ({
       return;
     }
 
-    trackMetaLead({ contentName: "Solicitud de llamada", vehicleId });
+    trackLead({ contentName: "Solicitud de llamada", vehicleId });
     toast.success("Solicitud de llamada enviada");
     authenticatedForm.reset({
       ...defaultAuthenticatedValues,

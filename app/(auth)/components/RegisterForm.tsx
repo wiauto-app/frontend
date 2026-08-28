@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/authService";
-import { trackMetaCompleteRegistration } from "@/lib/analytics/metaPixel";
+import { trackCompleteRegistration } from "@/lib/analytics/events";
 import { PasswordInput } from "@/components/ui/passwordInput";
 
 interface RegisterFormProps {
@@ -53,7 +53,7 @@ export default function RegisterForm({
       const response = await authService.register(data);
 
       if (response.ok) {
-        trackMetaCompleteRegistration("email");
+        trackCompleteRegistration("email");
         toast.success(
           "Revisa tu correo para verificar la cuenta e iniciar sesión.",
         );

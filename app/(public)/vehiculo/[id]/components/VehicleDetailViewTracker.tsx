@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { useUser } from "@/app/contexts/auth/useUser";
 import { vehiclesService } from "@/components/vehicles/services/vehiclesService";
-import { trackMetaViewContent } from "@/lib/analytics/metaPixel";
+import { trackViewContent } from "@/lib/analytics/events";
 
 interface VehicleDetailViewTrackerProps {
   vehicleId: string;
@@ -57,7 +57,7 @@ export const VehicleDetailViewTracker = ({
       metadata: { source: "vehicle_detail" },
     });
 
-    trackMetaViewContent({
+    trackViewContent({
       id: vehicleId,
       name: vehicleName,
       price: vehiclePrice,

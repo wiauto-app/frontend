@@ -18,7 +18,7 @@ import {
 import { PhoneFieldValue, PhoneInput } from "@/components/forms/phoneInput";
 import { PLAN_LEAD_CARS_QUANTITY_OPTIONS } from "@/app/(public)/planes/constants/cars-quantity.constants";
 import { planLeadService } from "@/services/planLead/planLeadService";
-import { trackMetaLead } from "@/lib/analytics/metaPixel";
+import { trackLead } from "@/lib/analytics/events";
 import {
   planesLeadSchema,
   type PlanesLeadFormValues,
@@ -59,7 +59,7 @@ export const PlansLeadForm = () => {
         message: data.message?.trim() || undefined,
       });
 
-      trackMetaLead({ contentName: "Asesoramiento de planes" });
+      trackLead({ contentName: "Asesoramiento de planes" });
       toast.success("Solicitud enviada. Te contactaremos pronto.");
       form.reset(defaultValues);
     } catch {

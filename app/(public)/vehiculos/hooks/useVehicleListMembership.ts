@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { VehicleList } from "@/interfaces/vehicle-list.interface";
 import { vehicleListService } from "@/services/vehicleListService";
-import { trackMetaAddToWishlist } from "@/lib/analytics/metaPixel";
+import { trackAddToWishlist } from "@/lib/analytics/events";
 import { useFavoriteIds } from "./useFavoriteIds";
 
 const VEHICLE_LISTS_QUERY_KEY = ["vehicle-lists"] as const;
@@ -107,7 +107,7 @@ export const useVehicleListMembership = ({
     },
     onSuccess: (result) => {
       if (!result.alreadyInList) {
-        trackMetaAddToWishlist({ id: vehicleId });
+        trackAddToWishlist({ id: vehicleId });
       }
     },
     onError: (_error, _listId, context) => {
@@ -183,7 +183,7 @@ export const useVehicleListMembership = ({
       return createResponse.data;
     },
     onSuccess: () => {
-      trackMetaAddToWishlist({ id: vehicleId });
+      trackAddToWishlist({ id: vehicleId });
       queryClient.invalidateQueries({ queryKey: VEHICLE_LISTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: membershipQueryKey });
     },

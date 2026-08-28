@@ -33,8 +33,6 @@ const CURRENCY = "EUR";
 /** `content_type` del catálogo de automoción de Meta. */
 const CONTENT_TYPE = "vehicle";
 
-const PENDING_PURCHASE_KEY = "wiauto:meta-pending-purchase";
-
 const createEventId = (): string => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
@@ -180,37 +178,3 @@ export const trackMetaPurchase = ({
     ...(contentName ? { content_name: contentName } : {}),
     ...(contentIds?.length ? { content_ids: contentIds } : {}),
   });
-
-interface PendingPurchase {
-  value: number;
-  currency: string;
-  contentName: string;
-  contentIds?: string[];
-}
-
-/**
- * Stripe redirige fuera del sitio y vuelve solo con `?checkout=success`, sin el
- * importe. Guardamos el detalle antes de salir para poder emitir un `Purchase`
- * con valor real al regresar.
- */
-export const rememberPendingMetaPurchase = (purchase: PendingPurchase): void => {
-  try {
-    sessionStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(purchase));
-  } catch {
-    // sessionStorage puede fallar en modo privado; el Purchase saldrá sin valor.
-  }
-};
-
-/** Lee y limpia la compra pendiente. Devuelve `null` si no hay ninguna. */
-export const consumePendingMetaPurchase = (): PendingPurchase | null => {
-  try {
-    const raw = sessionStorage.getItem(PENDING_PURCHASE_KEY);
-    if (!raw) {
-      return null;
-    }
-    sessionStorage.removeItem(PENDING_PURCHASE_KEY);
-    return JSON.parse(raw) as PendingPurchase;
-  } catch {
-    return null;
-  }
-};

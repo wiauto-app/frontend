@@ -19,10 +19,7 @@ import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface"
 import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { resolveLimitUsage } from "@/lib/billing/entitlements";
-import {
-  consumePendingMetaPurchase,
-  trackMetaPurchase,
-} from "@/lib/analytics/metaPixel";
+import { trackPendingPurchase } from "@/lib/analytics/events";
 import { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 import { UpgradeListingAdd } from "./upgradeListingAdd";
 
@@ -118,10 +115,7 @@ export const MyListing = () => {
   useEffect(() => {
     const checkout = searchParams.get("checkout");
     if (checkout === "success") {
-      const pending = consumePendingMetaPurchase();
-      if (pending) {
-        trackMetaPurchase(pending);
-      }
+      trackPendingPurchase();
       toast.success("Pago completado. Tu anuncio se destacará en breve.");
       void refetch();
       void refetchBillingMe();

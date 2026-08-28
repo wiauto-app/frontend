@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { vehicleContactClickService } from "@/services/vehicleContactClickService";
-import { trackMetaContact } from "@/lib/analytics/metaPixel";
+import { trackContact } from "@/lib/analytics/events";
 
 interface UseVehicleContactDialogsOptions {
   vehicleId: string;
@@ -56,7 +56,7 @@ export const useVehicleContactDialogs = ({
           return;
         }
 
-        trackMetaContact({
+        trackContact({
           channel: "phone",
           vehicle: { id: vehicleId, name: vehicleTitle },
         });
@@ -83,7 +83,7 @@ export const useVehicleContactDialogs = ({
           return;
         }
 
-        trackMetaContact({
+        trackContact({
           channel: "whatsapp",
           vehicle: { id: vehicleId, name: vehicleTitle },
         });

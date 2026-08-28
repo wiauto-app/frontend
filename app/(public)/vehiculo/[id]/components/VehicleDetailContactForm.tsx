@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { ControlledInput } from "@/components/forms/controlledInput";
 import { CustomCheckbox } from "@/components/ui/customCheckbox";
 import { leadService } from "@/services/leadService";
-import { trackMetaLead } from "@/lib/analytics/metaPixel";
+import { trackLead } from "@/lib/analytics/events";
 import {
   authenticatedContactFormSchema,
   guestContactFormSchema,
@@ -93,7 +93,7 @@ export const VehicleDetailContactForm = ({
       return;
     }
 
-    trackMetaLead({ contentName: "Consulta sobre vehículo", vehicleId });
+    trackLead({ contentName: "Consulta sobre vehículo", vehicleId });
     toast.success("Consulta enviada");
     guestForm.reset(defaultGuestValues);
   };
@@ -115,7 +115,7 @@ export const VehicleDetailContactForm = ({
       return;
     }
 
-    trackMetaLead({ contentName: "Consulta sobre vehículo", vehicleId });
+    trackLead({ contentName: "Consulta sobre vehículo", vehicleId });
 
     if (response.data?.chat_id) {
       toast.success("Consulta enviada. Te redirigimos al chat.");

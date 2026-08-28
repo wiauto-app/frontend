@@ -18,10 +18,9 @@ import {
 } from "@/lib/billing/entitlements";
 import { absoluteUrl } from "@/lib/seo/absolute-url";
 import {
-  consumePendingMetaPurchase,
-  rememberPendingMetaPurchase,
-  trackMetaPurchase,
-} from "@/lib/analytics/metaPixel";
+  rememberPendingPurchase,
+  trackPendingPurchase,
+} from "@/lib/analytics/events";
 import { Button } from "@/components/ui/button";
 import BillTable from "./billTable";
 import AddonsGrid from "./addonsGrid";
@@ -74,10 +73,7 @@ export const MonetizacionContent = () => {
   useEffect(() => {
     const checkout = search_params.get("checkout");
     if (checkout === "success") {
-      const pending = consumePendingMetaPurchase();
-      if (pending) {
-        trackMetaPurchase(pending);
-      }
+      trackPendingPurchase();
       toast.success(
         "Pago completado correctamente. Revisa tu correo si acabas de crear tu cuenta.",
       );
@@ -150,7 +146,7 @@ export const MonetizacionContent = () => {
       }
 
       if (price) {
-        rememberPendingMetaPurchase({
+        rememberPendingPurchase({
           value: price.amount_cents / 100,
           currency: price.currency.toUpperCase(),
           contentName: plan.name,
@@ -187,7 +183,7 @@ export const MonetizacionContent = () => {
         return;
       }
 
-      rememberPendingMetaPurchase({
+      rememberPendingPurchase({
         value: addon.amount_cents / 100,
         currency: addon.currency.toUpperCase(),
         contentName: addon.title,
