@@ -30,7 +30,7 @@ const formatEuros = (amountCents: number): string =>
 
 export const MyListing = () => {
   const { user, isLoading: isUserLoading } = useUser();
-  const { has, getLimitUsage, isPrivileged, isSubscribed } = useEntitlements();
+  const { has, getLimitUsage, isPrivileged, isSubscribed,entitlements } = useEntitlements();
   const searchParams = useSearchParams();
   const [scheduleListing, setScheduleListing] =
     useState<OwnerVehicleListItem | null>(null);
@@ -38,7 +38,6 @@ export const MyListing = () => {
 
   const isAuthenticated = Boolean(user);
   const canUseAdvancedEditor = has("advanced_listing_editor");
-
   const {
     listings,
     total,
@@ -299,7 +298,7 @@ export const MyListing = () => {
               />
             </>
           )}
-          <UpgradeListingAdd />
+          {entitlements.vehicles.limit === 2 ? <UpgradeListingAdd /> : null}
         </div>
 
         <MyListingsPromoSidebar

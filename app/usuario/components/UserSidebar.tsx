@@ -67,26 +67,35 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
     <div className="w-full  flex flex-col gap-4">
       {/* User Info Card */}
       <Card size="sm">
-        <CardContent className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <CardContent className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             <UserAvatar
-              className="size-9"
+              className="size-9 shrink-0"
               imageUrl={user?.avatar_url}
               name={user?.name}
               highlighted={isSubscribed}
             />
-            <div>
-              <h3 className="font-semibold text-gray-900">
+            <div className="min-w-0">
+              <h3
+                className="truncate font-semibold text-gray-900"
+                title={user?.name || undefined}
+              >
                 {user?.name || "Usuario"}
               </h3>
-              <p className="text-xs text-gray-500">{user?.email || "---"}</p>
+              <p
+                className="truncate text-xs text-gray-500"
+                title={user?.email || undefined}
+              >
+                {user?.email || "---"}
+              </p>
             </div>
           </div>
           <Link
             href={PERFIL_PATH}
-            className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+            aria-label="Editar perfil"
+            className="shrink-0 rounded-lg p-2 text-blue-600 transition-colors hover:bg-blue-50"
           >
-            <Edit className="w-4 h-4" />
+            <Edit className="h-4 w-4" />
           </Link>
         </CardContent>
       </Card>

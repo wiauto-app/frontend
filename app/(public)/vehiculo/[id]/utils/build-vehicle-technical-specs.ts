@@ -56,15 +56,6 @@ export const buildVehicleTechnicalSpecs = (vehicle: Vehicle): VehicleDetailSpec[
     "Cilindrada",
     vehicle.displacement > 0 ? `${vehicle.displacement} cc` : null,
   );
-  addSpec(specs, "Color", vehicle.color?.name);
-
-  const dgtLabel =
-    vehicle.dgt_label?.name ?? vehicle.dgt_label?.code ?? null;
-  addSpec(specs, "Distintivo DGT", dgtLabel);
-  addSpec(specs, "Garantía", vehicle.warranty_type?.name);
-
-
-
   addSpec(
     specs,
     "Autonomía",

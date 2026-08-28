@@ -1,3 +1,4 @@
+"use client";
 import { getVehicleFinancingQuote } from "@/app/(public)/vehiculos/utils";
 import { useMemo, useState } from "react";
 

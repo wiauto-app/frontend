@@ -49,6 +49,7 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
     label: "Descartados",
     icon: EyeOff,
   },
+  { href: `${basePath}/newsletter`, label: "Newsletter", icon: Newspaper },
   // { href: `${basePath}/configuracion`, label: "Configuración", icon: Settings },
 ];
 
@@ -62,14 +63,11 @@ export const USER_SIDEBAR_PRO_LINKS = [
     label: "Concesionario",
     icon: Building2,
   },
-
-
   {
     href: `${basePath}/equipo`,
     label: "Equipo",
     icon: Users,
   },
-  { href: `${basePath}/newsletter`, label: "Newsletter", icon: Newspaper },
 
 ] as UserSidebarLink[]
 
