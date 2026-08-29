@@ -119,7 +119,7 @@ export const VehicleDetailContactForm = ({
 
     if (response.data?.chat_id) {
       toast.success("Consulta enviada. Te redirigimos al chat.");
-      router.push(`/mensajes?chat_id=${response.data.chat_id}`);
+      router.push(`/usuario/mensajes?chat_id=${response.data.chat_id}`);
       return;
     }
 
@@ -150,7 +150,7 @@ export const VehicleDetailContactForm = ({
         <div className="space-y-4">
           <ControlledInput
             name="name"
-          placeholder="Nombre"
+            placeholder="Nombre"
             control={guestForm.control}
             label="Nombre"
             showLabel={false}
@@ -210,7 +210,14 @@ export const VehicleDetailContactForm = ({
             )}
           </Button>
 
-          <Button type="button" variant="link" className="w-full">
+          <Button
+            type="button"
+            variant="link"
+            className="w-full"
+            onClick={() =>
+              router.push(`/simulador-financiamiento?vehicleId=${vehicleId}`)
+            }
+          >
             Ir al simulador de financiación →
           </Button>
         </div>

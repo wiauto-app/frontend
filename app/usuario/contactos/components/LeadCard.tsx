@@ -69,7 +69,7 @@ export const LeadCard = ({ lead }: LeadCardProps) => {
         buyerProfileId,
       });
       toast.success("Chat abierto");
-      router.push(`/mensajes?chat_id=${chatId}`);
+      router.push(`/usuario/mensajes?chat_id=${chatId}`);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "No se pudo abrir el chat",

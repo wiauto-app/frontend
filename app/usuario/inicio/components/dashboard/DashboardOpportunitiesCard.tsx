@@ -44,7 +44,7 @@ export const DashboardOpportunitiesCard = ({
               </p>
             </div>
             <Link
-              href="/mensajes"
+              href="/usuario/mensajes"
               className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700"
             >
               Ir a mensajes

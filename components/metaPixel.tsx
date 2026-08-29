@@ -5,6 +5,11 @@ import { MetaPixelPageView } from "@/components/metaPixelPageView";
 import { META_PIXEL_ID } from "@/constants";
 
 
+/**
+ * El pixel se inicializa con el consentimiento revocado: los eventos se encolan
+ * en el navegador y solo se envían si el usuario acepta publicidad, momento en
+ * el que `applyConsent` ejecuta `fbq('consent', 'grant')`.
+ */
 export const MetaPixel = () => {
   if (!META_PIXEL_ID) {
     return null;
@@ -22,20 +27,11 @@ export const MetaPixel = () => {
           t.src=v;s=b.getElementsByTagName(e)[0];
           s.parentNode.insertBefore(t,s)}(window,document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
+          fbq('consent', 'revoke');
           fbq('init', '${META_PIXEL_ID}');
           fbq('track', 'PageView');
         `}
       </Script>
-      <noscript>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          height={1}
-          width={1}
-          style={{ display: "none" }}
-          src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
-          alt=""
-        />
-      </noscript>
       <Suspense fallback={null}>
         <MetaPixelPageView />
       </Suspense>

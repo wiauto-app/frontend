@@ -46,7 +46,7 @@ export const FavoriteVehicleActions = ({
         publisherId,
       });
       toast.success("Chat iniciado correctamente");
-      router.push(`/mensajes?chat_id=${chat_id}`);
+      router.push(`/usuario/mensajes?chat_id=${chat_id}`);
     } catch {
       toast.error("No se pudo iniciar el chat");
     } finally {

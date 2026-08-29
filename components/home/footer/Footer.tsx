@@ -4,6 +4,7 @@ import { getFooterData } from "../services/footerService";
 import type { FooterLinkItem, FooterSectionItem } from "../types/footer.types";
 
 import { Separator } from "../../ui/separator";
+import { CookiePreferencesButton } from "@/components/consent/cookiePreferencesButton";
 import {
   FaFacebook,
   FaInstagram,
@@ -175,11 +176,14 @@ export async function Footer() {
 
         <Separator className="bg-white/15" />
 
-        {data.copyright ? (
-          <p className="text-center text-xs text-white/70 sm:text-left sm:text-sm sm:text-white/85">
-            {data.copyright}
-          </p>
-        ) : null}
+        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
+          {data.copyright ? (
+            <p className="text-center text-xs text-white/70 sm:text-left sm:text-sm sm:text-white/85">
+              {data.copyright}
+            </p>
+          ) : null}
+          <CookiePreferencesButton className="text-xs text-white/70 underline underline-offset-2 transition-colors hover:text-white sm:text-sm" />
+        </div>
       </div>
     </footer>
   );

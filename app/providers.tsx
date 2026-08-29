@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthReturnRedirect } from "@/components/auth/AuthReturnRedirect";
 import { NotificationSocketProvider } from "@/components/notifications/context/notificationSocketContext";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { CookieConsentProvider } from "@/components/consent/cookieConsentProvider";
 const queryClient = new QueryClient();
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -15,9 +15,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <AuthReturnRedirect />
       <QueryClientProvider client={queryClient}>
         <NotificationSocketProvider>
-          {children}
-          <GoogleAnalytics gaId="G-XYZ" />
-          <Toaster richColors position={isMobile ? "bottom-center" : "top-right"} />
+          <CookieConsentProvider>
+            {children}
+            <Toaster
+              richColors
+              position={isMobile ? "bottom-center" : "top-right"}
+            />
+          </CookieConsentProvider>
         </NotificationSocketProvider>
       </QueryClientProvider>
     </AuthProvider>
