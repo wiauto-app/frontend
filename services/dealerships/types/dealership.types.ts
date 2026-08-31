@@ -14,7 +14,7 @@ export type DealershipListItem = {
   lng?: number;
   is_featured: boolean;
   show_phone: boolean;
-  rating: number | null;
+  rating: string | null;
   created_at: string;
   updated_at: string;
   members_count: number;

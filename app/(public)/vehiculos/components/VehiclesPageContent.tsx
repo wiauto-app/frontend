@@ -73,6 +73,7 @@ const VehiclesListingView = ({
         </div>
         {vehicles.map((vehicle) => (
           <VehicleGridCard
+            className="bg-white shadow-md hover:shadow-xl"
             key={vehicle.id}
             vehicle={vehicle}
             onDismissed={onDismissed}

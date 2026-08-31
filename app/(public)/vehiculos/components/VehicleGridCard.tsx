@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Camera } from "lucide-react";
+import { Camera, Star } from "lucide-react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
-import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,31 +12,27 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useVehicleImpressionTracker } from "@/components/vehicles/hooks/useVehicleImpressionTracker";
-import {
-  getVehicleMakeName,
-  getVehicleModelLine,
-} from "@/lib/vehicles/getVehicleDisplayName";
+import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import {
   formatPrice,
   formatMonthlyPrice,
   getConditionLabel,
   getImageUrl,
   getPrimaryCuotaValue,
-  getVehicleDisplayName,
   getVehicleUrl,
 } from "../utils";
 import { buildVehicleGridSpecs } from "../utils/build-vehicle-grid-specs";
 import { VehicleEngagementMenu } from "./VehicleEngagementMenu";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
-import { VehicleShareDialog } from "./VehicleShareDialog";
-import { useState } from "react";
 import { VehicleShareButton } from "./VehicleShareButton";
+import { Badge } from "@/components/ui/badge";
 
 interface VehicleGridCardProps {
   vehicle: VehicleListItem;
   interactive?: boolean;
   footer?: React.ReactNode;
   onDismissed?: (vehicleId: string) => void;
+  className?: string;
 }
 
 interface VehicleGridCardBadgesProps {
@@ -47,7 +42,6 @@ interface VehicleGridCardBadgesProps {
 interface VehicleGridCardBodyProps {
   vehicle: VehicleListItem;
   displayName: string;
-  vehicleUrl: string;
   interactive: boolean;
 }
 
@@ -94,84 +88,103 @@ const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
 const VehicleGridCardBody = ({
   vehicle,
   displayName,
-  vehicleUrl,
   interactive,
 }: VehicleGridCardBodyProps) => {
-  const makeName = getVehicleMakeName(vehicle);
-  const modelLine = getVehicleModelLine(vehicle);
   const specs = buildVehicleGridSpecs(vehicle);
   const cuotaValue = getPrimaryCuotaValue(vehicle);
   const financedLabel = cuotaValue ? formatMonthlyPrice(cuotaValue) : null;
-  const detailLabel = `Ver detalle de ${displayName}`;
-
+  const dealership = vehicle?.dealership;
+  const dealershipRating = dealership?.rating
+    ? parseFloat(dealership.rating).toFixed(1)
+    : null;
   return (
     <CardContent
       className={cn(
-        "relative z-1 flex flex-col gap-2 px-2.5 pb-0",
+        "relative z-1 flex flex-col gap-4 px-2.5 pb-0",
         interactive && "pointer-events-none",
       )}
     >
-      {makeName ? (
-        <p className="text-[11px] font-bold tracking-wide text-primary uppercase">
-          {makeName}
-        </p>
-      ) : null}
-
       <h3
         title={displayName}
         className="truncate text-base leading-snug font-bold text-slate-900"
       >
-        {modelLine}
+        {displayName}
       </h3>
 
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-        <p className="text-lg font-bold tracking-tight text-slate-900">
-          {formatPrice(vehicle.price)}
-        </p>
-        {financedLabel && (
-          <p
-            className="text-xs font-medium text-muted-foreground"
-            title="Precio financiado estimado"
-          >
-            desde {financedLabel}
-          </p>
-        )}
+        <div className="flex items-start gap-2">
+          <div className="flex flex-col ">
+            <span className="text-xs font-semibold text-muted-foreground ">
+              Buen precio
+            </span>
+            <p className="text-2xl font-bold tracking-tight text-red-600">
+              {formatPrice(vehicle.price)}
+            </p>
+          </div>
+          {vehicle.finance_price && (
+            <div className="flex flex-col ">
+              <span className="text-xs font-semibold text-muted-foreground ">
+                Financiado: {formatPrice(vehicle.finance_price)}
+              </span>
+              <p className="text-2xl font-bold flex items-center gap-1 tracking-tight">
+                {financedLabel}{" "}
+                <span className="text-xs text-muted-foreground">/mes</span>
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-
+      {vehicle.warranty_type && (
+        <div className="flex items-center gap-1 ">
+          <p className="text-xs font-medium text-green-600">IVA incluido</p>
+          <span className="text-muted-foreground text-xs">•</span>
+          <p className="text-xs font-medium ">
+            Garantía {vehicle.warranty_type?.name}
+          </p>
+        </div>
+      )}
       {specs.length > 0 && (
         <ul
-          className="grid grid-cols-2 gap-1.5"
+          className="flex flex-wrap gap-x-3 gap-y-1"
           aria-label={`Características de ${displayName}`}
         >
           {specs.map(({ key, label, value, Icon }) => (
             <li
               key={key}
-              className="flex min-w-0 items-center gap-1.5 text-xs text-slate-600"
+              className="
+          flex min-w-0 items-center gap-1 text-xs text-muted-foreground
+          after:ml-0.5
+          after:text-muted-foreground
+          after:content-['•']
+          last:after:hidden
+        "
               title={`${label}: ${value}`}
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10">
-                <Icon className="size-3.5 text-primary" aria-hidden />
-              </span>
+              <Icon className="size-3.5 text-primary" aria-hidden />
               <span className="truncate font-medium">{value}</span>
             </li>
           ))}
         </ul>
       )}
-
-      <Link
-        href={vehicleUrl}
-        prefetch={false}
-        aria-label={detailLabel}
-        title={detailLabel}
-        tabIndex={0}
-        className={cn(
-          buttonVariants({ variant: "default", size: "sm" }),
-          "pointer-events-auto relative z-10 mt-1 w-full justify-center gap-1.5",
-        )}
-      >
-        Ver detalle
-        <ArrowRight className="size-3.5" aria-hidden />
-      </Link>
+      {dealership && (
+        <div className="flex items-center gap-1">
+          <Badge>
+            Profesional
+            {dealershipRating && (
+              <>
+                {dealershipRating}
+                <Star
+                  aria-label="Puntuación de la concesionaria"
+                  //llenar con color
+                  fill="currentColor"
+                  className="size-3.5 text-yellow-500"
+                  aria-hidden
+                />
+              </>
+            )}
+          </Badge>
+        </div>
+      )}
     </CardContent>
   );
 };
@@ -181,16 +194,19 @@ export const VehicleGridCard = ({
   interactive = false,
   footer,
   onDismissed,
+  className,
 }: VehicleGridCardProps) => {
   const imageUrl = getImageUrl(vehicle.images[0]?.url ?? "");
   const displayName = getVehicleDisplayName(vehicle);
   const vehicleUrl = getVehicleUrl(vehicle.id);
   const impressionRef = useVehicleImpressionTracker<HTMLDivElement>(vehicle.id);
-  const [openShareDialog, setOpenShareDialog] = useState(false);
   return (
     <Card
       ref={impressionRef}
-      className="group relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md pb-3"
+      className={cn(
+        "group relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md pb-3 rounded-2xl h-full",
+        className,
+      )}
     >
       {/* Enlace de ratón; el CTA "Ver detalle" es el único foco de teclado/lector. */}
       <Link
@@ -201,7 +217,7 @@ export const VehicleGridCard = ({
         tabIndex={-1}
       />
 
-      <CardHeader className="pointer-events-none relative aspect-square overflow-hidden p-0 pt-0">
+      <CardHeader className="pointer-events-none relative aspect-video overflow-hidden p-0 pt-0">
         <div className="pointer-events-auto absolute top-2 right-2 z-10 flex items-center gap-1">
           <VehicleFavoriteButton
             vehicleId={vehicle.id}
@@ -230,20 +246,20 @@ export const VehicleGridCard = ({
           aria-hidden
         />
       </CardHeader>
-
-      <VehicleGridCardBody
-        vehicle={vehicle}
-        displayName={displayName}
-        vehicleUrl={vehicleUrl}
-        interactive={interactive}
-      />
-      {footer ? (
-        <>
-          <CardFooter className="relative z-10 pointer-events-auto px-2.5 pb-0">
-            {footer}
-          </CardFooter>
-        </>
-      ) : null}
+      <Link href={vehicleUrl}>
+        <VehicleGridCardBody
+          vehicle={vehicle}
+          displayName={displayName}
+          interactive={interactive}
+        />
+        {footer ? (
+          <>
+            <CardFooter className="relative z-10 pointer-events-auto px-2.5 pb-0">
+              {footer}
+            </CardFooter>
+          </>
+        ) : null}
+      </Link>
     </Card>
   );
 };

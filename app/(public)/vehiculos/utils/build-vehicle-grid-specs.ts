@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  BadgeCheck,
   CarFront,
   Cog,
   Fuel,
@@ -27,6 +28,15 @@ export const buildVehicleGridSpecs = (
   vehicle: VehicleListItem,
 ): VehicleGridSpec[] => {
   const specs: VehicleGridSpec[] = [];
+  if (vehicle.dgt_label) {
+
+    specs.push({
+      key: "dgt-label",
+      label: "DGT",
+      value: vehicle.dgt_label.name,
+      Icon: BadgeCheck,
+    });
+  }
 
   if (vehicle.mileage >= 0) {
     specs.push({
@@ -84,6 +94,7 @@ export const buildVehicleGridSpecs = (
       Icon: Palette,
     });
   }
+
 
   return specs.slice(0, MAX_GRID_SPECS);
 };

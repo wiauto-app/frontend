@@ -1,15 +1,13 @@
-
-import { API_URL } from "@/constants";
+import { ENVIRONMENT } from "@/constants";
 import type {
   FindAllVehiclesParams,
-  PaginatedResponse,
   VehicleListItem,
 } from "@/interfaces/vehicle.interface";
-import { buildVehiclesQueryString } from "@/lib/vehicles/build-vehicles-query-params";
-import { CACHE_ONE_HOUR, CACHE_TAGS } from "@/constants/cache.constants";
+import { apiGet } from "@/lib/api";
+import { CACHE_ONE_HOUR } from "@/constants/cache.constants";
 
 export interface VehiclesListingResult {
-  vehicles: VehicleListItem[];
+  data: VehicleListItem[];
   total: number;
   page: number;
   limit: number;
@@ -17,45 +15,27 @@ export interface VehiclesListingResult {
 
 export const findAllVehicles = async (
   params: FindAllVehiclesParams,
-  accessToken?:string,
 ): Promise<VehiclesListingResult> => {
   const empty: VehiclesListingResult = {
-    vehicles: [],
+    data: [],
     total: 0,
     page: params.page ?? 1,
     limit: params.limit ?? 30,
   };
 
 
-  const query = buildVehiclesQueryString(params);
 
   try {
-    const response = await fetch(`${API_URL}/v1/vehicles${query}`, {
-      next: {
-        revalidate: CACHE_ONE_HOUR,
-        tags: [CACHE_TAGS.VEHICLES],
-      },
-      headers:{
-        Authorization:`Bearer ${accessToken}`
-      }
-    });
-
+    const response = await apiGet<VehiclesListingResult>("/v1/vehicles", {
+      params,
+    }, ENVIRONMENT === "development" ? 0 : CACHE_ONE_HOUR);
     if (!response.ok) {
       return empty;
     }
 
-    const body = (await response.json()) as {
-      data?: PaginatedResponse<VehicleListItem>;
-    };
+    const payload = response.data;
 
-    const payload = body.data;
-
-    return {
-      vehicles: payload?.data ?? [],
-      total: payload?.total ?? 0,
-      page: payload?.page ?? empty.page,
-      limit: payload?.limit ?? empty.limit,
-    };
+    return payload;
   } catch {
     return empty;
   }

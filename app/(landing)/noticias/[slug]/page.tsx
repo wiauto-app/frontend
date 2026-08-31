@@ -114,27 +114,14 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   const { slug } = await params;
 
   let news: Awaited<ReturnType<typeof newsService.findOne>>;
-
   try {
     news = await newsService.findOne({ slug });
   } catch {
     notFound();
   }
 
-
   const primary_banner = news.banners[0] ?? null;
   const MOCK_BANNER = "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?q=80&w=1200&auto=format&fit=crop";
-
-  // Mock comments for display when no real ones exist
-  const mockComments = [
-    { document_id: "m1", name: "Annette Black", email: "26 Apr, 2021", text: "In a nisl commodo, porttitor ligula consequat, tincidunt dui. Nulla volutpat, metus eu aliquam malesuada, elit libero venenatis urna, consequat maximus arcu diam non diam." },
-    { document_id: "m2", name: "Devon Lane", email: "26 Apr, 2021", text: "Quisque eget tortor lobortis, facilisis metus eu, elementum orci. Nunc ut amet orci at quis ex convallis suscipit. Nam hendrerit, velit ut aliquam euismod, nibh tortor rutrum nisi, ac sodales ante orci nec risus. Sed scelerisque, est eget aliquam venenatis, est sem tempor arcu." },
-    { document_id: "m3", name: "Jacob Jones", email: "30 Apr, 2021", text: "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae." },
-    { document_id: "m4", name: "Jane Cooper", email: "18 Apr, 2021", text: "Pellentesque fauciat, nibh vel vehicula pretium, nibh nibh bibendum elit, a volutpat arcu dui nec orci. Aenean dui odio, ullamcorper quis turpis ac, volutpat imperdiet ex." },
-    { document_id: "m5", name: "Darrell Steward", email: "7 Apr, 2021", text: "Nulla molestie interdum ultrices." },
-  ];
-
-  const displayComments = news.comments.length > 0 ? news.comments : mockComments;
 
   return (
     <div className="bg-white min-h-screen">
@@ -272,7 +259,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           {/* Comments list */}
           <div className="mt-10">
             <h2 className="text-xl font-bold text-slate-900 mb-6">Comentarios</h2>
-            <CommentsList comments={displayComments} />
+            <CommentsList comments={news.comments} />
           </div>
         </section>
       </article>

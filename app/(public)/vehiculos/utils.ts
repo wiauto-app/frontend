@@ -79,7 +79,7 @@ export function formatMonthlyPrice(price: number, cuotas?: number): string {
       currency: "EUR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(cuotaPrice) + "/mes"
+    }).format(cuotaPrice)
   );
 }
 
@@ -123,8 +123,11 @@ export function getVehicleTags(vehicle: VehicleListItem): string[] {
 }
 
 export function getPrimaryCuotaValue(vehicle: VehicleListItem): number | null {
-  const cuota = vehicle.cuotas.find((item) => item.value > 0);
-  return cuota?.value ?? null;
+  const cuota = vehicle.cuotas.sort((a, b) => b.value - a.value)[0];
+  if (cuota) {
+    return Math.floor(vehicle.finance_price / cuota.value);
+  }
+  return null;
 }
 
 export function getFinancedPrice(vehicle: VehicleListItem): string | null {
@@ -146,6 +149,6 @@ export function formatDate(date: string): string {
 }
 
 
-export const getVehicleUrl    = (vehicleId: string): string => {
+export const getVehicleUrl = (vehicleId: string): string => {
   return `/vehiculo/${vehicleId}`;
 }

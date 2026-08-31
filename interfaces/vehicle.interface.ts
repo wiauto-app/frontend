@@ -1,4 +1,4 @@
-import { DealershipScheduleDay } from "@/services/dealerships/types/dealership.types";
+import { DealershipDetail, DealershipScheduleDay } from "@/services/dealerships/types/dealership.types";
 import { VehiclePriceHistoryItem } from "./vehicle-price.interface";
 
 export const PUBLISHER_TYPE = {
@@ -134,6 +134,13 @@ export interface VehicleListItem {
   warranty_type: WarrantyTypeRef | null;
   cuotas: CuotaRef[];
   publisher: VehicleListItemPublisher;
+  dealership: DealershipDetail | null;
+  show_first_cuota: boolean;
+  by_brand_warranty: boolean;
+  show_exact_location: boolean;
+  show_review_collab: boolean;
+  
+  finance_price: number;
 }
 
 export interface Publisher {

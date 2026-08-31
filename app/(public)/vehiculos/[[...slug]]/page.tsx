@@ -103,7 +103,7 @@ export default async function VehiclesListingPage(props: {
             !isMapVisible ? "listing-container" : "container-custom-full",
           )}
         >
-          <aside className="hidden w-85 shrink-0 flex-col gap-2 lg:flex">
+          <aside className="hidden w-82 shrink-0 flex-col gap-2 lg:flex">
             <Suspense fallback={<FiltersLoading />}>
               <SaveSearchButton />
               <BuyAssistantBannerCard />
@@ -112,7 +112,7 @@ export default async function VehiclesListingPage(props: {
             </Suspense>
           </aside>
           <VehiclesPageContent
-            vehicles={listing.vehicles}
+            vehicles={listing.data}
             total={listing.total}
             isMapVisible={isMapVisible}
             titleNode={<FiltersTitle title={activeFilters.title} />}
