@@ -94,6 +94,10 @@ const mapMunicipalityToFacetItem = (
 });
 
 export const heroCatalogService = {
+  searchModelMakeIds: async (search: string): Promise<number[]> => {
+    const models = await modelService.searchGlobal(search);
+    return [...new Set(models.map((model) => model.make_id))];
+  },
   getMakes: async (search?: string): Promise<HeroCatalogFacetItem[]> => {
     const makes = await fetchAllPages((page, limit) =>
       makeService.findAll({
@@ -104,7 +108,15 @@ export const heroCatalogService = {
         order_direction: "ASC",
       }),
     );
-    return makes.map(mapMakeToFacetItem);
+    const modelMatches = search?.trim()
+      ? await modelService.searchGlobal(search.trim())
+      : [];
+    const makeIds = new Set(modelMatches.map((model) => model.make_id));
+    const matchingMakes = modelMatches.length
+      ? await fetchAllPages((page, limit) => makeService.findAll({ page, limit, order_by: "name", order_direction: "ASC" }))
+      : [];
+    const merged = [...makes, ...matchingMakes.filter((make) => makeIds.has(Number(make.id)))];
+    return [...new Map(merged.map((make) => [make.id, make])).values()].map(mapMakeToFacetItem);
   },
 
   getModels: async (

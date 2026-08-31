@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 // import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { FileText, Filter, Search, SlidersHorizontal } from "lucide-react";
+import { FileText, Search, SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "../ui/card";

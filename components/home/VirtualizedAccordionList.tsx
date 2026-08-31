@@ -36,7 +36,7 @@ export const VirtualizedAccordionList = <T,>({
   onOpenValuesChange,
   renderTrigger,
   renderContent,
-  estimateSize = 56,
+  estimateSize = 40,
   overscan = 6,
   gap = 8,
   className = "max-h-50 overflow-y-auto",

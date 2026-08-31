@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 
@@ -26,6 +26,7 @@ import { WiautoImage } from "../ui/wiautoImage";
 interface MakeModelsListProps {
   make: HeroCatalogFacetItem;
   isOpen: boolean;
+  search?: string;
   // cascadeFilters: {
   //   province_slug?: string;
   //   municipality_slug?: string;
@@ -51,6 +52,7 @@ const buildMakeTriggerLabel = (
 const MakeModelsList = ({
   make,
   isOpen,
+  search,
   // cascadeFilters,
 }: MakeModelsListProps) => {
   const { selectedMakes, selectedModels, handleToggleMake, handleToggleModel } =
@@ -66,7 +68,7 @@ const MakeModelsList = ({
   const { data: models = [], isLoading } = useQuery({
     queryKey: ["hero-catalog", "models", make.id],
     queryFn: () =>
-      heroCatalogService.getModels(make.id, undefined, {
+      heroCatalogService.getModels(make.id, search?.trim() || undefined, {
         id: make.id,
         slug: make.slug,
         name: make.name,
@@ -157,7 +159,7 @@ const MakeModelsList = ({
   );
 };
 
-export const HeroFiltersMakeSelector = () => {
+export const  HeroFiltersMakeSelector = () => {
   const {
     selectedMakes,
     selectedModels,
@@ -197,6 +199,19 @@ export const HeroFiltersMakeSelector = () => {
     queryFn: () =>
       heroCatalogService.getMakes(debounced_search.trim() || undefined),
   });
+  const { data: model_make_ids = [] } = useQuery({
+    queryKey: ["hero-catalog", "model-make-ids", debounced_search],
+    queryFn: () => heroCatalogService.searchModelMakeIds(debounced_search.trim()),
+    enabled: debounced_search.trim().length > 0,
+  });
+
+  useEffect(() => {
+    if (!debounced_search.trim()) {
+      setOpenValues([]);
+      return;
+    }
+    setOpenValues(model_make_ids.map(String));
+  }, [debounced_search, model_make_ids]);
 
   const trigger_label = useMemo(
     () => buildMakeTriggerLabel(selectedMakes, selectedModels),
@@ -282,6 +297,7 @@ export const HeroFiltersMakeSelector = () => {
               <MakeModelsList
                 make={make}
                 isOpen={is_open}
+                search={debounced_search}
                 // cascadeFilters={make_cascade_filters}
               />
             )}

@@ -35,6 +35,11 @@ export interface FindAllModelsParams {
 }
 
 export const modelService = {
+  searchGlobal: async (search: string, limit = 50): Promise<SearchModelItem[]> => {
+    const query = qs.stringify({ search, limit }, { skipNulls: true, addQueryPrefix: true });
+    const response = await apiGet<{ models?: SearchModelItem[] }>(`${V1_CATALOG_MODELS}/search/global${query}`);
+    return response.data?.models ?? [];
+  },
   search: async (params: SearchModelsParams): Promise<SearchModelItem[]> => {
     const query = qs.stringify(params, {
       skipNulls: true,
