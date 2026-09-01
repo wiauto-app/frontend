@@ -49,6 +49,8 @@ const buildMakeTriggerLabel = (
   return "Marca / modelo";
 };
 
+const EMPTY_MODEL_MAKE_IDS: readonly number[] = [];
+
 const MakeModelsList = ({
   make,
   isOpen,
@@ -159,14 +161,14 @@ const MakeModelsList = ({
   );
 };
 
-export const  HeroFiltersMakeSelector = () => {
+export const HeroFiltersMakeSelector = () => {
   const {
     selectedMakes,
     selectedModels,
     // facetQueryParams,
   } = useHeroSearchFilters();
   const [search, setSearch] = useState("");
-  const [open_values, setOpenValues] = useState<string[]>([]);
+  const [manualOpenValues, setManualOpenValues] = useState<string[]>([]);
   const debounced_search = useDebouncedValue(search, 300);
   const [open, setOpen] = useState(false);
 
@@ -199,19 +201,26 @@ export const  HeroFiltersMakeSelector = () => {
     queryFn: () =>
       heroCatalogService.getMakes(debounced_search.trim() || undefined),
   });
-  const { data: model_make_ids = [] } = useQuery({
+  const { data: modelMakeIds } = useQuery({
     queryKey: ["hero-catalog", "model-make-ids", debounced_search],
     queryFn: () => heroCatalogService.searchModelMakeIds(debounced_search.trim()),
     enabled: debounced_search.trim().length > 0,
   });
 
+  const autoExpandedValues = useMemo(() => {
+    if (!debounced_search.trim()) {
+      return null;
+    }
+    return (modelMakeIds ?? EMPTY_MODEL_MAKE_IDS).map(String);
+  }, [debounced_search, modelMakeIds]);
+
   useEffect(() => {
     if (!debounced_search.trim()) {
-      setOpenValues([]);
-      return;
+      setManualOpenValues((current) => (current.length === 0 ? current : []));
     }
-    setOpenValues(model_make_ids.map(String));
-  }, [debounced_search, model_make_ids]);
+  }, [debounced_search]);
+
+  const open_values = autoExpandedValues ?? manualOpenValues;
 
   const trigger_label = useMemo(
     () => buildMakeTriggerLabel(selectedMakes, selectedModels),
@@ -219,7 +228,10 @@ export const  HeroFiltersMakeSelector = () => {
   );
 
   const handleAccordionValueChange = (value: string | string[]) => {
-    setOpenValues(Array.isArray(value) ? value : value ? [value] : []);
+    if (autoExpandedValues !== null) {
+      return;
+    }
+    setManualOpenValues(Array.isArray(value) ? value : value ? [value] : []);
   };
 
   return (

@@ -50,7 +50,7 @@ export const CookieConsentBanner = () => {
           role="dialog"
           aria-live="polite"
           aria-label="Aviso de cookies"
-          className="fixed inset-x-0 bottom-0 z-100 border-t bg-background/95 p-4 pb-18 shadow-lg backdrop-blur md:pb-4"
+          className="fixed inset-x-0 bottom-0 z-100 border-t bg-background/95 p-4 pb-8 shadow-lg backdrop-blur md:pb-4"
         >
           <div className="container-custom mx-auto flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-3">
