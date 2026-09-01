@@ -69,7 +69,7 @@ export const mapDealershipToDealerProfile = ({
     name: dealership.name,
     tagline: dealership.description?.slice(0, 120) || undefined,
     isVerified: dealership.is_featured,
-    rating,
+    rating: Number(rating),
     reviewCount: dealership.reviews_count,
     memberSince: formatMemberSince(dealership.created_at),
     avatar: dealership.avatar_url ?? undefined,

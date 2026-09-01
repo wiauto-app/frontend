@@ -78,7 +78,7 @@ export const TopDealershipCard = ({
             {dealership.name}
           </h3>
 
-          <DealershipRatingStars rating={dealership.rating} />
+          <DealershipRatingStars rating={Number(dealership.rating)} />
         </div>
       </div>
     </Link>

@@ -77,10 +77,8 @@ export default async function DealerProfilePage({
     ...url_filters,
     dealership_ids: [dealership.id],
   };
-  const cookiesStore = await cookies()
-  const access_token = cookiesStore.get(cookiesConfig.accessToken.name)
   const [listing, active_filters] = await Promise.all([
-    findAllVehicles(vehicle_filters,access_token?.value),
+    findAllVehicles(vehicle_filters),
     activeFiltersService.getActiveFilters(vehicle_filters),
   ]);
   const dealer = mapDealershipToDealerProfile({
@@ -91,7 +89,7 @@ export default async function DealerProfilePage({
   const { breadcrumbItems, jsonLdGraph } = buildDealershipDetailSeo({
     dealership,
     reviewCount: dealership.reviews_count,
-    rating: dealership.rating ?? 0,
+    rating: Number(dealership.rating) ?? 0,
   });
 
   return (
@@ -128,7 +126,7 @@ export default async function DealerProfilePage({
                   />
                   <Suspense fallback={<LoadingComponent />}>
                     <VehiclesPageContent
-                      vehicles={listing.vehicles}
+                      vehicles={listing.data}
                       total={listing.total}
                     />
                   </Suspense>

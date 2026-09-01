@@ -44,7 +44,7 @@ export const VehiclesListingSectionFromFilters = async ({
       <VehiclesListingSection
         title={title}
         variant="grid"
-        vehicles={listing.vehicles}
+        vehicles={listing.data}
         seeMoreHref={seeMoreHref}
         seeMoreLabel={seeMoreLabel}
         className={className}

@@ -91,7 +91,7 @@ type BuildDealershipDetailJsonLdInput = {
 export const buildDealershipDetailJsonLd = ({
   dealership,
   reviewCount = 0,
-  rating = dealership.rating ?? 0,
+  rating = Number(dealership.rating) ?? 0,
 }: BuildDealershipDetailJsonLdInput) => {
   const breadcrumbItems = buildDealershipBreadcrumbItems(dealership);
   const description =

@@ -123,10 +123,10 @@ export function ConcesionariaCard({ dealer, onReview }: ConcesionariaCardProps) 
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <StarRating rating={dealer.rating} />
+              <StarRating rating={Number(dealer.rating)} />
               {dealer.rating != null && (
                 <span className="text-sm font-bold text-slate-800">
-                  {dealer.rating.toFixed(1)}
+                  {Number(dealer.rating).toFixed(1)}
                 </span>
               )}
               <span className="text-xs text-slate-400">

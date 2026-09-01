@@ -10,5 +10,5 @@ export const getFeaturedVehicles = async (): Promise<VehicleListItem[]> => {
     limit: FEATURED_VEHICLES_LIMIT,
   });
 
-  return listing.vehicles;
+  return listing.data;
 };
