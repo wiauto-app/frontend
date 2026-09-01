@@ -7,12 +7,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { motion } from "motion/react";
 import type { Category } from "@/interfaces/vehicle.interface";
 
 import { PopularCategoryCard } from "./PopularCategoryCard";
-import { getVariant, staggerContainer, staggerItem } from "./motion";
-import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 
 interface PopularCategoriesSliderProps {
   categories: Category[];
@@ -21,9 +18,6 @@ interface PopularCategoriesSliderProps {
 export const PopularCategoriesSlider = ({
   categories,
 }: PopularCategoriesSliderProps) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const containerVariants = getVariant(staggerContainer, prefersReducedMotion);
-  const itemVariants = getVariant(staggerItem, prefersReducedMotion);
 
   return (
     <Carousel
@@ -31,25 +25,16 @@ export const PopularCategoriesSlider = ({
       opts={{ align: "start", loop: false, dragFree: true }}
     >
       <div className="relative px-10 sm:px-12">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={containerVariants}
-        >
-          <CarouselContent className="-ml-3 sm:-ml-4">
-            {categories.map((category) => (
-              <CarouselItem
-                key={category.id}
-                className="basis-[78%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
-              >
-                <motion.div variants={itemVariants}>
-                  <PopularCategoryCard category={category} />
-                </motion.div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </motion.div>
+        <CarouselContent className="-ml-3 sm:-ml-4">
+          {categories.map((category) => (
+            <CarouselItem
+              key={category.id}
+              className="basis-[78%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
+            >
+              <PopularCategoryCard category={category} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
         <CarouselPrevious
           aria-label="Ver categorías anteriores"

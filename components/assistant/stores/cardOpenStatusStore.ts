@@ -6,7 +6,7 @@ interface CardOpenStatusStore {
 }
 
 export const useCardOpenStatusStore = create<CardOpenStatusStore>()(persist((set) => ({
-  isOpen: true,
+  isOpen: false,
   setIsOpen: (isOpen) => set({ isOpen }),
 }), {
   name: "card-open-status",
