@@ -117,7 +117,7 @@ const VehicleGridCardBody = ({
             <span className="text-xs font-semibold text-muted-foreground ">
               Buen precio
             </span>
-            <p className="text-2xl font-bold tracking-tight text-red-600">
+            <p className="text-2xl font-bold tracking-tight text-primary">
               {formatPrice(vehicle.price)}
             </p>
           </div>
