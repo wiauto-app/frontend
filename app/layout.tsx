@@ -63,7 +63,7 @@ export default async function RootLayout({
             </ConditionalWrapper>
             <AssistantDialog />
             <MobileNavbar />
-            <CookieConsentBanner />
+            {/* <CookieConsentBanner /> */}
           </AssistantChatProvider>
           {GOOGLE_ANALYTICS_ID ? (
             <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
