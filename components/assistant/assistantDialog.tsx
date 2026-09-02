@@ -132,7 +132,7 @@ export const AssistantDialog = () => {
       aria-label="Asistente WiAuto AI"
       className={
         cn(
-          "fixed right-3 bottom-19 z-40 flex w-[calc(100%-1.5rem)] max-w-md flex-col overflow-hidden border bg-background p-0 shadow-2xl md:right-4 md:bottom-4 md:border-none",
+          "fixed right-3 gap-0 bottom-23 lg:bottom-19 z-40 flex w-[calc(100%-1.5rem)] max-w-md flex-col overflow-hidden border bg-background p-0 shadow-2xl md:right-4 md:bottom-4 md:border-none",
           isAuthenticated && "h-[min(76dvh,42rem)]  md:h-[min(72dvh,42rem)] "
         )
       }
@@ -179,7 +179,7 @@ export const AssistantDialog = () => {
 
       <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-3">
         {!isAuthenticated && !isAuthLoading ? (
-          <div className="mt-auto rounded-xl border border-primary/15 bg-primary/5 p-3 text-sm">
+          <div className="rounded-xl border border-primary/15 bg-primary/5 p-3 text-sm">
             <p className="font-medium">
               Inicia sesión para conversar con WiAuto AI.
             </p>
