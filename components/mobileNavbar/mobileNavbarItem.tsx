@@ -34,7 +34,7 @@ export const MobileNavbarItem = ({ item }: MobileNavbarItemProps) => {
       aria-label={item.label}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "relative flex flex-col items-center justify-center gap-1 rounded-2xl px-1 py-1.5 transition-colors",
+        "relative flex flex-col items-center justify-center gap-1 rounded-2xl px-1 py-3 transition-colors",
         isActive
           ? "bg-primary/10 text-primary"
           : "text-muted-foreground hover:text-foreground",
