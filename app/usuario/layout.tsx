@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { ProfessionalSidebar } from "./components/professionalSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getServerSession } from "@/lib/ensure-session.server";
-import { UserSidebarSheet } from "./components/userSidebarSheet";
 import { Suspense } from "react";
 
 const USER_SIDEBAR_WIDTH = "w-56 lg:w-64";
@@ -15,11 +14,9 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const { data } = await getServerSession();
-  const { status } = data?.billing_summary?.subscription ?? {};
-  // const [open, setOpen] = useState(false);
-  // const { isSubscribed, isPrivileged, isLoading } = useEntitlements();
+  const planName = data?.billing_summary.plan_name ?? {};
 
-  const showProShell = status === "active";
+  const showProShell = !!planName;
   const showUserSidebar = !showProShell;
   const layoutVariants = cva(
     "mx-auto w-full px-4 py-2 sm:px-6 md:py-8 lg:px-8 ",

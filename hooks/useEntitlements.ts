@@ -10,8 +10,7 @@ export const useEntitlements = () => {
   const entitlements = user?.billing_summary?.entitlements ?? {};
   const isPrivileged =
     user?.billing_summary?.source === "admin" || user?.isAdmin === true;
-  const isSubscribed = billingSummary?.subscription?.status === "active";
-
+  const isSubscribed = !!billingSummary?.plan_name
   const has = (feature: string): boolean => {
     if (isPrivileged) {
       return true;
