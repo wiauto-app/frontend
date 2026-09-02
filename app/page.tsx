@@ -26,29 +26,18 @@ import {
 } from "@/components/discovery";
 import { mapLowEmissionsLinkToQuickLink } from "@/components/discovery/mappers/map-low-emissions-link-to-quick-link";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
+import { buildHomeSeo } from "@/lib/seo/build-home-seo";
+import { JsonLdScript } from "@/lib/seo/json-ld-script";
 import { LandingContainer } from "@/components/ui/landingContainer";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
-  const seo = home_data.homeSeo;
-  const share_image_url = getStrapiMediaUrl(seo?.shareImage?.url);
-
-  return {
-    title: seo?.metaTitle ?? "",
-    description: seo?.metaDescription ?? undefined,
-    keywords: seo?.keywords ?? undefined,
-    alternates: seo?.canonicalURL ? { canonical: seo.canonicalURL } : undefined,
-    robots: seo?.noIndex ? { index: false, follow: false } : undefined,
-    openGraph: {
-      title: seo?.metaTitle ?? undefined,
-      description: seo?.metaDescription ?? undefined,
-      images: share_image_url ? [{ url: share_image_url }] : undefined,
-    },
-  };
+  return buildHomeSeo({ seo: home_data.homeSeo }).metadata;
 };
 
 export default async function Home() {
   const home_data = await getHomeData();
+  const { jsonLdGraph } = buildHomeSeo({ seo: home_data.homeSeo });
   const low_emissions = home_data.bajas_emisiones;
   const low_emissions_links = low_emissions?.links ?? [];
   const low_emissions_quick_links =
@@ -58,6 +47,7 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLdScript data={jsonLdGraph} />
       <LandingContainer>
         <HeroSection data={home_data.homeHero} />
         {/* <div className="block sm:hidden h-50" /> */}

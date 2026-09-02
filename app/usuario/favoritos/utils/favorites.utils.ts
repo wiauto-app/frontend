@@ -79,7 +79,7 @@ export const getFavoriteVehicleTagLabel = (
 
 export const formatVehicleCountLabel = (count: number): string => {
   if (count === 1) {
-    return "1 auto";
+    return "1 coche";
   }
-  return `${count} autos`;
+  return `${count} coches`;
 };

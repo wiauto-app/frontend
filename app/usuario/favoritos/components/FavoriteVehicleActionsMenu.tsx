@@ -3,6 +3,16 @@
 import { useState } from "react";
 import type { VehicleList } from "@/interfaces/vehicle-list.interface";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,30 +22,40 @@ import { Button } from "@/components/ui/button";
 import { Copy, MoreVertical, MoveRight, Trash2 } from "lucide-react";
 import { MoveCopyVehicleListDialog } from "./MoveCopyVehicleListDialog";
 
-type FavoriteVehicleActionsMenuProps = {
+interface FavoriteVehicleActionsMenuProps {
   lists: VehicleList[];
   currentListId: string;
+  itemCounts: Record<string, number>;
   vehicleId: string;
   onRemove: () => Promise<void>;
   onMove: (targetListId: string) => Promise<void>;
   onCopy: (targetListId: string) => Promise<void>;
   disabled?: boolean;
-};
+}
 
 export const FavoriteVehicleActionsMenu = ({
   lists,
   currentListId,
+  itemCounts,
   vehicleId,
   onRemove,
   onMove,
   onCopy,
   disabled = false,
 }: FavoriteVehicleActionsMenuProps) => {
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [moveDialogOpen, setMoveDialogOpen] = useState(false);
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
 
-  const handleRemove = async () => {
-    await onRemove();
+  const handleConfirmRemove = async () => {
+    setIsRemoving(true);
+    try {
+      await onRemove();
+      setRemoveDialogOpen(false);
+    } finally {
+      setIsRemoving(false);
+    }
   };
 
   return (
@@ -46,17 +66,19 @@ export const FavoriteVehicleActionsMenu = ({
           render={
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="icon"
               aria-label="Más acciones"
-              className="rounded-full text-gray-400 hover:bg-gray-50 hover:text-gray-700"
             >
               <MoreVertical className="size-4" aria-hidden />
             </Button>
           }
         />
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem variant="destructive" onClick={handleRemove}>
+        <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setRemoveDialogOpen(true)}
+          >
             <Trash2 className="size-4" aria-hidden />
             Quitar de favoritos
           </DropdownMenuItem>
@@ -71,12 +93,35 @@ export const FavoriteVehicleActionsMenu = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Quitar de favoritos?</AlertDialogTitle>
+            <AlertDialogDescription>
+              El vehículo se eliminará de esta carpeta. Podrás volver a guardarlo
+              desde el anuncio.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isRemoving}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmRemove}
+              disabled={isRemoving}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {isRemoving ? "Quitando…" : "Quitar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <MoveCopyVehicleListDialog
         open={moveDialogOpen}
         onOpenChange={setMoveDialogOpen}
         mode="move"
         lists={lists}
         currentListId={currentListId}
+        itemCounts={itemCounts}
         vehicleId={vehicleId}
         onConfirm={onMove}
       />
@@ -87,6 +132,7 @@ export const FavoriteVehicleActionsMenu = ({
         mode="copy"
         lists={lists}
         currentListId={currentListId}
+        itemCounts={itemCounts}
         vehicleId={vehicleId}
         onConfirm={onCopy}
       />

@@ -8,7 +8,7 @@ export const useFavoriteIds = () => {
     const ids = new Set<string>();
 
     user?.vehicle_lists.forEach((list) => {
-      list.items.forEach((item) => {
+      list.items?.forEach((item) => {
         ids.add(item.vehicle_id);
       });
     });

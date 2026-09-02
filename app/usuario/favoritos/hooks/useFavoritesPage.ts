@@ -9,31 +9,20 @@ import type {
 import { vehicleListService } from "@/services/vehicleListService";
 import { resolveDefaultVehicleList } from "@/app/(public)/vehiculos/hooks/useVehicleListMembership";
 
+export const FAVORITES_PAGE_SIZE = 10;
+
 export const VEHICLE_LISTS_QUERY_KEY = ["vehicle-lists"] as const;
 
-export const vehicleListItemsQueryKey = (listId: string) =>
-  ["vehicle-list-items", listId] as const;
-
-const fetchListItemCount = async (listId: string): Promise<number> => {
-  const response = await vehicleListService.findItems(listId);
-  if (!response.ok || !response.data) {
-    return 0;
-  }
-  return response.data.length;
-};
-
-const fetchAllListItemCounts = async (
-  lists: VehicleList[],
-): Promise<Record<string, number>> => {
-  const entries = await Promise.all(
-    lists.map(async (list) => [list.id, await fetchListItemCount(list.id)] as const),
-  );
-  return Object.fromEntries(entries);
-};
+export const vehicleListItemsQueryKey = (
+  listId: string,
+  page: number,
+  limit: number,
+) => ["vehicle-list-items", listId, page, limit] as const;
 
 export const useFavoritesPage = () => {
   const queryClient = useQueryClient();
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   const listsQuery = useQuery({
     queryKey: VEHICLE_LISTS_QUERY_KEY,
@@ -59,22 +48,28 @@ export const useFavoritesPage = () => {
     }
   }, [lists, selectedListId]);
 
-  const itemCountsQuery = useQuery({
-    queryKey: [...VEHICLE_LISTS_QUERY_KEY, "counts", lists.map((list) => list.id)],
-    queryFn: () => fetchAllListItemCounts(lists),
-    enabled: lists.length > 0,
-  });
+  useEffect(() => {
+    setPage(1);
+  }, [selectedListId]);
 
   const itemsQuery = useQuery({
     queryKey: selectedListId
-      ? vehicleListItemsQueryKey(selectedListId)
+      ? vehicleListItemsQueryKey(selectedListId, page, FAVORITES_PAGE_SIZE)
       : ["vehicle-list-items", "none"],
     queryFn: async () => {
       if (!selectedListId) {
-        return [];
+        return {
+          data: [] as VehicleListItemRecord[],
+          total: 0,
+          page: 1,
+          limit: FAVORITES_PAGE_SIZE,
+        };
       }
 
-      const response = await vehicleListService.findItems(selectedListId);
+      const response = await vehicleListService.findItems(selectedListId, {
+        page,
+        limit: FAVORITES_PAGE_SIZE,
+      });
       if (!response.ok || !response.data) {
         throw new Error(response.message || "No se pudieron cargar los favoritos");
       }
@@ -82,6 +77,15 @@ export const useFavoritesPage = () => {
     },
     enabled: !!selectedListId,
   });
+
+  const total = itemsQuery.data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / FAVORITES_PAGE_SIZE));
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
 
   const invalidateLists = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: VEHICLE_LISTS_QUERY_KEY });
@@ -94,7 +98,7 @@ export const useFavoritesPage = () => {
         return;
       }
       await queryClient.invalidateQueries({
-        queryKey: vehicleListItemsQueryKey(targetListId),
+        queryKey: ["vehicle-list-items", targetListId],
       });
     },
     [queryClient, selectedListId],
@@ -122,6 +126,7 @@ export const useFavoritesPage = () => {
     onSuccess: async (createdList) => {
       await invalidateLists();
       setSelectedListId(createdList.id);
+      setPage(1);
     },
   });
 
@@ -153,6 +158,7 @@ export const useFavoritesPage = () => {
           queryClient.getQueryData<VehicleList[]>(VEHICLE_LISTS_QUERY_KEY) ?? [];
         const defaultList = resolveDefaultVehicleList(refreshedLists);
         setSelectedListId(defaultList?.id ?? null);
+        setPage(1);
       }
     },
   });
@@ -174,8 +180,18 @@ export const useFavoritesPage = () => {
       }
     },
     onSuccess: async (_data, variables) => {
+      const currentTotal = itemsQuery.data?.total ?? 0;
+      const isLastItemOnPage =
+        (itemsQuery.data?.data.length ?? 0) === 1 && page > 1;
+      const willBeEmptyOnCurrentPage =
+        currentTotal - 1 <= (page - 1) * FAVORITES_PAGE_SIZE && page > 1;
+
+      if (isLastItemOnPage || willBeEmptyOnCurrentPage) {
+        setPage((currentPage) => Math.max(1, currentPage - 1));
+      }
+
       await invalidateItems(variables.listId);
-      await queryClient.invalidateQueries({ queryKey: VEHICLE_LISTS_QUERY_KEY });
+      await invalidateLists();
     },
   });
 
@@ -197,7 +213,7 @@ export const useFavoritesPage = () => {
     },
     onSuccess: async (_data, variables) => {
       await invalidateItems(variables.listId);
-      await queryClient.invalidateQueries({ queryKey: VEHICLE_LISTS_QUERY_KEY });
+      await invalidateLists();
     },
   });
 
@@ -206,8 +222,8 @@ export const useFavoritesPage = () => {
     toListId: string,
     vehicleId: string,
   ) => {
-    await removeItemMutation.mutateAsync({ listId: fromListId, vehicleId });
     await addItemMutation.mutateAsync({ listId: toListId, vehicleId });
+    await removeItemMutation.mutateAsync({ listId: fromListId, vehicleId });
   };
 
   const copyItem = async (toListId: string, vehicleId: string) => {
@@ -219,11 +235,26 @@ export const useFavoritesPage = () => {
     [lists, selectedListId],
   );
 
-  const itemCounts = itemCountsQuery.data ?? {};
+  const itemCounts = useMemo(
+    () =>
+      Object.fromEntries(
+        lists.map((list) => [list.id, list.item_count ?? 0]),
+      ),
+    [lists],
+  );
+
+  const handleSetSelectedListId = useCallback((listId: string) => {
+    setSelectedListId(listId);
+    setPage(1);
+  }, []);
 
   return {
     lists,
-    items: itemsQuery.data ?? [],
+    items: itemsQuery.data?.data ?? [],
+    total,
+    page,
+    limit: FAVORITES_PAGE_SIZE,
+    totalPages,
     selectedListId,
     selectedList,
     itemCounts,
@@ -232,7 +263,8 @@ export const useFavoritesPage = () => {
     isFetchingItems: itemsQuery.isFetching,
     listsError: listsQuery.error,
     itemsError: itemsQuery.error,
-    setSelectedListId,
+    setSelectedListId: handleSetSelectedListId,
+    setPage,
     createList: createListMutation.mutateAsync,
     isCreatingList: createListMutation.isPending,
     updateList: updateListMutation.mutateAsync,

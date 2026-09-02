@@ -46,7 +46,7 @@ export const FavoritesFolderStrip = ({
   }
 
   return (
-    <div className="scrollbar-hide flex gap-4 overflow-x-auto pb-2">
+    <div className="scrollbar-hide flex gap-4 overflow-x-auto p-2">
       {lists.map((list) => (
         <FavoritesFolderCard
           key={list.id}

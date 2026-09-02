@@ -9,20 +9,22 @@ import { openVehicleContactChat } from "@/lib/chat/openVehicleContactChat";
 import { FavoriteVehicleActionsMenu } from "./FavoriteVehicleActionsMenu";
 import type { VehicleList } from "@/interfaces/vehicle-list.interface";
 
-type FavoriteVehicleActionsProps = {
+interface FavoriteVehicleActionsProps {
   lists: VehicleList[];
   currentListId: string;
+  itemCounts: Record<string, number>;
   vehicleId: string;
   publisherId: string;
   onRemove: () => Promise<void>;
   onMove: (targetListId: string) => Promise<void>;
   onCopy: (targetListId: string) => Promise<void>;
   disabled?: boolean;
-};
+}
 
 export const FavoriteVehicleActions = ({
   lists,
   currentListId,
+  itemCounts,
   vehicleId,
   publisherId,
   onRemove,
@@ -55,17 +57,10 @@ export const FavoriteVehicleActions = ({
   };
 
   return (
-    <div className="flex flex-col gap-2 md:w-36">
-      {/* TODO: alertar precio — pendiente endpoint de alertas */}
-      {/*
-      <Button type="button" variant="outline" className="w-full">
-        Alertar precio
-      </Button>
-      */}
-
+    <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:justify-end">
       <Button
         type="button"
-        className="w-full"
+        className="w-full sm:min-w-32"
         onClick={handleContact}
         disabled={disabled || isContacting}
       >
@@ -79,6 +74,7 @@ export const FavoriteVehicleActions = ({
       <FavoriteVehicleActionsMenu
         lists={lists}
         currentListId={currentListId}
+        itemCounts={itemCounts}
         vehicleId={vehicleId}
         onRemove={onRemove}
         onMove={onMove}

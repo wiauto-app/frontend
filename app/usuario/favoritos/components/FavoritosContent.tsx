@@ -1,8 +1,17 @@
 "use client";
 
 import { Heart, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CreateListDialog } from "./CreateListDialog";
 import { FavoriteVehicleCard } from "./FavoriteVehicleCard";
@@ -10,12 +19,32 @@ import { FavoritesFolderStrip } from "./FavoritesFolderStrip";
 import { FavoritesPageHeader } from "./FavoritesPageHeader";
 import { useFavoritesPage } from "../hooks/useFavoritesPage";
 
+const buildPageNumbers = (currentPage: number, totalPages: number): number[] => {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const pages = new Set<number>([1, totalPages, currentPage]);
+
+  if (currentPage > 1) {
+    pages.add(currentPage - 1);
+  }
+  if (currentPage < totalPages) {
+    pages.add(currentPage + 1);
+  }
+
+  return [...pages].sort((a, b) => a - b);
+};
+
 export const FavoritosContent = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const {
     lists,
     items,
+    total,
+    page,
+    totalPages,
     selectedListId,
     selectedList,
     itemCounts,
@@ -25,6 +54,7 @@ export const FavoritosContent = () => {
     listsError,
     itemsError,
     setSelectedListId,
+    setPage,
     createList,
     isCreatingList,
     updateList,
@@ -36,6 +66,11 @@ export const FavoritosContent = () => {
     copyItem,
     isMovingOrCopying,
   } = useFavoritesPage();
+
+  const pageNumbers = useMemo(
+    () => buildPageNumbers(page, totalPages),
+    [page, totalPages],
+  );
 
   const handleCreateList = async (values: {
     name: string;
@@ -85,6 +120,8 @@ export const FavoritosContent = () => {
     await copyItem(targetListId, vehicleId);
   };
 
+  const showPagination = total > 0 && totalPages > 1;
+
   return (
     <div className="space-y-8 pb-20">
       <FavoritesPageHeader onCreateFolder={() => setCreateDialogOpen(true)} />
@@ -108,9 +145,18 @@ export const FavoritosContent = () => {
       )}
 
       <section aria-labelledby="favorites-list-heading">
-        <h2 id="favorites-list-heading" className="sr-only">
-          Vehículos en {selectedList?.name ?? "favoritos"}
-        </h2>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h2 id="favorites-list-heading" className="text-lg font-semibold text-gray-900">
+            {selectedList
+              ? `Vehículos en "${selectedList.name}"`
+              : "Vehículos guardados"}
+          </h2>
+          {total > 0 && (
+            <p className="text-sm text-gray-500">
+              {total} {total === 1 ? "vehículo" : "vehículos"}
+            </p>
+          )}
+        </div>
 
         {itemsError ? (
           <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
@@ -149,12 +195,64 @@ export const FavoritosContent = () => {
                 item={item}
                 lists={lists}
                 currentListId={selectedListId ?? ""}
+                itemCounts={itemCounts}
                 onRemove={handleRemoveItem}
                 onMove={handleMoveItem}
                 onCopy={handleCopyItem}
                 disabled={isMovingOrCopying}
               />
             ))}
+
+            {showPagination && (
+              <div className="flex flex-col items-center gap-3 pt-2">
+                <p className="text-sm text-gray-500">
+                  Página {page} de {totalPages}
+                </p>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        disabled={page <= 1 || isFetchingItems}
+                        onClick={() => setPage(page - 1)}
+                      />
+                    </PaginationItem>
+
+                    {pageNumbers.map((pageNumber, index) => {
+                      const previousPage = pageNumbers[index - 1];
+                      const showEllipsis =
+                        previousPage !== undefined &&
+                        pageNumber - previousPage > 1;
+
+                      return (
+                        <span key={pageNumber} className="contents">
+                          {showEllipsis ? (
+                            <PaginationItem>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          ) : null}
+                          <PaginationItem>
+                            <PaginationLink
+                              isActive={pageNumber === page}
+                              disabled={isFetchingItems}
+                              onClick={() => setPage(pageNumber)}
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        </span>
+                      );
+                    })}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        disabled={page >= totalPages || isFetchingItems}
+                        onClick={() => setPage(page + 1)}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
         )}
       </section>

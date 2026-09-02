@@ -21,6 +21,7 @@ import {
 import type { VehicleList } from "@/interfaces/vehicle-list.interface";
 import { cn } from "@/lib/utils";
 import { formatVehicleCountLabel } from "../utils/favorites.utils";
+import { Card, CardContent } from "@/components/ui/card";
 
 type FavoritesFolderCardProps = {
   list: VehicleList;
@@ -65,82 +66,79 @@ export const FavoritesFolderCard = ({
 
   return (
     <>
-      <div
+      <Card
+        size="sm"
+        role="button"
         className={cn(
-          "flex w-56 shrink-0 items-start justify-between rounded-xl border p-4 transition-colors",
-          isActive
-            ? "border-blue-200 bg-blue-50"
-            : "border-gray-100 bg-white shadow-sm hover:border-gray-200",
+          "flex w-56 shrink-0 items-start justify-between transition-colors",
+          isActive ? "border-blue-200 bg-blue-50" : "",
         )}
-      >
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => onSelect(list.id)}
-          className="min-w-0 flex-1 items-start gap-3 text-left h-auto"
-          aria-pressed={isActive}
-          aria-label={`Seleccionar carpeta ${list.name}`}
+        onClick={() => onSelect(list.id)}
         >
-          <div
-            className={cn(
-              "rounded-lg p-2",
-              isActive ? "bg-blue-100 text-blue-600" : "bg-gray-50 text-gray-400",
-            )}
-          >
-            <Folder className="size-5" aria-hidden />
-          </div>
-          <div className="min-w-0">
-            <h3
+        <CardContent className="flex justify-between flex-row w-full">
+          
+            <div
               className={cn(
-                "truncate text-sm font-semibold",
-                isActive ? "text-gray-900" : "text-gray-700",
+                "rounded-lg p-2",
+                isActive
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-gray-50 text-gray-400",
               )}
             >
-              {list.name}
-            </h3>
-            <p className="mt-1 text-xs text-gray-500">
-              {formatVehicleCountLabel(itemCount)}
-            </p>
-          </div>
-        </Button>
+              <Folder className="size-5" aria-hidden />
+            </div>
+            <div className="min-w-0">
+              <h3
+                className={cn(
+                  "truncate text-sm font-semibold",
+                  isActive ? "text-gray-900" : "text-gray-700",
+                )}
+              >
+                {list.name}
+              </h3>
+              <p className="mt-1 text-xs text-gray-500">
+                {formatVehicleCountLabel(itemCount)}
+              </p>
+            </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={`Opciones de ${list.name}`}
-                className="text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                onClick={(event) => event.stopPropagation()}
-              >
-                <MoreHorizontal className="size-5" aria-hidden />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end" className="w-44">
-            <DropdownMenuItem
-              onClick={() => {
-                setRenameValue(list.name);
-                setRenameOpen(true);
-              }}
-            >
-              <Pencil className="size-4" aria-hidden />
-              Renombrar
-            </DropdownMenuItem>
-            {!list.is_default && (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Opciones de ${list.name}`}
+                  className="text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <MoreHorizontal className="size-5" aria-hidden />
+                </Button>
+              }
+            />
+            <DropdownMenuContent align="end" className="w-44">
               <DropdownMenuItem
-                variant="destructive"
-                onClick={() => setDeleteOpen(true)}
+                onClick={() => {
+                  setRenameValue(list.name);
+                  setRenameOpen(true);
+                }}
               >
-                <Trash2 className="size-4" aria-hidden />
-                Eliminar
+                <Pencil className="size-4" aria-hidden />
+                Renombrar
               </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+              {!list.is_default && (
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => setDeleteOpen(true)}
+                >
+                  <Trash2 className="size-4" aria-hidden />
+                  Eliminar
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardContent>
+      </Card>
 
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
         <DialogContent className="max-w-md">
@@ -176,8 +174,8 @@ export const FavoritesFolderCard = ({
           <DialogHeader>
             <DialogTitle>Eliminar carpeta</DialogTitle>
             <DialogDescription>
-              Se eliminará la carpeta {list.name}. Los vehículos seguirán en otras
-              listas donde estén guardados.
+              Se eliminará la carpeta {list.name}. Los vehículos seguirán en
+              otras listas donde estén guardados.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -2,10 +2,12 @@ import { ApiResponse, apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api";
 import type {
   AddVehicleListItemDto,
   CreateVehicleListDto,
+  FindVehicleListItemsParams,
   UpdateVehicleListDto,
   VehicleList,
   VehicleListDetail,
   VehicleListItemRecord,
+  VehicleListItemsPage,
 } from "@/interfaces/vehicle-list.interface";
 
 export const vehicleListService = {
@@ -27,8 +29,22 @@ export const vehicleListService = {
   remove: (listId: string): Promise<ApiResponse<null>> =>
     apiDelete(`/v1/vehicle-lists/${listId}`),
 
-  findItems: (listId: string): Promise<ApiResponse<VehicleListItemRecord[]>> =>
-    apiGet<VehicleListItemRecord[]>(`/v1/vehicle-lists/${listId}/items`),
+  findItems: (
+    listId: string,
+    params?: FindVehicleListItemsParams,
+  ): Promise<ApiResponse<VehicleListItemsPage>> => {
+    const searchParams = new URLSearchParams();
+    if (params?.page !== undefined) {
+      searchParams.set("page", String(params.page));
+    }
+    if (params?.limit !== undefined) {
+      searchParams.set("limit", String(params.limit));
+    }
+    const query = searchParams.toString();
+    return apiGet<VehicleListItemsPage>(
+      `/v1/vehicle-lists/${listId}/items${query ? `?${query}` : ""}`,
+    );
+  },
 
   addItem: (
     listId: string,

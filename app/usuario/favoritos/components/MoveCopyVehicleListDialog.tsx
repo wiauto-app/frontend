@@ -13,16 +13,18 @@ import {
 } from "@/components/ui/dialog";
 import type { VehicleList } from "@/interfaces/vehicle-list.interface";
 import { cn } from "@/lib/utils";
+import { formatVehicleCountLabel } from "../utils/favorites.utils";
 
-type MoveCopyVehicleListDialogProps = {
+interface MoveCopyVehicleListDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "move" | "copy";
   lists: VehicleList[];
   currentListId: string;
+  itemCounts: Record<string, number>;
   vehicleId: string;
   onConfirm: (targetListId: string) => Promise<void>;
-};
+}
 
 export const MoveCopyVehicleListDialog = ({
   open,
@@ -30,6 +32,7 @@ export const MoveCopyVehicleListDialog = ({
   mode,
   lists,
   currentListId,
+  itemCounts,
   onConfirm,
 }: MoveCopyVehicleListDialogProps) => {
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
@@ -93,6 +96,7 @@ export const MoveCopyVehicleListDialog = ({
           <ul className="max-h-60 space-y-2 overflow-y-auto" role="listbox" aria-label={title}>
             {availableLists.map((list) => {
               const isSelected = selectedListId === list.id;
+              const count = itemCounts[list.id] ?? list.item_count ?? 0;
 
               return (
                 <li key={list.id}>
@@ -103,16 +107,16 @@ export const MoveCopyVehicleListDialog = ({
                     onClick={() => setSelectedListId(list.id)}
                     variant="ghost"
                     className={cn(
-                      "w-full justify-between rounded-lg border px-4 py-3 text-left",
+                      "h-auto w-full justify-between rounded-lg border px-4 py-3 text-left",
                       isSelected
                         ? "border-blue-200 bg-blue-50 text-blue-700"
                         : "border-gray-100 bg-white text-gray-700 hover:border-gray-200",
                     )}
                   >
                     <span className="font-medium">{list.name}</span>
-                    {list.is_default && (
-                      <span className="text-xs text-gray-500">Predeterminada</span>
-                    )}
+                    <span className="text-xs text-gray-500">
+                      {formatVehicleCountLabel(count)}
+                    </span>
                   </Button>
                 </li>
               );

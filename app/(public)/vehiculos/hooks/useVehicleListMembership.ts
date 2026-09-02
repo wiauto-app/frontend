@@ -17,19 +17,46 @@ export const resolveDefaultVehicleList = (
   lists.find((list) => list.is_default) ??
   lists.find((list) => list.name === "Favoritos");
 
+const MEMBERSHIP_PAGE_SIZE = 100;
+
+const isVehicleInList = async (
+  listId: string,
+  vehicleId: string,
+): Promise<boolean> => {
+  let page = 1;
+
+  while (true) {
+    const response = await vehicleListService.findItems(listId, {
+      page,
+      limit: MEMBERSHIP_PAGE_SIZE,
+    });
+
+    if (!response.ok || !response.data) {
+      return false;
+    }
+
+    const found = response.data.data.some(
+      (item) => item.vehicle_id === vehicleId,
+    );
+
+    if (found) {
+      return true;
+    }
+
+    if (page * MEMBERSHIP_PAGE_SIZE >= response.data.total) {
+      return false;
+    }
+
+    page += 1;
+  }
+};
+
 const fetchMembership = async (vehicleId: string, lists: VehicleList[]) => {
   const membership = new Set<string>();
 
   await Promise.all(
     lists.map(async (list) => {
-      const response = await vehicleListService.findItems(list.id);
-      if (!response.ok || !response.data) {
-        return;
-      }
-
-      const isMember = response.data.some(
-        (item) => item.vehicle_id === vehicleId,
-      );
+      const isMember = await isVehicleInList(list.id, vehicleId);
 
       if (isMember) {
         membership.add(list.id);

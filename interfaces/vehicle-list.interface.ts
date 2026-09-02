@@ -1,3 +1,5 @@
+import type { PaginatedResult } from "@/types/general.types";
+
 export interface VehicleList {
   id: string;
   profile_id: string;
@@ -5,8 +7,11 @@ export interface VehicleList {
   name: string;
   description: string | null;
   created_at: string;
-  items: VehicleListItemRecord[];
+  item_count: number;
+  items?: VehicleListItemRecord[];
 }
+
+export type VehicleListItemsPage = PaginatedResult<VehicleListItemRecord>;
 
 export interface VehicleListItemCategory {
   id: string;
@@ -42,21 +47,26 @@ export interface VehicleListDetail extends VehicleList {
   items: VehicleListItemRecord[];
 }
 
-export type CreateVehicleListDto = {
+export interface CreateVehicleListDto {
   name: string;
   description?: string | null;
   is_default?: boolean;
-};
+}
 
-export type UpdateVehicleListDto = {
+export interface UpdateVehicleListDto {
   name?: string;
   description?: string | null;
   is_default?: boolean;
-};
+}
 
-export type AddVehicleListItemDto = {
+export interface AddVehicleListItemDto {
   vehicle_id: string;
-};
+}
+
+export interface FindVehicleListItemsParams {
+  page?: number;
+  limit?: number;
+}
 
 export const VEHICLE_SHARE_PLATFORMS = {
   WHATSAPP: "whatsapp",
