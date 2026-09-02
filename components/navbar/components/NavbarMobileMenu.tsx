@@ -32,7 +32,7 @@ export const NavbarMobileMenu = () => {
         <SheetTrigger
           render={
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
               aria-label="Abrir menú de navegación"
             >
