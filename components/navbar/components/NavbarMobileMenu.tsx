@@ -12,10 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  isNavEntryActive,
-  NAV_LINKS,
-} from "../constants/navLinks.constants";
+import { isNavEntryActive, NAV_LINKS } from "../constants/navLinks.constants";
 import { NavLinkItem } from "./NavLinkItem";
 import { NavbarPublishButton } from "./NavbarPublishButton";
 import { Button } from "@/components/ui/button";
@@ -34,12 +31,13 @@ export const NavbarMobileMenu = () => {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
           render={
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Abrir menú de navegación"
-              className="mt-2"
             >
               <Menu className="size-5" aria-hidden />
-            </button>
+            </Button>
           }
         />
 
@@ -51,14 +49,8 @@ export const NavbarMobileMenu = () => {
           <SheetHeader className="flex flex-row items-center justify-between">
             <div>
               <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
-              <Link
-                href="/"
-                onClick={handleNavigate}
-                aria-label="Ir al inicio"
-                className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
-              >
-                <BrandLogo className="h-10" />
-              </Link>
+
+              <BrandLogo className="h-10" />
             </div>
             <Button
               variant="outline"
@@ -86,7 +78,6 @@ export const NavbarMobileMenu = () => {
                 onNavigate={handleNavigate}
               />
             ))}
-
           </nav>
 
           <div className="mt-auto border-t border-slate-200 px-6 py-4">
