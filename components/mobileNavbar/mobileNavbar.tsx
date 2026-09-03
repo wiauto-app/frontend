@@ -83,7 +83,12 @@ export const MobileNavbar = () => {
     <div>
       <nav
         aria-label="Navegación móvil"
-        className="fixed right-2 bottom-2 left-2 z-50 rounded-3xl bg-white/70 px-2 py-2 shadow-md backdrop-blur-sm md:hidden "
+        className={
+          cn(
+            "fixed right-2 bottom-2 left-2 z-50 rounded-3xl bg-white/70 p-0 shadow-md backdrop-blur-sm md:hidden ",
+            user ? "w-full" : "w-80 mx-auto",
+          )
+        }
       >
         <div className={cn("grid gap-1", user ? "grid-cols-5" : "grid-cols-3")}>
           {user
