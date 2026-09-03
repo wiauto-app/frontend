@@ -18,7 +18,7 @@ export function SectionContainer({
   return (
     <Component
       id={id}
-      className={cn("w-full", className)}
+      className={cn("w-full flex flex-col gap-4", className)}
       style={style}
       {...props}
     >

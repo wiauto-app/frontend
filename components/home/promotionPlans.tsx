@@ -26,8 +26,9 @@ export const PromotionPlans = ({
 
   return (
     <Hero
-      className="lg:h-auto gap-5 overflow-visible lg:px-0"
+      className="lg:h-auto gap-5 overflow-visible lg:px-0 py-0 px-0"
       contentClassName="gap-3 lg:gap-5"
+      
       leftContent={
         <>
           <HeroTitle as="h3" className="text-foreground" highlight>

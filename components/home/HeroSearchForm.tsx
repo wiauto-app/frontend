@@ -116,7 +116,7 @@ const HeroFiltersSearchForm = () => {
 
   return (
     <form
-      className="grid grid-cols-1 lg:grid-cols-4 gap-4  w-full"
+      className="grid grid-cols-1 gap-2 lg:gap-4 lg:grid-cols-4  w-full"
       onSubmit={(event) => {
         event.preventDefault();
         handleSearch();

@@ -1,12 +1,6 @@
 "use client";
 
-
-import { motion } from "motion/react";
-
 import { cn } from "@/lib/utils";
-
-import { getVariant, staggerContainer, staggerItem } from "./motion";
-import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 
 interface SectionHeadingProps {
   lead: string;
@@ -23,9 +17,6 @@ export function SectionHeading({
   highlightClassName,
   animate = true,
 }: SectionHeadingProps) {
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const containerVariants = getVariant(staggerContainer, prefersReducedMotion);
-  const itemVariants = getVariant(staggerItem, prefersReducedMotion);
   const highlightText = highlight?.trim() || null;
   const highlightClasses = cn("text-primary", highlightClassName);
   const headingClassName = cn(
@@ -50,24 +41,17 @@ export function SectionHeading({
   }
 
   return (
-    <motion.div
-      className="mb-5 flex items-center justify-between"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.4 }}
-      variants={containerVariants}
-    >
-      <motion.h2 className={headingClassName} variants={itemVariants}>
+   
+      <h2 className={headingClassName}>
         {lead}
         {highlightText ? (
           <>
             {" "}
-            <motion.span className={highlightClasses} variants={itemVariants}>
+            <span className={highlightClasses} >
               {highlightText}
-            </motion.span>
+            </span>
           </>
         ) : null}
-      </motion.h2>
-    </motion.div>
+      </h2>
   );
 }
