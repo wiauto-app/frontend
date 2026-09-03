@@ -108,7 +108,7 @@ const HeroFiltersSearchForm = () => {
   // const is_count_loading = isPending || isFetching;
   // const search_label = buildSearchButtonLabel(count, is_count_loading);
 
-  const [selectedItems, setSelectedItems] = useState<string[]>();
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSearch = () => {
     router.push(buildListingHref());
@@ -127,11 +127,7 @@ const HeroFiltersSearchForm = () => {
       <Suspense>
         <HeroFiltersLocationSelector
           value={selectedItems}
-          onChange={(items) => {
-            if (items?.length && typeof items[0] === "object") {
-              setSelectedItems(items);
-            }
-          }}
+          onChange={setSelectedItems}
         />
       </Suspense>
       <PriceUntilSelector />
@@ -154,7 +150,10 @@ const HeroSearchFormContent = () => {
     <div className=" w-full  space-y-2">
       <div className="grid w-full grid-cols-2 gap-1  lg:w-80 ">
         <Button className="rounded-lg">Comprar</Button>
-        <NavbarPublishButton variant="outline" className="rounded-lg w-full h-full text-foreground"  />
+        <NavbarPublishButton
+          variant="outline"
+          className="rounded-lg w-full h-full text-foreground"
+        />
       </div>
       <Card className="w-full pt-1 pb-4">
         <CardContent className="space-y-2 px-4">
