@@ -16,7 +16,9 @@ import type { HierarchyMultiValue } from "@/components/selectors/types";
 import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 import { trackSearch } from "@/lib/analytics/events";
 import {
+  buildClassicCatalogListingHref,
   buildVehicleListingHref,
+  isIndexableCatalogSlugPath,
   orderDirectionFromUrlSegment,
   orderDirectionToUrlSegment,
   parseVehicleListingUrl,
@@ -145,20 +147,38 @@ export const VehiclesListingFiltersProvider = ({
     filters.order_direction ?? "DESC",
   )}`;
 
+  const isIndexableSlugUrl = useMemo(
+    () => isIndexableCatalogSlugPath(slugSegments),
+    [slugSegments],
+  );
+
+  const buildListingHref = useCallback(
+    (nextFilters: FindAllVehiclesParams, catalogInQueryOnly = false) => {
+      if (catalogInQueryOnly) {
+        return buildClassicCatalogListingHref(nextFilters);
+      }
+
+      return buildVehicleListingHref(nextFilters);
+    },
+    [],
+  );
+
   const pushFilters = useCallback(
     (nextFilters: FindAllVehiclesParams) => {
-      router.push(buildVehicleListingHref(nextFilters));
+      router.push(buildListingHref(nextFilters));
     },
-    [router],
+    [buildListingHref, router],
   );
 
   const commitFilters = useCallback(
     (nextFilters: FindAllVehiclesParams) => {
       startTransition(() => {
-        pushFilters(nextFilters);
+        router.push(
+          buildListingHref(nextFilters, isIndexableSlugUrl),
+        );
       });
     },
-    [pushFilters],
+    [buildListingHref, isIndexableSlugUrl, router],
   );
 
   const resetLocalFilters = useCallback(() => {

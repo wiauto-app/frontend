@@ -18,9 +18,15 @@ export { buildPathSegments } from "./build-path-segments";
 export { parsePathSegments } from "./parse-path-segments";
 
 export {
+  buildClassicCatalogListingHref,
   buildVehicleListingHref,
   buildVehicleListingUrl,
 } from "./build-listing-url";
+
+export {
+  buildIndexableCatalogListingPath,
+  isIndexableCatalogSlugPath,
+} from "./indexable-catalog-listing-url";
 
 export {
   buildCanonicalListingHref,

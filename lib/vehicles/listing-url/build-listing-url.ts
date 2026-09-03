@@ -48,9 +48,18 @@ const CATALOG_DTO_KEYS = new Set<keyof FindAllVehiclesParams>([
   "municipalities_slugs",
 ]);
 
-const buildFriendlySearch = (params: FindAllVehiclesParams): string => {
+interface BuildVehicleListingUrlOptions {
+  catalogInQueryOnly?: boolean;
+}
+
+const buildFriendlySearch = (
+  params: FindAllVehiclesParams,
+  options?: BuildVehicleListingUrlOptions,
+): string => {
   const search = new URLSearchParams();
-  const catalog_in_path = resolveCatalogForPath(params);
+  const catalog_in_path = options?.catalogInQueryOnly
+    ? {}
+    : resolveCatalogForPath(params);
   const catalog_query = resolveCatalogForQuery(params, catalog_in_path);
 
   Object.entries(catalog_query).forEach(([friendly_key, raw]) => {
@@ -128,8 +137,9 @@ const buildFriendlySearch = (params: FindAllVehiclesParams): string => {
 
 export const buildVehicleListingUrl = (
   params: FindAllVehiclesParams,
+  options?: BuildVehicleListingUrlOptions,
 ): { pathname: string; search: string } => {
-  const segments = buildPathSegments(params);
+  const segments = options?.catalogInQueryOnly ? [] : buildPathSegments(params);
   const pathname =
     segments.length > 0
       ? `${VEHICLES_LISTING_BASE_PATH}/${segments.join("/")}`
@@ -137,11 +147,19 @@ export const buildVehicleListingUrl = (
 
   return {
     pathname,
-    search: buildFriendlySearch(params),
+    search: buildFriendlySearch(params, options),
   };
 };
 
-export const buildVehicleListingHref = (params: FindAllVehiclesParams): string => {
-  const { pathname, search } = buildVehicleListingUrl(params);
+export const buildVehicleListingHref = (
+  params: FindAllVehiclesParams,
+  options?: BuildVehicleListingUrlOptions,
+): string => {
+  const { pathname, search } = buildVehicleListingUrl(params, options);
   return search ? `${pathname}?${search}` : pathname;
 };
+
+/** Navegación clásica: todo el catálogo en query y path base sin slugs. */
+export const buildClassicCatalogListingHref = (
+  params: FindAllVehiclesParams,
+): string => buildVehicleListingHref(params, { catalogInQueryOnly: true });

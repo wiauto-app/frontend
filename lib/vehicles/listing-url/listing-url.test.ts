@@ -2,9 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildCanonicalListingPath,
+  buildClassicCatalogListingHref,
+  buildIndexableCatalogListingPath,
   buildVehicleListingHref,
   buildVehicleListingUrl,
   DEFAULT_LISTING_PARAMS,
+  isIndexableCatalogSlugPath,
   normalizeVehicleListingHref,
   parseVehicleListingUrl,
 } from "./index";
@@ -148,6 +151,19 @@ describe("parseVehicleListingUrl — Opción C", () => {
       provinces_slugs: ["madrid"],
     });
   });
+
+  it("parsea marca, modelo y provincia sin prefijo geo en path", () => {
+    expect(
+      parseVehicleListingUrl(
+        ["toyota", "avensis", "tarragona"],
+        new URLSearchParams(),
+      ),
+    ).toMatchObject({
+      makes_slugs: ["toyota"],
+      models_slugs: ["avensis"],
+      provinces_slugs: ["tarragona"],
+    });
+  });
 });
 
 describe("buildVehicleListingUrl — Opción C", () => {
@@ -257,6 +273,22 @@ describe("buildVehicleListingUrl — Opción C", () => {
       search: "marcas=toyota&precio_hasta=20000",
     });
   });
+
+  it("construye todo el catálogo en query con catalogInQueryOnly", () => {
+    expect(
+      buildVehicleListingUrl(
+        {
+          makes_slugs: ["toyota"],
+          models_slugs: ["corolla"],
+          provinces_slugs: ["madrid"],
+        },
+        { catalogInQueryOnly: true },
+      ),
+    ).toEqual({
+      pathname: "/vehiculos",
+      search: "marcas=toyota&modelos=corolla&provincias=madrid",
+    });
+  });
 });
 
 describe("canonical", () => {
@@ -324,6 +356,62 @@ describe("normalizeVehicleListingHref", () => {
       new URLSearchParams(),
     );
     expect(target).toBe("/vehiculos/provincia-madrid");
+  });
+});
+
+describe("indexable catalog URLs", () => {
+  it("detecta paths indexables de 2 y 3 segmentos", () => {
+    expect(isIndexableCatalogSlugPath(["toyota", "avensis"])).toBe(true);
+    expect(isIndexableCatalogSlugPath(["toyota", "avensis", "tarragona"])).toBe(
+      true,
+    );
+  });
+
+  it("excluye paths con prefijo geo o patrones legacy duplicados", () => {
+    expect(isIndexableCatalogSlugPath(["provincia-madrid"])).toBe(false);
+    expect(isIndexableCatalogSlugPath(["madrid", "madrid"])).toBe(false);
+    expect(isIndexableCatalogSlugPath(["toyota"])).toBe(false);
+    expect(isIndexableCatalogSlugPath(["toyota", "avensis", "provincia-madrid"])).toBe(
+      false,
+    );
+  });
+
+  it("construye path indexable de catálogo y con provincia", () => {
+    expect(
+      buildIndexableCatalogListingPath({
+        makes_slugs: ["toyota"],
+        models_slugs: ["avensis"],
+      }),
+    ).toBe("/vehiculos/toyota/avensis");
+
+    expect(
+      buildIndexableCatalogListingPath({
+        makes_slugs: ["toyota"],
+        models_slugs: ["avensis"],
+        provinces_slugs: ["tarragona"],
+      }),
+    ).toBe("/vehiculos/toyota/avensis/tarragona");
+  });
+
+  it("devuelve null si no hay exactamente una marca y un modelo", () => {
+    expect(
+      buildIndexableCatalogListingPath({
+        makes_slugs: ["toyota", "bmw"],
+        models_slugs: ["avensis"],
+      }),
+    ).toBeNull();
+  });
+
+  it("construye href clásico con todo el catálogo en query", () => {
+    expect(
+      buildClassicCatalogListingHref({
+        makes_slugs: ["toyota"],
+        models_slugs: ["avensis"],
+        provinces_slugs: ["tarragona"],
+      }),
+    ).toBe(
+      "/vehiculos?marcas=toyota&modelos=avensis&provincias=tarragona",
+    );
   });
 });
 

@@ -10,6 +10,9 @@ import { findAllVehicles } from "./services/findAllVehicles.server";
 import { toUrlSearchParams } from "./utils/toUrlSearchParams";
 import {
   buildCanonicalListingHref,
+  buildIndexableCatalogListingPath,
+  CATALOG_DEGRADED_QUERY_KEYS,
+  isIndexableCatalogSlugPath,
   parseVehicleListingUrl,
 } from "@/lib/vehicles/listing-url";
 import { activeFiltersService } from "../services/activeFiltersService";
@@ -39,7 +42,15 @@ export async function generateMetadata(props: {
     activeFiltersService.getActiveFilters(filters),
   ]);
 
-  const canonical_path = buildCanonicalListingHref(filters);
+  const url_search_params = toUrlSearchParams(search_params);
+  const has_degraded_catalog_query = CATALOG_DEGRADED_QUERY_KEYS.some((key) =>
+    url_search_params.has(key),
+  );
+  const indexable_path =
+    isIndexableCatalogSlugPath(slug_segments) && !has_degraded_catalog_query
+      ? buildIndexableCatalogListingPath(filters)
+      : null;
+  const canonical_path = indexable_path ?? buildCanonicalListingHref(filters);
 
   return {
     title: `${listing.total} resultados de ${activeFilters.title}`,

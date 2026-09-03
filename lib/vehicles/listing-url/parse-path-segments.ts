@@ -11,7 +11,7 @@ import { splitCommaSlugs } from "./split-comma-slugs";
 const stripPrefix = (segment: string, prefix: string): string =>
   segment.slice(prefix.length);
 
-const hasGeoPrefix = (segment: string): boolean =>
+export const hasGeoPrefix = (segment: string): boolean =>
   segment.startsWith(COMMUNITY_PATH_PREFIX) ||
   segment.startsWith(PROVINCE_PATH_PREFIX) ||
   segment.startsWith(MUNICIPALITY_PATH_PREFIX);
@@ -50,7 +50,7 @@ const parseLegacyPathSegments = (
     return {
       makes_slugs: [segments[0]],
       models_slugs: [segments[1]],
-      comunities_slugs: [segments[2]],
+      provinces_slugs: [segments[2]],
     };
   }
 
