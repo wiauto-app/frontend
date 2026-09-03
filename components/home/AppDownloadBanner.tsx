@@ -12,7 +12,7 @@ interface AppDownloadBannerProps {
 
 export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
   return (
-    <SectionContainer className=" flex h-auto items-end lg:h-[550px]">
+    <SectionContainer className=" flex h-auto items-end  lg:mt-44">
       <div className="dots-background relative w-full rounded-[2rem] bg-primary sm:rounded-[2.5rem] ">
         <div className="grid grid-cols-1 px-5 py-10 lg:grid-cols-2">
           <div className="flex justify-center  ">
