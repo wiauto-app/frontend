@@ -14,7 +14,6 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { SORT_OPTIONS } from "../constants";
@@ -86,7 +85,7 @@ export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
                 />
                 <SheetContent
                   side="left"
-                  className="w-[300px] overflow-y-auto p-0 sm:w-[400px]"
+                  className="w-75 overflow-y-auto p-0 sm:w-100"
                 >
                
                   <div >{filtersNode}</div>

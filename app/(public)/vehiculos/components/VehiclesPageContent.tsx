@@ -15,13 +15,11 @@ import {
 } from "@/components/ui/dialog";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useAuthenticatedVehiclesListing } from "../hooks/useAuthenticatedVehiclesListing";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { SHOW_MAP_KEY } from "../[[...slug]]/constants/filterKeys.constants";
 import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
 import { VehiclesMap } from "./vehiclesMap";
 import { MapButton } from "./mapButton";
-import { BuyAssistantBannerCard } from "./buyAssistantBannerCard";
 
 interface VehiclesListingViewProps {
   vehicles: VehicleListItem[];

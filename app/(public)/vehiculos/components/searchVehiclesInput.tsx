@@ -23,6 +23,7 @@ import {
   getVehicleMakeName,
   getVehicleModelName,
 } from "../utils";
+import Image from "next/image";
 
 const MIN_SEARCH_LENGTH = 2;
 const SEARCH_RESULTS_LIMIT = 10;
@@ -52,7 +53,9 @@ const SearchVehicleResultItem = ({
       className="flex gap-3 rounded-md p-2 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <div className="relative size-16 shrink-0 overflow-hidden rounded-md bg-muted">
-        <img
+        <Image
+          width={64}
+          height={64}
           src={imageUrl}
           alt={displayName}
           className="size-full object-cover"
