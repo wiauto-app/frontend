@@ -16,7 +16,7 @@ import { VehicleRefBadge } from "./vehicleRefBadge";
 
 interface DealershipCardProps {
   dealership: VehicleDetailDealership;
-  vehicleRef?: number | null;
+  vehicleRef?: string | number | null;
 }
 
 interface ScheduleRow {

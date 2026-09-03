@@ -7,12 +7,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface VehicleRefBadgeProps {
-  vehicleRef: number;
+  vehicleRef: string | number;
   className?: string;
   textClassName?: string;
 }
 
-const formatVehicleRef = (vehicleRef: number): string => String(vehicleRef);
+const formatVehicleRef = (vehicleRef: string | number): string =>
+  String(vehicleRef);
 
 export const VehicleRefBadge = ({
   vehicleRef,

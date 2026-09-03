@@ -19,13 +19,11 @@ export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
   },
   {
     id: 2,
-    name: "Identificación",
-    fields: ["license_plate", "vin_code"],
-  },
-  {
-    id: 3,
     name: "Datos del vehículo",
     fields: [
+      "license_plate",
+      "vin_code",
+      "ref",
       "images",
       "videos",
       "version_id",
@@ -62,7 +60,7 @@ export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
     ],
   },
   {
-    id: 4,
+    id: 3,
     name: "Financiación y garantía",
     fields: [
       "finance_price",

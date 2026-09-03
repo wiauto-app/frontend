@@ -34,6 +34,15 @@ export const serializeVehiclePayload = (
     delete payload[key];
   }
 
+  if (typeof payload.ref === "string") {
+    const trimmed_ref = payload.ref.trim();
+    if (!trimmed_ref) {
+      delete payload.ref;
+    } else {
+      payload.ref = trimmed_ref;
+    }
+  }
+
   if (options?.is_update && vehicle_price_id) {
     payload.vehicle_price_id = vehicle_price_id;
   }

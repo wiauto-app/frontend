@@ -164,7 +164,7 @@ export interface VehicleDetailDealership {
 
 export interface Vehicle {
   id: string;
-  ref?: number;
+  ref?: string | null;
   price: number;
   prices?: VehiclePriceHistoryItem[];
   vehicle_prices?: VehiclePriceHistoryItem[];

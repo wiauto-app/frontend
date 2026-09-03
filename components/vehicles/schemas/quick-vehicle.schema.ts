@@ -36,6 +36,7 @@ const optional_vehicle_videos_array = z
 
 const quickVehicleBaseSchema = z.object({
   vehicle_type_id: z.uuid({ error: "Selecciona un tipo de vehículo." }),
+  ref: z.string().optional(),
   license_plate: z
     .union([
       z.literal(""),
@@ -128,6 +129,7 @@ export type QuickVehicleSchema = z.infer<typeof quickVehicleSchema>;
 
 export const createQuickVehicleDefaultValues: QuickVehicleSchema = {
   vehicle_type_id: "",
+  ref: "",
   license_plate: "",
   vin_code: "",
   images: [],

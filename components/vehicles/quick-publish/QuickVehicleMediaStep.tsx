@@ -26,7 +26,7 @@ export const QuickVehicleMediaStep = ({
   const canUploadVideos = entitlements?.video_upload?.value;
   return (
     <VehicleFormStep
-      number={1}
+      number={2}
       label="Fotos y vídeos"
       description={
         canUploadVideos

@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { QuickCatalogFields } from "./QuickCatalogFields";
 import { QuickVehicleClassificationFields } from "./QuickVehicleClassificationFields";
+import { QuickVehicleIdentificationFields } from "./QuickVehicleIdentificationFields";
 import { QuickVehicleMediaStep } from "./QuickVehicleMediaStep";
 import { QuickVehicleAiDescriptionCard } from "./QuickVehicleAiDescriptionCard";
 import { QuickVehiclePricingFields } from "./QuickVehiclePricingFields";
@@ -43,12 +44,14 @@ export const QuickVehicleMainSections = ({
   return (
     <div className="flex flex-col gap-12">
       {/* {!isSubscribed ? <PromotionBanner /> : null} */}
+      <QuickVehicleIdentificationFields />
+
       <QuickVehicleMediaStep
         vehicleId={vehicleId}
         onImageUploadStatusChange={onImageUploadStatusChange}
       />
 
-      <VehicleFormStep number={2} label="¿Qué vehículo vendes?">
+      <VehicleFormStep number={3} label="¿Qué vehículo vendes?">
         <QuickCatalogFields />
         {form.formState.errors.version_id ? (
           <p className="text-sm text-destructive">

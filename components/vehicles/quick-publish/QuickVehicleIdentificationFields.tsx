@@ -17,6 +17,7 @@ import {
   VEHICLE_IDENTIFICATION_RATE_LIMIT_MESSAGE,
   type ApiVehicleResponse,
 } from "@/components/vehicles/services/vehicleIdentificationService";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { QuickVehicleIdentificationPreview } from "./QuickVehicleIdentificationPreview";
 import {
   useVehicleIdentificationLookup,
@@ -69,14 +70,21 @@ const applyIdentificationToForm = (
   }
 };
 
-export const QuickVehicleIdentificationStep = () => {
+export const QuickVehicleIdentificationFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
+  const { isSubscribed } = useEntitlements();
   const { lookupByLicensePlate, lookupByVin, isLoading, result } =
     useVehicleIdentificationLookup();
-  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(true);
+  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false);
   const [isLookupAvailable, setIsLookupAvailable] = useState(false);
 
   useEffect(() => {
+    if (!isSubscribed) {
+      setIsAvailabilityLoading(false);
+      setIsLookupAvailable(false);
+      return;
+    }
+
     let cancelled = false;
 
     const loadAvailability = async () => {
@@ -104,7 +112,9 @@ export const QuickVehicleIdentificationStep = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isSubscribed]);
+
+  const showLookupUi = isSubscribed && isLookupAvailable;
 
   const handleLookupOutcome = (outcome: VehicleIdentificationLookupOutcome) => {
     if (outcome.error) {
@@ -144,10 +154,11 @@ export const QuickVehicleIdentificationStep = () => {
   return (
     <section className="flex flex-col gap-4">
       <VehicleFormStep
-        number={2}
+        number={1}
+        isOptional
         label="Identificación del vehículo"
         description={
-          isLookupAvailable
+          showLookupUi
             ? "Opcional. Busca por matrícula o VIN para rellenar automáticamente los datos del vehículo."
             : "Opcional. Introduce la matrícula y el VIN de forma manual."
         }
@@ -167,7 +178,7 @@ export const QuickVehicleIdentificationStep = () => {
                 placeholder="Ej. 1234 ABC"
                 aria-invalid={fieldState.invalid}
               />
-              {isLookupAvailable ? (
+              {showLookupUi ? (
                 <Button
                   type="button"
                   variant="outline"
@@ -200,7 +211,7 @@ export const QuickVehicleIdentificationStep = () => {
                 placeholder="Opcional"
                 aria-invalid={fieldState.invalid}
               />
-              {isLookupAvailable ? (
+              {showLookupUi ? (
                 <Button
                   type="button"
                   variant="outline"
@@ -220,7 +231,27 @@ export const QuickVehicleIdentificationStep = () => {
           )}
         </ControllerInput>
       </div>
-      {isAvailabilityLoading ? (
+
+      {isSubscribed ? (
+        <ControllerInput
+          name="ref"
+          control={form.control}
+          label="Referencia interna"
+          optional
+        >
+          {({ field, fieldState }) => (
+            <Input
+              {...field}
+              value={String(field.value ?? "")}
+              placeholder="Opcional"
+              aria-invalid={fieldState.invalid}
+              aria-label="Referencia interna del vehículo"
+            />
+          )}
+        </ControllerInput>
+      ) : null}
+
+      {isSubscribed && isAvailabilityLoading ? (
         <p
           className="flex items-center gap-2 text-sm text-slate-500"
           role="status"
@@ -229,9 +260,8 @@ export const QuickVehicleIdentificationStep = () => {
           Comprobando búsqueda automática...
         </p>
       ) : null}
-      {isLookupAvailable ? (
+      {showLookupUi ? (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-          <div className="flex shrink-0 flex-col gap-2"></div>
           <div className="flex-1">
             <QuickVehicleIdentificationPreview result={result} />
           </div>

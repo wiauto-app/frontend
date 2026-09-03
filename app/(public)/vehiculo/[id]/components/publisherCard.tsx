@@ -9,7 +9,7 @@ import { VehicleRefBadge } from "./vehicleRefBadge";
 
 interface PublisherCardProps {
   publisher: Publisher;
-  vehicleRef?: number | null;
+  vehicleRef?: string | number | null;
   createdAt?: string;
   views?: number;
   location?: string | null;

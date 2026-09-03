@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/stepper";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 
-import { QuickVehicleIdentificationStep } from "./QuickVehicleIdentificationStep";
 import { QuickVehicleMainSections } from "./QuickVehicleMainSections";
 import { QuickVehicleTypeStep } from "./QuickVehicleTypeStep";
 import { FinanceWarrantyForm } from "./financeWarrantyForm";
@@ -34,8 +33,7 @@ interface QuickVehicleIntroWizardProps {
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
 }
 
-const is_subscriber_only_step = (step_id: number) =>
-  step_id === 2 || step_id === 4;
+const is_subscriber_only_step = (step_id: number) => step_id === 3;
 
 export const QuickVehicleIntroWizard = ({
   vehicleId,
@@ -171,9 +169,6 @@ export const QuickVehicleIntroWizard = ({
         return <QuickVehicleTypeStep />;
 
       case 2:
-        return <QuickVehicleIdentificationStep />;
-
-      case 3:
         return (
           <QuickVehicleMainSections
             vehicleId={vehicleId}
@@ -182,7 +177,7 @@ export const QuickVehicleIntroWizard = ({
           />
         );
 
-      case 4:
+      case 3:
         return <FinanceWarrantyForm />;
 
       default:

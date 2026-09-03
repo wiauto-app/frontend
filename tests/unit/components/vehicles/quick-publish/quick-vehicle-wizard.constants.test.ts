@@ -23,12 +23,12 @@ describe("findQuickVehicleErrorStep", () => {
       findQuickVehicleErrorStep({
         finance_price: { message: "Precio inválido" },
       })?.id,
-    ).toBe(4);
+    ).toBe(3);
   });
 
   it("only searches through the available steps", () => {
     const availableSteps = QUICK_VEHICLE_INTRO_STEPS.filter(
-      step => step.id !== 4,
+      step => step.id !== 3,
     );
 
     expect(
