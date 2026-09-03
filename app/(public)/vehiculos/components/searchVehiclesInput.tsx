@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -28,10 +27,14 @@ import {
 const MIN_SEARCH_LENGTH = 2;
 const SEARCH_RESULTS_LIMIT = 10;
 
-type SearchVehicleResultItemProps = {
+interface SearchVehicleResultItemProps {
   vehicle: VehicleListItem;
   onNavigate: () => void;
-};
+}
+
+interface SearchVehiclesInputProps {
+  children?: React.ReactNode;
+}
 
 const SearchVehicleResultItem = ({
   vehicle,
@@ -84,13 +87,17 @@ const SearchResultsSkeleton = () => (
   </div>
 );
 
-export const SearchVehiclesInput = () => {
+export const SearchVehiclesInput = ({ children }: SearchVehiclesInputProps) => {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const debouncedSearch = useDebouncedValue(search.trim(), 500);
   const hasMinLength = debouncedSearch.length >= MIN_SEARCH_LENGTH;
 
-  const { data: vehicles = [], isLoading, isFetching } = useQuery({
+  const {
+    data: vehicles = [],
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ["vehicles-search", debouncedSearch],
     queryFn: async () => {
       const response = await vehicleService.vehicles.findAll({
@@ -119,23 +126,25 @@ export const SearchVehiclesInput = () => {
     setSearch("");
   };
 
-  const showHint = search.trim().length > 0 && search.trim().length < MIN_SEARCH_LENGTH;
+  const showHint =
+    search.trim().length > 0 && search.trim().length < MIN_SEARCH_LENGTH;
   const showEmpty =
     hasMinLength && !isLoading && !isFetching && vehicles.length === 0;
   const showResults = hasMinLength && vehicles.length > 0;
 
   return (
-    <div className="hidden md:block w-full min-w-0 flex-1">
+    <div className="flex w-full min-w-0 flex-1 items-center gap-1 rounded-full border border-slate-200 bg-white p-1 shadow-sm">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger
           render={
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2 font-normal text-muted-foreground"
+            <button
+              type="button"
+              className="flex min-w-0 flex-1 items-center justify-start gap-2 rounded-md px-2.5 py-1.5 text-sm font-normal text-muted-foreground outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Buscar vehículos"
             >
               <Search className="size-4 shrink-0" aria-hidden />
               <span className="truncate">Buscar vehículos</span>
-            </Button>
+            </button>
           }
         />
         <PopoverContent
@@ -166,7 +175,9 @@ export const SearchVehiclesInput = () => {
               </p>
             )}
 
-            {hasMinLength && (isLoading || isFetching) && <SearchResultsSkeleton />}
+            {hasMinLength && (isLoading || isFetching) && (
+              <SearchResultsSkeleton />
+            )}
 
             {showEmpty && (
               <p className="px-3 py-6 text-center text-sm text-muted-foreground">
@@ -175,7 +186,10 @@ export const SearchVehiclesInput = () => {
             )}
 
             {showResults && (
-              <ul className="flex flex-col p-1" aria-label="Resultados de búsqueda">
+              <ul
+                className="flex flex-col p-1"
+                aria-label="Resultados de búsqueda"
+              >
                 {vehicles.map((vehicle) => (
                   <li key={vehicle.id}>
                     <SearchVehicleResultItem
@@ -189,6 +203,10 @@ export const SearchVehiclesInput = () => {
           </div>
         </PopoverContent>
       </Popover>
+
+      {children ? (
+        <div className="flex shrink-0 items-center gap-0.5">{children}</div>
+      ) : null}
     </div>
   );
 };

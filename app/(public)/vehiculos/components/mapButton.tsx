@@ -14,17 +14,13 @@ export const MapButton = () => {
 
   return (
     <Button
-      variant="ghost"
-      className={
-        cn(
-          isMapVisible && "text-primary bg-primary/10"
-        )
-      }
+      variant="outline"
+      className={cn(isMapVisible && "text-primary bg-primary/10")}
       onClick={() =>
         handleChange(SHOW_MAP_KEY, isMapVisible ? "false" : "true")
       }
     >
-      {isMapVisible ? "Ocultar mapa" : "Ver en mapa"}
+      <span className="hidden md:block">{isMapVisible ? "Ocultar mapa" : "Ver en mapa"}</span>
       <HiOutlineMap />
     </Button>
   );

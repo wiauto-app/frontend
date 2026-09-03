@@ -68,9 +68,9 @@ const VehiclesListingView = ({
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
-        <div className="lg:hidden">
+        {/* <div className="lg:hidden">
           <BuyAssistantBannerCard />
-        </div>
+        </div> */}
         {vehicles.map((vehicle) => (
           <VehicleGridCard
             className="bg-white shadow-md hover:shadow-xl"
