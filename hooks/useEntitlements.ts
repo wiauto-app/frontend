@@ -78,7 +78,7 @@ export const useEntitlements = () => {
     getUsed,
     getRemaining,
     getLimitUsage,
-    planName: billingSummary?.subscription?.plan_name ?? null,
+    planName: billingSummary?.plan_name ?? null,
     isSubscribed,
     isPrivileged,
   };

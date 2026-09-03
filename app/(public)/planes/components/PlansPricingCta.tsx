@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { billingService } from "@/services/billingService";
 
 interface PlansPricingCtaProps {
   planName: string;
@@ -18,46 +17,24 @@ export const PlansPricingCta = ({
   planPriceId,
   featured = false,
 }: PlansPricingCtaProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleClick = async () => {
+  const handleClick = () => {
     if (!planPriceId) {
       toast.error("Este plan no tiene un precio de suscripción disponible");
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const result = await billingService.createPublicSubscriptionCheckout(planPriceId);
-
-      if (!result.checkoutUrl) {
-        if (result.status === 403) {
-          toast.error(
-            result.message ??
-              "No tienes permiso para contratar este plan.",
-          );
-          return;
-        }
-
-        toast.error(
-          result.message ?? "No se pudo iniciar el checkout. Inténtalo de nuevo.",
-        );
-        return;
-      }
-
-      window.location.href = result.checkoutUrl;
-    } catch {
-      toast.error("No se pudo iniciar el checkout. Inténtalo de nuevo.");
-    } finally {
-      setIsLoading(false);
-    }
+    router.push(
+      `/billing-plan?plan_price_id=${encodeURIComponent(planPriceId)}`,
+    );
   };
 
   return (
     <Button
       type="button"
       onClick={handleClick}
-      disabled={isLoading || !planPriceId}
+      disabled={!planPriceId}
       className={cn(
         "h-11 w-full text-sm font-semibold transition-transform duration-200",
         featured
@@ -65,9 +42,8 @@ export const PlansPricingCta = ({
           : "border border-slate-200 bg-slate-900 text-white hover:bg-slate-800 hover:scale-[1.02]",
       )}
       aria-label={`Quiero el plan ${planName}`}
-      aria-busy={isLoading}
     >
-      {isLoading ? "Redirigiendo..." : "Quiero este plan"}
+      Quiero este plan
     </Button>
   );
 };

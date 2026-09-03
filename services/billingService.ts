@@ -6,12 +6,14 @@ import type {
   BillingMeResponse,
   CheckoutResponse,
   CreateCheckoutResult,
+  CreateSubscriptionCheckoutPayload,
   FeaturedListingOffer,
   PortalResponse,
 } from "@/interfaces/billing.interface";
 import {
   V1_BILLING_ASSISTANT_CREDIT_PACKS_CATALOG,
   V1_BILLING_CHECKOUT_ONE_TIME,
+  V1_BILLING_CHECKOUT_SUBSCRIPTION,
   V1_BILLING_FEATURED_LISTING_OFFERS_CATALOG,
   V1_BILLING_INVOICES,
   V1_BILLING_ME,
@@ -60,13 +62,14 @@ const normalizeCatalogPlan = (plan: BillingCatalogPlan): BillingCatalogPlan => (
   prices: plan.prices ?? [],
 });
 
-const createPublicSubscriptionCheckout = async (
-  plan_price_id: string,
-): Promise<CreateCheckoutResult> => {
-  const response = await apiPost<CheckoutResponse>(V1_PUBLIC_BILLING_CHECKOUT_SUBSCRIPTION, {
-    plan_price_id,
-  });
-
+const toCheckoutResult = (
+  response: {
+    ok: boolean;
+    status: number;
+    message?: unknown;
+    data?: CheckoutResponse | null;
+  },
+): CreateCheckoutResult => {
   if (response.ok && response.data?.checkout_url) {
     return {
       checkoutUrl: response.data.checkout_url,
@@ -83,6 +86,30 @@ const createPublicSubscriptionCheckout = async (
     ),
     status: response.status,
   };
+};
+
+const createPublicSubscriptionCheckout = async (
+  plan_price_id: string,
+): Promise<CreateCheckoutResult> => {
+  const response = await apiPost<CheckoutResponse>(
+    V1_PUBLIC_BILLING_CHECKOUT_SUBSCRIPTION,
+    {
+      plan_price_id,
+    },
+  );
+
+  return toCheckoutResult(response);
+};
+
+const createSubscriptionCheckout = async (
+  payload: CreateSubscriptionCheckoutPayload,
+): Promise<CreateCheckoutResult> => {
+  const response = await apiPost<CheckoutResponse>(
+    V1_BILLING_CHECKOUT_SUBSCRIPTION,
+    payload,
+  );
+
+  return toCheckoutResult(response);
 };
 
 const postOneTimeCheckout = async (
@@ -138,7 +165,7 @@ export const billingService = {
 
   },
 
-  createSubscriptionCheckout: createPublicSubscriptionCheckout,
+  createSubscriptionCheckout,
 
   createPublicSubscriptionCheckout,
 

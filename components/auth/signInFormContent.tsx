@@ -112,8 +112,8 @@ export const SignInFormContent = ({
         <TwoFactorLoginStep
           email={pendingEmail}
           onSuccess={async () => {
-            onSuccess();
-            router.push("/");
+            await onSuccess();
+            router.push(returnTo ?? "/");
           }}
           onBack={handleBackToCredentials}
         />

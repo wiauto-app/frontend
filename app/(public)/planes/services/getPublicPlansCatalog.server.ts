@@ -1,33 +1,13 @@
-import { API_URL } from "@/constants";
 import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
+import { apiGet } from "@/lib/api";
 import { V1_PUBLIC_BILLING_PLANS_CATALOG } from "@/services/billing/route.constants";
 
-interface PublicCatalogResponse {
-  ok: boolean;
-  data: BillingCatalogPlan[];
-}
+
 
 export const getPublicPlansCatalog = async (): Promise<BillingCatalogPlan[]> => {
-  if (!API_URL) {
-    throw new Error("API_URL no configurada");
-  }
-
-  const url = `${API_URL.replace(/\/$/, "")}/${V1_PUBLIC_BILLING_PLANS_CATALOG}?billing_type=recurring`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error("No se pudo cargar el catálogo de planes");
-  }
-
-  const body = (await response.json()) as PublicCatalogResponse;
-  const plans = body.data ?? [];
+  const response = await apiGet<BillingCatalogPlan[]>
+    (V1_PUBLIC_BILLING_PLANS_CATALOG)
+  const plans = response.data ?? [];
 
   return plans
     .filter((plan) => plan.billing_type === "recurring")

@@ -35,15 +35,14 @@ export default async function Page() {
     getPublicPlansCatalog(),
   ]);
 
-
   const cms = cms_result.status === "fulfilled" ? cms_result.value : null;
   const plans = plans_result.status === "fulfilled" ? plans_result.value : [];
   const catalog_error = plans_result.status === "rejected";
-
   if (!cms && catalog_error) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center p-20 text-center text-slate-600">
-        No se pudo cargar la información de planes. Inténtalo de nuevo más tarde.
+        No se pudo cargar la información de planes. Inténtalo de nuevo más
+        tarde.
       </div>
     );
   }
@@ -52,12 +51,20 @@ export default async function Page() {
     <div className="container-custom flex flex-col gap-16">
       {cms?.hero ? <PlansHeroSection hero={cms.hero} /> : null}
 
-      {cms?.estadisticas && cms.estadisticas.length > 0 ? (
+      {/* {cms?.estadisticas && cms.estadisticas.length > 0 ? (
         <PlansStatsSection items={cms.estadisticas ?? []} />
-      ) : null}
+      ) : null} */}
 
-      {cms?.caracteristicas ? <PlansFeaturesSection data={cms.caracteristicas} /> : null}
-      {cms?.action_call_section ? <PlansPricingSection actionCallSection={cms.action_call_section} plans={plans} catalogError={catalog_error} /> : null}
+      {cms?.caracteristicas ? (
+        <PlansFeaturesSection data={cms.caracteristicas} />
+      ) : null}
+      {cms?.action_call_section ? (
+        <PlansPricingSection
+          actionCallSection={cms.action_call_section}
+          plans={plans}
+          catalogError={catalog_error}
+        />
+      ) : null}
 
       {cms?.tech_add ? <PlansTechSection data={cms.tech_add} /> : null}
 

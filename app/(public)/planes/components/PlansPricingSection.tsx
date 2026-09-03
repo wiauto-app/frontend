@@ -1,82 +1,73 @@
 "use client";
 
-import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-import { StrapiHero } from "@/interfaces/strapi-components.interface";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { resolveStrapiIconName } from "../../simulador-financiamiento/utils/resolveStrapiIconName";
-import { StrapiButton } from "@/components/ui/strapiButton";
+import { PlanCard } from "@/components/billing/PlanCard";
+import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
+import type { StrapiHero } from "@/interfaces/strapi-components.interface";
+import { cn } from "@/lib/utils";
+import { SectionHeading } from "@/components/home/SectionHeading";
+import { useEntitlements } from "@/hooks/useEntitlements";
+
 interface PlansPricingSectionProps {
   actionCallSection: StrapiHero;
   plans: BillingCatalogPlan[];
   catalogError?: boolean;
 }
 
+const formatEuros = (amountCents: number) =>
+  new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amountCents / 100);
+
+const getPrimaryPriceId = (plan: BillingCatalogPlan): string | null => {
+  const monthly = plan.prices.find((price) => price.interval === "month");
+  const primaryPrice = monthly ?? plan.prices[0];
+
+  return primaryPrice?.id ?? null;
+};
+
 export const PlansPricingSection = ({
   actionCallSection,
+  plans,
+  catalogError = false,
 }: PlansPricingSectionProps) => {
-  const card = actionCallSection?.card;
-  const features = actionCallSection?.caracteristicas;
-  const Icon = resolveStrapiIconName(features?.[0]?.iconName ?? "");
-  return (
-    <section className="overflow-hidden  rounded-3xl py-8 md:py-20 relative ">
-      <Image
-        src={actionCallSection?.imagen?.url ?? ""}
-        alt={actionCallSection?.imagen?.alternativeText ?? ""}
-        fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        className="object-cover"
-      />
+  const router = useRouter();
+  const { planName } = useEntitlements();
 
-      <div className="relative container mx-auto max-w-7xl px-4 space-y-8 md:space-y-12">
-        <div className="mx-auto max-w-2xl text-center space-y-4 md:space-y-6">
-          <h2 className="text-3xl font-bold tracking-tight text-balance md:text-4xl lg:text-6xl lg:leading-tight text-white">
-            {actionCallSection?.titulo}
-          </h2>
-          <p className="text-sm text-slate-300 md:text-base">
+  const handleSelectPlan = (plan: BillingCatalogPlan) => {
+    const planPriceId = getPrimaryPriceId(plan);
+
+    if (!planPriceId) {
+      toast.error("Este plan no tiene un precio de suscripción disponible");
+      return;
+    }
+
+    router.push(
+      `/billing-plan?plan_price_id=${encodeURIComponent(planPriceId)}`,
+    );
+  };
+
+  return (
+    <section className="relative overflow-hidden rounded-3xl py-8 md:py-20">
+      <div className="relative container mx-auto max-w-7xl space-y-8 px-4 md:space-y-12">
+        <div className="mx-auto max-w-2xl space-y-4 text-center md:space-y-6">
+          <h2 className="text-3xl font-bold tracking-tight text-balance text-white md:text-4xl lg:text-6xl lg:leading-tight"></h2>
+          <SectionHeading
+            className="text-2xl font-bold tracking-tight text-balance  md:text-3xl lg:text-4xl lg:leading-tight"
+            lead={actionCallSection?.titulo}
+          />
+
+          <p className="text-sm text-muted-foreground md:text-base">
             {actionCallSection?.descripcion}
           </p>
         </div>
 
-        <Card className="border-2 border-primary max-w-4xl  w-fit mx-auto" size="sm">
-          <CardContent className="flex flex-col md:flex-row items-center ">
-            <Image
-              src={card?.imagen?.url ?? ""}
-              alt={card?.imagen?.alternativeText ?? ""}
-              width={250}
-              height={250}
-              className="rounded-full hidden md:block"
-            />
-            <div className="border-l-2 border-primary h-full w-10 bg-black"></div>
-            <div className="flex flex-col gap-5">
-              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-5">
-                {features?.map((feature) => (
-                  <div
-                    key={feature.id}
-                    className="flex items-center gap-2 p-2 bg-muted-foreground/10 rounded-full w-full md:w-fit t"
-                  >
-                    {Icon ? <Icon className="size-7 text-primary" /> : null}
-                    <p>{feature.label}</p>
-                  </div>
-                ))}
-              </div>
-              {card?.boton ? (
-                <StrapiButton
-                  button={card?.boton}
-                  className="w-full h-14 md:h-20 md:text-xl font-semibold"
-                />
-              ) : null}
-              <p className="text-xs text-muted-foreground text-center">
-                {card?.descripcion}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* {catalogError ? (
+        {catalogError ? (
           <div
-            className="mb-8 rounded-2xl border border-white/15 bg-white/10 px-4 py-4 text-center text-sm text-slate-200 backdrop-blur-sm"
+            className="rounded-2xl border border-white/15 bg-white/10 px-4 py-4 text-center text-sm text-slate-200 backdrop-blur-sm"
             role="status"
           >
             No pudimos cargar los planes en este momento. Inténtalo de nuevo más
@@ -84,30 +75,29 @@ export const PlansPricingSection = ({
           </div>
         ) : null}
 
-        {!sortedPlans.length ? (
+        {!catalogError && !plans.length ? (
           <div className="rounded-2xl border border-white/15 bg-white/10 px-6 py-10 text-center text-slate-200 backdrop-blur-sm">
             No hay planes de suscripción disponibles en este momento.
           </div>
-        ) : (
-          <ul
-            className={cn(
-              "mx-auto grid list-none gap-5 p-0",
-              sortedPlans.length === 1 && "max-w-md",
-              sortedPlans.length === 2 && "max-w-3xl sm:grid-cols-2",
-              sortedPlans.length >= 3 &&
-                "grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
-            )}
+        ) : null}
+
+        {!catalogError && plans.length > 0 ? (
+          <div
+            className={cn("mx-auto grid gap-5 sm:grid-cols-2 lg:grid-cols-3")}
           >
-            {sortedPlans.map((plan, index) => (
-              <PlanPricingCard
+            {plans.map((plan) => (
+              <PlanCard
                 key={plan.id}
                 plan={plan}
-                index={index}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={planName === plan.name}
+                formatPrice={formatEuros}
+                onSelect={() => {
+                  handleSelectPlan(plan);
+                }}
               />
             ))}
-          </ul>
-        )} */}
+          </div>
+        ) : null}
       </div>
     </section>
   );

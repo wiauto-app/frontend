@@ -56,7 +56,12 @@ export default async function RootLayout({
               {children}
             </main>
             <ConditionalWrapper
-              hideOnPaths={["/usuario", "/publicar", "/editar-vehiculo"]}
+              hideOnPaths={[
+                "/usuario",
+                "/publicar",
+                "/editar-vehiculo",
+                "/billing-plan",
+              ]}
             >
               <NewsletterSection />
               <Footer />

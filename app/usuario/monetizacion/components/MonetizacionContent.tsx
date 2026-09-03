@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { LayoutGrid } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -126,38 +125,13 @@ export const MonetizacionContent = () => {
 
   const addons_loading = packs_loading || offers_loading;
 
-  const handleSubscriptionCheckout = async (
-    plan: BillingCatalogPlan,
+  const handleSubscriptionCheckout = (
+    _plan: BillingCatalogPlan,
     price_id: string,
   ) => {
-    set_is_checkout_loading(true);
-    try {
-      const price = plan.prices.find((item) => item.id === price_id);
-      const result = await billingService.createSubscriptionCheckout(price_id);
-      if (!result.checkoutUrl) {
-        if (result.status === 403) {
-          toast.error(
-            result.message ?? "No tienes permiso para contratar este plan.",
-          );
-          return;
-        }
-        toast.error(result.message ?? "No se pudo iniciar el checkout");
-        return;
-      }
-
-      if (price) {
-        rememberPendingPurchase({
-          value: price.amount_cents / 100,
-          currency: price.currency.toUpperCase(),
-          contentName: plan.name,
-          contentIds: [plan.id],
-        });
-      }
-
-      window.location.href = result.checkoutUrl;
-    } finally {
-      set_is_checkout_loading(false);
-    }
+    router.push(
+      `/billing-plan?plan_price_id=${encodeURIComponent(price_id)}`,
+    );
   };
 
   const handleAddonCheckout = async (addon: MonetizacionAddon) => {

@@ -207,3 +207,17 @@ export interface CreateCheckoutResult {
   message: string | null;
   status: number;
 }
+
+export type BillingAccountType = "self_employed" | "company";
+
+export interface CreateSubscriptionCheckoutPayload {
+  plan_price_id: string;
+  account_type: BillingAccountType;
+  legal_name: string;
+  tax_id: string;
+  commercial_name?: string;
+  accepted_terms: true;
+  email: string;
+  phone_code?: string;
+  phone?: string;
+}

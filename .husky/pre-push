@@ -1,0 +1,2 @@
+echo "Comprobando que el frontend compile (next build) antes de subir..."
+pnpm build
