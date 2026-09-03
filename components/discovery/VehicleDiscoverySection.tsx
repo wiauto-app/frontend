@@ -26,7 +26,9 @@ const renderHighlightedTitle = (title: string) => {
   return (
     <>
       {title.slice(0, index)}
-      <span className="text-nature">{title.slice(index, index + highlight.length)}</span>
+      <span className="text-nature">
+        {title.slice(index, index + highlight.length)}
+      </span>
       {title.slice(index + highlight.length)}
     </>
   );
@@ -91,15 +93,18 @@ export const VehicleDiscoverySection = async ({
               <FaLeaf className="w-4 h-4 text-nature" aria-hidden />
             </span>
           </h2>
-          <p className="text-sm text-center lg:text-left text-muted-foreground">{description}</p>
+          <p className="text-sm text-center lg:text-left text-muted-foreground">
+            {description}
+          </p>
         </div>
         {imageUrl ? (
-          <div className="relative aspect-video overflow-hidden rounded-xl">
+          <div className="overflow-hidden rounded-xl">
             <Image
               src={imageUrl}
               alt={title}
-              fill
-              className="object-cover"
+              width={1280}
+              height={720}
+              className="aspect-video h-auto w-full object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
@@ -109,10 +114,7 @@ export const VehicleDiscoverySection = async ({
       </div>
 
       {quickLinks && quickLinks.length > 0 ? (
-        <VehicleDiscoveryQuickCards
-          quickLinks={quickLinks}
-          className=""
-        />
+        <VehicleDiscoveryQuickCards quickLinks={quickLinks} className="" />
       ) : null}
 
       <VehicleDiscoveryAccordion sections={resolvedSections} />
