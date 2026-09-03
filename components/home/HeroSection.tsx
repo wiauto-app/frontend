@@ -23,7 +23,7 @@ export function HeroSection({ data }: HeroSectionProps) {
   return (
     <>
       <Hero
-        className="px-3 h-80 md:h-auto  lg:h-auto overflow-visible "
+        className="px-3  md:h-auto  lg:h-auto overflow-visible "
         contentClassName="lg:grid-cols-1"
         image="https://media.wiauto.es/wiauto-strapi/41_C5_DDB_7_9_D8_F_4_ACE_82_CC_BE_887_E4_CBFEC_e38f248f10.jpeg"
         imageClassName="object-center block md:hidden"
