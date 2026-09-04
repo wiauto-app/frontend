@@ -10,13 +10,15 @@ import {
 import { provincesCatalogService } from "@/services/locations/provincesCatalogService";
 import { useQuery } from "@tanstack/react-query";
 
+interface ProfileProvinceSelectorProps {
+  value: number | undefined;
+  onChange: (value: number | undefined) => void;
+}
+
 export const ProfileProvinceSelector = ({
   value,
   onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) => {
+}: ProfileProvinceSelectorProps) => {
   const { data, isLoading } = useQuery({
     queryKey: ["profile-province-selector"],
     queryFn: () => provincesCatalogService.findAll({ page: 1, limit: 100 }),
@@ -26,21 +28,34 @@ export const ProfileProvinceSelector = ({
   if (isLoading) {
     return <InputSkeleton />;
   }
+
+  const selectedValue = value != null ? String(value) : "";
+
+  const handleValueChange = (next: string | null | undefined) => {
+    if (next == null || next === "") {
+      onChange(undefined);
+      return;
+    }
+
+    const parsed = Number(next);
+    onChange(Number.isFinite(parsed) ? parsed : undefined);
+  };
+
   return (
     <Select
       items={provinces.map((province) => ({
         label: province.name,
-        value: province.id.toString(),
+        value: String(province.id),
       }))}
-      value={value ?? undefined}
-      onValueChange={(value) => onChange(value ?? "")}
+      value={selectedValue}
+      onValueChange={handleValueChange}
     >
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Selecciona una provincia" />
       </SelectTrigger>
       <SelectContent className="max-h-[200px] overflow-y-auto">
         {provinces.map((province) => (
-          <SelectItem key={province.id} value={province.id.toString()}>
+          <SelectItem key={province.id} value={String(province.id)}>
             {province.name}
           </SelectItem>
         ))}

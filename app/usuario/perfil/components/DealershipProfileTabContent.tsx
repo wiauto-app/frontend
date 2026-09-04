@@ -34,8 +34,10 @@ export const DealershipProfileTabContent = () => {
   const { user, isLoading: isUserLoading, refreshUser } = useUser();
   const queryClient = useQueryClient();
   const dealershipId = user?.dealership_membership?.dealership_id;
+  const membershipRole = user?.dealership_membership?.role;
   const isCreateMode = !dealershipId;
-  const canEditSchedule = canManageTeam(user?.dealership_membership?.role);
+  const canEditProfile = !dealershipId || canManageTeam(membershipRole);
+  const canEditSchedule = canManageTeam(membershipRole);
   const {
     data: dealership,
     isLoading: isDealershipLoading,
@@ -51,7 +53,7 @@ export const DealershipProfileTabContent = () => {
       }
       return response.data;
     },
-    enabled: !isUserLoading && Boolean(dealershipId),
+    enabled: !isUserLoading && Boolean(dealershipId) && canManageTeam(membershipRole),
   });
 
   const form = useForm<DealershipProfileFormValues>({
@@ -95,6 +97,10 @@ export const DealershipProfileTabContent = () => {
 
 
   const onSubmit = async (data: DealershipProfileFormValues) => {
+    if (!canEditProfile) {
+      return;
+    }
+
     if (!user?.id) {
       toast.error("No se pudo identificar tu usuario");
       return;
@@ -137,6 +143,37 @@ export const DealershipProfileTabContent = () => {
   if (isUserLoading) {
     return (
       <div className="p-6 text-center text-gray-500">Cargando perfil...</div>
+    );
+  }
+
+  if (dealershipId && !canManageTeam(membershipRole)) {
+    const membershipName =
+      user?.dealership_membership?.dealership_name || "Tu concesionaria";
+
+    return (
+      <div className="space-y-6">
+        <div className="overflow-hidden rounded-xl border border-blue-100 bg-blue-100/50">
+          <div className="h-32 w-full bg-blue-200" />
+          <div className="flex flex-col items-center gap-4 p-6 md:flex-row md:items-end">
+            <div className="relative -mt-12 flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-blue-100 bg-blue-200 text-2xl font-bold text-blue-700 md:-mt-16">
+              <Building2 className="size-8" aria-hidden />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {membershipName}
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="rounded-xl border border-gray-100 bg-white p-6 text-sm text-gray-700 shadow-sm sm:p-8"
+          role="status"
+        >
+          Solo el propietario y los administradores pueden editar los datos de
+          la concesionaria. Tu rol actual es miembro.
+        </div>
+      </div>
     );
   }
 

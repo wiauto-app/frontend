@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { useUser } from "@/app/contexts/auth/useUser";
@@ -10,6 +12,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { PhoneInput, DEFAULT_PHONE_CODE } from "@/components/forms/phoneInput";
 import { ImageInput } from "@/components/ui/imageInput";
 import { Input } from "@/components/ui/input";
+import type { MyProfileResponse } from "@/interfaces/profile.interface";
 import { userService } from "@/services/userService";
 import {
   mapProfileFormToPayload,
@@ -26,8 +29,22 @@ const EMPTY_PROFILE_FORM: UpdateProfileFormValues = {
   avatar_url: null,
 };
 
+const mapProfileToFormValues = (
+  profile: MyProfileResponse,
+): UpdateProfileFormValues => ({
+  name: profile.name ?? "",
+  last_name: profile.last_name ?? "",
+  phone: {
+    phone_code: profile.phone_code?.trim() || DEFAULT_PHONE_CODE,
+    phone: profile.phone ?? "",
+  },
+  avatar_url: profile.avatar_url ?? null,
+  province_id: profile.province_id ?? undefined,
+});
+
 export const ProfileDataForm = () => {
   const { user, refreshUser } = useUser();
+  const queryClient = useQueryClient();
   const form = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(updateProfileFormSchema),
     defaultValues: EMPTY_PROFILE_FORM,
@@ -41,22 +58,29 @@ export const ProfileDataForm = () => {
     formState: { errors, isSubmitting },
   } = form;
 
+  const {
+    data: profile,
+    isLoading: isLoadingProfile,
+    isError: isProfileError,
+  } = useQuery({
+    queryKey: ["me-profile"],
+    queryFn: async () => {
+      const response = await userService.getMyProfile();
+      if (!response.ok || !response.data) {
+        throw new Error(response.message || "No se pudo cargar el perfil");
+      }
+      return response.data;
+    },
+    enabled: Boolean(user),
+  });
+
   useEffect(() => {
-    if (!user) {
+    if (!profile) {
       return;
     }
 
-    reset({
-      name: user.name ?? "",
-      last_name: user.last_name ?? "",
-      phone: {
-        phone_code: user.phone_code?.trim() || DEFAULT_PHONE_CODE,
-        phone: user.phone ?? "",
-      },
-      avatar_url: user.avatar_url ?? null,
-      province_id: user.province_id?.toString() ?? "",
-    });
-  }, [user, reset]);
+    reset(mapProfileToFormValues(profile));
+  }, [profile, reset]);
 
   const handleSaveProfile = async (data: UpdateProfileFormValues) => {
     const response = await userService.updateProfile(
@@ -71,8 +95,42 @@ export const ProfileDataForm = () => {
     }
 
     toast.success("Perfil actualizado correctamente");
-    // await refreshUser();
+
+    if (response.data) {
+      reset(mapProfileToFormValues(response.data));
+      queryClient.setQueryData(["me-profile"], response.data);
+    } else {
+      await queryClient.invalidateQueries({ queryKey: ["me-profile"] });
+    }
+
+    await refreshUser();
   };
+
+  if (isLoadingProfile) {
+    return (
+      <Card size="sm">
+        <CardContent className="flex min-h-32 items-center justify-center">
+          <Loader2
+            className="size-8 animate-spin text-muted-foreground"
+            aria-label="Cargando perfil"
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isProfileError) {
+    return (
+      <Card size="sm">
+        <CardContent className="text-sm text-red-700">
+          No se pudieron cargar los datos del perfil. Intenta recargar la
+          página.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const avatarOwnerId = profile?.id ?? user?.id ?? "me";
 
   return (
     <Card size="sm">
@@ -91,8 +149,10 @@ export const ProfileDataForm = () => {
                   value={field.value}
                   onChange={field.onChange}
                   bucketName="profile-images"
-                  path={`avatars/${user?.id ?? "me"}`}
-                  referenceId={user?.id}
+                  path={`avatars/${avatarOwnerId}`}
+                  referenceId={
+                    avatarOwnerId === "me" ? undefined : avatarOwnerId
+                  }
                   description="PNG, JPG o WEBP. Se guardará como tu avatar."
                 />
               </Field>
@@ -144,10 +204,14 @@ export const ProfileDataForm = () => {
                 </Field>
               )}
             />
-            <ControllerInput label="Provincia" control={control} name="province_id">
+            <ControllerInput
+              label="Provincia"
+              control={control}
+              name="province_id"
+            >
               {({ field }) => (
                 <ProfileProvinceSelector
-                  value={field.value as string}
+                  value={field.value as number}
                   onChange={field.onChange}
                 />
               )}

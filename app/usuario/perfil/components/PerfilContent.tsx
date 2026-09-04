@@ -75,7 +75,10 @@ export const PerfilContent = () => {
   });
 
   const handleAccountUpdated = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["account-settings"] });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["account-settings"] }),
+      queryClient.invalidateQueries({ queryKey: ["me-profile"] }),
+    ]);
     await refreshUser();
   };
 
