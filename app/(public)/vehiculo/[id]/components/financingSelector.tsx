@@ -11,7 +11,7 @@ export const FinancingSelector = ({
 }) => {
   const defaultCuota = cuotas?.[0]?.value ?? null;
   const sortedCuotas = useMemo(() => {
-    return cuotas.sort((a, b) => a.value - b.value);
+    return [...cuotas].sort((a, b) => a.value - b.value);
   }, [cuotas]);
   const [selectedCuota, setSelectedCuota] = useState<number | null>(
     defaultCuota,

@@ -92,7 +92,7 @@ export const VehicleDetailMobileContactBar = ({
 
   return (
     <>
-      <div className="mx-auto block md:hidden">
+      <div className="mx-auto block lg:hidden">
         <div
           className="flex items-stretch gap-1"
           role="toolbar"

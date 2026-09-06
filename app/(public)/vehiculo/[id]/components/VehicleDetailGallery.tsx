@@ -1,22 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Camera } from "lucide-react";
+
 import { getImageUrl } from "@/app/(public)/vehiculos/utils";
-import type { VehicleImage } from "@/interfaces/vehicle.interface";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
+  ImageVisualizer,
+  type ImageVisualizerItem,
+} from "@/components/ui/image-visualizer";
+import type { VehicleImage } from "@/interfaces/vehicle.interface";
 import { cn } from "@/lib/utils";
 
-type VehicleDetailGalleryProps = {
+interface VehicleDetailGalleryProps {
   images: VehicleImage[];
   title: string;
-};
+}
 
 const PLACEHOLDER_IMAGE: VehicleImage = {
   id: "placeholder",
@@ -24,120 +23,126 @@ const PLACEHOLDER_IMAGE: VehicleImage = {
   order: 0,
 };
 
+const ASIDE_LIMIT = 3;
+
 export const VehicleDetailGallery = ({
   images,
   title,
 }: VehicleDetailGalleryProps) => {
-  const [api, setApi] = useState<CarouselApi>();
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const gallery_images = images.length > 0 ? images : [PLACEHOLDER_IMAGE];
-  const has_multiple_images = gallery_images.length > 1;
-  const total_images = gallery_images.length;
-  const progress_width = ((selectedIndex + 1) / total_images) * 100;
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
 
-  useEffect(() => {
-    if (!api) return;
+  const galleryImages = useMemo(
+    () => (images.length > 0 ? images : [PLACEHOLDER_IMAGE]),
+    [images],
+  );
+  const totalImages = galleryImages.length;
+  const mainImage = galleryImages[0];
+  const asideImages = galleryImages.slice(1, 1 + ASIDE_LIMIT);
+  const extraCount = Math.max(0, totalImages - (1 + ASIDE_LIMIT));
+  const hasAside = asideImages.length > 0;
 
-    const handleSelect = () => {
-      setSelectedIndex(api.selectedScrollSnap());
-    };
+  const visualizerImages = useMemo<ImageVisualizerItem[]>(
+    () =>
+      galleryImages.map((image, index) => ({
+        id: image.id,
+        src: getImageUrl(image.url),
+        alt: `${title} - imagen ${index + 1}`,
+      })),
+    [galleryImages, title],
+  );
 
-    handleSelect();
-    api.on("select", handleSelect);
-    api.on("reInit", handleSelect);
-
-    return () => {
-      api.off("select", handleSelect);
-      api.off("reInit", handleSelect);
-    };
-  }, [api]);
-
-  const handleThumbnailClick = (index: number) => {
-    api?.scrollTo(index);
+  const handleOpenViewer = (index: number) => {
+    setViewerIndex(index);
+    setViewerOpen(true);
   };
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white">
-      <Carousel
-        className="w-full"
-        opts={{ loop: has_multiple_images }}
-        setApi={setApi}
-      >
-        <div className="relative aspect-4/3 bg-gray-100">
-          <CarouselContent className="ml-0 h-full">
-            {gallery_images.map((image, index) => (
-              <CarouselItem key={image.id} className="basis-full pl-0">
-                <div className="relative aspect-4/3 w-full">
-                  <Image
-                    unoptimized
-                    fill
-                    src={getImageUrl(image.url)}
-                    alt={`${title} - imagen ${index + 1}`}
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 66vw"
-                    priority={index === 0}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-
+    <>
+      <div className="flex flex-col gap-2 overflow-hidden lg:flex-row">
+        <button
+          type="button"
+          className="relative h-140 min-w-0 flex-1 cursor-pointer overflow-hidden rounded-s-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+          onClick={() => handleOpenViewer(0)}
+          aria-label={`Ver imagen principal de ${title}`}
+        >
+          <Image
+            unoptimized
+            fill
+            src={getImageUrl(mainImage.url)}
+            alt={`${title} - imagen 1`}
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 66vw"
+            priority
+          />
           <span className="pointer-events-none absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-black/40 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
             <Camera className="size-3.5" aria-hidden />
-            {total_images}
+            {totalImages}
           </span>
-        </div>
-      </Carousel>
+        </button>
 
-      {has_multiple_images ? (
-        <>
-          <div
-            className="h-1 w-full bg-gray-200"
-            role="progressbar"
-            aria-valuenow={selectedIndex + 1}
-            aria-valuemin={1}
-            aria-valuemax={total_images}
-            aria-label={`Imagen ${selectedIndex + 1} de ${total_images}`}
-          >
+        {hasAside ? (
+          <div className="w-full lg:h-140 lg:w-64">
             <div
-              className="h-full bg-blue-600 transition-all duration-300 ease-out"
-              style={{ width: `${progress_width}%` }}
-            />
-          </div>
+              className={cn(
+                "grid h-full gap-2",
+                "grid-cols-3 lg:grid-cols-1 lg:grid-rows-3",
+              )}
+              role="list"
+              aria-label="Miniaturas de imágenes"
+            >
+              {asideImages.map((image, asideIndex) => {
+                const galleryIndex = asideIndex + 1;
+                const isLastAside = asideIndex === asideImages.length - 1;
+                const showExtraOverlay = isLastAside && extraCount > 0;
 
-          <div
-            className="flex gap-2 p-2"
-            role="tablist"
-            aria-label="Miniaturas de imágenes"
-          >
-            {gallery_images.map((image, index) => (
-              <button
-                key={image.id}
-                type="button"
-                role="tab"
-                aria-selected={index === selectedIndex}
-                aria-label={`Ver imagen ${index + 1}`}
-                onClick={() => handleThumbnailClick(index)}
-                className={cn(
-                  "relative aspect-4/3 min-w-0 flex-1 overflow-hidden rounded-lg",
-                  index === selectedIndex
-                    ? "border-2 border-blue-600"
-                    : "border-2 border-transparent",
-                )}
-              >
-                <Image
-                  unoptimized
-                  fill
-                  src={getImageUrl(image.url)}
-                  alt={`${title} - miniatura ${index + 1}`}
-                  className="object-cover"
-                  sizes="120px"
-                />
-              </button>
-            ))}
+                return (
+                  <button
+                    key={image.id}
+                    type="button"
+                    className={cn(
+                      "relative min-h-24 min-w-0 cursor-pointer overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 lg:min-h-0",
+                      asideIndex === 0 && "lg:rounded-tr-2xl",
+                      isLastAside && "lg:rounded-br-2xl",
+                    )}
+                    onClick={() => handleOpenViewer(galleryIndex)}
+                    aria-label={
+                      showExtraOverlay
+                        ? `Ver ${extraCount} imágenes más`
+                        : `Ver imagen ${galleryIndex + 1}`
+                    }
+                  >
+                    <Image
+                      unoptimized
+                      fill
+                      src={getImageUrl(image.url)}
+                      alt={`${title} - miniatura ${galleryIndex + 1}`}
+                      className="object-cover"
+                      sizes="256px"
+                    />
+                    {showExtraOverlay ? (
+                      <span className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 bg-black/55 text-white">
+                        <span className="text-lg font-semibold leading-none">
+                          +{extraCount}
+                        </span>
+                        <span className="text-xs font-medium">Ver más</span>
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </>
-      ) : null}
-    </div>
+        ) : null}
+      </div>
+
+      <ImageVisualizer
+        images={visualizerImages}
+        open={viewerOpen}
+        onOpenChange={setViewerOpen}
+        initialIndex={viewerIndex}
+        title={title}
+      />
+    </>
   );
 };

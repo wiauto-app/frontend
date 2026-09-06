@@ -14,6 +14,7 @@ export interface StrapiLink {
   destacado: boolean | null;
   imagen: StrapiMedia | null;
   iconName: string | null;
+  externo?: boolean | null;
 }
 
 /** Componente `shared.icon-feature` */
@@ -47,12 +48,13 @@ export interface StrapiHeader {
 /** Componente `shared.hero` */
 export interface StrapiHero {
   id: number;
-  titulo: string ;
-  descripcion: string ;
+  titulo: string;
+  descripcion: string;
   acciones: StrapiLink[];
   imagen: StrapiMedia | null;
   caracteristicas: StrapiIconFeature[];
   card: StrapiCard | null;
+  footer?: BlocksContent | null;
 }
 
 /** Componente `shared.estadistica` */

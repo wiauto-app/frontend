@@ -1,11 +1,8 @@
 import { VehicleEngagementMenu } from "@/app/(public)/vehiculos/components/VehicleEngagementMenu";
-import { VehicleFavoriteButton } from "@/app/(public)/vehiculos/components/VehicleFavoriteButton";
-import { VehicleShareButton } from "@/app/(public)/vehiculos/components/VehicleShareButton";
 import { PageBreadcrumbs } from "@/components/navigation/page-breadcrumbs";
 import { ReportButton } from "@/components/reports/ReportButton";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
-import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 
 interface VehicleDetailTopBarProps {
   vehicle: Vehicle;
@@ -18,7 +15,7 @@ export const VehicleDetailTopBar = ({
 }: VehicleDetailTopBarProps) => {
   return (
     <div className="border-b border-gray-200 bg-white">
-      <div className="mx-auto container-custom flex items-center justify-between gap-4 py-3">
+      <div className="mx-auto listing-container flex items-center justify-between gap-4 py-3">
         <PageBreadcrumbs items={breadcrumbItems} />
 
         <div className="flex items-center justify-end gap-2">
@@ -30,12 +27,6 @@ export const VehicleDetailTopBar = ({
             variant="outline"
           />
           <VehicleEngagementMenu vehicleId={vehicle.id} variant="outline" />
-          <VehicleFavoriteButton vehicleId={vehicle.id} variant="outline" />
-          <VehicleShareButton
-            vehicleId={vehicle.id}
-            vehicleTitle={getVehicleDisplayName(vehicle)}
-            variant="outline"
-          />
         </div>
       </div>
     </div>
