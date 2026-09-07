@@ -16,7 +16,12 @@ import type {
   DealershipMemberDetail,
   DealershipMemberRole,
 } from "@/services/dealerships/types/team.types";
-import { canManageTeam, getRoleBadgeClass, getRoleLabel } from "../utils/teamPermissions";
+import {
+  canManageTeam,
+  getRoleBadgeClass,
+  getRoleLabel,
+} from "../utils/teamPermissions";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type TeamTableProps = {
   members: DealershipMemberDetail[];
@@ -90,8 +95,12 @@ const TeamTable = ({
     return (
       <div className="rounded-lg border border-gray-200 bg-white py-12 text-center">
         <UserX className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-        <h3 className="mb-2 text-lg font-medium text-gray-900">No hay miembros</h3>
-        <p className="mb-4 text-gray-500">Comienza invitando a tu primer miembro al equipo</p>
+        <h3 className="mb-2 text-lg font-medium text-gray-900">
+          No hay miembros
+        </h3>
+        <p className="mb-4 text-gray-500">
+          Comienza invitando a tu primer miembro al equipo
+        </p>
         {isManager ? (
           <Link
             href="/invitar-miembro"
@@ -107,42 +116,48 @@ const TeamTable = ({
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="border-b border-gray-200 bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Miembro
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              </TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Rol
-              </th>
+              </TableHead>
               {isManager ? (
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                <TableHead className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                   Acciones
-                </th>
+                </TableHead>
               ) : null}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {members.map((member) => {
               const isSelf = member.id === currentMemberId;
               const canEditMember =
                 isManager && member.role !== "owner" && !isSelf;
 
               return (
-                <tr key={member.id} className="transition-colors hover:bg-gray-50">
-                  <td className="px-6 py-4">
+                <TableRow
+                  key={member.id}
+                >
+                  <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 font-semibold text-white">
                         {getMemberName(member).charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{getMemberName(member)}</p>
-                        <p className="text-sm text-gray-500">{member.profile.email}</p>
+                        <p className="font-medium text-gray-900">
+                          {getMemberName(member)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {member.profile.email}
+                        </p>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
+                  </TableCell>
+                  <TableCell>
                     {canEditMember ? (
                       <Select
                         value={member.role}
@@ -165,9 +180,9 @@ const TeamTable = ({
                         {getRoleLabel(member.role)}
                       </span>
                     )}
-                  </td>
+                  </TableCell>
                   {isManager ? (
-                    <td className="px-6 py-4 text-right">
+                    <TableCell>
                       {canEditMember ? (
                         <Button
                           type="button"
@@ -180,13 +195,13 @@ const TeamTable = ({
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       ) : null}
-                    </td>
+                    </TableCell>
                   ) : null}
-                </tr>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {!isManager && currentRole === "member" ? (

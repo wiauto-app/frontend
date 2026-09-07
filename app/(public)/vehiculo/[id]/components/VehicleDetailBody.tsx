@@ -1,16 +1,22 @@
 import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
+import { VehicleDetailContactChannels } from "./VehicleDetailContactChannels";
+import { VehicleDetailContactTabs } from "./VehicleDetailContactTabs";
 import { VehicleDetailGallery } from "./VehicleDetailGallery";
+import { VehicleDetailFeatures } from "./VehicleDetailFeatures";
+import { VehicleDetailLocationSection } from "./VehicleDetailLocationSection";
 import { VehicleDetailMobileContactBar } from "./VehicleDetailMobileContactBar";
 import { VehicleDetailSaveSearchSection } from "./VehicleDetailSaveSearchSection";
+import { VehicleDetailDescription } from "./VehicleDetailDescription";
+import { VehicleDetailServicesSection } from "./VehicleDetailServicesSection";
+import { VehicleDetailTitleSection } from "./VehicleDetailTitleSection";
 import { VehicleDetailTopBar } from "./VehicleDetailTopBar";
+import { VehicleDetailAdvertiserSection } from "./VehicleDetailAdvertiserSection";
 import { VehicleSimilarVehiclesSection } from "./VehicleSimilarVehiclesSection";
 import { VehicleDetailViewTracker } from "./VehicleDetailViewTracker";
+import { Card, CardContent } from "@/components/ui/card";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
 import { CollaborationHeroCard } from "@/components/collabs/CollaborationHeroCard";
-import { VehicleDetailSummaryCard } from "./VehicleDetailSummaryCard";
-import { VehicleDetailContactCard } from "./VehicleDetailContactCard";
-import { VehicleDetailTabbedContent } from "./VehicleDetailTabbedContent";
 import { vehicleDetailCmsService } from "../services/vehicleDetailCmsService";
 
 interface VehicleDetailBodyProps {
@@ -44,15 +50,11 @@ export const VehicleDetailBody = async ({
         vehicle={vehicle}
         breadcrumbItems={breadcrumbItems}
       />
-      <div className="mx-auto listing-container space-y-8 py-5 sm:py-6">
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem] xl:grid-cols-[minmax(0,1fr)_25rem]">
-          <main className="min-w-0 space-y-6">
+      <div className="mx-auto container-custom space-y-6 py-6">
+        <div className="relative grid grid-cols-1 gap-6 lg:grid-cols-4">
+          <div className="space-y-6 lg:col-span-3">
             <VehicleDetailGallery images={vehicle.images} title={displayName} />
-
-            <div className="lg:hidden">
-              <VehicleDetailSummaryCard vehicle={vehicle} />
-            </div>
-
+            <VehicleDetailTitleSection vehicle={vehicle} />
             <VehicleDetailMobileContactBar
               vehicleId={vehicle.id}
               showPhone={showPhone}
@@ -60,8 +62,7 @@ export const VehicleDetailBody = async ({
               vehicleTitle={displayName}
               publisherProfileId={publisherProfileId}
             />
-
-            <VehicleDetailTabbedContent vehicle={vehicle} />
+            <VehicleDetailServicesSection services={vehicle.services} />
 
             {collaborations.length > 0 ? (
               <section
@@ -77,18 +78,32 @@ export const VehicleDetailBody = async ({
               </section>
             ) : null}
 
+            <VehicleDetailDescription description={vehicle.description} />
             <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
-          </main>
+            <VehicleDetailFeatures features={vehicle.features} />
+            <VehicleDetailAdvertiserSection vehicle={vehicle} />
+            <VehicleDetailLocationSection vehicle={vehicle} />
+          </div>
 
-          <aside className="hidden space-y-5 lg:block">
-            <VehicleDetailSummaryCard vehicle={vehicle} />
-            <VehicleDetailContactCard
-              vehicle={vehicle}
-              publisherProfileId={publisherProfileId}
-            />
-          </aside>
+          <Card
+            id="vehicle-contact-section"
+            className="sticky top-26 right-0 hidden h-fit scroll-mt-24 space-y-6 lg:block"
+            size="sm"
+          >
+            <CardContent className="space-y-6">
+              <VehicleDetailContactChannels
+                vehicleId={vehicle.id}
+                showPhone={showPhone}
+                hasWhatsApp={hasWhatsApp}
+                vehicleTitle={displayName}
+              />
+              <VehicleDetailContactTabs
+                vehicleId={vehicle.id}
+                publisherProfileId={publisherProfileId}
+              />
+            </CardContent>
+          </Card>
         </div>
-
         <VehicleSimilarVehiclesSection vehicleId={vehicle.id} />
       </div>
     </>

@@ -17,11 +17,7 @@ export interface CollaborationHeroCardProps {
   className?: string;
 }
 
-const CollaborationFeature = ({
-  feature,
-}: {
-  feature: StrapiIconFeature;
-}) => {
+const CollaborationFeature = ({ feature }: { feature: StrapiIconFeature }) => {
   return (
     <li className="flex min-w-0 items-start gap-3 py-2.5">
       <IconContainer
@@ -61,9 +57,7 @@ const CollaborationAction = ({
           ? "bg-primary text-white hover:bg-primary-dark"
           : "border border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50",
       )}
-      {...(isExternal
-        ? { target: "_blank", rel: "noopener noreferrer" }
-        : {})}
+      {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       <span>{action.label}</span>
       <ArrowRight
@@ -100,35 +94,28 @@ export const CollaborationHeroCard = ({
         className,
       )}
     >
-      <div className="h-1 w-full bg-primary" aria-hidden />
-
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-          Servicio colaborador
-        </p>
-
+      <div className="flex flex-1 flex-col p-3">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
-          <div className="min-w-0">
-            <h2 className="text-xl font-semibold leading-7 tracking-tight text-slate-950">
+          <div className="min-w-0 space-y-1">
+            <h2 className="text-xl font-bold ">
               {content.titulo}
             </h2>
             {content.descripcion ? (
-              <p className="mt-2 whitespace-pre-line text-sm leading-6 text-slate-600">
+              <p className=" whitespace-pre-line text-xs text-muted-foreground">
                 {content.descripcion}
               </p>
             ) : null}
           </div>
 
           {imageUrl ? (
-            <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:w-28">
-              <Image
-                src={imageUrl}
-                alt={imageAlt}
-                fill
-                sizes="112px"
-                className="object-contain p-2.5"
-              />
-            </div>
+            <Image
+              src={imageUrl}
+              alt={imageAlt}
+              width={112}
+              height={112}
+              sizes="112px"
+              className="object-contain"
+            />
           ) : null}
         </div>
 

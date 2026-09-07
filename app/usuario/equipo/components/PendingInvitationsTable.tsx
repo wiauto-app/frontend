@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { DealershipInvitation } from "@/services/dealerships/types/team.types";
 import { getRoleLabel } from "../utils/teamPermissions";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type PendingInvitationsTableProps = {
   invitations: DealershipInvitation[];
@@ -25,8 +26,11 @@ export const PendingInvitationsTable = ({
   isLoading,
   onRevoke,
 }: PendingInvitationsTableProps) => {
+  console.log(invitations);
   const handleRevoke = async (invitation: DealershipInvitation) => {
-    const confirmed = window.confirm(`¿Revocar la invitación a ${invitation.email}?`);
+    const confirmed = window.confirm(
+      `¿Revocar la invitación a ${invitation.email}?`,
+    );
     if (!confirmed) {
       return;
     }
@@ -51,8 +55,13 @@ export const PendingInvitationsTable = ({
     return (
       <div className="rounded-lg border border-gray-200 bg-white py-12 text-center">
         <Mail className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-        <h3 className="text-lg font-medium text-gray-900">Sin invitaciones pendientes</h3>
-        <p className="text-gray-500">Las invitaciones enviadas aparecerán aquí hasta que se acepten o revoquen.</p>
+        <h3 className="text-lg font-medium text-gray-900">
+          Sin invitaciones pendientes
+        </h3>
+        <p className="text-gray-500">
+          Las invitaciones enviadas aparecerán aquí hasta que se acepten o
+          revoquen.
+        </p>
       </div>
     );
   }
@@ -60,34 +69,36 @@ export const PendingInvitationsTable = ({
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="border-b border-gray-200 bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+        <Table >
+          <TableHeader>
+            <TableRow>
+              <TableHead>
                 Correo
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              </TableHead>
+              <TableHead>
                 Rol
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              </TableHead>
+              <TableHead>
                 Expira
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+              </TableHead>
+              <TableHead>
                 Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {invitations.map((invitation) => (
-              <tr key={invitation.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">{invitation.email}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">
+              <TableRow key={invitation.id} className="hover:bg-gray-50">
+                <TableCell>
+                  {invitation.email}
+                </TableCell>
+                <TableCell>
                   {getRoleLabel(invitation.role)}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
+                </TableCell>
+                <TableCell>
                   {formatDate(invitation.expires_at)}
-                </td>
-                <td className="px-6 py-4 text-right">
+                </TableCell>
+                <TableCell>
                   <Button
                     type="button"
                     variant="ghost"
@@ -98,11 +109,11 @@ export const PendingInvitationsTable = ({
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

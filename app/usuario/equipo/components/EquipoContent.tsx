@@ -17,6 +17,7 @@ import TeamTable from "./teamTable";
 import RolesGrid from "./rolesGrid";
 import { PendingInvitationsTable } from "./PendingInvitationsTable";
 import { canManageTeam } from "../utils/teamPermissions";
+import { InviteUserDialog } from "./inviteUserDialog";
 
 export const EquipoContent = () => {
   const router = useRouter();
@@ -63,11 +64,11 @@ export const EquipoContent = () => {
     [members],
   );
 
-  useEffect(() => {
-    if (!isUserLoading && !membership) {
-      router.replace("/inicio");
-    }
-  }, [isUserLoading, membership, router]);
+  // useEffect(() => {
+  //   if (!isUserLoading && !membership) {
+  //     router.replace("/inicio");
+  //   }
+  // }, [isUserLoading, membership, router]);
 
   useEffect(() => {
     if (searchParams.get("joined") === "1") {
@@ -163,12 +164,7 @@ export const EquipoContent = () => {
           <p className="text-sm text-gray-500">{membership.dealership_name}</p>
         </div>
         {isManager ? (
-          <Link
-            href="/invitar-miembro"
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-          >
-            Invitar miembro
-          </Link>
+          <InviteUserDialog />
         ) : null}
       </div>
 

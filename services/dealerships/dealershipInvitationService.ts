@@ -3,7 +3,7 @@ import type { PaginatedResult } from "@/types/general.types";
 import { objectToQueryString } from "@/lib/utils";
 import { V1_DEALERSHIP_INVITATIONS } from "./route.constants";
 import type { DealershipInvitation } from "./types/team.types";
-import type { CreateInvitationDto } from "@/validations/dealership/team.schema";
+import { InviteUserSchema } from "@/app/usuario/equipo/schemas/inviteUser.schema";
 
 export type ListInvitationsParams = {
   dealership_id: string;
@@ -13,11 +13,9 @@ export type ListInvitationsParams = {
 };
 
 export const dealershipInvitationService = {
-  createInvitation: async (data: CreateInvitationDto): Promise<void> => {
-    const response = await apiPost<void>(V1_DEALERSHIP_INVITATIONS, data);
-    if (!response.ok) {
-      throw new Error(response.message || "No se pudo enviar la invitación");
-    }
+  createInvitation: async (data: InviteUserSchema) => {
+    const response = await apiPost<boolean>(V1_DEALERSHIP_INVITATIONS, data);
+    return response;
   },
 
   listInvitations: async (

@@ -4,7 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { newsService } from "@/app/(landing)/noticias/services/newsService";
-import type { UpdateNewsletterPreferencesPayload } from "@/interfaces/newsletter.interface";
+import type {
+  NewsletterSubscription,
+  UpdateNewsletterPreferencesPayload,
+} from "@/interfaces/newsletter.interface";
 import {
   NEWSLETTER_ME_QUERY_KEY,
   newsletterService,
@@ -13,6 +16,19 @@ import {
 export const NEWSLETTER_CATEGORIES_QUERY_KEY = [
   "newsletter-categories",
 ] as const;
+
+const readApiErrorMessage = (message: unknown, fallback: string): string => {
+  if (typeof message === "string" && message.trim()) {
+    return message;
+  }
+  if (Array.isArray(message)) {
+    const joined = message.map(String).filter(Boolean).join(", ");
+    if (joined) {
+      return joined;
+    }
+  }
+  return fallback;
+};
 
 export const useNewsletterPreferences = () => {
   const queryClient = useQueryClient();
@@ -23,8 +39,10 @@ export const useNewsletterPreferences = () => {
       const response = await newsletterService.getMyPreferences();
       if (!response.ok || !response.data) {
         throw new Error(
-          response.message ||
+          readApiErrorMessage(
+            response.message,
             "No se pudieron cargar las preferencias del newsletter",
+          ),
         );
       }
       return response.data;
@@ -41,16 +59,38 @@ export const useNewsletterPreferences = () => {
       const response = await newsletterService.updateMyPreferences(payload);
       if (!response.ok || !response.data) {
         throw new Error(
-          response.message ||
+          readApiErrorMessage(
+            response.message,
             "No se pudieron actualizar las preferencias del newsletter",
+          ),
         );
       }
       return response.data;
     },
+    onMutate: async (payload) => {
+      await queryClient.cancelQueries({ queryKey: NEWSLETTER_ME_QUERY_KEY });
+      const previous =
+        queryClient.getQueryData<NewsletterSubscription>(NEWSLETTER_ME_QUERY_KEY);
+
+      if (previous) {
+        queryClient.setQueryData<NewsletterSubscription>(NEWSLETTER_ME_QUERY_KEY, {
+          ...previous,
+          ...payload,
+          enabled_category_slugs:
+            payload.enabled_category_slugs ?? previous.enabled_category_slugs,
+        });
+      }
+
+      return { previous };
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(NEWSLETTER_ME_QUERY_KEY, data);
+      toast.success("Preferencias actualizadas");
     },
-    onError: (error) => {
+    onError: (error, _payload, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(NEWSLETTER_ME_QUERY_KEY, context.previous);
+      }
       toast.error(
         error instanceof Error
           ? error.message

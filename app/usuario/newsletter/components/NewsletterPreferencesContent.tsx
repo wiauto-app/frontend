@@ -17,11 +17,13 @@ import type {
 
 import { useNewsletterPreferences } from "@/app/usuario/newsletter/hooks/useNewsletterPreferences";
 
+type NewsletterChannelField = keyof Pick<
+  NewsletterSubscription,
+  "channel_push" | "channel_email" | "channel_in_app" | "channel_whatsapp"
+>;
+
 interface ChannelItem {
-  field: keyof Pick<
-    NewsletterSubscription,
-    "channel_push" | "channel_email" | "channel_in_app" | "channel_whatsapp"
-  >;
+  field: NewsletterChannelField;
   label: string;
   icon: LucideIcon;
 }
@@ -62,7 +64,7 @@ const PreferenceToggle = ({
       checked={checked}
       disabled={disabled}
       aria-label={label}
-      onCheckedChange={onCheckedChange}
+      onCheckedChange={(value) => onCheckedChange(value === true)}
     />
   </div>
 );
@@ -80,10 +82,13 @@ export const NewsletterPreferencesContent = () => {
   } = useNewsletterPreferences();
 
   const handleToggleChannel = (
-    field: keyof UpdateNewsletterPreferencesPayload,
+    field: NewsletterChannelField,
     checked: boolean,
   ) => {
-    void handleUpdatePreferences({ [field]: checked });
+    const payload: UpdateNewsletterPreferencesPayload = {
+      [field]: checked,
+    };
+    void handleUpdatePreferences(payload);
   };
 
   const handleToggleCategory = (slug: string, checked: boolean) => {

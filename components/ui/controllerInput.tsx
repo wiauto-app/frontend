@@ -6,16 +6,18 @@ import {
   type ControllerRenderProps,
   type ControllerFieldState,
 } from "react-hook-form";
+import type { InputHTMLAttributes, ReactNode } from "react";
+import { Info } from "lucide-react";
 
 import { formatFieldLabel } from "@/components/vehicles/constants/vehicle-form-field-meta";
-import { Input } from "./input";
-import { Field, FieldError, FieldLabel } from "./field";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
-import { Info } from "lucide-react";
 import { Button } from "./button";
+import { Field, FieldError, FieldLabel } from "./field";
+import { Input } from "./input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
-type ControllerInputProps<T extends FieldValues> = {
+interface ControllerInputProps<T extends FieldValues>
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "name" | "children"> {
   name: FieldPath<T>;
   control: Control<T>;
   label?: string;
@@ -25,9 +27,9 @@ type ControllerInputProps<T extends FieldValues> = {
   children?: (props: {
     field: ControllerRenderProps<T, FieldPath<T>>;
     fieldState: ControllerFieldState;
-  }) => React.ReactNode;
+  }) => ReactNode;
   tooltipContent?: string;
-};
+}
 
 export const ControllerInput = <T extends FieldValues>({
   name,
@@ -37,7 +39,11 @@ export const ControllerInput = <T extends FieldValues>({
   children,
   orientation = "vertical",
   tooltipContent,
+  id,
+  ...inputProps
 }: ControllerInputProps<T>) => {
+  const inputId = id ?? String(name);
+
   return (
     <Controller
       name={name}
@@ -54,17 +60,18 @@ export const ControllerInput = <T extends FieldValues>({
             )}
           >
             {label ? (
-              <FieldLabel className="flex items-center gap-2" htmlFor={name}>
+              <FieldLabel className="flex items-center gap-2" htmlFor={inputId}>
                 {formatFieldLabel(label, optional)}
                 {tooltipContent ? (
                   <Tooltip>
-                    <TooltipTrigger delay={0} render={
-                      <Button variant="ghost" size="icon">  
-                        <Info className="size-4" />
-                      </Button>
-                    }>
-                      
-                    </TooltipTrigger>
+                    <TooltipTrigger
+                      delay={0}
+                      render={
+                        <Button variant="ghost" size="icon" type="button">
+                          <Info className="size-4" />
+                        </Button>
+                      }
+                    />
                     <TooltipContent>{tooltipContent}</TooltipContent>
                   </Tooltip>
                 ) : null}
@@ -74,7 +81,12 @@ export const ControllerInput = <T extends FieldValues>({
             {children ? (
               children({ field, fieldState })
             ) : (
-              <Input {...field} aria-invalid={fieldState.invalid} />
+              <Input
+                {...inputProps}
+                {...field}
+                id={inputId}
+                aria-invalid={fieldState.invalid}
+              />
             )}
           </div>
           {fieldState.error && <FieldError errors={[fieldState.error]} />}
