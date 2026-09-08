@@ -125,7 +125,7 @@ export const PlanCard = ({
         </div>
 
         <TbCarGarage className="size-14 text-primary" aria-hidden />
-        <p className="text-center text-2xl font-bold">{plan.name}</p>
+        <p className="text-center text-xl font-semibold">{plan.name}</p>
         <CardDescription className="max-w-56 text-center text-xs">
           {plan.description}
         </CardDescription>
@@ -133,10 +133,10 @@ export const PlanCard = ({
 
       <CardContent className="flex flex-col items-center justify-center">
         {primaryPrice ? (
-          <p className="text-3xl font-bold whitespace-nowrap">
+          <p className="text-3xl font-semibold whitespace-nowrap">
             {formatPrice(primaryPrice.amount_cents)}{" "}
-            <span className="text-lg text-muted-foreground">
-              / {monthly ? "mes" : "año"}
+            <span className="text-sm text-muted-foreground font-normal">
+              /{monthly ? "mes" : "año"}
             </span>
           </p>
         ) : null}
