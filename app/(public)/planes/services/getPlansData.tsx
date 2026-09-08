@@ -1,16 +1,18 @@
 import { getStrapiData } from "@/lib/strapi-api";
 import qs from "qs";
 
-import type { PlanesPageResponse, StrapiPlanesResponse } from "../interfaces/planes.interface";
+import type {
+  PlanesPageResponse,
+  StrapiPlanesResponse,
+} from "../interfaces/planes.interface";
 import { HERO_POPULATE } from "@/lib/strapi-populate";
 
 const PLANS_POPULATE_QUERY = {
   populate: {
     hero: HERO_POPULATE,
 
-    estadisticas: true,
     action_call_section: HERO_POPULATE,
-    caracteristicas: {
+    ventajas: {
       populate: {
         header: true,
         caracteristicas: {
@@ -21,24 +23,9 @@ const PLANS_POPULATE_QUERY = {
       },
     },
 
-    tech_add: {
+    facil_vender: {
       populate: {
         header: true,
-        caracteristicas: {
-          populate: {
-            icon: true,
-          },
-        },
-        imagen: true,
-      },
-    },
-
-    mobile_advertisment: {
-      populate: {
-        header: true,
-        imagen: true,
-        apple: true,
-        google: true,
         caracteristicas: {
           populate: {
             icon: true,

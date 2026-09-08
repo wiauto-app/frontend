@@ -1,8 +1,9 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import { ArrowRight, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 import { IconContainer } from "@/components/ui/iconContainer";
 import { StrapiRenderer } from "@/components/ui/strapiRenderer";
 import type {
@@ -21,7 +22,7 @@ const CollaborationFeature = ({ feature }: { feature: StrapiIconFeature }) => {
   return (
     <li className="flex min-w-0 items-start gap-3 py-2.5">
       <IconContainer
-        Icon={resolveStrapiIconName(feature.iconName) ?? Check}
+        Icon={resolveStrapiIconName(feature.iconName, defaultStrapiIconPack) ?? Check}
         size="xs"
         className="size-7 rounded-md bg-primary/8 [&_svg]:size-3.5"
       />

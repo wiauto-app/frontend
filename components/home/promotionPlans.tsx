@@ -1,7 +1,8 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 
 import Image from "next/image";
 
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 import type { StrapiHero } from "@/interfaces/strapi-components.interface";
 
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
@@ -44,7 +45,7 @@ export const PromotionPlans = ({
           <Card className="z-10 border-none bg-[#F7F8FC] shadow-none">
             <CardContent className="flex flex-row gap-5">
               <IconContainer
-                Icon={resolveStrapiIconName(data.card?.iconName)}
+                Icon={resolveStrapiIconName(data.card?.iconName, defaultStrapiIconPack)}
                 size="xl"
                 rounded
               />

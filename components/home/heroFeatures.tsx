@@ -1,5 +1,6 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 import type { StrapiIconFeature } from "@/interfaces/strapi-components.interface";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +32,7 @@ export const HeroFeatures = ({
       {features.map((feature) => (
         <li key={feature.id} className="flex items-center gap-1 lg:gap-2">
           <IconContainer
-            Icon={resolveStrapiIconName(feature.iconName)}
+            Icon={resolveStrapiIconName(feature.iconName, defaultStrapiIconPack)}
             justIcon
           />
           <div className="min-w-0">

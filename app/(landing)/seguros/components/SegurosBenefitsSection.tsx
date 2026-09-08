@@ -1,9 +1,10 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import Image from "next/image";
 import { Shield } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "../constants";
 import type { SegurosFeaturesSection } from "../interfaces/seguros.interface";
@@ -39,7 +40,7 @@ export const SegurosBenefitsSection = ({
         {features.length > 0 ? (
           <div className="mx-auto mt-2 grid grid-cols-2 gap-4 md:grid-cols-5">
             {features.map((benefit) => {
-              const BenefitIcon = resolveStrapiIconName(benefit.iconName);
+              const BenefitIcon = resolveStrapiIconName(benefit.iconName, defaultStrapiIconPack);
 
               return (
                 <Card
@@ -56,7 +57,7 @@ export const SegurosBenefitsSection = ({
                     >
                       {benefit.iconName ? (
                         <IconContainer
-                          Icon={resolveStrapiIconName(benefit.iconName)}
+                          Icon={resolveStrapiIconName(benefit.iconName, defaultStrapiIconPack)}
                         />
                       ) : null}
                     </div>

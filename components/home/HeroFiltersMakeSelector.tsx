@@ -203,7 +203,8 @@ export const HeroFiltersMakeSelector = () => {
   });
   const { data: modelMakeIds } = useQuery({
     queryKey: ["hero-catalog", "model-make-ids", debounced_search],
-    queryFn: () => heroCatalogService.searchModelMakeIds(debounced_search.trim()),
+    queryFn: () =>
+      heroCatalogService.searchModelMakeIds(debounced_search.trim()),
     enabled: debounced_search.trim().length > 0,
   });
 

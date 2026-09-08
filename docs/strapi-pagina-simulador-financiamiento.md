@@ -92,7 +92,7 @@ Single type de contenido marketing para `/simulador-financiamiento`.
 
 ## Resolución de `iconName`
 
-Helper: `resolveStrapiIconName` en `app/(public)/simulador-financiamiento/utils/`.
+Helper: `resolveStrapiIconName` / packs en `lib/strapi/` (`defaultStrapiIconPack`, packs por feature).
 
 | Prefijo | Librería |
 |---------|----------|

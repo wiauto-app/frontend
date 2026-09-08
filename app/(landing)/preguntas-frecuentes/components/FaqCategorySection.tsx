@@ -1,6 +1,7 @@
 "use client";
 
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import {
   Accordion,
   AccordionContent,
@@ -21,7 +22,7 @@ interface FaqCategorySectionProps {
 }
 
 export const FaqCategorySection = ({ group }: FaqCategorySectionProps) => {
-  const Icon = resolveStrapiIconName(group.iconName) ?? HiOutlineCollection;
+  const Icon = resolveStrapiIconName(group.iconName, defaultStrapiIconPack) ?? HiOutlineCollection;
 
   return (
     <section className="flex flex-col gap-3" aria-labelledby={`faq-${group.categoria}`}>

@@ -1,6 +1,7 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import Image from "next/image";
 
-import { resolveStrapiIconName } from "../utils/resolveStrapiIconName";
 
 interface SimulatorFeatureIconProps {
   iconName: string | null;
@@ -24,7 +25,7 @@ export const SimulatorFeatureIcon = ({
   mediaSizeClassName = "relative size-12",
   imageSizes = "48px",
 }: SimulatorFeatureIconProps) => {
-  const icon = resolveStrapiIconName(iconName);
+  const icon = resolveStrapiIconName(iconName, defaultStrapiIconPack);
 
   // Llamar el IconType como función evita JSX dinámico
   // ("Cannot create components during render" del React Compiler).

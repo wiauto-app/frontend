@@ -51,7 +51,7 @@ export const PlansPricingSection = ({
   };
 
   return (
-    <section className="relative overflow-hidden rounded-3xl py-8 md:py-20">
+    <section className="relative overflow-hidden ">
       <div className="relative container mx-auto max-w-7xl space-y-8 px-4 md:space-y-12">
         <div className="mx-auto max-w-2xl space-y-4 text-center md:space-y-6">
           <h2 className="text-3xl font-bold tracking-tight text-balance text-white md:text-4xl lg:text-6xl lg:leading-tight"></h2>

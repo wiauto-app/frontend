@@ -1,6 +1,7 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import React from "react";
 import type { StrapiFinanciacionAdvantages } from "@/interfaces/strapi-components.interface";
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 import { IconContainer } from "@/components/ui/iconContainer";
 import {
   ShieldCheck,
@@ -35,7 +36,7 @@ export const FinanciacionVentajasSection = ({
 
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {data?.caracteristicas?.map((item, idx: number) => {
-          const StrapiIcon = resolveStrapiIconName(item.iconName);
+          const StrapiIcon = resolveStrapiIconName(item.iconName, defaultStrapiIconPack);
           const label = item.label;
           const desc = item.descripcion;
 

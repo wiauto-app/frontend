@@ -1,4 +1,5 @@
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import {
   Card,
   CardContent,
@@ -11,7 +12,7 @@ import { StrapiCard } from "@/interfaces/strapi-components.interface";
 import { StrapiButton } from "./strapiButton";
 import Image from "next/image";
 export const HeroCard = ({ card }: { card?: StrapiCard | null }) => {
-  const Icon = resolveStrapiIconName(card?.iconName ?? null);
+  const Icon = resolveStrapiIconName(card?.iconName ?? null, defaultStrapiIconPack);
   return (
     <Card className="max-w-64 h-fit">
       <CardContent className="flex flex-col items-center justify-center gap-4">

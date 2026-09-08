@@ -1,6 +1,7 @@
 "use client";
 
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import { StrapiButton } from "@/components/ui/strapiButton";
 import type { StrapiCard } from "@/interfaces/strapi-components.interface";
 import { cn } from "@/lib/utils";
@@ -63,7 +64,7 @@ export const FaqCategorySidebar = ({
 
           {groups.map((group) => {
             const Icon =
-              resolveStrapiIconName(group.iconName) ?? HiOutlineCollection;
+              resolveStrapiIconName(group.iconName, defaultStrapiIconPack) ?? HiOutlineCollection;
             const isActive = selectedCategory === group.categoria;
 
             return (

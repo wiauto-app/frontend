@@ -1,5 +1,6 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import { VentajasSection as VentajasSectionInterface } from "../interfaces/vender-vehiculo.interface";
-import { resolveStrapiIconName } from "../../simulador-financiamiento/utils/resolveStrapiIconName";
 import { IconContainer } from "@/components/ui/iconContainer";
 
 interface Props {
@@ -25,7 +26,7 @@ export function VentajasSection({ data }: Props) {
             {item.iconName ? (
               <IconContainer
                 size="lg"
-                Icon={resolveStrapiIconName(item.iconName)}
+                Icon={resolveStrapiIconName(item.iconName, defaultStrapiIconPack)}
               />
             ) : null}
             <h3 className="text-base font-semibold text-foreground ">

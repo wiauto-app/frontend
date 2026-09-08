@@ -1,7 +1,8 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import React from 'react';
 import type { StrapiFinanciacionSteps } from '@/interfaces/strapi-components.interface';
 import { FinanciacionSimuladorCard } from './FinanciacionSimuladorCard';
-import { resolveStrapiIconName } from '@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName';
 import { IconContainer } from '@/components/ui/iconContainer';
 import { Car, Calculator, FileText, CheckCircle2, Disc } from 'lucide-react';
 
@@ -45,7 +46,7 @@ export const FinanciacionPasosSection = ({
 
                 {steps.map((step, index) => {
                   const StrapiIcon = step.iconName
-                    ? resolveStrapiIconName(step.iconName)
+                    ? resolveStrapiIconName(step.iconName, defaultStrapiIconPack)
                     : null;
 
                   const FallbackIcon =

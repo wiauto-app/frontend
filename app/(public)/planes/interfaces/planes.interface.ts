@@ -29,10 +29,8 @@ export interface PlanesPageResponse {
   publishedAt: string;
   hero: PlanesHero | null;
   action_call_section: StrapiHero;
-  estadisticas: PlanesEstadistica[] | null;
-  caracteristicas: PlanesCaracteristicasBlock | null;
-  tech_add: PlanesTechBlock | null;
-  mobile_advertisment: PlanesMobileBlock | null;
+  ventajas: PlanesCaracteristicasBlock | null;
+  facil_vender: PlanesCaracteristicasBlock | null;
 }
 
 export interface StrapiPlanesResponse {

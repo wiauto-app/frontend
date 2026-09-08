@@ -1,6 +1,7 @@
 "use client";
 
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import {
   Accordion,
   AccordionContent,
@@ -22,7 +23,7 @@ export const FaqQuestionsList = ({ items }: FaqQuestionsListProps) => (
   <div className="mx-auto w-full max-w-xl">
     <Accordion>
       {items.map((item) => {
-        const Icon = resolveStrapiIconName(item.iconName);
+        const Icon = resolveStrapiIconName(item.iconName, defaultStrapiIconPack);
         const pregunta = item.pregunta?.trim() ?? "";
         const respuesta = item.respuesta;
 

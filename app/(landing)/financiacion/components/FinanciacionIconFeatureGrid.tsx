@@ -1,8 +1,9 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import Image from "next/image";
 
 import type { StrapiIconFeature } from "@/interfaces/strapi-components.interface";
 import { IconContainer } from "@/components/ui/iconContainer";
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 
 interface FinanciacionIconFeatureGridProps {
   items: StrapiIconFeature[];
@@ -27,7 +28,7 @@ export const FinanciacionIconFeatureGrid = ({
               {index + 1}
             </span>
           ) : null}
-          {item.iconName && <IconContainer Icon={resolveStrapiIconName(item.iconName)} justIcon />}
+          {item.iconName && <IconContainer Icon={resolveStrapiIconName(item.iconName, defaultStrapiIconPack)} justIcon />}
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-semibold text-slate-900">{item.label}</h3>
             {item.descripcion ? (

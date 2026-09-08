@@ -1,7 +1,8 @@
 "use client";
 
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import type { StrapiHero } from "@/interfaces/strapi-components.interface";
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 import { IconContainer } from "@/components/ui/iconContainer";
 import Image from "next/image";
 
@@ -39,7 +40,7 @@ export const FinanciacionSoporteSection = ({
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-5  lg:gap-2 pt-1">
             {caracteristicasStrapi.map((item, idx: number) => {
-              const Icon = resolveStrapiIconName(item.iconName);
+              const Icon = resolveStrapiIconName(item.iconName, defaultStrapiIconPack);
               const label = item.label;
               const desc = item.descripcion;
 

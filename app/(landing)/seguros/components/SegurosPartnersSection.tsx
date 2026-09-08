@@ -1,10 +1,11 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import Image from "next/image";
 
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
 import type { SegurosFeaturesSection } from "../interfaces/seguros.interface";
 import { IconContainer } from "@/components/ui/iconContainer";
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 
 interface SegurosPartnersSectionProps {
   data: SegurosFeaturesSection | null;
@@ -39,7 +40,7 @@ export const SegurosPartnersSection = ({
               return (
                 <div key={partner.id}>
                   {partner.iconName ? (
-                    <IconContainer Icon={resolveStrapiIconName(partner.iconName)} justIcon />
+                    <IconContainer Icon={resolveStrapiIconName(partner.iconName, defaultStrapiIconPack)} justIcon />
                   ) : null}
                 </div>
               );

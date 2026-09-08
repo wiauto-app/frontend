@@ -1,6 +1,7 @@
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import Image from "next/image";
 
-import { resolveStrapiIconName } from "@/app/(public)/simulador-financiamiento/utils/resolveStrapiIconName";
 import type { StrapiFeaturesSection } from "@/interfaces/strapi-components.interface";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
@@ -37,7 +38,7 @@ const FeatureIcon = ({ icon_url, icon_alt, icon_name }: FeatureIconProps) => {
   if (icon_name) {
     return (
       <IconContainer
-        Icon={resolveStrapiIconName(icon_name)}
+        Icon={resolveStrapiIconName(icon_name, defaultStrapiIconPack)}
         justIcon
         className="size-10 shrink-0"
       />

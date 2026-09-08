@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 
 import { PlansFeaturesSection } from "./components/PlansFeaturesSection";
-import { PlansFinalCtaSection } from "./components/PlansFinalCtaSection";
 import { PlansHeroSection } from "./components/PlansHeroSection";
-import { PlansMobileSection } from "./components/PlansMobileSection";
 import { PlansPricingSection } from "./components/PlansPricingSection";
-import { PlansStatsSection } from "./components/PlansStatsSection";
-import { PlansTechSection } from "./components/PlansTechSection";
+import { PlansStepsSection } from "./components/PlansStepsSection";
 import { getPlansData } from "./services/getPlansData";
 import { getPublicPlansCatalog } from "./services/getPublicPlansCatalog.server";
+import { LandingContainer } from "@/components/ui/landingContainer";
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -18,13 +16,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: cms?.hero?.titulo ?? "Planes profesionales | WiAuto",
       description:
         cms?.hero?.descripcion ??
-        "Descubre los planes profesionales de WiAuto para impulsar tu negocio automotriz.",
+        "Descubre los planes profesionales de WiAuto para impulsar tu negocio de la automoción.",
     };
   } catch {
     return {
       title: "Planes profesionales | WiAuto",
       description:
-        "Descubre los planes profesionales de WiAuto para impulsar tu negocio automotriz.",
+        "Descubre los planes profesionales de WiAuto para impulsar tu negocio de la automoción.",
     };
   }
 }
@@ -48,16 +46,8 @@ export default async function Page() {
   }
 
   return (
-    <div className="container-custom flex flex-col gap-16">
+    <LandingContainer>
       {cms?.hero ? <PlansHeroSection hero={cms.hero} /> : null}
-
-      {/* {cms?.estadisticas && cms.estadisticas.length > 0 ? (
-        <PlansStatsSection items={cms.estadisticas ?? []} />
-      ) : null} */}
-
-      {cms?.caracteristicas ? (
-        <PlansFeaturesSection data={cms.caracteristicas} />
-      ) : null}
       {cms?.action_call_section ? (
         <PlansPricingSection
           actionCallSection={cms.action_call_section}
@@ -66,13 +56,11 @@ export default async function Page() {
         />
       ) : null}
 
-      {cms?.tech_add ? <PlansTechSection data={cms.tech_add} /> : null}
+      {cms?.ventajas ? <PlansFeaturesSection data={cms.ventajas} /> : null}
 
-      {cms?.mobile_advertisment ? (
-        <PlansMobileSection data={cms.mobile_advertisment} />
+      {cms?.facil_vender ? (
+        <PlansStepsSection data={cms.facil_vender} />
       ) : null}
-
-      <PlansFinalCtaSection primaryCta={cms?.hero?.acciones?.[0] ?? null} />
-    </div>
+    </LandingContainer>
   );
 }
