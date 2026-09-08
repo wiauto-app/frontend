@@ -29,22 +29,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const [cms_result, plans_result] = await Promise.allSettled([
+  const [cms_result, plans_result] = await Promise.all([
     getPlansData(),
     getPublicPlansCatalog(),
   ]);
 
-  const cms = cms_result.status === "fulfilled" ? cms_result.value : null;
-  const plans = plans_result.status === "fulfilled" ? plans_result.value : [];
-  const catalog_error = plans_result.status === "rejected";
-  if (!cms && catalog_error) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center p-20 text-center text-slate-600">
-        No se pudo cargar la información de planes. Inténtalo de nuevo más
-        tarde.
-      </div>
-    );
-  }
+
+  const cms = cms_result ?? null;
+  const plans = plans_result ?? [];
+  console.log(plans);
 
   return (
     <LandingContainer>
@@ -53,7 +46,6 @@ export default async function Page() {
         <PlansPricingSection
           actionCallSection={cms.action_call_section}
           plans={plans}
-          catalogError={catalog_error}
         />
       ) : null}
 
