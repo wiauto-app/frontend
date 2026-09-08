@@ -114,7 +114,7 @@ export default async function VehiclesListingPage(props: {
             !isMapVisible ? "listing-container" : "container-custom-full",
           )}
         >
-          <aside className="hidden w-82 shrink-0 flex-col gap-2 lg:flex">
+          <aside className="hidden 2xl:w-82 w-64 shrink-0 flex-col gap-2 lg:flex">
             <Suspense fallback={<FiltersLoading />}>
               <SaveSearchButton />
               <BuyAssistantBannerCard />
