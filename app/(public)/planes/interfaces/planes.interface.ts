@@ -1,4 +1,5 @@
 import type {
+  StrapiCard,
   StrapiEstadistica,
   StrapiHero,
   StrapiLink,
@@ -31,6 +32,7 @@ export interface PlanesPageResponse {
   action_call_section: StrapiHero;
   ventajas: PlanesCaracteristicasBlock | null;
   facil_vender: PlanesCaracteristicasBlock | null;
+  contact: StrapiCard | null;
 }
 
 export interface StrapiPlanesResponse {

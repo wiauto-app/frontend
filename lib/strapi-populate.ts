@@ -1,41 +1,42 @@
+/** Populate de `shared.link` (media anidada). */
+export const LINK_POPULATE = {
+  populate: {
+    imagen: true,
+  },
+};
+
+/** Populate de `shared.carta-ventaja` (card). */
+export const CARD_POPULATE = {
+  populate: {
+    boton: LINK_POPULATE,
+    boton_secundario: LINK_POPULATE,
+    imagen: true,
+  },
+};
 
 export const HERO_POPULATE = {
   populate: {
-    acciones: {
-      populate: {
-        imagen: true,
-      },
-    },
+    acciones: LINK_POPULATE,
     imagen: true,
     caracteristicas: {
       populate: {
         icon: true,
       },
     },
-    card: {
+    card: CARD_POPULATE,
+  },
+};
+
+export const ADVANTAGES_POPULATE = {
+  populate: {
+    header: true,
+    caracteristicas: {
       populate: {
-        boton: {
-          populate: {
-            imagen: true,
-          },
-        },
-        imagen: true,
+        icon: true,
       },
     },
   },
 };
-
-
-export const ADVANTAGES_POPULATE = {
-    populate: {
-      header: true,
-      caracteristicas: {
-        populate: {
-          icon: true,
-        },
-      },
-    },
-  };
 
 export const STEPS_POPULATE = {
   populate: {

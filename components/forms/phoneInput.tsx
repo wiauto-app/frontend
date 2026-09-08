@@ -38,6 +38,7 @@ export type PhoneInputProps = {
   dialListLabel?: string;
   nationalNumberLabel?: string;
   nationalNumberPlaceholder?: string;
+  inputsClassName?: string;
 };
 
 export const PhoneInput = ({
@@ -49,6 +50,7 @@ export const PhoneInput = ({
   dialListLabel = "Buscar país o prefijo",
   nationalNumberLabel = "Número de teléfono",
   nationalNumberPlaceholder = "Número",
+  inputsClassName,
 }: PhoneInputProps) => {
   const baseId = useId();
   const dialTriggerId = `${baseId}-dial-trigger`;
@@ -172,7 +174,7 @@ export const PhoneInput = ({
               aria-expanded={dialPopoverOpen}
               aria-label="Prefijo internacional del teléfono"
               title={triggerHint}
-              className="h-9 justify-between gap-1 bg-transparent font-normal tabular-nums "
+              className={cn("h-9 justify-between gap-1 bg-transparent font-normal tabular-nums ", inputsClassName)}
             >
               <span className="min-w-0 flex-1 truncate text-left">
                 <span
@@ -271,7 +273,7 @@ export const PhoneInput = ({
         placeholder={nationalNumberPlaceholder}
         value={value.phone ?? ""}
         onChange={handleNationalPhoneChange}
-        className="min-w-0 flex-1"
+        className={cn("min-w-0 flex-1", inputsClassName)}
       />
     </div>
   );

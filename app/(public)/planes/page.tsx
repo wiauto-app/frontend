@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { PlansContactSection } from "./components/PlansContactSection";
 import { PlansFeaturesSection } from "./components/PlansFeaturesSection";
 import { PlansHeroSection } from "./components/PlansHeroSection";
 import { PlansPricingSection } from "./components/PlansPricingSection";
@@ -61,6 +62,8 @@ export default async function Page() {
       {cms?.facil_vender ? (
         <PlansStepsSection data={cms.facil_vender} />
       ) : null}
+
+      {cms?.contact ? <PlansContactSection data={cms.contact} /> : null}
     </LandingContainer>
   );
 }

@@ -15,6 +15,8 @@ export interface StrapiLink {
   imagen: StrapiMedia | null;
   iconName: string | null;
   externo?: boolean | null;
+  /** Si es true, el CTA dispara una acción en la página (p. ej. submit) en lugar de navegar. */
+  funcion?: boolean | null;
 }
 
 /** Componente `shared.icon-feature` */
@@ -32,6 +34,7 @@ export interface StrapiCard {
   titulo: string | null;
   descripcion: string | null;
   boton: StrapiLink | null;
+  boton_secundario: StrapiLink | null;
   imagen: StrapiMedia | null;
   colorFondo: string | null;
   colorTexto: string | null;

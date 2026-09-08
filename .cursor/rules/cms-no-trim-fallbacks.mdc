@@ -1,0 +1,37 @@
+---
+description: No trim ni fallbacks defensivos en textos del CMS Strapi; mostrar lo que hay en el CMS
+globs: "**/interfaces/strapi*.ts,**/lib/strapi*/**,app/(public)/**/*.tsx,app/(landing)/**/*.tsx,components/home/**/*.tsx,components/ui/strapi*.tsx,components/ui/hero*.tsx"
+alwaysApply: false
+---
+
+# Textos CMS (Strapi): sin `.trim()` ni defaults inventados
+
+El contenido lo decide quien edita Strapi. **Lo que venga en el CMS se muestra tal cual.**
+
+## Prohibido por defecto
+
+1. Encadenar `.trim()` en títulos, descripciones, labels, URLs o colores del CMS solo “por limpieza”.
+2. Rellenar la UI con fallbacks de copy cuando el campo es `null`/vacío (`|| "Texto inventado"`, `?? "…"`, placeholders de marketing).
+3. Helpers vacíos del estilo `const title = cms.titulo?.trim() || "Default"` que esconden datos mal cargados o campos no rellenados a propósito.
+
+```tsx
+// ❌ EVITAR
+<h2>{data.titulo?.trim() || "¿Prefieres hablar con nosotros?"}</h2>
+const label = data.boton?.label?.trim() || "Hablar por WhatsApp";
+const bg = data.colorFondo?.trim() ? { backgroundColor: data.colorFondo.trim() } : {};
+
+// ✅ BIEN — render directo
+<h2>{data.titulo}</h2>
+<span>{data.boton?.label}</span>
+style={data.colorFondo ? { backgroundColor: data.colorFondo } : undefined}
+```
+
+## Cuándo sí validar / no renderizar
+
+- **Null de componente/relación**: si `data.boton` es `null`, no inventes CTA; omite el botón o la sección.
+- **Contrato técnico** (no copy): p. ej. URL absoluta `http(s)` para enlaces externos, tipos, ids.
+- **Input de usuario** (formularios, búsqueda): ahí sí tiene sentido normalizar; no aplica a campos CMS.
+
+## Criterio
+
+Si el CMS manda espacios o un string raro, se muestra. Corregir el contenido en Strapi, no en el frontend.

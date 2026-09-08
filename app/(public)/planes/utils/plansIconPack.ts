@@ -1,3 +1,4 @@
+import { FaWhatsapp } from "react-icons/fa";
 import {
   HiChartBar,
   HiCheckCircle,
@@ -27,4 +28,5 @@ export const plansIconPack = {
   HiOutlineUsers,
   HiOutlineChartBar,
   HiCheckCircle,
+  FaWhatsapp,
 } as const satisfies StrapiIconPack;

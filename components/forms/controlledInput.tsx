@@ -52,6 +52,7 @@ type ControllerInputProps<T extends FieldValues> = {
   }) => React.ReactNode;
   placeholder?: string;
   rows?: number;
+  inputsClassName?: string;
 };
 
 export const ControlledInput = <T extends FieldValues>({
@@ -65,6 +66,7 @@ export const ControlledInput = <T extends FieldValues>({
   children,
   orientation = "vertical",
   rows = 3,
+  inputsClassName,
 }: ControllerInputProps<T>) => {
   return (
     <Controller
@@ -89,6 +91,7 @@ export const ControlledInput = <T extends FieldValues>({
               value={normalizePhoneFieldValue(field.value)}
               onChange={field.onChange}
               ariaInvalid={fieldState.invalid}
+              className={inputsClassName}
             />
           ) : type === "textarea" ? (
             <Textarea

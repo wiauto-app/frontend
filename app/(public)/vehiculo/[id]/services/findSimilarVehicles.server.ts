@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 
 import { API_URL } from "@/constants";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
@@ -40,7 +39,6 @@ export const findSimilarVehicles = async (
     return empty;
   }
 
-  const token = (await cookies()).get("access_token")?.value;
   const query = new URLSearchParams({
     page: String(page),
     limit: String(limit),
@@ -50,7 +48,6 @@ export const findSimilarVehicles = async (
     const response = await fetch(
       `${API_URL}/v1/vehicles/${vehicleId}/similar?${query.toString()}`,
       {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
         cache: "no-store",
       },
     );

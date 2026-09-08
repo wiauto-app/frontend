@@ -51,54 +51,51 @@ export const PlansPricingSection = ({
   };
 
   return (
-    <section className="relative overflow-hidden ">
-      <div className="relative container mx-auto max-w-7xl space-y-8 px-4 md:space-y-12">
-        <div className="mx-auto max-w-2xl space-y-4 text-center md:space-y-6">
-          <h2 className="text-3xl font-bold tracking-tight text-balance text-white md:text-4xl lg:text-6xl lg:leading-tight"></h2>
-          <SectionHeading
-            className="text-2xl font-bold tracking-tight text-balance  md:text-3xl lg:text-4xl lg:leading-tight"
-            lead={actionCallSection?.titulo}
-          />
+    <section className="relative overflow-hidden space-y-6">
+      <div className="mx-auto text-center space-y-2">
+        <SectionHeading
+          lead={actionCallSection?.titulo}
+          description={actionCallSection?.descripcion}
+        />
 
-          <p className="text-sm text-muted-foreground md:text-base">
-            {actionCallSection?.descripcion}
-          </p>
-        </div>
-
-        {catalogError ? (
-          <div
-            className="rounded-2xl border border-white/15 bg-white/10 px-4 py-4 text-center text-sm text-slate-200 backdrop-blur-sm"
-            role="status"
-          >
-            No pudimos cargar los planes en este momento. Inténtalo de nuevo más
-            tarde o accede a monetización desde tu cuenta.
-          </div>
-        ) : null}
-
-        {!catalogError && !plans.length ? (
-          <div className="rounded-2xl border border-white/15 bg-white/10 px-6 py-10 text-center text-slate-200 backdrop-blur-sm">
-            No hay planes de suscripción disponibles en este momento.
-          </div>
-        ) : null}
-
-        {!catalogError && plans.length > 0 ? (
-          <div
-            className={cn("mx-auto grid gap-5 sm:grid-cols-2 lg:grid-cols-3")}
-          >
-            {plans.map((plan) => (
-              <PlanCard
-                key={plan.id}
-                plan={plan}
-                isActive={planName === plan.name}
-                formatPrice={formatEuros}
-                onSelect={() => {
-                  handleSelectPlan(plan);
-                }}
-              />
-            ))}
-          </div>
-        ) : null}
+       
       </div>
+
+      {catalogError ? (
+        <div
+          className="rounded-2xl border border-white/15 bg-white/10 px-4 py-4 text-center text-sm text-slate-200 backdrop-blur-sm"
+          role="status"
+        >
+          No pudimos cargar los planes en este momento. Inténtalo de nuevo más
+          tarde o accede a monetización desde tu cuenta.
+        </div>
+      ) : null}
+
+      {!catalogError && !plans.length ? (
+        <div className="rounded-2xl border border-white/15 bg-white/10 px-6 py-10 text-center text-slate-200 backdrop-blur-sm">
+          No hay planes de suscripción disponibles en este momento.
+        </div>
+      ) : null}
+
+      {!catalogError && plans.length > 0 ? (
+        <div
+          className={cn(
+            "mx-auto grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-3 px-1",
+          )}
+        >
+          {plans.map((plan) => (
+            <PlanCard
+              key={plan.id}
+              plan={plan}
+              isActive={planName === plan.name}
+              formatPrice={formatEuros}
+              onSelect={() => {
+                handleSelectPlan(plan);
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 };

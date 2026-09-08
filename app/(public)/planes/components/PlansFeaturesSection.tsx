@@ -22,7 +22,7 @@ export const PlansFeaturesSection = ({ data }: PlansFeaturesSectionProps) => {
     <SectionContainer className="">
       <SectionHeading lead={data.header?.titulo || ""}></SectionHeading>
       {data.header?.descripcion ? (
-        <p className="mt-4 text-base text-slate-600 md:text-lg">
+        <p className="mt-4 text-base text-slate-600">
           {data.header.descripcion}
         </p>
       ) : null}
@@ -35,9 +35,9 @@ export const PlansFeaturesSection = ({ data }: PlansFeaturesSectionProps) => {
               <CardContent className="flex flex-col items-center gap-4">
                 {Icon ? <IconContainer Icon={Icon} rounded size="xl" /> : null}
                 <div className="flex flex-col gap-2">
-                  <CardTitle className="text-lg font-semibold text-center">
+                  <h3 className="text-base  font-semibold text-center">
                     {item.label}
-                  </CardTitle>
+                  </h3>
                   {item.descripcion ? (
                     <CardDescription className="text-xs text-center">
                       {item.descripcion}

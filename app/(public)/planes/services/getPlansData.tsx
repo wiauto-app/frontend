@@ -5,34 +5,19 @@ import type {
   PlanesPageResponse,
   StrapiPlanesResponse,
 } from "../interfaces/planes.interface";
-import { HERO_POPULATE } from "@/lib/strapi-populate";
+import {
+  ADVANTAGES_POPULATE,
+  CARD_POPULATE,
+  HERO_POPULATE,
+} from "@/lib/strapi-populate";
 
 const PLANS_POPULATE_QUERY = {
   populate: {
     hero: HERO_POPULATE,
-
     action_call_section: HERO_POPULATE,
-    ventajas: {
-      populate: {
-        header: true,
-        caracteristicas: {
-          populate: {
-            icon: true,
-          },
-        },
-      },
-    },
-
-    facil_vender: {
-      populate: {
-        header: true,
-        caracteristicas: {
-          populate: {
-            icon: true,
-          },
-        },
-      },
-    },
+    ventajas: ADVANTAGES_POPULATE,
+    facil_vender: ADVANTAGES_POPULATE,
+    contact: CARD_POPULATE,
   },
 };
 
