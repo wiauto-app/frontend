@@ -22,6 +22,8 @@ import {
   getRoleLabel,
 } from "../utils/teamPermissions";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatDate } from "@/app/(public)/vehiculos/utils";
+import { UserAvatar } from "@/components/navbar/components/userAvatar";
 
 type TeamTableProps = {
   members: DealershipMemberDetail[];
@@ -51,6 +53,7 @@ const TeamTable = ({
   onRemoveMember,
   onLeaveTeam,
 }: TeamTableProps) => {
+  console.log(members);
   const isManager = canManageTeam(currentRole);
 
   const handleRemove = async (member: DealershipMemberDetail) => {
@@ -119,14 +122,17 @@ const TeamTable = ({
         <Table className="w-full">
           <TableHeader>
             <TableRow>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <TableHead >
                 Miembro
               </TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <TableHead >
                 Rol
               </TableHead>
+              <TableHead >
+                Miembro desde
+              </TableHead>
               {isManager ? (
-                <TableHead className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                <TableHead >
                   Acciones
                 </TableHead>
               ) : null}
@@ -144,9 +150,7 @@ const TeamTable = ({
                 >
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 font-semibold text-white">
-                        {getMemberName(member).charAt(0).toUpperCase()}
-                      </div>
+                      <UserAvatar imageUrl={member.profile.avatar_url} name={getMemberName(member)} />
                       <div>
                         <p className="font-medium text-gray-900">
                           {getMemberName(member)}
@@ -180,6 +184,9 @@ const TeamTable = ({
                         {getRoleLabel(member.role)}
                       </span>
                     )}
+                  </TableCell>
+                  <TableCell>
+                    {formatDate(member.created_at)}
                   </TableCell>
                   {isManager ? (
                     <TableCell>

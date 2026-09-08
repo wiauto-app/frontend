@@ -2,7 +2,10 @@ import { apiDelete, apiGet, apiPost } from "@/lib/api";
 import type { PaginatedResult } from "@/types/general.types";
 import { objectToQueryString } from "@/lib/utils";
 import { V1_DEALERSHIP_INVITATIONS } from "./route.constants";
-import type { DealershipInvitation } from "./types/team.types";
+import type {
+  DealershipInvitation,
+  DealershipInvitationJoinStatus,
+} from "./types/team.types";
 import { InviteUserSchema } from "@/app/usuario/equipo/schemas/inviteUser.schema";
 
 export type ListInvitationsParams = {
@@ -33,6 +36,20 @@ export const dealershipInvitationService = {
     );
     if (!response.ok) {
       throw new Error(response.message || "No se pudieron cargar las invitaciones");
+    }
+    return response.data;
+  },
+
+  getJoinStatus: async (
+    invitationId: string,
+  ): Promise<DealershipInvitationJoinStatus> => {
+    const response = await apiGet<DealershipInvitationJoinStatus>(
+      `${V1_DEALERSHIP_INVITATIONS}/${invitationId}/join-status`,
+    );
+    if (!response.ok) {
+      throw new Error(
+        response.message || "No se pudo validar la invitación",
+      );
     }
     return response.data;
   },

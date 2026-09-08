@@ -14,8 +14,7 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const { data } = await getServerSession();
-  const planName = data?.billing_summary.plan_name ?? {};
-
+  const planName = data?.billing_summary.plan_name ?? null;
   const showProShell = !!planName;
   const showUserSidebar = !showProShell;
   const layoutVariants = cva(

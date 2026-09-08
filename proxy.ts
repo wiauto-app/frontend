@@ -10,6 +10,16 @@ import {
 
 const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
 const PRIVATE_PATHS = ["/usuario", "/publicar"];
+
+const buildLoginRedirectUrl = (req: NextRequest): URL => {
+  const loginUrl = new URL("/iniciar-sesion", req.url);
+  const returnPath = `${req.nextUrl.pathname}${req.nextUrl.search}`;
+  if (returnPath.startsWith("/") && !returnPath.startsWith("//")) {
+    loginUrl.searchParams.set("redirect", returnPath);
+  }
+  return loginUrl;
+};
+
 /**
  * En rutas protegidas: refresca sesión al navegar (UX).
  * El cliente usa POST /api/auth/refresh con single-flight; Nest mitiga rotación concurrente.
@@ -25,7 +35,7 @@ export async function proxy(req: NextRequest) {
 
   const shouldRedirect = !access_token && !refresh_token && isPrivatePath;
   if (shouldRedirect) {
-    return NextResponse.redirect(new URL("/iniciar-sesion", req.url));
+    return NextResponse.redirect(buildLoginRedirectUrl(req));
   }
 
   if(!refresh_token && !isPrivatePath) {
@@ -33,7 +43,7 @@ export async function proxy(req: NextRequest) {
   }
 
   if(!refresh_token) {
-    return NextResponse.redirect(new URL("/iniciar-sesion", req.url));
+    return NextResponse.redirect(buildLoginRedirectUrl(req));
   }
 
   const result = await ensureValidSession({ refresh_token, access_token });
@@ -65,9 +75,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/verificacion-2fa", req.url));
   }
 
-  const redirect_res = NextResponse.redirect(
-    new URL("/iniciar-sesion", req.url),
-  );
+  const redirect_res = NextResponse.redirect(buildLoginRedirectUrl(req));
   return clearSessionCookiesOnResponse(redirect_res);
 }
 

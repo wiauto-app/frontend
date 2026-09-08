@@ -11,13 +11,34 @@ describe("getUserSidebarLinks", () => {
     expect(links.some((link) => link.href === "/usuario/contactos")).toBe(true);
   });
 
-  it("muestra Perfil de concesionaria en la navegación", () => {
+  it("muestra Monetización siempre", () => {
     const links = getUserSidebarLinks({
       dealershipMembership: null,
     });
 
+    expect(links.some((link) => link.href === "/usuario/monetizacion")).toBe(
+      true,
+    );
+  });
+
+  it("muestra links pro solo con suscripción", () => {
+    const withoutPlan = getUserSidebarLinks({
+      dealershipMembership: null,
+      isSubscribed: false,
+    });
+    const withPlan = getUserSidebarLinks({
+      dealershipMembership: null,
+      isSubscribed: true,
+    });
+
     expect(
-      links.some((link) => link.href === "/usuario/perfil?tab=dealership"),
+      withoutPlan.some((link) => link.href === "/usuario/estadisticas"),
+    ).toBe(false);
+    expect(withPlan.some((link) => link.href === "/usuario/estadisticas")).toBe(
+      true,
+    );
+    expect(
+      withPlan.some((link) => link.href === "/usuario/perfil?tab=dealership"),
     ).toBe(true);
   });
 
@@ -29,21 +50,23 @@ describe("getUserSidebarLinks", () => {
         member_id: "member-1",
         role: "member",
       },
+      isSubscribed: false,
     });
 
     expect(links.some((link) => link.href === "/usuario/equipo")).toBe(true);
   });
 
-  it("oculta Equipo sin membership", () => {
+  it("oculta Equipo sin membership aunque haya suscripción", () => {
     const links = getUserSidebarLinks({
       dealershipMembership: null,
+      isSubscribed: true,
       hasDismissedVehicles: true,
     });
 
     expect(links.some((link) => link.href === "/usuario/equipo")).toBe(false);
   });
 
-  it("muestra Monetización siempre y Descartados con entitlement", () => {
+  it("muestra Descartados por defecto y Equipo con membership", () => {
     const links = getUserSidebarLinks({
       dealershipMembership: {
         dealership_id: "dealer-1",
@@ -51,12 +74,16 @@ describe("getUserSidebarLinks", () => {
         member_id: "member-1",
         role: "admin",
       },
+      isSubscribed: true,
       hasDismissedVehicles: true,
     });
 
-    expect(links.some((link) => link.href === "/usuario/monetizacion")).toBe(true);
-    expect(links.some((link) => link.href === "/usuario/descartados")).toBe(true);
-    expect(links.some((link) => link.href === "/usuario/reportes")).toBe(false);
+    expect(links.some((link) => link.href === "/usuario/monetizacion")).toBe(
+      true,
+    );
+    expect(links.some((link) => link.href === "/usuario/descartados")).toBe(
+      true,
+    );
     expect(links.some((link) => link.href === "/usuario/equipo")).toBe(true);
   });
 

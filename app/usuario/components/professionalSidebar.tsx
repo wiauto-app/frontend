@@ -18,7 +18,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEntitlements } from "@/hooks/useEntitlements";
 import { useUserSidebarItems } from "@/hooks/useUserSidebarItems";
 
 const SIDEBAR_SKELETON_ITEMS = 8;
@@ -73,6 +72,7 @@ export function ProfessionalSidebar({
 
   const isOnUsuarioPath = pathname.includes("usuario");
   const sidebarItems = useUserSidebarItems();
+
   if (!isOnUsuarioPath) {
     return null;
   }

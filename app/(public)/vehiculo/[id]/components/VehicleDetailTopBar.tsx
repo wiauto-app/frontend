@@ -14,8 +14,8 @@ export const VehicleDetailTopBar = ({
   breadcrumbItems,
 }: VehicleDetailTopBarProps) => {
   return (
-    <div className="border-b border-gray-200 bg-white">
-      <div className="mx-auto listing-container flex items-center justify-between gap-4 py-3">
+    <div className=" border-b border-gray-200 bg-white">
+      <div className="mx-auto container-custom flex items-center justify-between gap-4 py-3">
         <PageBreadcrumbs items={breadcrumbItems} />
 
         <div className="flex items-center justify-end gap-2">

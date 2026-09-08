@@ -14,8 +14,10 @@ import { InvitationRoleSelector } from "./invitationRoleSelector";
 import { dealershipInvitationService } from "@/services/dealerships/dealershipInvitationService";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const InviteUserDialog = () => {
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const form = useForm<InviteUserSchema>({
     resolver: zodResolver(inviteUserSchema),
@@ -32,6 +34,8 @@ export const InviteUserDialog = () => {
       toast.error(response.message || "No se pudo enviar la invitación");
       return;
     }
+    queryClient.invalidateQueries({ queryKey: ["dealership-members"] });
+    queryClient.invalidateQueries({ queryKey: ["dealership-invitations"] });
     toast.success("Invitación enviada correctamente");
     form.reset();
     setIsOpen(false);
