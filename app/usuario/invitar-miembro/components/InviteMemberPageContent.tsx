@@ -67,7 +67,6 @@ export const InviteMemberPageContent = () => {
       await dealershipInvitationService.createInvitation({
         email: values.email,
         role: values.role,
-        dealership_id: membership.dealership_id,
       });
 
       await queryClient.invalidateQueries({
@@ -112,8 +111,12 @@ export const InviteMemberPageContent = () => {
         <div className="mb-6 flex items-center gap-2">
           <UserPlus className="size-5 text-blue-600" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Invitar miembro</h1>
-            <p className="text-sm text-gray-500">{membership.dealership_name}</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Invitar miembro
+            </h1>
+            <p className="text-sm text-gray-500">
+              {membership.dealership_name}
+            </p>
           </div>
         </div>
 
