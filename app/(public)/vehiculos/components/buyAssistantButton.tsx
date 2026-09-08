@@ -21,8 +21,7 @@ export const BuyAssistantButton = () => {
   return (
     <IAButton
       type="button"
-      size="2xl"
-      className="rounded-2xl max-w-xl text-lg font-semibold w-fit"
+      className="rounded-2xl 2xl:text-lg text-base font-semibold w-full h-12"
       aria-label="Abrir asistente de compra con los filtros actuales"
       onClick={handleClick}
     >
