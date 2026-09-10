@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
 import { AppleLogin } from "./appleLogin";
 import { GoogleLogin } from "./googleLogin";
-import { RegisterDto, RegisterSchema } from "@/validations/Schemas";
+import {
+  RegisterFormValues,
+  RegisterSchema,
+} from "@/validations/Schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/authService";
 import { trackCompleteRegistration } from "@/lib/analytics/events";
 import { PasswordInput } from "@/components/ui/passwordInput";
+import {
+  DEFAULT_PHONE_CODE,
+  PhoneInput,
+} from "@/components/forms/phoneInput";
 
 interface RegisterFormProps {
   invitedEmail?: string;
@@ -32,17 +38,21 @@ export default function RegisterForm({
   const [isLoading, setIsLoading] = useState(false);
 
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const form = useForm<RegisterDto>({
+  const form = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: invitedEmail ?? "",
       password: "",
       name: "",
       last_name: "",
+      phone: {
+        phone_code: DEFAULT_PHONE_CODE,
+        phone: "",
+      },
     },
   });
 
-  async function onSubmit(data: z.infer<typeof RegisterSchema>) {
+  async function onSubmit(data: RegisterFormValues) {
     if (!acceptTerms) {
       toast.error("Debes aceptar las condiciones de uso");
       return;
@@ -50,7 +60,12 @@ export default function RegisterForm({
 
     setIsLoading(true);
     try {
-      const response = await authService.register(data);
+      const { phone, ...rest } = data;
+      const response = await authService.register({
+        ...rest,
+        phone_code: phone.phone_code,
+        phone: phone.phone,
+      });
 
       if (response.ok) {
         trackCompleteRegistration("email");
@@ -61,12 +76,11 @@ export default function RegisterForm({
       } else {
         toast.error(response.message);
       }
-
     } catch (error: Error | unknown) {
       console.error("Register error:", error);
       toast.error(
         (error as Error).message ||
-          "Hubo un error al crear tu cuenta. Por favor, intenta de nuevo.",
+          "Hubo un error al crear tu cuenta. Por favor, inténtalo de nuevo.",
       );
     } finally {
       setIsLoading(false);
@@ -128,12 +142,12 @@ export default function RegisterForm({
               htmlFor="register-last_name"
               className="mb-1 block text-gray-700"
             >
-              Apellido *
+              Apellidos *
             </Label>
             <Input
               id="register-last_name"
               type="text"
-              placeholder="Apellido"
+              placeholder="Apellidos"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
               {...form.register("last_name")}
               disabled={isLoading}
@@ -168,6 +182,36 @@ export default function RegisterForm({
         </div>
 
         <div>
+          <Label className="mb-1 block text-gray-700">Teléfono *</Label>
+          <Controller
+            name="phone"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <>
+                <PhoneInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={isLoading}
+                  ariaInvalid={fieldState.invalid}
+                  nationalNumberLabel="Número de teléfono"
+                  nationalNumberPlaceholder="Número de móvil"
+                />
+                {form.formState.errors.phone?.phone_code ? (
+                  <p className="mt-1 text-sm text-red-600">
+                    {form.formState.errors.phone.phone_code.message}
+                  </p>
+                ) : null}
+                {form.formState.errors.phone?.phone ? (
+                  <p className="mt-1 text-sm text-red-600">
+                    {form.formState.errors.phone.phone.message}
+                  </p>
+                ) : null}
+              </>
+            )}
+          />
+        </div>
+
+        <div>
           <Label
             htmlFor="register-password"
             className="mb-1 block text-gray-700"
@@ -179,7 +223,7 @@ export default function RegisterForm({
             placeholder="Contraseña *"
             {...form.register("password")}
             disabled={isLoading}
-            />
+          />
           {form.formState.errors.password && (
             <p className="mt-1 text-sm text-red-600">
               {form.formState.errors.password.message}
@@ -199,18 +243,6 @@ export default function RegisterForm({
             de datos.
           </Label>
         </div>
-        {/* 
-        <div className="flex items-start gap-2">
-          <Checkbox
-            id="accept-newsletter"
-            checked={acceptNewsletter}
-            onCheckedChange={(checked) => setAcceptNewsletter(checked)}
-            disabled={isLoading}
-          />
-          <Label htmlFor="accept-newsletter" className="text-gray-600">
-            Suscríbete y recibe todas las novedades de nuestro blog
-          </Label>
-        </div> */}
       </form>
 
       <Button
@@ -219,7 +251,7 @@ export default function RegisterForm({
         className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
         disabled={isLoading}
       >
-        {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
+        {isLoading ? "Creando cuenta..." : "Crear cuenta"}
       </Button>
 
       <div className="text-center">
