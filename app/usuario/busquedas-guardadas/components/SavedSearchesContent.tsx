@@ -6,23 +6,17 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSavedSearchesPage } from "../hooks/useSavedSearchesPage";
 import { SavedSearchCard } from "./SavedSearchCard";
-import { GlobalNotificationPreferences } from "./GlobalNotificationPreferences";
 
 export const SavedSearchesContent = () => {
   const {
     alerts,
-    notificationPreferences,
     isLoadingAlerts,
-    isLoadingNotificationPreferences,
     alertsError,
-    notificationPreferencesError,
     updateAlert,
     isUpdatingAlert,
     removeAlert,
     isRemovingAlert,
     markViewed,
-    updateNotificationPreferences,
-    isUpdatingNotificationPreferences,
   } = useSavedSearchesPage();
 
   const handleUpdateAlert = async (
@@ -59,21 +53,6 @@ export const SavedSearchesContent = () => {
       await markViewed(alertId);
     } catch {
       // El contador se actualiza en segundo plano; no bloqueamos la UI.
-    }
-  };
-
-  const handleUpdatePreferences = async (
-    payload: Parameters<typeof updateNotificationPreferences>[0],
-  ) => {
-    try {
-      await updateNotificationPreferences(payload);
-      toast.success("Preferencias actualizadas");
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "No se pudieron actualizar las preferencias",
-      );
     }
   };
 
@@ -138,27 +117,6 @@ export const SavedSearchesContent = () => {
           ))}
       </div>
 
-      {isLoadingNotificationPreferences && (
-        <Skeleton className="h-64 w-full rounded-xl" />
-      )}
-
-      {!isLoadingNotificationPreferences && notificationPreferencesError && (
-        <div className="rounded-lg border border-red-100 bg-red-50 p-4 text-sm text-red-700">
-          {notificationPreferencesError instanceof Error
-            ? notificationPreferencesError.message
-            : "No se pudieron cargar las preferencias globales"}
-        </div>
-      )}
-
-      {!isLoadingNotificationPreferences &&
-        notificationPreferences &&
-        !notificationPreferencesError && (
-          <GlobalNotificationPreferences
-            preferences={notificationPreferences}
-            onUpdate={handleUpdatePreferences}
-            isUpdating={isUpdatingNotificationPreferences}
-          />
-        )}
     </div>
   );
 };

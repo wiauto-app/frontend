@@ -4,6 +4,13 @@ export interface AlertFilters extends Record<string, unknown> {
   source_vehicle_id?: string;
 }
 
+export type AlertNotificationChannel =
+  | "email"
+  | "push"
+  | "sms"
+  | "in_app"
+  | "whatsapp";
+
 export interface Alert {
   id: string;
   name: string;
@@ -21,6 +28,7 @@ export interface Alert {
   notify_sold_removed: boolean;
   notify_featured: boolean;
   notify_recently_updated: boolean;
+  notification_channels: AlertNotificationChannel[];
   last_viewed_at: string | null;
   new_matches_count: number;
 }
@@ -87,4 +95,5 @@ export type UpdateAlertPayload = Partial<{
   notify_sold_removed: boolean;
   notify_featured: boolean;
   notify_recently_updated: boolean;
+  notification_channels: AlertNotificationChannel[];
 }>;
