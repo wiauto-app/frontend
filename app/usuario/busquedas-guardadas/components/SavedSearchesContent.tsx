@@ -71,7 +71,7 @@ export const SavedSearchesContent = () => {
         </Link>
       </div>
 
-      <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+      <div className="space-y-4 ">
         {isLoadingAlerts && (
           <div className="space-y-4">
             <Skeleton className="h-24 w-full" />
