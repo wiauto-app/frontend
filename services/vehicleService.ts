@@ -80,7 +80,7 @@ export const vehicleService = {
       return apiGet<SimilarVehiclesPaginatedResponse>(`/v1/vehicles/${id}/similar${query}`, undefined, 60);
     },
     findById: (id: string): Promise<ApiResponse<Vehicle>> =>
-      apiGet<Vehicle>(`/v1/vehicles/${id}`),
+      apiGet<Vehicle>(`/v1/vehicles/${id}`,{},3600),
     findByRef: (ref: number): Promise<ApiResponse<VehicleByRefResponse>> =>
       apiGet<VehicleByRefResponse>(`/v1/vehicles/by-ref/${ref}`),
     create: (data: CreateVehicleDto, files?: File[]): Promise<ApiResponse<Vehicle>> => {
