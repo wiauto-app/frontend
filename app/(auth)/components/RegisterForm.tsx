@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
@@ -239,8 +240,31 @@ export default function RegisterForm({
             disabled={isLoading}
           />
           <Label htmlFor="accept-terms" className="text-gray-600">
-            Acepto las condiciones de uso y la información básica de protección
-            de datos.
+            Acepto las{" "}
+            <Link
+              href="/terminos"
+              className="underline underline-offset-2"
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              condiciones de uso
+            </Link>{" "}
+            y la{" "}
+            <Link
+              href="/privacidad"
+              className="underline underline-offset-2"
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              información básica de protección de datos
+            </Link>
+            .
           </Label>
         </div>
       </form>

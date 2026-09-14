@@ -1,5 +1,9 @@
 "use client";
 
+import { useMemo, useState } from "react";
+import { getToolName, isToolUIPart } from "ai";
+import { BotIcon, Flag } from "lucide-react";
+
 import {
   Conversation,
   ConversationContent,
@@ -11,10 +15,14 @@ import {
   MessageContent,
   MessageResponse,
 } from "@/components/ai-elements/message";
+import { ReportDialog } from "@/components/reports/ReportDialog";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { getToolName, isToolUIPart } from "ai";
-import { BotIcon } from "lucide-react";
-import { useMemo } from "react";
+import {
+  REPORT_TARGET_TYPE,
+  type ReportTarget,
+} from "@/interfaces/report.interface";
+
 import { AssistantAnalyzeListing } from "./assistantAnalyzeListing";
 import { AssistantClarifyingQuestions } from "./assistantClarifyingQuestions";
 import { AssistantCompareVehicles } from "./assistantCompareVehicles";
@@ -244,7 +252,9 @@ const hasAssistantVisibleContent = (
 };
 
 export const AssistantMessages = () => {
-  const { messages, isConversationLoading, status } = useAssistantChat();
+  const { messages, isConversationLoading, status, conversationId } =
+    useAssistantChat();
+  const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null);
 
   const pendingLabel = useMemo(() => {
     if (status === "submitted") {
@@ -276,6 +286,32 @@ export const AssistantMessages = () => {
     return !hasAssistantVisibleContent(lastMessage);
   }, [messages, status]);
 
+  const streamingAssistantMessageId = useMemo(() => {
+    if (status !== "streaming" && status !== "submitted") {
+      return null;
+    }
+
+    const lastMessage = messages.at(-1);
+    if (!lastMessage || lastMessage.role !== "assistant") {
+      return null;
+    }
+
+    return lastMessage.id;
+  }, [messages, status]);
+
+  const handleReportAssistantMessage = (messageId: string) => {
+    if (!conversationId) {
+      return;
+    }
+
+    setReportTarget({
+      targetType: REPORT_TARGET_TYPE.ASSISTANT_MESSAGE,
+      targetId: conversationId,
+      targetName: "respuesta del asistente",
+      targetAssistantMessageId: messageId,
+    });
+  };
+
   if (isConversationLoading) {
     return (
       <div className="flex flex-1 items-center justify-center py-8">
@@ -285,69 +321,105 @@ export const AssistantMessages = () => {
   }
 
   return (
-    <Conversation className="min-h-0 flex-1">
-      <ConversationContent className="gap-6 p-0">
-        {messages.length === 0 ? (
-          <ConversationEmptyState
-            title="¿En qué puedo ayudarte?"
-            description="Pregunta por marcas, presupuesto, combustible o ubicación y te mostraré anuncios de WiAuto."
-            icon={<BotIcon className="size-10" />}
-          />
-        ) : (
-          messages.map((message) => {
-            const seenToolCallIds = new Set<string>();
+    <>
+      <Conversation className="min-h-0 flex-1">
+        <ConversationContent className="gap-6 p-0">
+          {messages.length === 0 ? (
+            <ConversationEmptyState
+              title="¿En qué puedo ayudarte?"
+              description="Pregunta por marcas, presupuesto, combustible o ubicación y te mostraré anuncios de WiAuto."
+              icon={<BotIcon className="size-10" />}
+            />
+          ) : (
+            messages.map((message) => {
+              const seenToolCallIds = new Set<string>();
+              const canReportAssistantMessage =
+                message.role === "assistant" &&
+                Boolean(conversationId) &&
+                hasAssistantVisibleContent(message) &&
+                message.id !== streamingAssistantMessageId;
 
-            return (
-              <Message from={message.role} key={message.id}>
-                <MessageContent>
-                  {message.parts.map((part, index) => {
-                    if (part.type === "text") {
-                      return (
-                        <MessageResponse
-                          isAnimating={part.state === "streaming"}
-                          key={`${message.id}-text-${index}`}
-                        >
-                          {part.text}
-                        </MessageResponse>
-                      );
-                    }
+              return (
+                <Message from={message.role} key={message.id}>
+                  <MessageContent>
+                    {message.parts.map((part, index) => {
+                      if (part.type === "text") {
+                        return (
+                          <MessageResponse
+                            isAnimating={part.state === "streaming"}
+                            key={`${message.id}-text-${index}`}
+                          >
+                            {part.text}
+                          </MessageResponse>
+                        );
+                      }
 
-                    if (!isToolUIPart(part)) {
-                      return null;
-                    }
-
-                    const toolName = getToolName(part);
-
-                    if (!ASSISTANT_TOOL_NAMES.has(toolName)) {
-                      return null;
-                    }
-
-                    const toolCallId = getToolCallId(part);
-
-                    if (toolCallId) {
-                      if (seenToolCallIds.has(toolCallId)) {
+                      if (!isToolUIPart(part)) {
                         return null;
                       }
 
-                      seenToolCallIds.add(toolCallId);
-                    }
+                      const toolName = getToolName(part);
 
-                    return renderAssistantToolPart(
-                      part,
-                      `${message.id}-tool-${toolName}-${toolCallId ?? index}`,
-                    );
-                  })}
-                </MessageContent>
-              </Message>
-            );
-          })
-        )}
+                      if (!ASSISTANT_TOOL_NAMES.has(toolName)) {
+                        return null;
+                      }
 
-        {showPendingIndicator && pendingLabel && (
-          <AssistantPendingIndicator label={pendingLabel} />
-        )}
-      </ConversationContent>
-      <ConversationScrollButton />
-    </Conversation>
+                      const toolCallId = getToolCallId(part);
+
+                      if (toolCallId) {
+                        if (seenToolCallIds.has(toolCallId)) {
+                          return null;
+                        }
+
+                        seenToolCallIds.add(toolCallId);
+                      }
+
+                      return renderAssistantToolPart(
+                        part,
+                        `${message.id}-tool-${toolName}-${toolCallId ?? index}`,
+                      );
+                    })}
+
+                    {canReportAssistantMessage ? (
+                      <div className="mt-2">
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="h-auto px-0 text-xs text-muted-foreground"
+                          aria-label="Reportar respuesta del asistente"
+                          onClick={() => {
+                            handleReportAssistantMessage(message.id);
+                          }}
+                        >
+                          <Flag className="mr-1.5 size-3.5" aria-hidden />
+                          Reportar respuesta
+                        </Button>
+                      </div>
+                    ) : null}
+                  </MessageContent>
+                </Message>
+              );
+            })
+          )}
+
+          {showPendingIndicator && pendingLabel && (
+            <AssistantPendingIndicator label={pendingLabel} />
+          )}
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
+
+      {reportTarget ? (
+        <ReportDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              setReportTarget(null);
+            }
+          }}
+          target={reportTarget}
+        />
+      ) : null}
+    </>
   );
 };

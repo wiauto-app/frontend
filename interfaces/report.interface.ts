@@ -4,36 +4,41 @@ export const REPORT_TARGET_TYPE = {
   PROFILE: "profile",
   DEALERSHIP: "dealership",
   VEHICLE: "vehicle",
+  CHAT_MESSAGE: "chat_message",
+  ASSISTANT_MESSAGE: "assistant_message",
 } as const;
 
 export type ReportTargetType =
   (typeof REPORT_TARGET_TYPE)[keyof typeof REPORT_TARGET_TYPE];
 
-export type ReportCategory = {
+export interface ReportCategory {
   id: string;
   name: string;
   slug: string;
   target_type: ReportTargetType;
   created_at: string;
   updated_at: string;
-};
+}
 
-export type ReportTarget = {
+export interface ReportTarget {
   targetType: ReportTargetType;
   targetId: string;
   targetName: string;
-};
+  /** Solo para `assistant_message`: id del UIMessage. */
+  targetAssistantMessageId?: string;
+}
 
-export type CreateReportDto = {
+export interface CreateReportDto {
   category_id: string;
   title: string;
   description: string;
   target_type: ReportTargetType;
   target_id: string;
   file_url?: string | null;
-};
+  target_assistant_message_id?: string;
+}
 
-export type ReportListItem = {
+export interface ReportListItem {
   id: string;
   title: string;
   description: string;
@@ -43,6 +48,6 @@ export type ReportListItem = {
   target_id: string;
   created_at: string;
   updated_at: string;
-};
+}
 
 export type PaginatedReportCategoriesResponse = PaginatedResponse<ReportCategory>;

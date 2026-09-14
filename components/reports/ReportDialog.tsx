@@ -22,7 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { ReportCategory, ReportTarget } from "@/interfaces/report.interface";
+import {
+  REPORT_TARGET_TYPE,
+  type ReportCategory,
+  type ReportTarget,
+} from "@/interfaces/report.interface";
 import { getReportTargetTypeLabel } from "@/lib/reports/resolve-advertiser-report-target";
 import { reportService } from "@/services/reportService";
 
@@ -31,18 +35,42 @@ import {
   type ReportFormValues,
 } from "./schemas/report.schema";
 
-type ReportDialogProps = {
+interface ReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   target: ReportTarget;
   onSuccess?: () => void;
-};
+}
 
 const buildDefaultValues = (targetName: string): ReportFormValues => ({
   category_id: "",
   title: `Denuncia sobre ${targetName}`,
   description: "",
 });
+
+const getReportDialogDescription = (target: ReportTarget): string => {
+  if (target.targetType === REPORT_TARGET_TYPE.CHAT_MESSAGE) {
+    return `Estás reportando un mensaje de ${target.targetName}. Describe el motivo de tu denuncia con el mayor detalle posible.`;
+  }
+
+  if (target.targetType === REPORT_TARGET_TYPE.ASSISTANT_MESSAGE) {
+    return "Estás reportando una respuesta del asistente. Describe el motivo de tu denuncia con el mayor detalle posible.";
+  }
+
+  return `Estás reportando a ${target.targetName}. Describe el motivo de tu denuncia con el mayor detalle posible.`;
+};
+
+const getDescriptionPlaceholder = (targetType: ReportTarget["targetType"]) => {
+  if (targetType === REPORT_TARGET_TYPE.CHAT_MESSAGE) {
+    return "Explica qué ocurrió y por qué quieres reportar este mensaje";
+  }
+
+  if (targetType === REPORT_TARGET_TYPE.ASSISTANT_MESSAGE) {
+    return "Explica qué tiene de incorrecto o inapropiada esta respuesta";
+  }
+
+  return "Explica qué ocurrió y por qué quieres reportar este anunciante";
+};
 
 export const ReportDialog = ({
   open,
@@ -92,7 +120,7 @@ export const ReportDialog = ({
     };
 
     void loadCategories();
-  }, [open, target.targetName, target.targetType]);
+  }, [form, open, target.targetName, target.targetType]);
 
   const onSubmit = async (data: ReportFormValues) => {
     try {
@@ -102,6 +130,12 @@ export const ReportDialog = ({
         description: data.description.trim(),
         target_type: target.targetType,
         target_id: target.targetId,
+        ...(target.targetType === REPORT_TARGET_TYPE.ASSISTANT_MESSAGE &&
+        target.targetAssistantMessageId
+          ? {
+              target_assistant_message_id: target.targetAssistantMessageId,
+            }
+          : {}),
       });
 
       if (!response.ok) {
@@ -123,8 +157,7 @@ export const ReportDialog = ({
         <DialogHeader>
           <DialogTitle>Reportar {targetTypeLabel}</DialogTitle>
           <DialogDescription>
-            Estás reportando a <strong>{target.targetName}</strong>. Describe el
-            motivo de tu denuncia con el mayor detalle posible.
+            {getReportDialogDescription(target)}
           </DialogDescription>
         </DialogHeader>
 
@@ -181,7 +214,7 @@ export const ReportDialog = ({
             control={form.control}
             label="Descripción"
             type="textarea"
-            placeholder="Explica qué ocurrió y por qué quieres reportar este anunciante"
+            placeholder={getDescriptionPlaceholder(target.targetType)}
             rows={4}
           />
 

@@ -9,12 +9,12 @@ import {
   type ReportTarget,
 } from "@/interfaces/report.interface";
 
-type ResolveAdvertiserReportTargetInput = {
+interface ResolveAdvertiserReportTargetInput {
   publisherType: PublisherType;
   profileId?: string;
   publisher: Pick<Publisher, "id" | "name">;
   dealership?: Pick<VehicleDetailDealership, "id" | "name">;
-};
+}
 
 export const resolveAdvertiserReportTarget = (
   input: ResolveAdvertiserReportTargetInput,
@@ -53,6 +53,14 @@ export const getReportTargetTypeLabel = (targetType: ReportTarget["targetType"])
 
   if (targetType === REPORT_TARGET_TYPE.PROFILE) {
     return "vendedor";
+  }
+
+  if (targetType === REPORT_TARGET_TYPE.CHAT_MESSAGE) {
+    return "mensaje";
+  }
+
+  if (targetType === REPORT_TARGET_TYPE.ASSISTANT_MESSAGE) {
+    return "respuesta del asistente";
   }
 
   return "anuncio";

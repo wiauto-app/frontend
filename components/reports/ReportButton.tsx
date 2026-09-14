@@ -7,36 +7,37 @@ import { usePathname } from "next/navigation";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { SignInDialog } from "@/components/auth/signInDialog";
 import { Button } from "@/components/ui/button";
-import {
-  REPORT_TARGET_TYPE,
-  type ReportTarget,
-} from "@/interfaces/report.interface";
+import type { ReportTarget } from "@/interfaces/report.interface";
 import {
   type Publisher,
   type PublisherType,
   type VehicleDetailDealership,
 } from "@/interfaces/vehicle.interface";
-import { resolveAdvertiserReportTarget } from "@/lib/reports/resolve-advertiser-report-target";
+import {
+  getReportTargetTypeLabel,
+  resolveAdvertiserReportTarget,
+} from "@/lib/reports/resolve-advertiser-report-target";
 import { cn } from "@/lib/utils";
 
 import { ReportDialog } from "./ReportDialog";
 
-type ReportButtonBaseProps = {
+interface ReportButtonBaseProps {
   variant?: "ghost" | "outline" | "link";
   className?: string;
   onSuccess?: () => void;
-};
+  label?: string;
+}
 
-type ReportButtonWithTargetProps = ReportButtonBaseProps & {
+interface ReportButtonWithTargetProps extends ReportButtonBaseProps {
   target: ReportTarget;
-};
+}
 
-type ReportButtonFromVehicleProps = ReportButtonBaseProps & {
+interface ReportButtonFromVehicleProps extends ReportButtonBaseProps {
   publisherType: PublisherType;
   profileId?: string;
   publisher: Pick<Publisher, "id" | "name">;
   dealership?: Pick<VehicleDetailDealership, "id" | "name">;
-};
+}
 
 export type ReportButtonProps =
   | ReportButtonWithTargetProps
@@ -60,7 +61,7 @@ const resolveTargetFromProps = (props: ReportButtonProps): ReportTarget | null =
 };
 
 export const ReportButton = (props: ReportButtonProps) => {
-  const { variant = "outline", className, onSuccess } = props;
+  const { variant = "outline", className, onSuccess, label } = props;
   const pathname = usePathname();
   const { isAuthenticated, isLoading } = useUser();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -90,16 +91,15 @@ export const ReportButton = (props: ReportButtonProps) => {
     setDialogOpen(true);
   };
 
-  const targetLabel =
-    target.targetType === REPORT_TARGET_TYPE.DEALERSHIP
-      ? "concesionario"
-      : "vendedor";
+  const targetLabel = getReportTargetTypeLabel(target.targetType);
+  const buttonLabel = label ?? `Reportar ${targetLabel}`;
+  const showTextLabel = variant === "link" || Boolean(label);
 
   return (
     <>
       <Button
         type="button"
-        size={variant === "link" ? "default" : "icon"}
+        size={showTextLabel ? "default" : "icon"}
         variant={variant}
         className={cn(
           variant === "outline" &&
@@ -109,15 +109,15 @@ export const ReportButton = (props: ReportButtonProps) => {
           variant === "link" && "h-auto px-0 text-sm text-muted-foreground",
           className,
         )}
-        aria-label={`Reportar ${targetLabel}`}
+        aria-label={buttonLabel}
         disabled={isLoading}
         onClick={(event) => {
           event.stopPropagation();
           handleOpenReport();
         }}
       >
-        <Flag className={cn("size-4", variant === "link" && "mr-2")} aria-hidden />
-        {variant === "link" ? `Reportar ${targetLabel}` : null}
+        <Flag className={cn("size-4", showTextLabel && "mr-2")} aria-hidden />
+        {showTextLabel ? buttonLabel : null}
       </Button>
 
       <SignInDialog

@@ -59,10 +59,10 @@ export const VehicleDetailGallery = ({
 
   return (
     <>
-      <div className="flex flex-col gap-2 overflow-hidden lg:flex-row">
+      <div className="flex flex-col gap-2 overflow-hidden lg:flex-row lg:items-stretch">
         <button
           type="button"
-          className="relative h-140 min-w-0 flex-1 cursor-pointer overflow-hidden rounded-s-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+          className="relative block aspect-[4/3] w-full min-h-[220px] min-w-0 flex-1 cursor-pointer overflow-hidden rounded-2xl bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 lg:aspect-auto lg:h-140 lg:min-h-0 lg:rounded-s-2xl lg:rounded-e-none"
           onClick={() => handleOpenViewer(0)}
           aria-label={`Ver imagen principal de ${title}`}
         >
@@ -82,7 +82,7 @@ export const VehicleDetailGallery = ({
         </button>
 
         {hasAside ? (
-          <div className="w-full lg:h-140 lg:w-64">
+          <div className="w-full shrink-0 lg:h-140 lg:w-64">
             <div
               className={cn(
                 "grid h-full gap-2",
