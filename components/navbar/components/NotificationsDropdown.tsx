@@ -134,10 +134,11 @@ export const NotificationsDropdown = () => {
           >
             <Bell className="size-5" aria-hidden />
             {badgeLabel ? (
-              <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
                 {badgeLabel}
               </span>
             ) : null}
+           
           </Button>
         }
       />

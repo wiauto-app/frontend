@@ -80,15 +80,13 @@ export const MobileNavbar = () => {
   ];
 
   return (
-    <div>
+    <div className="fixed  bottom-2 w-full px-4">
       <nav
         aria-label="Navegación móvil"
-        className={
-          cn(
-            "fixed right-2 bottom-2 left-2 z-50 rounded-3xl bg-white/70 p-0 shadow-md backdrop-blur-sm md:hidden ",
-            user ? "w-full" : "w-80 mx-auto",
-          )
-        }
+        className={cn(
+          " z-50 rounded-3xl bg-white/70 p-0 shadow-md backdrop-blur-sm md:hidden max-w-full",
+          user ? "w-full" : "w-80 mx-auto",
+        )}
       >
         <div className={cn("grid gap-1", user ? "grid-cols-5" : "grid-cols-3")}>
           {user
