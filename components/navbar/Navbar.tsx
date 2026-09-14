@@ -20,7 +20,11 @@ export const Navbar = () => {
           pathname.includes("usuario") ? "container-full" : "container-custom",
         )}
       >
-        <BrandLogo className="w-32 lg:w-44 " sizes="130px" variant={isSubscribed ? "pro" : "primary"} />
+        <BrandLogo
+          className="w-32 lg:w-44 "
+          sizes="100px"
+          variant={isSubscribed ? "pro" : "primary"}
+        />
         <NavbarLinks />
         <NavbarActions>
           <NavbarMobileMenu />
