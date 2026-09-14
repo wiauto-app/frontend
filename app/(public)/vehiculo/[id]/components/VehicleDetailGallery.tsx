@@ -67,12 +67,17 @@ export const VehicleDetailGallery = ({
           aria-label={`Ver imagen principal de ${title}`}
         >
           <Image
-            unoptimized
             fill
             src={getImageUrl(mainImage.url)}
             alt={`${title} - imagen 1`}
             className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 66vw"
+            sizes="
+    (max-width: 1023px) calc(100vw - 2rem),
+    (max-width: 1279px) 520px,
+    (max-width: 1535px) 680px,
+    760px
+  "
+            quality={70}
             priority
           />
           <span className="pointer-events-none absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-black/40 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
@@ -113,12 +118,15 @@ export const VehicleDetailGallery = ({
                     }
                   >
                     <Image
-                      unoptimized
                       fill
                       src={getImageUrl(image.url)}
                       alt={`${title} - miniatura ${galleryIndex + 1}`}
                       className="object-cover"
-                      sizes="256px"
+                      sizes="
+    (max-width: 1023px) calc((100vw - 3rem) / 3),
+    256px
+  "
+                      quality={60}
                     />
                     {showExtraOverlay ? (
                       <span className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 bg-black/55 text-white">
