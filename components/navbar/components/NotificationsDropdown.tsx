@@ -125,6 +125,7 @@ export const NotificationsDropdown = () => {
             type="button"
             variant="ghost"
             size="icon-sm"
+            className="relative"
             aria-label={
               unreadCount > 0
                 ? `Notificaciones, ${unreadCount} sin leer`
