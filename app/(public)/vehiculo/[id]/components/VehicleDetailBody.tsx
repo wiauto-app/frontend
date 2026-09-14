@@ -1,6 +1,4 @@
 import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
-import { VehicleDetailContactChannels } from "./VehicleDetailContactChannels";
-import { VehicleDetailContactTabs } from "./VehicleDetailContactTabs";
 import { VehicleDetailGallery } from "./VehicleDetailGallery";
 import { VehicleDetailFeatures } from "./VehicleDetailFeatures";
 import { VehicleDetailLocationSection } from "./VehicleDetailLocationSection";
@@ -13,12 +11,17 @@ import { VehicleDetailTopBar } from "./VehicleDetailTopBar";
 import { VehicleDetailAdvertiserSection } from "./VehicleDetailAdvertiserSection";
 import { VehicleSimilarVehiclesSection } from "./VehicleSimilarVehiclesSection";
 import { VehicleDetailViewTracker } from "./VehicleDetailViewTracker";
-import { Card, CardContent } from "@/components/ui/card";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
 import { CollaborationHeroCard } from "@/components/collabs/CollaborationHeroCard";
 import { vehicleDetailCmsService } from "../services/vehicleDetailCmsService";
+import dynamic from "next/dynamic";
 
+const ContactSectionsContainer = dynamic(() =>
+  import("./contactSectionsContainer").then(
+    (mod) => mod.ContactSectionsContainer,
+  ),
+);
 interface VehicleDetailBodyProps {
   vehicle: Vehicle;
   breadcrumbItems: BreadcrumbItem[];
@@ -34,8 +37,7 @@ export const VehicleDetailBody = async ({
   const showPhone = vehicle.show_phone !== false;
   const hasWhatsApp = vehicle.has_whatsapp === true;
 
-  const collaborations =
-    await vehicleDetailCmsService.getHeroCollaborations();
+  const collaborations = await vehicleDetailCmsService.getHeroCollaborations();
 
   return (
     <>
@@ -84,25 +86,13 @@ export const VehicleDetailBody = async ({
             <VehicleDetailAdvertiserSection vehicle={vehicle} />
             <VehicleDetailLocationSection vehicle={vehicle} />
           </div>
-
-          <Card
-            id="vehicle-contact-section"
-            className="sticky top-26 right-0 hidden h-fit scroll-mt-24 space-y-6 lg:block"
-            size="sm"
-          >
-            <CardContent className="space-y-6">
-              <VehicleDetailContactChannels
-                vehicleId={vehicle.id}
-                showPhone={showPhone}
-                hasWhatsApp={hasWhatsApp}
-                vehicleTitle={displayName}
-              />
-              <VehicleDetailContactTabs
-                vehicleId={vehicle.id}
-                publisherProfileId={publisherProfileId}
-              />
-            </CardContent>
-          </Card>
+          <ContactSectionsContainer
+            vehicleId={vehicle.id}
+            showPhone={showPhone}
+            hasWhatsApp={hasWhatsApp}
+            vehicleTitle={displayName}
+            publisherProfileId={publisherProfileId}
+          />
         </div>
         <VehicleSimilarVehiclesSection vehicleId={vehicle.id} />
       </div>

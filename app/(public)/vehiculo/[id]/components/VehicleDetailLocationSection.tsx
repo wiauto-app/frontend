@@ -8,9 +8,10 @@ import {
 } from "@vis.gl/react-google-maps";
 
 import { VehicleDetailCard } from "./VehicleDetailCard";
-import { CustomMap } from "@/components/customMap";
 import { Vehicle } from "@/interfaces/vehicle.interface";
+import dynamic from "next/dynamic";
 
+const DynamicCustomMap = dynamic(() => import("@/components/customMap").then(mod => mod.CustomMap), { ssr: false });
 type VehicleDetailLocationSectionProps = {
   vehicle: Vehicle;
 };
@@ -90,7 +91,7 @@ export const VehicleDetailLocationSection = ({
       }
     >
       <div className="flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-gray-200">
-        <CustomMap
+        <DynamicCustomMap
           mapId="map"
           gestureHandling="greedy"
           defaultCenter={mapPosition}
@@ -119,7 +120,7 @@ export const VehicleDetailLocationSection = ({
               fillOpacity={0.15}
             />
           )}
-        </CustomMap>
+        </DynamicCustomMap>
       </div>
 
       {addressLines.length > 0 && (

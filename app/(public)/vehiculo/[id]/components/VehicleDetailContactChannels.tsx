@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useVehicleContactDialogs } from "../hooks/useVehicleContactDialogs";
