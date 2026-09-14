@@ -36,9 +36,7 @@ export const activeFiltersService = {
     const query = buildVehiclesQueryString(params);
 
     try {
-      const response = await fetch(`${API_URL}/v1/filters/active${query}`, {
-        cache: "no-store",
-      });
+      const response = await fetch(`${API_URL}/v1/filters/active${query}`);
 
       if (!response.ok) {
         return empty_active_filters;

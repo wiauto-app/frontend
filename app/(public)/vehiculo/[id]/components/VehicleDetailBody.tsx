@@ -11,11 +11,11 @@ import { VehicleDetailTopBar } from "./VehicleDetailTopBar";
 import { VehicleDetailAdvertiserSection } from "./VehicleDetailAdvertiserSection";
 import { VehicleSimilarVehiclesSection } from "./VehicleSimilarVehiclesSection";
 import { VehicleDetailViewTracker } from "./VehicleDetailViewTracker";
+import { VehicleDetailCollaborationsSection } from "./VehicleDetailCollaborationsSection";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumb.types";
-import { CollaborationHeroCard } from "@/components/collabs/CollaborationHeroCard";
-import { vehicleDetailCmsService } from "../services/vehicleDetailCmsService";
 import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
 const ContactSectionsContainer = dynamic(() =>
   import("./contactSectionsContainer").then(
@@ -36,8 +36,6 @@ export const VehicleDetailBody = async ({
   const publisherProfileId = vehicle.profile_id ?? vehicle.publisher.id;
   const showPhone = vehicle.show_phone !== false;
   const hasWhatsApp = vehicle.has_whatsapp === true;
-
-  const collaborations = await vehicleDetailCmsService.getHeroCollaborations();
 
   return (
     <>
@@ -66,19 +64,9 @@ export const VehicleDetailBody = async ({
             />
             <VehicleDetailServicesSection services={vehicle.services} />
 
-            {collaborations.length > 0 ? (
-              <section
-                aria-label="Colaboraciones y servicios"
-                className="grid grid-cols-1 gap-4 sm:grid-cols-2"
-              >
-                {collaborations.map((collaboration) => (
-                  <CollaborationHeroCard
-                    key={collaboration.id}
-                    content={collaboration}
-                  />
-                ))}
-              </section>
-            ) : null}
+            <Suspense fallback={null}>
+              <VehicleDetailCollaborationsSection />
+            </Suspense>
 
             <VehicleDetailDescription description={vehicle.description} />
             <VehicleDetailSaveSearchSection vehicle_id={vehicle.id} />
@@ -94,7 +82,9 @@ export const VehicleDetailBody = async ({
             publisherProfileId={publisherProfileId}
           />
         </div>
-        <VehicleSimilarVehiclesSection vehicleId={vehicle.id} />
+        <Suspense>
+          <VehicleSimilarVehiclesSection vehicleId={vehicle.id} />
+        </Suspense>
       </div>
     </>
   );

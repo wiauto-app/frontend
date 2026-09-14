@@ -48,7 +48,7 @@ export const findSimilarVehicles = async (
     const response = await fetch(
       `${API_URL}/v1/vehicles/${vehicleId}/similar?${query.toString()}`,
       {
-        cache: "no-store",
+        next: { revalidate: 60 },
       },
     );
 
