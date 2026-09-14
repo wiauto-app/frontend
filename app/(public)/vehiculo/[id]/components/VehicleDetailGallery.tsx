@@ -101,7 +101,7 @@ export const VehicleDetailGallery = ({
                     key={image.id}
                     type="button"
                     className={cn(
-                      "relative min-h-24 min-w-0 cursor-pointer overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 lg:min-h-0",
+                      "relative min-h-24 min-w-0 cursor-pointer overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 lg:min-h-0 lg:rounded-none",
                       asideIndex === 0 && "lg:rounded-tr-2xl",
                       isLastAside && "lg:rounded-br-2xl",
                     )}
