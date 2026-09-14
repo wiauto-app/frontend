@@ -1,7 +1,7 @@
 import { ENVIRONMENT } from "@/constants";
 import { STRAPI_API_URL, STRAPI_TOKEN } from "@/constants/strapi.constants";
 
-const DEFAULT_STRAPI_REVALIDATE_SECONDS = 60;
+const DEFAULT_STRAPI_REVALIDATE_SECONDS = 3600; // 1 hour
 
 export interface StrapiResponse<T> {
   data: T;
