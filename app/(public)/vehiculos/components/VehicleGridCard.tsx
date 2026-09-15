@@ -98,7 +98,7 @@ const VehicleGridCardBody = ({
   return (
     <CardContent
       className={cn(
-        "relative z-1 flex flex-col gap-4 px-2.5 pb-0",
+        "relative z-1 flex flex-col gap-1 px-2.5 pb-0",
         interactive && "pointer-events-none",
       )}
     >
@@ -110,16 +110,14 @@ const VehicleGridCardBody = ({
       </h3>
 
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-        <div className="flex items-start gap-2">
+        <div className="flex items-start ">
           <div className="flex flex-col ">
-            <span className="text-xs font-semibold text-muted-foreground ">
-              Buen precio
-            </span>
+  
             <p className="text-2xl font-bold tracking-tight text-primary">
               {formatPrice(vehicle.price)}
             </p>
           </div>
-          {vehicle.finance_price && (
+          {vehicle.finance_price && vehicle.finance_price > 0 && (
             <div className="flex flex-col ">
               <span className="text-xs font-semibold text-muted-foreground ">
                 Financiado: {formatPrice(vehicle.finance_price)}
@@ -141,29 +139,7 @@ const VehicleGridCardBody = ({
           </p>
         </div>
       )}
-      {/* {specs.length > 0 && (
-        <ul
-          className="flex flex-wrap gap-x-3 gap-y-1"
-          aria-label={`Características de ${displayName}`}
-        >
-          {specs.map(({ key, label, value, Icon }) => (
-            <li
-              key={key}
-              className="
-          flex min-w-0 items-center gap-1 text-xs text-muted-foreground
-          after:ml-0.5
-          after:text-muted-foreground
-          after:content-['•']
-          last:after:hidden
-        "
-              title={`${label}: ${value}`}
-            >
-              <Icon className="size-3.5 text-primary" aria-hidden />
-              <span className="truncate font-medium">{value}</span>
-            </li>
-          ))}
-        </ul>
-      )} */}
+    
       {/* {dealership && (
         <div className="flex items-center gap-1">
           <Badge>
