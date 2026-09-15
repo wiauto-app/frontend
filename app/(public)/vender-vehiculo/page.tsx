@@ -43,7 +43,7 @@ export default async function Page() {
 
       {data.consejos && <ConsejosSection data={data.consejos} />}
 
-      {data.preguntas && <PreguntasSection data={data.preguntas} />}
+      {/* {data.preguntas && <PreguntasSection data={data.preguntas} />} */}
 
     </LandingContainer>
   );
