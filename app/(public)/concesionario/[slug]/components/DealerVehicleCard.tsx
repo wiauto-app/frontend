@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "@/app/(public)/concesionario/constants";
 import { formatPrice } from "@/app/(public)/vehiculos/utils";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import { getImageUrl } from "@/lib/utils";
@@ -34,8 +33,7 @@ export function DealerVehicleCard({ vehicle }: DealerVehicleCardProps) {
           />
         ) : (
           <div
-            className="flex size-full items-center justify-center text-sm font-semibold text-white"
-            style={{ backgroundColor: BRAND_BLUE }}
+            className="flex size-full items-center justify-center text-sm font-semibold text-white bg-primary"
           >
             Sin imagen
           </div>
@@ -64,8 +62,7 @@ export function DealerVehicleCard({ vehicle }: DealerVehicleCardProps) {
       <CardContent className="space-y-2 p-4">
         <Link href={`/vehiculo/${vehicle.id}`} className="block">
           <p
-            className="text-[11px] font-bold uppercase tracking-wide"
-            style={{ color: BRAND_BLUE }}
+            className="text-[11px] font-bold uppercase tracking-wide text-primary"
           >
             {vehicle.condition === "new" ? "New " : ""}
             {makeName}
@@ -80,8 +77,7 @@ export function DealerVehicleCard({ vehicle }: DealerVehicleCardProps) {
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-                style={{ backgroundColor: BRAND_BLUE_LIGHT, color: BRAND_BLUE }}
+                className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-primary"
               >
                 {tag}
               </span>
