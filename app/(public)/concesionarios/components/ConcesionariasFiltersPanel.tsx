@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MapPin, Star, Car, Shield } from "lucide-react";
 import Link from "next/link";
 import { HiOutlineStar, HiStar } from "react-icons/hi";
@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { provincesCatalogService } from "@/services/locations/provincesCatalogService";
 import type { ProvinceCatalogItem } from "@/services/locations/types/province.types";
@@ -27,6 +26,7 @@ import {
   DEALER_FILTER_KEYS,
   DEALER_FILTER_KEYS_LIST,
 } from "../constants/filterKeys.constants";
+import { RadiusSelector } from "./RadiusSelector";
 
 interface SectionTitleProps {
   icon: React.ElementType;
@@ -62,7 +62,7 @@ export function ConcesionariasFiltersPanel() {
   const [provinces, setProvinces] = useState<ProvinceCatalogItem[]>([]);
 
   const provinceSlug = readStringFilter(values[DEALER_FILTER_KEYS.PROVINCE_SLUG]);
-  const radius = readNumberFilter(values[DEALER_FILTER_KEYS.RADIUS]) ?? 0;
+  const radius = readNumberFilter(values[DEALER_FILTER_KEYS.RADIUS]);
   const minRating = readNumberFilter(values[DEALER_FILTER_KEYS.RATING_SINCE]);
   const minVehicles =
     readNumberFilter(values[DEALER_FILTER_KEYS.VEHICLES_NUMBER]) ?? 0;
@@ -96,21 +96,25 @@ export function ConcesionariasFiltersPanel() {
     applyUrlUpdates({
       [DEALER_FILTER_KEYS.PROVINCE_SLUG]: next || undefined,
       [DEALER_FILTER_KEYS.RADIUS]:
-        next && radius > 0 ? String(radius) : undefined,
+        next && radius != null && radius > 0 ? String(radius) : undefined,
       [DEALER_FILTER_KEYS.PAGE]: undefined,
     });
   };
 
-  const handleRadiusChange = (next: number) => {
-    if (!provinceSlug) {
-      return;
-    }
+  const handleRadiusChange = useCallback(
+    (next: number | undefined) => {
+      if (!provinceSlug) {
+        return;
+      }
 
-    applyUrlUpdates({
-      [DEALER_FILTER_KEYS.RADIUS]: next > 0 ? String(next) : undefined,
-      [DEALER_FILTER_KEYS.PAGE]: undefined,
-    });
-  };
+      applyUrlUpdates({
+        [DEALER_FILTER_KEYS.RADIUS]:
+          next != null && next > 0 ? String(next) : undefined,
+        [DEALER_FILTER_KEYS.PAGE]: undefined,
+      });
+    },
+    [applyUrlUpdates, provinceSlug],
+  );
 
   const handleRatingChange = (next: number) => {
     applyUrlUpdates({
@@ -169,35 +173,11 @@ export function ConcesionariasFiltersPanel() {
               </Select>
             </div>
 
-            <div className="mt-4">
-              <div className="mb-2 flex items-center justify-between text-xs text-slate-500">
-                <span>Radio</span>
-                <span className="font-semibold" style={{ color: BRAND_BLUE }}>
-                  {!provinceSlug || radius === 0
-                    ? "Toda la provincia"
-                    : `${radius} km`}
-                </span>
-              </div>
-              <Slider
-                aria-label="Radio de búsqueda en kilómetros"
-                value={[radius]}
-                min={0}
-                max={100}
-                step={10}
-                disabled={!provinceSlug}
-                onValueChange={(next) => {
-                  const value = Array.isArray(next) ? next[0] : next;
-                  if (!Number.isFinite(value)) {
-                    return;
-                  }
-                  handleRadiusChange(value);
-                }}
-              />
-              <div className="mt-2 flex items-center justify-between text-xs tabular-nums text-muted-foreground">
-                <span>0 km</span>
-                <span>100 km</span>
-              </div>
-            </div>
+            <RadiusSelector
+              value={radius}
+              disabled={!provinceSlug}
+              onChange={handleRadiusChange}
+            />
           </section>
 
           <Separator />
