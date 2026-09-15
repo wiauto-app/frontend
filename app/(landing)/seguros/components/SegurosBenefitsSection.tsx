@@ -37,8 +37,6 @@ export const SegurosBenefitsSection = ({
         {features.length > 0 ? (
           <div className="mx-auto mt-2 grid grid-cols-2 gap-4 md:grid-cols-5">
             {features.map((benefit) => {
-              const BenefitIcon = resolveStrapiIconName(benefit.iconName, defaultStrapiIconPack);
-
               return (
                 <Card
                   key={benefit.id}
@@ -54,7 +52,11 @@ export const SegurosBenefitsSection = ({
                     >
                       {benefit.iconName ? (
                         <IconContainer
-                          Icon={resolveStrapiIconName(benefit.iconName, defaultStrapiIconPack)}
+                          justIcon
+                          Icon={resolveStrapiIconName(
+                            benefit.iconName,
+                            defaultStrapiIconPack,
+                          )}
                         />
                       ) : null}
                     </div>

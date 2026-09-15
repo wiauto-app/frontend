@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import {
@@ -22,10 +23,16 @@ interface FaqCategorySectionProps {
 }
 
 export const FaqCategorySection = ({ group }: FaqCategorySectionProps) => {
-  const Icon = resolveStrapiIconName(group.iconName, defaultStrapiIconPack) ?? HiOutlineCollection;
+  const Icon =
+    resolveStrapiIconName(group.iconName, defaultStrapiIconPack) ??
+    HiOutlineCollection;
+  const [openValues, setOpenValues] = useState<string[]>([]);
 
   return (
-    <section className="flex flex-col gap-3" aria-labelledby={`faq-${group.categoria}`}>
+    <section
+      className="flex flex-col gap-3"
+      aria-labelledby={`faq-${group.categoria}`}
+    >
       <h2
         id={`faq-${group.categoria}`}
         className="flex items-center gap-2 text-base font-bold text-slate-900"
@@ -34,7 +41,12 @@ export const FaqCategorySection = ({ group }: FaqCategorySectionProps) => {
         {group.categoria}
       </h2>
 
-      <Accordion className="gap-2">
+      <Accordion
+        multiple
+        value={openValues}
+        onValueChange={setOpenValues}
+        className="gap-2"
+      >
         {group.items.map((item, index) => (
           <FaqQuestionCard key={item.id} item={item} index={index + 1} />
         ))}
@@ -62,7 +74,9 @@ const FaqQuestionCard = ({ item, index }: FaqQuestionCardProps) => {
           <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-bold text-primary tabular-nums">
             {index}
           </span>
-          <span className="text-sm font-semibold text-slate-900">{pregunta}</span>
+          <span className="text-sm font-semibold text-slate-900">
+            {pregunta}
+          </span>
         </span>
       </AccordionTrigger>
       <AccordionContent className="px-4 pb-4 text-sm leading-relaxed text-slate-600">
