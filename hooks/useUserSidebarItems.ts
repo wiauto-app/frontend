@@ -1,21 +1,23 @@
-"use client"
-import { USER_SIDEBAR_LINKS, USER_SIDEBAR_PRO_LINKS } from '@/app/usuario/constants/user.constants'
-import { useEntitlements } from './useEntitlements'
-import { useCallback } from 'react';
+"use client";
+
+import { useMemo } from "react";
+
+import { useUser } from "@/app/contexts/auth/useUser";
+import { getUserSidebarLinks } from "@/app/usuario/constants/user.constants";
+import { useEntitlements } from "./useEntitlements";
 
 export const useUserSidebarItems = () => {
-  const { isSubscribed } = useEntitlements();
+  const { user } = useUser();
+  const { isSubscribed, isPrivileged, has } = useEntitlements();
+  const hasProAccess = isSubscribed || isPrivileged;
 
-  const getSidebarItems = useCallback(
-    () => {
-      if (!isSubscribed) {
-        return USER_SIDEBAR_LINKS
-      } else {
-        return [...USER_SIDEBAR_LINKS, ...USER_SIDEBAR_PRO_LINKS]
-      }
-    }, [isSubscribed]
-  )
-
-  return getSidebarItems()
-
-}
+  return useMemo(
+    () =>
+      getUserSidebarLinks({
+        dealershipMembership: user?.dealership_membership ?? null,
+        hasDismissedVehicles: has("dismissed_vehicles") || hasProAccess,
+        isSubscribed: hasProAccess,
+      }),
+    [has, hasProAccess, user?.dealership_membership],
+  );
+};

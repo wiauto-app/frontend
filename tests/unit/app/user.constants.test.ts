@@ -3,12 +3,22 @@ import { describe, expect, it } from "vitest";
 import { getUserSidebarLinks } from "@/app/usuario/constants/user.constants";
 
 describe("getUserSidebarLinks", () => {
-  it("incluye Contactos / Leads en la navegación", () => {
-    const links = getUserSidebarLinks({
+  it("muestra Contactos / Leads solo con suscripción", () => {
+    const withoutPlan = getUserSidebarLinks({
       dealershipMembership: null,
+      isSubscribed: false,
+    });
+    const withPlan = getUserSidebarLinks({
+      dealershipMembership: null,
+      isSubscribed: true,
     });
 
-    expect(links.some((link) => link.href === "/usuario/contactos")).toBe(true);
+    expect(
+      withoutPlan.some((link) => link.href === "/usuario/contactos"),
+    ).toBe(false);
+    expect(withPlan.some((link) => link.href === "/usuario/contactos")).toBe(
+      true,
+    );
   });
 
   it("muestra Monetización siempre", () => {
@@ -50,7 +60,7 @@ describe("getUserSidebarLinks", () => {
         member_id: "member-1",
         role: "member",
       },
-      isSubscribed: false,
+      isSubscribed: true,
     });
 
     expect(links.some((link) => link.href === "/usuario/equipo")).toBe(true);

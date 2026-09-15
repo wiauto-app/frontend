@@ -1,6 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarDays, Eye, MapPin, ShieldCheck, UserRound } from "lucide-react";
+import { CalendarDays, MapPin, ShieldCheck, UserRound } from "lucide-react";
 
 import { Profile } from "@/components/ui/profile";
 import type { Publisher } from "@/interfaces/vehicle.interface";
@@ -11,7 +11,6 @@ interface PublisherCardProps {
   publisher: Publisher;
   vehicleRef?: string | number | null;
   createdAt?: string;
-  views?: number;
   location?: string | null;
 }
 
@@ -41,7 +40,6 @@ export const PublisherCard = ({
   publisher,
   vehicleRef,
   createdAt,
-  views,
   location,
 }: PublisherCardProps) => {
   const publishedAgo = createdAt ? formatPublishedAgo(createdAt) : null;
@@ -57,14 +55,6 @@ export const PublisherCard = ({
     });
   }
 
-  if (typeof views === "number") {
-    detailRows.push({
-      id: "views",
-      label: "Visitas",
-      value: new Intl.NumberFormat("es-ES").format(views),
-      icon: Eye,
-    });
-  }
 
   if (location) {
     detailRows.push({

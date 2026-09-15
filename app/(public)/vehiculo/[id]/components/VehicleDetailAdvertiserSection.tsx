@@ -15,7 +15,6 @@ export const VehicleDetailAdvertiserSection = ({
         publisher={vehicle.publisher}
         vehicleRef={vehicle.ref}
         createdAt={vehicle.created_at}
-        views={vehicle.views}
         location={vehicle.address}
       />
     );

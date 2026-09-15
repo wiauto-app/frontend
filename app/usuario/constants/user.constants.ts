@@ -36,7 +36,6 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
     icon: Search,
   },
   { href: `${basePath}/mensajes`, label: "Mensajes (chat)", icon: MessageSquare },
-  { href: `${basePath}/contactos`, label: "Contactos / Leads", icon: ContactRound },
   {
     href: `${basePath}/monetizacion`,
     label: "Monetización",
@@ -55,9 +54,8 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
 
 
 export const USER_SIDEBAR_PRO_LINKS = [
-
+  { href: `${basePath}/contactos`, label: "Contactos / Leads", icon: ContactRound },
   { href: `${basePath}/estadisticas`, label: "Estadísticas", icon: BarChart3 },
-
   { href: `${basePath}/mi-tasador`, label: "Tasador", icon: Calculator },
   {
     href: `${basePath}/perfil?tab=dealership`,
@@ -69,12 +67,37 @@ export const USER_SIDEBAR_PRO_LINKS = [
     label: "Equipo",
     icon: Users,
   },
-
 ] as UserSidebarLink[]
-
 
 
 export interface GetUserSidebarLinksParams {
   dealershipMembership?: DealershipMembership | null;
   hasDismissedVehicles?: boolean;
+  isSubscribed?: boolean;
 }
+
+/** Construye los links del sidebar según suscripción y membership. */
+export const getUserSidebarLinks = ({
+  dealershipMembership = null,
+  hasDismissedVehicles = true,
+  isSubscribed = false,
+}: GetUserSidebarLinksParams = {}): UserSidebarLink[] => {
+  const links = [...USER_SIDEBAR_LINKS];
+
+  if (isSubscribed) {
+    links.push(
+      ...USER_SIDEBAR_PRO_LINKS.filter((link) => {
+        if (link.href === `${basePath}/equipo`) {
+          return Boolean(dealershipMembership);
+        }
+        return true;
+      }),
+    );
+  }
+
+  if (!hasDismissedVehicles) {
+    return links.filter((link) => link.href !== `${basePath}/descartados`);
+  }
+
+  return links;
+};
