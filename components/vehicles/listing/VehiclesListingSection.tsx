@@ -9,25 +9,27 @@ import { VehiclesGridLayout } from "./VehiclesGridLayout";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { Button } from "@/components/ui/button";
 
-type VehiclesListingSectionProps = {
+interface VehiclesListingSectionProps {
   title: {
     lead: string;
     highlight?: string;
   };
   vehicles: VehicleListItem[];
   variant: "grid" | "carousel";
+  cardVariant?: "default" | "featured";
   vehicleId?: string;
   total?: number;
   pageSize?: number;
   seeMoreHref?: string;
   seeMoreLabel?: string;
   className?: string;
-};
+}
 
 export const VehiclesListingSection = ({
   title,
   vehicles,
   variant,
+  cardVariant = "default",
   vehicleId,
   total,
   pageSize = 4,
@@ -45,7 +47,7 @@ export const VehiclesListingSection = ({
     <SectionContainer className={cn("", className)}>
       <SectionHeading lead={title.lead} highlight={title.highlight ?? ""} />
       {variant === "grid" ? (
-        <VehiclesGridLayout vehicles={vehicles} />
+        <VehiclesGridLayout vehicles={vehicles} cardVariant={cardVariant} />
       ) : (
         <VehiclesCarouselLayout
           initialVehicles={vehicles}

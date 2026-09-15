@@ -5,23 +5,25 @@ import { buildVehicleListingHref } from "@/lib/vehicles/listing-url";
 
 import { VehiclesListingSection } from "./VehiclesListingSection";
 
-type VehiclesListingSectionFromFiltersProps = {
+interface VehiclesListingSectionFromFiltersProps {
   title: {
     lead: string;
     highlight?: string;
   };
   variant: "grid" | "carousel";
+  cardVariant?: "default" | "featured";
   fetchParams?: FindAllVehiclesParams;
   vehicleId?: string;
   seeMoreHref?: string;
   seeMoreLabel?: string;
   className?: string;
   pageSize?: number;
-};
+}
 
 export const VehiclesListingSectionFromFilters = async ({
   title,
   variant,
+  cardVariant = "default",
   fetchParams,
   vehicleId,
   seeMoreHref,
@@ -44,6 +46,7 @@ export const VehiclesListingSectionFromFilters = async ({
       <VehiclesListingSection
         title={title}
         variant="grid"
+        cardVariant={cardVariant}
         vehicles={listing.data}
         seeMoreHref={seeMoreHref}
         seeMoreLabel={seeMoreLabel}

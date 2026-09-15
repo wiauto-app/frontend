@@ -1,10 +1,8 @@
 "use client";
 
 import { Car } from "lucide-react";
-import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import type { ReactNode } from "react";
-import { VehicleGridCard } from "./VehicleGridCard";
-import { VehiclesPagination } from "./VehiclesPagination";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,11 +13,16 @@ import {
 } from "@/components/ui/dialog";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
+import type { VehicleListItem } from "@/interfaces/vehicle.interface";
+
 import { SHOW_MAP_KEY } from "../[[...slug]]/constants/filterKeys.constants";
+import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
-import { VehiclesMap } from "./vehiclesMap";
 import { MapButton } from "./mapButton";
+import { VehicleFeaturedCard } from "./VehicleFeaturedCard";
+import { VehicleGridCard } from "./VehicleGridCard";
+import { VehiclesMap } from "./vehiclesMap";
+import { VehiclesPagination } from "./VehiclesPagination";
 
 interface VehiclesListingViewProps {
   vehicles: VehicleListItem[];
@@ -65,18 +68,19 @@ const VehiclesListingView = ({
 
   return (
     <div className="flex min-w-0 flex-col gap-6">
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
-        {/* <div className="lg:hidden">
-          <BuyAssistantBannerCard />
-        </div> */}
-        {vehicles.map((vehicle) => (
-          <VehicleGridCard
-            className="bg-white shadow-md hover:shadow-xl"
-            key={vehicle.id}
-            vehicle={vehicle}
-            onDismissed={onDismissed}
-          />
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
+        {vehicles.map((vehicle) =>
+          vehicle.is_featured ? (
+            <VehicleFeaturedCard key={vehicle.id} vehicle={vehicle} />
+          ) : (
+            <VehicleGridCard
+              className="bg-white shadow-md hover:shadow-xl"
+              key={vehicle.id}
+              vehicle={vehicle}
+              onDismissed={onDismissed}
+            />
+          ),
+        )}
       </div>
 
       <VehiclesPagination
@@ -103,13 +107,8 @@ export const VehiclesPageContent = ({
   titleNode,
   activeFiltersNode,
 }: VehiclesPageContentProps) => {
-  const { resetFilters, goToPage,filters } = useVehiclesListingFilters();
-  // const { vehicles, total, handleDismissed, filters } =
-  //   useAuthenticatedVehiclesListing({
-  //     initialVehicles,
-  //     initialTotal,
-  //   });
-  
+  const { resetFilters, goToPage, filters } = useVehiclesListingFilters();
+
   const { handleChange } = useFiltersManager({
     keys: [SHOW_MAP_KEY],
   });
@@ -131,7 +130,7 @@ export const VehiclesPageContent = ({
 
   return (
     <>
-      <div className="mx-auto min-w-0 flex-1  space-y-2">
+      <div className="mx-auto min-w-0 flex-1 space-y-2">
         <div className="flex items-center justify-between">
           {titleNode}
           <MapButton />
@@ -140,7 +139,6 @@ export const VehiclesPageContent = ({
         <VehiclesListingView
           vehicles={vehicles}
           total={total}
-          // onDismissed={handleDismissed}
           goToPage={goToPage}
           resetFilters={resetFilters}
           pageLimit={filters.limit || 12}

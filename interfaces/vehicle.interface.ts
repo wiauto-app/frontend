@@ -139,8 +139,8 @@ export interface VehicleListItem {
   by_brand_warranty: boolean;
   show_exact_location: boolean;
   show_review_collab: boolean;
-  
   finance_price: number;
+  is_featured: boolean;
 }
 
 export interface Publisher {

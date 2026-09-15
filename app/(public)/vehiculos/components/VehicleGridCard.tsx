@@ -143,7 +143,7 @@ const VehicleGridCardBody = ({
           </p>
         </div>
       )}
-      {specs.length > 0 && (
+      {/* {specs.length > 0 && (
         <ul
           className="flex flex-wrap gap-x-3 gap-y-1"
           aria-label={`Características de ${displayName}`}
@@ -165,8 +165,8 @@ const VehicleGridCardBody = ({
             </li>
           ))}
         </ul>
-      )}
-      {dealership && (
+      )} */}
+      {/* {dealership && (
         <div className="flex items-center gap-1">
           <Badge>
             Profesional
@@ -184,7 +184,7 @@ const VehicleGridCardBody = ({
             )}
           </Badge>
         </div>
-      )}
+      )} */}
     </CardContent>
   );
 };
