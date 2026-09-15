@@ -22,6 +22,8 @@ export interface BaseSelectProps<T> {
   contentClassName?: string;
   /** Texto del ítem deshabilitado cuando `items` está vacío */
   emptyLabel?: string;
+  /** Contenido de cada opción. Si no se pasa, se usa `labelKey`. */
+  renderItem?: (item: T) => ReactNode;
   /**
    * Acciones a la derecha de cada opción (editar, eliminar, menú, etc.).
    * Usa `type="button"` y, si hace falta, `onPointerDown={(e) => e.stopPropagation()}` en controles interactivos.
@@ -54,6 +56,7 @@ export function BaseSelector<T>({
   triggerClassName,
   contentClassName,
   emptyLabel,
+  renderItem,
   renderItemTrailing,
   renderFooter,
   showExtraActions,
@@ -109,6 +112,7 @@ export function BaseSelector<T>({
           items.map((item) => {
             const itemValue = String(item[valueKey]);
             const trailing = renderItemTrailing?.(item);
+            const itemContent = renderItem?.(item) ?? String(item[labelKey]);
 
             if (trailing) {
               return (
@@ -117,7 +121,7 @@ export function BaseSelector<T>({
                   className="flex min-w-0 w-full items-center gap-1 pr-1"
                 >
                   <SelectItem value={itemValue} className="min-w-0 flex-1">
-                    <span className="truncate">{String(item[labelKey])}</span>
+                    <span className="truncate">{itemContent}</span>
                   </SelectItem>
                   <div className="flex shrink-0 items-center gap-0.5">{trailing}</div>
                 </div>
@@ -126,7 +130,7 @@ export function BaseSelector<T>({
 
             return (
               <SelectItem key={itemValue} value={itemValue}>
-                {String(item[labelKey])}
+                {itemContent}
               </SelectItem>
             );
           })

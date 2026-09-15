@@ -93,6 +93,10 @@ export interface CatalogYearItem {
   slug: string;
 }
 
+export interface CatalogVersionListItem extends CatalogVersionItem {
+  year?: CatalogYearItem | null;
+}
+
 export interface CatalogYearPaginationParams extends PaginationParams {
   model_id?: number;
   body_type_id?: number;

@@ -1,29 +1,18 @@
 import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
-import type { CatalogVersionItem } from "@/components/vehicles/types/catalog.types";
+import type {
+  CatalogVersionItem,
+  CatalogVersionListItem,
+} from "@/components/vehicles/types/catalog.types";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { Field, FieldLabel } from "@/components/ui/field";
 import { BaseSelector } from "./baseSelector";
 
-type VersionOption = CatalogVersionItem & { label: string };
+interface VersionOption extends CatalogVersionListItem {
+  label: string;
+}
 
-/**
- * Lista versiones filtradas por modelo + combustible + año (backend `GET /v1/catalog/versions`).
- * La consulta solo se hace cuando hay los tres IDs; el paso del año es el disparador en UI.
- */
-export const VersionSelector = ({
-  makeId,
-  value,
-  onChange,
-  modelId,
-  fuelTypeId,
-  bodyTypeId,
-  yearId,
-  ariaInvalid,
-  disabled,
-  placeholder = "Versión",
-  hideLabel = false,
-}: {
+interface VersionSelectorProps {
   makeId?: number;
   value?: string;
   onChange?: (value: string | undefined, version?: CatalogVersionItem) => void;
@@ -36,16 +25,41 @@ export const VersionSelector = ({
   placeholder?: string;
   /** Si true, no se muestra `FieldLabel` (útil cuando el padre ya tiene label, p. ej. react-hook-form). */
   hideLabel?: boolean;
-}) => {
+}
+
+const getVersionLabel = (item: CatalogVersionListItem) => {
+  const year = item.year?.year;
+  return year ? `${item.name} - ${year}` : item.name;
+};
+
+export const VersionSelector = ({
+  makeId,
+  value,
+  onChange,
+  modelId,
+  fuelTypeId,
+  bodyTypeId,
+  yearId,
+  ariaInvalid,
+  disabled,
+  placeholder = "Versión",
+  hideLabel = false,
+}: VersionSelectorProps) => {
   const canFetch = Boolean(modelId);
   const { data, isLoading } = useQuery({
-    queryKey: ["catalogVersions", modelId, fuelTypeId, yearId],
+    queryKey: [
+      "catalogVersions",
+      makeId,
+      modelId,
+      bodyTypeId,
+      fuelTypeId,
+      yearId,
+    ],
     queryFn: () =>
       catalogVersionsService.findAll({
         make_id: makeId,
         model_id: modelId,
         body_type_id: bodyTypeId,
-        // ...(fuelTypeId ? { fuel_type_id: fuelTypeId } : {}),
         year_id: yearId,
         page: 1,
         limit: 100,
@@ -53,12 +67,11 @@ export const VersionSelector = ({
     enabled: canFetch,
   });
 
-
   const items = useMemo<VersionOption[]>(
     () =>
       (data?.data ?? []).map((item) => ({
         ...item,
-        label: item.name,
+        label: getVersionLabel(item),
       })),
     [data?.data],
   );
@@ -72,17 +85,8 @@ export const VersionSelector = ({
     </div>
   ) : (
     <BaseSelector
-      items={items}
-      value={value}
-      onChange={(next_value) =>{
-        const version = data?.data.find((item) => Number(item.id) === Number(next_value));
-        onChange?.(next_value,version);
-      }}
-      labelKey="label"
-      contentClassName="w-84"
       align="start"
-      valueKey="id"
-      placeholder={placeholder}
+      contentClassName="w-84"
       disabled={disabled || !canFetch}
       emptyLabel={
         !modelId
@@ -91,12 +95,41 @@ export const VersionSelector = ({
             ? "Selecciona un año primero"
             : "No hay versiones para esta combinación"
       }
+      items={items}
+      labelKey="label"
+      onChange={(nextValue) => {
+        const version = data?.data.find(
+          (item) => Number(item.id) === Number(nextValue),
+        );
+        onChange?.(nextValue, version);
+      }}
+      placeholder={placeholder}
+      renderItem={(item) => {
+        const year = item.year?.year;
+        if (!year) {
+          return item.name;
+        }
+
+        return (
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span className="min-w-0 truncate">{item.name}</span>
+            <span aria-hidden className="text-muted-foreground">
+              -
+            </span>
+            <span className="shrink-0 text-muted-foreground tabular-nums">
+              {year}
+            </span>
+          </span>
+        );
+      }}
+      value={value}
+      valueKey="id"
     />
   );
 
   if (hideLabel) {
     return (
-      <div data-invalid={ariaInvalid} className="w-full">
+      <div className="w-full" data-invalid={ariaInvalid}>
         {content}
       </div>
     );

@@ -1,10 +1,17 @@
 import { objectToQueryString } from "@/lib/utils";
 import { apiGet } from "@/lib/api";
 import type { PaginatedResult } from "@/types/general.types";
-import type { CatalogVersionItem, CatalogVersionPaginationParams, VehicleSpecs } from "../types/catalog.types";
+import type {
+  CatalogVersionItem,
+  CatalogVersionListItem,
+  CatalogVersionPaginationParams,
+  VehicleSpecs,
+} from "../types/catalog.types";
 import { V1_CATALOG_VERSIONS, V1_VEHICLE_SPECS } from "./route.constants";
 
-type VersionResponse = { version: CatalogVersionItem };
+interface VersionResponse {
+  version: CatalogVersionItem;
+}
 
 const DEFAULT_LIMIT = 100;
 
@@ -14,13 +21,13 @@ export const catalogVersionsService = {
       page: 1,
       limit: DEFAULT_LIMIT,
     },
-  ): Promise<PaginatedResult<CatalogVersionItem>> => {
+  ): Promise<PaginatedResult<CatalogVersionListItem>> => {
     const queryString = objectToQueryString({
       ...params,
       page: params.page ?? 1,
       limit: params.limit ?? DEFAULT_LIMIT,
     });
-    const response = await apiGet<PaginatedResult<CatalogVersionItem>>(
+    const response = await apiGet<PaginatedResult<CatalogVersionListItem>>(
       `${V1_CATALOG_VERSIONS}${queryString ? `?${queryString}` : ""}`,
     );
     return response.data;
