@@ -20,15 +20,15 @@ export const LoadingComponent = ({
   const aria_label = label ?? "Cargando";
 
   return (
-    <div className="flex items-center justify-center h-[80vh]">
+    <div className="flex items-center justify-center h-[80vh] w-full">
       <div
         role="status"
         aria-live="polite"
         aria-busy="true"
         aria-label={aria_label}
         className={cn(
-          "flex items-center justify-center",
-          scope === "viewport" ? "fixed inset-0 z-50" : "absolute inset-0 z-40",
+          "flex items-center justify-center ",
+          scope === "viewport" ? "fixed inset-0 z-50" : "",
           "bg-background/70 backdrop-blur-lg",
           className,
         )}

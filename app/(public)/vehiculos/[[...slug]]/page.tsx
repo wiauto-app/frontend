@@ -89,48 +89,13 @@ export default async function VehiclesListingPage(props: {
 
   const isMapVisible = search_params[SHOW_MAP_KEY] === "true";
 
-
   return (
-    <VehiclesListingShell>
-      <div>
-        <VehiclesToolbar
-          filtersNode={
-            <Suspense
-              fallback={
-                <div className="flex items-center">
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <Skeleton key={index} className="h-5  w-28" />
-                  ))}
-                </div>
-              }
-            >
-              <VehiclesFilters />
-            </Suspense>
-          }
-        />
-        <div
-          className={cn(
-            "mx-auto mt-5 flex gap-5",
-            !isMapVisible ? "listing-container" : "container-custom-full",
-          )}
-        >
-          <aside className="hidden 2xl:w-82 w-64 shrink-0 flex-col gap-2 lg:flex">
-            <Suspense fallback={<FiltersLoading />}>
-              <SaveSearchButton />
-              <BuyAssistantBannerCard />
-
-              <VehiclesFilters />
-            </Suspense>
-          </aside>
-          <VehiclesPageContent
-            vehicles={listing.data}
-            total={listing.total}
-            isMapVisible={isMapVisible}
-            titleNode={<FiltersTitle title={activeFilters.title} />}
-            activeFiltersNode={<ActiveFilters activeFilters={activeFilters} />}
-          />
-        </div>
-      </div>
-    </VehiclesListingShell>
+    <VehiclesPageContent
+      vehicles={listing.data}
+      total={listing.total}
+      isMapVisible={isMapVisible}
+      titleNode={<FiltersTitle title={activeFilters.title} />}
+      activeFiltersNode={<ActiveFilters activeFilters={activeFilters} />}
+    />
   );
 }
