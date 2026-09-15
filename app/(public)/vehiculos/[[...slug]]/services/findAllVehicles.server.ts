@@ -23,19 +23,17 @@ export const findAllVehicles = async (
     limit: params.limit ?? 30,
   };
 
-
-
   try {
-    const response = await apiGet<VehiclesListingResult>("/v1/vehicles", {
-      params,
-    }, ENVIRONMENT === "development" ? 0 : CACHE_ONE_HOUR);
+    const response = await apiGet<VehiclesListingResult>(
+      "/v1/vehicles",
+      params as Record<string, unknown>,
+      ENVIRONMENT === "development" ? 0 : CACHE_ONE_HOUR,
+    );
     if (!response.ok) {
       return empty;
     }
 
-    const payload = response.data;
-
-    return payload;
+    return response.data;
   } catch {
     return empty;
   }

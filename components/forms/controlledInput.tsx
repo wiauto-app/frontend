@@ -53,6 +53,8 @@ type ControllerInputProps<T extends FieldValues> = {
   placeholder?: string;
   rows?: number;
   inputsClassName?: string;
+  /** Tope de caracteres en el input (Zod valida al enviar; esto corta al escribir). */
+  maxLength?: number;
 };
 
 export const ControlledInput = <T extends FieldValues>({
@@ -67,6 +69,7 @@ export const ControlledInput = <T extends FieldValues>({
   orientation = "vertical",
   rows = 3,
   inputsClassName,
+  maxLength,
 }: ControllerInputProps<T>) => {
   return (
     <Controller
@@ -98,6 +101,7 @@ export const ControlledInput = <T extends FieldValues>({
               id={name}
               placeholder={placeholder}
               rows={rows}
+              maxLength={maxLength}
               aria-invalid={fieldState.invalid}
               value={typeof field.value === "string" ? field.value : ""}
               onChange={field.onChange}
@@ -111,6 +115,7 @@ export const ControlledInput = <T extends FieldValues>({
               aria-invalid={fieldState.invalid}
               placeholder={placeholder}
               type={type}
+              maxLength={maxLength}
             />
           )}
 

@@ -213,7 +213,7 @@ export const parseVehicleListingUrl = (
     query_filters.municipalities_slugs,
   );
 
-  return {
+  const filters = {
     ...DEFAULT_LISTING_PARAMS,
     ...path_filters,
     ...query_filters,
@@ -229,4 +229,6 @@ export const parseVehicleListingUrl = (
     order_direction:
       query_filters.order_direction ?? DEFAULT_LISTING_PARAMS.order_direction,
   };
+
+  return filters;
 };

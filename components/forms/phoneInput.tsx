@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { countryCodes } from "@/lib/countryCodes";
+import { MAX_NATIONAL_PHONE_DIGITS } from "@/lib/phone-limits";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const MAX_SUBSCRIBER_DIGITS_E164 = 15;
+export { MAX_NATIONAL_PHONE_DIGITS as MAX_NATIONAL_DIGITS };
 
 /** Prefijo por defecto (España) cuando `phone_code` llega vacío al montar. */
 export const DEFAULT_PHONE_CODE = "+34";
@@ -139,7 +140,7 @@ export const PhoneInput = ({
   ) => {
     const digitsOnly = event.target.value
       .replace(/\D/g, "")
-      .slice(0, MAX_SUBSCRIBER_DIGITS_E164);
+      .slice(0, MAX_NATIONAL_PHONE_DIGITS);
 
     if (digitsOnly === value.phone) return;
 
@@ -272,6 +273,7 @@ export const PhoneInput = ({
         aria-label={nationalNumberLabel}
         placeholder={nationalNumberPlaceholder}
         value={value.phone ?? ""}
+        maxLength={MAX_NATIONAL_PHONE_DIGITS}
         onChange={handleNationalPhoneChange}
         className={cn("min-w-0 flex-1", inputsClassName)}
       />

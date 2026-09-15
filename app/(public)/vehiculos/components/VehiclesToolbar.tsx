@@ -10,6 +10,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
   Sheet,
@@ -28,6 +29,9 @@ export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
   const router = useRouter();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const { sortValue, handleSortChange } = useVehiclesListingFilters();
+  const selectedSortLabel =
+    SORT_OPTIONS.find((option) => option.value === sortValue)?.label ??
+    "Ordenar";
 
   return (
     <div className="sticky top-14 z-30 border-b border-slate-200 bg-[#EEF3FA] md:top-20">
@@ -54,10 +58,13 @@ export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
           >
             <SelectTrigger
               size="sm"
-              className="size-8 justify-center gap-0 border-0 p-0 shadow-none [&_svg:last-child]:hidden"
-              aria-label="Ordenar resultados"
+              className="h-8 min-w-0 max-w-44 gap-1.5 border-0 px-2 shadow-none"
+              aria-label={`Ordenar resultados: ${selectedSortLabel}`}
             >
-              <ArrowDownUp className="size-4 text-slate-600" aria-hidden />
+              <ArrowDownUp className="size-4 shrink-0 text-slate-600" aria-hidden />
+              <SelectValue className="truncate text-xs font-medium text-slate-700">
+                {selectedSortLabel}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent align="end" className="min-w-44">
               {SORT_OPTIONS.map((option) => (

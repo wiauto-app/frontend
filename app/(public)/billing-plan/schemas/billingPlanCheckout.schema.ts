@@ -10,14 +10,15 @@ export const billingPlanCheckoutSchema = z.object({
   legal_name: z
     .string()
     .trim()
-    .min(2, "Introduce el nombre o la razón social"),
+    .min(2, "Introduce el nombre o la razón social")
+    .max(50, "El nombre o la razón social es demasiado largo"),
   tax_id: z
     .string()
     .trim()
     .min(8, "Introduce un NIF, NIE o CIF válido")
     .max(20, "El NIF/NIE/CIF es demasiado largo"),
-  commercial_name: z.string().trim().optional(),
-  email: z.string().trim().email("Introduce un correo válido"),
+  commercial_name: z.string().trim().max(50, "El nombre comercial es demasiado largo").optional(),
+  email: z.email("Introduce un correo válido"),
   phone: phoneSchema,
   accepted_terms: acceptedTermsSchema,
 });

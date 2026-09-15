@@ -25,12 +25,7 @@ import {
   type PhoneFieldValue,
 } from "@/components/forms/phoneInput";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomCheckbox } from "@/components/ui/customCheckbox";
 import { FieldError } from "@/components/ui/field";
 import type {
@@ -97,7 +92,9 @@ const findPlanByPriceId = (
   return null;
 };
 
-const getIntervalCopy = (interval: BillingCatalogPlan["prices"][number]["interval"]) => {
+const getIntervalCopy = (
+  interval: BillingCatalogPlan["prices"][number]["interval"],
+) => {
   if (interval === "year") {
     return {
       publication: "Publicación anual",
@@ -167,7 +164,10 @@ export const BillingPlanCheckoutContent = ({
       form.setValue(
         "phone",
         {
-          phone_code: user.phone_code?.trim() || currentPhone.phone_code || DEFAULT_PHONE_CODE,
+          phone_code:
+            user.phone_code?.trim() ||
+            currentPhone.phone_code ||
+            DEFAULT_PHONE_CODE,
           phone: user.phone ?? "",
         },
         { shouldDirty: false },
@@ -231,9 +231,7 @@ export const BillingPlanCheckoutContent = ({
         return;
       }
 
-      toast.error(
-        result.message ?? "No se pudo iniciar el checkout. Inténtalo de nuevo.",
-      );
+      toast.error("No se pudo iniciar el checkout. Inténtalo de nuevo.");
       return;
     }
 
@@ -341,6 +339,7 @@ export const BillingPlanCheckoutContent = ({
             control={form.control}
             label="Nombre comercial"
             optional
+            maxLength={50}
             placeholder="Ej: Coches Premium Zaragoza"
           />
 
@@ -353,6 +352,7 @@ export const BillingPlanCheckoutContent = ({
                   ? "Razón social"
                   : "Nombre y apellidos"
               }
+              maxLength={50}
               placeholder={
                 accountType === "company"
                   ? "Ej: Concesionario WiAuto S.L."
@@ -364,6 +364,7 @@ export const BillingPlanCheckoutContent = ({
               name="tax_id"
               control={form.control}
               label="NIF / NIE / CIF"
+              maxLength={20}
               placeholder="Ej: 12345678X"
             />
           </div>

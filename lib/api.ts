@@ -306,8 +306,8 @@ export const apiGet = async <T>(
   if (queryParams) {
     query = qs.stringify(queryParams, { skipNulls: true, addQueryPrefix: true });
   }
-
-  return fetchWithAuth<T>(`${path}${query}`, { method: "GET", next: { revalidate } });
+  const url = `${path}${query}`;
+  return fetchWithAuth<T>(url, { method: "GET", next: { revalidate } });
 };
 
 export const apiPost = async <T>(
