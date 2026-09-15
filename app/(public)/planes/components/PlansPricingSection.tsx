@@ -4,11 +4,15 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { PlanCard } from "@/components/billing/PlanCard";
+import { SectionHeading } from "@/components/home/SectionHeading";
+import { IconContainer } from "@/components/ui/iconContainer";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
 import type { StrapiHero } from "@/interfaces/strapi-components.interface";
+import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import { cn } from "@/lib/utils";
-import { SectionHeading } from "@/components/home/SectionHeading";
-import { useEntitlements } from "@/hooks/useEntitlements";
+
+import { plansIconPack } from "../utils/plansIconPack";
 
 interface PlansPricingSectionProps {
   actionCallSection: StrapiHero;
@@ -36,6 +40,7 @@ export const PlansPricingSection = ({
 }: PlansPricingSectionProps) => {
   const router = useRouter();
   const { planName } = useEntitlements();
+  const features = actionCallSection.caracteristicas ?? [];
 
   const handleSelectPlan = (plan: BillingCatalogPlan) => {
     const planPriceId = getPrimaryPriceId(plan);
@@ -51,14 +56,44 @@ export const PlansPricingSection = ({
   };
 
   return (
-    <section className="relative overflow-hidden space-y-6">
-      <div className="mx-auto text-center space-y-2">
+    <section className="relative space-y-6 overflow-hidden">
+      <div className="mx-auto space-y-4 text-center">
         <SectionHeading
           lead={actionCallSection?.titulo}
           description={actionCallSection?.descripcion}
         />
 
-       
+        {features.length > 0 ? (
+          <ul className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-3">
+            {features.map((feature) => {
+              const Icon = resolveStrapiIconName(
+                feature.iconName,
+                plansIconPack,
+              );
+
+              return (
+                <li
+                  key={feature.id}
+                  className="flex items-center gap-2 text-left"
+                >
+                  {Icon ? (
+                    <IconContainer Icon={Icon} justIcon className="text-primary" />
+                  ) : null}
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-800">
+                      {feature.label}
+                    </p>
+                    {feature.descripcion ? (
+                      <p className="text-xs text-muted-foreground">
+                        {feature.descripcion}
+                      </p>
+                    ) : null}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
       </div>
 
       {catalogError ? (
@@ -80,7 +115,7 @@ export const PlansPricingSection = ({
       {!catalogError && plans.length > 0 ? (
         <div
           className={cn(
-            "mx-auto grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-3 px-1",
+            "mx-auto grid gap-2 px-1 py-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
           )}
         >
           {plans.map((plan) => (

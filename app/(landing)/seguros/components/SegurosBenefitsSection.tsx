@@ -1,10 +1,7 @@
 import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
-import Image from "next/image";
-import { Shield } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { getStrapiMediaUrl } from "@/lib/strapi-media";
 
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "../constants";
 import type { SegurosFeaturesSection } from "../interfaces/seguros.interface";

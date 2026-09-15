@@ -2,7 +2,6 @@
 
 import { X } from "lucide-react";
 import { HiOutlineCheckCircle } from "react-icons/hi";
-import { TbCarGarage } from "react-icons/tb";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,8 @@ import {
 import type { BillingCatalogPlan } from "@/interfaces/billing.interface";
 import { listCatalogEntitlementDisplays } from "@/lib/billing/entitlements";
 import { cn } from "@/lib/utils";
-
+import { LiaCarSideSolid } from "react-icons/lia";
+import { FaStar } from "react-icons/fa";
 const VISIBLE_FEATURES_COUNT = 5;
 
 interface PlanCardProps {
@@ -105,12 +105,25 @@ export const PlanCard = ({
 
   return (
     <Card
-      size="sm"
       className={cn(
-        "relative flex flex-col overflow-visible gap-2",
+        "relative flex flex-col  gap-2 pt-0 overflow-hidden",
         isActive && "ring ring-primary",
+        plan.is_featured && "border border-primary bg-primary-soft/10",
       )}
     >
+      <div
+        className={cn(
+          "flex items-center justify-center gap-2 text-white  h-8",
+          plan.is_featured && "  bg-primary",
+        )}
+      >
+        {plan.is_featured && (
+          <>
+            <FaStar className="size-4" />
+            MÁS POPULAR
+          </>
+        )}
+      </div>
       {isActive ? (
         <div className="absolute -top-2.5 flex w-full justify-center">
           <Badge className="rounded-full px-4 text-sm">Seleccionado</Badge>
@@ -124,7 +137,7 @@ export const PlanCard = ({
           ) : null}
         </div>
 
-        <TbCarGarage className="size-14 text-primary" aria-hidden />
+        <LiaCarSideSolid className="size-14 text-primary" aria-hidden />
         <p className="text-center text-xl font-semibold">{plan.name}</p>
         <CardDescription className="max-w-56 text-center text-xs">
           {plan.description}

@@ -1,4 +1,5 @@
-import { FaWhatsapp } from "react-icons/fa";
+import { BsBarChartFill } from "react-icons/bs";
+import { FaStar, FaWhatsapp } from "react-icons/fa";
 import {
   HiChartBar,
   HiCheckCircle,
@@ -9,6 +10,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineUsers,
   HiPhone,
+  HiUserGroup,
   HiUsers,
 } from "react-icons/hi";
 import { HiRocketLaunch } from "react-icons/hi2";
@@ -19,6 +21,7 @@ import type { StrapiIconPack } from "@/lib/strapi/resolveStrapiIconName";
 export const plansIconPack = {
   HiEye,
   HiUsers,
+  HiUserGroup,
   HiRocketLaunch,
   HiCog,
   HiChartBar,
@@ -29,4 +32,6 @@ export const plansIconPack = {
   HiOutlineChartBar,
   HiCheckCircle,
   FaWhatsapp,
+  FaStar,
+  BsBarChartFill,
 } as const satisfies StrapiIconPack;

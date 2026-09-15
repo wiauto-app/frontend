@@ -37,7 +37,6 @@ export default async function Page() {
 
   const cms = cms_result ?? null;
   const plans = plans_result ?? [];
-  console.log(plans);
 
   return (
     <LandingContainer>
