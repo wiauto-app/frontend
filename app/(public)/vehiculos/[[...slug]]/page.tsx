@@ -86,7 +86,6 @@ export default async function VehiclesListingPage(props: {
     findAllVehicles(filters),
     activeFiltersService.getActiveFilters(filters),
   ]);
-
   const isMapVisible = search_params[SHOW_MAP_KEY] === "true";
 
   return (

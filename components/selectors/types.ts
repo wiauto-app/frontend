@@ -1,4 +1,3 @@
-import { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
 import type { PublisherType, TransmissionType } from "@/interfaces/vehicle.interface";
 
 /** Selección jerárquica: padres (marca/provincia) e hijos (modelo/municipio) por slug. */

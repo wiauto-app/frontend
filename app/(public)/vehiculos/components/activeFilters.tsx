@@ -14,5 +14,5 @@ export const ActiveFilters = ({ activeFilters }: ActiveFiltersProps) => {
   useEffect(() => {
     setActiveFilters(activeFilters);
   }, [activeFilters, setActiveFilters]);
-  return <ActiveFiltersChips  />;
+  return <ActiveFiltersChips activeFilters={activeFilters} />;
 };

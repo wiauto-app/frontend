@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Camera, Star } from "lucide-react";
+import { Camera } from "lucide-react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import {
   Card,
@@ -21,11 +21,9 @@ import {
   getPrimaryCuotaValue,
   getVehicleUrl,
 } from "../utils";
-import { buildVehicleGridSpecs } from "../utils/build-vehicle-grid-specs";
 import { VehicleEngagementMenu } from "./VehicleEngagementMenu";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
 import { VehicleShareButton } from "./VehicleShareButton";
-import { Badge } from "@/components/ui/badge";
 
 interface VehicleGridCardProps {
   vehicle: VehicleListItem;
@@ -88,13 +86,9 @@ const VehicleGridCardBody = ({
   displayName,
   interactive,
 }: VehicleGridCardBodyProps) => {
-  const specs = buildVehicleGridSpecs(vehicle);
   const cuotaValue = getPrimaryCuotaValue(vehicle);
   const financedLabel = cuotaValue ? formatMonthlyPrice(cuotaValue) : null;
-  const dealership = vehicle?.dealership;
-  const dealershipRating = dealership?.rating
-    ? parseFloat(dealership.rating).toFixed(1)
-    : null;
+
   return (
     <CardContent
       className={cn(

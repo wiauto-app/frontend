@@ -72,7 +72,7 @@ export const NAV_LINKS: NavLink[] = [
         Icon: Users,
         items: [
           {
-            href: "/vehiculos?publisher_types=professional",
+            href: "/vehiculos?publisher_types=dealership",
             label: "Profesional",
           },
           {

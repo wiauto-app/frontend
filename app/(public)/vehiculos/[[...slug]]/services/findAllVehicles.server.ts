@@ -30,6 +30,7 @@ export const findAllVehicles = async (
       ENVIRONMENT === "development" ? 0 : CACHE_ONE_HOUR,
     );
     if (!response.ok) {
+      console.log(response);
       return empty;
     }
 

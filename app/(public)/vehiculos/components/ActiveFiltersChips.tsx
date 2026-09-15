@@ -8,18 +8,19 @@ import {
   hasVisibleActiveFilters,
 } from "@/lib/vehicles/build-active-filter-chips";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
-import { useActiveFiltersStore } from "../stores/activeFiltersStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ActiveFiltersResponse } from "@/interfaces/active-filters.interface";
 
 interface ActiveFiltersChipsProps {
   readOnly?: boolean;
+  activeFilters: ActiveFiltersResponse;
 }
 
 export const ActiveFiltersChips = ({
   readOnly = false,
+  activeFilters,
 }: ActiveFiltersChipsProps) => {
-  const { activeFilters } = useActiveFiltersStore();
 
 
   const {
@@ -29,6 +30,7 @@ export const ActiveFiltersChips = ({
     setSearchInput,
     resetFilters,
   } = useVehiclesListingFilters();
+  
   const chips = useMemo(
     () =>
       buildActiveFilterChips(activeFilters, {
@@ -61,7 +63,7 @@ export const ActiveFiltersChips = ({
           variant="outline"
           className="border-primary bg-primary/10 text-primary"
         >
-          {chip.label}
+          {chip.label === "dealership" ? "Concesionario" : chip.label}
           {!readOnly && (
             <button
               type="button"
