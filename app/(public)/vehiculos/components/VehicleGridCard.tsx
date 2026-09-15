@@ -46,10 +46,8 @@ interface VehicleGridCardBodyProps {
 }
 
 const VEHICLE_GRID_IMAGE_SIZES = `
-  (max-width: 640px) 100vw,
-  (max-width: 1024px) 50vw,
-  (max-width: 1536px) 33vw,
-  25vw
+  (max-width: 640px) 300px,
+  160px
 `;
 
 const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
@@ -241,7 +239,7 @@ export const VehicleGridCard = ({
           alt={`Imagen del vehículo ${displayName}`}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-          quality={80}
+          quality={70}
           sizes={VEHICLE_GRID_IMAGE_SIZES}
           aria-hidden
         />
