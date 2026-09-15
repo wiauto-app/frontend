@@ -5,7 +5,7 @@ export const SORT_OPTIONS = [
   { value: "relevance", label: "Más relevantes" },
   { value: "rating-desc", label: "Mejor valorados" },
   { value: "vehicles-desc", label: "Más vehículos" },
-  { value: "distance-asc", label: "Más cercanos" },
+  // { value: "distance-asc", label: "Más cercanos" },
   { value: "reviews-desc", label: "Más reseñas" },
 ] as const;
 

@@ -1,16 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
 import { AppleLogin } from "./appleLogin";
 import { GoogleLogin } from "./googleLogin";
-import {
-  RegisterFormValues,
-  RegisterSchema,
-} from "@/validations/Schemas";
+import { RegisterFormValues, RegisterSchema } from "@/validations/Schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -19,10 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/authService";
 import { trackCompleteRegistration } from "@/lib/analytics/events";
 import { PasswordInput } from "@/components/ui/passwordInput";
-import {
-  DEFAULT_PHONE_CODE,
-  PhoneInput,
-} from "@/components/forms/phoneInput";
+import { DEFAULT_PHONE_CODE, PhoneInput } from "@/components/forms/phoneInput";
 
 interface RegisterFormProps {
   invitedEmail?: string;
@@ -239,11 +232,11 @@ export default function RegisterForm({
             onCheckedChange={(checked) => setAcceptTerms(checked)}
             disabled={isLoading}
           />
-          <Label htmlFor="accept-terms" className="text-gray-600">
+          <Label className="inline font-normal leading-normal text-gray-600">
             Acepto las{" "}
-            <Link
+            <a
               href="/terminos"
-              className="underline underline-offset-2"
+              className="hover:underline text-primary"
               onClick={(event) => {
                 event.stopPropagation();
               }}
@@ -251,11 +244,11 @@ export default function RegisterForm({
               target="_blank"
             >
               condiciones de uso
-            </Link>{" "}
+            </a>{" "}
             y la{" "}
-            <Link
+            <a
               href="/privacidad"
-              className="underline underline-offset-2"
+              className="hover:underline text-primary"
               onClick={(event) => {
                 event.stopPropagation();
               }}
@@ -263,7 +256,7 @@ export default function RegisterForm({
               target="_blank"
             >
               información básica de protección de datos
-            </Link>
+            </a>
             .
           </Label>
         </div>

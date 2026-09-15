@@ -43,6 +43,7 @@ const VehiclesListingView = ({
   pageLimit,
   currentPage,
 }: VehiclesListingViewProps) => {
+  console.log(JSON.stringify(vehicles, null, 2));
   const totalPages = Math.ceil(total / pageLimit);
 
   if (vehicles?.length === 0) {

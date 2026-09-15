@@ -24,7 +24,6 @@ const FEATURE_LABELS: Record<string, string> = {
   ai_generation: "Generación con IA",
   statistics: "Estadísticas avanzadas",
   featured_listings: "Vehículos destacados",
-  dismissed_vehicles: "Vehículos descartados",
   advanced_listing_editor: "Editor avanzado de anuncios",
 };
 
@@ -38,7 +37,6 @@ const FEATURE_ORDER: EntitlementFeatureKey[] = [
   "users",
   "statistics",
   "featured_listings",
-  "dismissed_vehicles",
   "advanced_listing_editor",
 ];
 

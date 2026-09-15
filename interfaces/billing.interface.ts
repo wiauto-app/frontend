@@ -29,7 +29,6 @@ export type EntitlementFeatureKey =
   | "ai_generation"
   | "statistics"
   | "featured_listings"
-  | "dismissed_vehicles"
   | "advanced_listing_editor"
   | (string & {});
 

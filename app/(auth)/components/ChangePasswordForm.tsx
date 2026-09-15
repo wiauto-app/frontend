@@ -29,6 +29,7 @@ export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
       password: "",
       token: token,
     },
+    mode: "onChange",
   });
 
   async function onSubmit(data: ResetPasswordDto) {

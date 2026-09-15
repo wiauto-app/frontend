@@ -8,16 +8,15 @@ import { useEntitlements } from "./useEntitlements";
 
 export const useUserSidebarItems = () => {
   const { user } = useUser();
-  const { isSubscribed, isPrivileged, has } = useEntitlements();
+  const { isSubscribed, isPrivileged } = useEntitlements();
   const hasProAccess = isSubscribed || isPrivileged;
 
   return useMemo(
     () =>
       getUserSidebarLinks({
         dealershipMembership: user?.dealership_membership ?? null,
-        hasDismissedVehicles: has("dismissed_vehicles") || hasProAccess,
         isSubscribed: hasProAccess,
       }),
-    [has, hasProAccess, user?.dealership_membership],
+    [hasProAccess, user?.dealership_membership],
   );
 };

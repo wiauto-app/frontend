@@ -38,7 +38,7 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
   { href: `${basePath}/mensajes`, label: "Mensajes (chat)", icon: MessageSquare },
   {
     href: `${basePath}/monetizacion`,
-    label: "Monetización",
+    label: "Planes",
     icon: CreditCard,
   },
   { href: `${basePath}/notificaciones`, label: "Notificaciones", icon: Bell },
@@ -72,14 +72,12 @@ export const USER_SIDEBAR_PRO_LINKS = [
 
 export interface GetUserSidebarLinksParams {
   dealershipMembership?: DealershipMembership | null;
-  hasDismissedVehicles?: boolean;
   isSubscribed?: boolean;
 }
 
 /** Construye los links del sidebar según suscripción y membership. */
 export const getUserSidebarLinks = ({
   dealershipMembership = null,
-  hasDismissedVehicles = true,
   isSubscribed = false,
 }: GetUserSidebarLinksParams = {}): UserSidebarLink[] => {
   const links = [...USER_SIDEBAR_LINKS];
@@ -93,10 +91,6 @@ export const getUserSidebarLinks = ({
         return true;
       }),
     );
-  }
-
-  if (!hasDismissedVehicles) {
-    return links.filter((link) => link.href !== `${basePath}/descartados`);
   }
 
   return links;

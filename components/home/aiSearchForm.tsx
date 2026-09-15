@@ -20,7 +20,6 @@ import {
   HERO_DELAYS,
   STAGGER_CHILDREN_FAST,
   staggerContainer,
-  staggerItem,
 } from "./motion";
 import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 
@@ -34,18 +33,18 @@ export const AiSearchForm = ({ className }: AiSearchFormProps) => {
   const router = useRouter();
   const prefersReducedMotion = usePrefersReducedMotion();
   const chipsContainer = getVariant(staggerContainer, prefersReducedMotion);
-  const chipItem = getVariant(staggerItem, prefersReducedMotion);
 
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const examples = [
-    "SUV familiares",
-    "Económicos",
-    "Eléctricos",
-    "4x4",
-    "Coches de deportivos",
+    "Híbridos",
+    "Diésel manual",
+    "Diésel automático",
+    "Gasolina automático con techo solar y cuero",
+    "Con navegador y techo solar",
+    "Compactos con aire acondicionado y cámara de aparcamiento",
   ];
 
   const trimmedQuery = query.trim();

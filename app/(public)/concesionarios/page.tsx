@@ -36,7 +36,6 @@ export default async function ConcesionariasPage(props: {
                 <ConcesionariasFiltersPanel />
               </Suspense>
             </div>
-
             <div className="min-w-0 flex-1">
               <ConcesionariasPageContent
                 dealers={listing.dealers}

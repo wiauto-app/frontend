@@ -70,13 +70,12 @@ describe("getUserSidebarLinks", () => {
     const links = getUserSidebarLinks({
       dealershipMembership: null,
       isSubscribed: true,
-      hasDismissedVehicles: true,
     });
 
     expect(links.some((link) => link.href === "/usuario/equipo")).toBe(false);
   });
 
-  it("muestra Descartados por defecto y Equipo con membership", () => {
+  it("muestra Descartados y Equipo con membership", () => {
     const links = getUserSidebarLinks({
       dealershipMembership: {
         dealership_id: "dealer-1",
@@ -85,7 +84,6 @@ describe("getUserSidebarLinks", () => {
         role: "admin",
       },
       isSubscribed: true,
-      hasDismissedVehicles: true,
     });
 
     expect(links.some((link) => link.href === "/usuario/monetizacion")).toBe(
@@ -97,14 +95,14 @@ describe("getUserSidebarLinks", () => {
     expect(links.some((link) => link.href === "/usuario/equipo")).toBe(true);
   });
 
-  it("oculta Descartados sin entitlement", () => {
+  it("muestra Descartados siempre, sin suscripción", () => {
     const links = getUserSidebarLinks({
       dealershipMembership: null,
-      hasDismissedVehicles: false,
+      isSubscribed: false,
     });
 
     expect(links.some((link) => link.href === "/usuario/descartados")).toBe(
-      false,
+      true,
     );
     expect(links.some((link) => link.href === "/usuario/monetizacion")).toBe(
       true,

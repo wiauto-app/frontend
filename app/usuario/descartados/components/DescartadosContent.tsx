@@ -15,7 +15,6 @@ export const DescartadosContent = () => {
     restore,
     restoringVehicleId,
   } = useDismissedVehiclesPage();
-
   const handleRestore = async (vehicleId: string) => {
     try {
       await restore(vehicleId);

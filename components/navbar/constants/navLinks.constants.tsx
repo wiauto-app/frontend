@@ -101,29 +101,29 @@ export const NAV_LINKS: NavLink[] = [
       },
     ],
   },
-  {
-    label: "Vender",
-    items: [
-      {
-        href: "/publicar",
-        label: "Publicar vehículo",
-        Icon: CirclePlus,
-        description: "Crea tu anuncio y llega a compradores en minutos",
-      },
-      {
-        href: "/tasador",
-        label: "Tasador",
-        Icon: Calculator,
-        description: "Obtén una valoración orientativa de tu vehículo",
-      },
-      // {
-      //   href: "/simulador",
-      //   label: "Simulador de financiación",
-      //   Icon: Percent,
-      //   description: "Calcula cuotas y compara opciones de pago",
-      // },
-    ],
-  },
+  // {
+  //   label: "Vender",
+  //   items: [
+  //     {
+  //       href: "/publicar",
+  //       label: "Publicar vehículo",
+  //       Icon: CirclePlus,
+  //       description: "Crea tu anuncio y llega a compradores en minutos",
+  //     },
+  //     {
+  //       href: "/tasador",
+  //       label: "Tasador",
+  //       Icon: Calculator,
+  //       description: "Obtén una valoración orientativa de tu vehículo",
+  //     },
+  //     // {
+  //     //   href: "/simulador",
+  //     //   label: "Simulador de financiación",
+  //     //   Icon: Percent,
+  //     //   description: "Calcula cuotas y compara opciones de pago",
+  //     // },
+  //   ],
+  // },
   {
     label: "Servicios",
     items: [
