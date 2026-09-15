@@ -3,10 +3,10 @@ import { Hero } from "@/components/ui/hero";
 import { HeroBackdrop } from "@/components/ui/heroBackdrop";
 import { HeroDescription } from "@/components/ui/heroDescription";
 import { HeroTitle } from "@/components/ui/heroTitle";
+import { HeroActions } from "@/components/ui/heroActions";
 
 import type { SegurosHero } from "../interfaces/seguros.interface";
-import { HeroCard } from "@/components/ui/heroCard";
-import { HeroActions } from "@/components/ui/heroActions";
+import { SegurosHeroCard } from "./SegurosHeroCard";
 
 interface SegurosHeroSectionProps {
   hero: SegurosHero | null;
@@ -18,11 +18,11 @@ export const SegurosHeroSection = ({ hero }: SegurosHeroSectionProps) => {
   }
 
   const background_url = hero.imagen?.url;
-
   const card = hero.card;
 
   return (
     <Hero
+      className="lg:h-auto"
       image={background_url ?? undefined}
       leftContent={
         <>
@@ -37,8 +37,8 @@ export const SegurosHeroSection = ({ hero }: SegurosHeroSectionProps) => {
         </>
       }
       rightContent={
-        <div className="flex justify-center items-center">
-          <HeroCard card={card} />
+        <div className="flex w-full justify-center">
+          <SegurosHeroCard card={card} />
         </div>
       }
       floatingContent={<HeroBackdrop />}
