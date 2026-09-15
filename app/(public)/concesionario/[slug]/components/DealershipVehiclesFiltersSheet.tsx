@@ -34,11 +34,7 @@ export const DealershipVehiclesFiltersSheet = ({
       side="left"
       className="w-[300px] overflow-y-auto p-0 sm:w-[400px]"
     >
-      <div className="border-b p-4">
-        <SheetHeader>
-          <SheetTitle>Filtros</SheetTitle>
-        </SheetHeader>
-      </div>
+      
       <div className="p-4">{filtersNode}</div>
     </SheetContent>
   </Sheet>

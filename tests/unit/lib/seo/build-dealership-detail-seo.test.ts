@@ -45,7 +45,7 @@ describe("buildDealershipDetailSeo", () => {
 
     expect(seo.breadcrumbItems).toEqual([
       { label: "Inicio", href: "/" },
-      { label: "Concesionarios", href: "/concesionarias" },
+      { label: "Concesionarios", href: "/concesionarios" },
       { label: "Auto Norte Madrid" },
     ]);
   });
@@ -59,7 +59,7 @@ describe("buildDealershipDetailSeo", () => {
       "Auto Norte Madrid | Concesionarios | WiAuto",
     );
     expect(seo.metadata.alternates?.canonical).toBe(
-      "https://wiauto.test/concesionaria/auto-norte-madrid",
+      "https://wiauto.test/concesionario/auto-norte-madrid",
     );
     expect(seo.metadata.openGraph?.images).toEqual([
       { url: "https://media.test/dealerships/banner.jpg" },

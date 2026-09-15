@@ -130,7 +130,7 @@ export const DealershipVehiclesFiltersProvider = ({
 
   const resetFilters = useCallback(() => {
     resetLocalFilters();
-    router.push(`/concesionaria/${slug}`);
+    router.push(`/concesionario/${slug}`);
   }, [resetLocalFilters, router, slug]);
 
   const toggleArrayFilter = useCallback(

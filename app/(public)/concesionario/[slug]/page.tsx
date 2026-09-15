@@ -29,15 +29,11 @@ type DealerProfilePageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-const parseReviewsPage = (
-  value: string | string[] | undefined,
-): number => {
+const parseReviewsPage = (value: string | string[] | undefined): number => {
   const raw_value = Array.isArray(value) ? value[0] : value;
   const parsed_value = Number(raw_value);
 
-  return Number.isInteger(parsed_value) && parsed_value > 0
-    ? parsed_value
-    : 1;
+  return Number.isInteger(parsed_value) && parsed_value > 0 ? parsed_value : 1;
 };
 
 export async function generateMetadata({
@@ -59,9 +55,7 @@ export default async function DealerProfilePage({
 }: DealerProfilePageProps) {
   const { slug } = await params;
   const resolved_search_params = await searchParams;
-  const reviews_page = parseReviewsPage(
-    resolved_search_params.reviews_page,
-  );
+  const reviews_page = parseReviewsPage(resolved_search_params.reviews_page);
 
   const dealership = await getDealershipDetailBySlug(slug);
   if (!dealership) {
@@ -91,7 +85,7 @@ export default async function DealerProfilePage({
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 space-y-5">
       <JsonLdScript data={jsonLdGraph} />
       <DealerProfileHero dealer={dealer} breadcrumbItems={breadcrumbItems} />
 
@@ -102,33 +96,30 @@ export default async function DealerProfilePage({
           </aside>
 
           <main className="lg:col-span-8 xl:col-span-9">
-            <div className="pt-5 lg:pt-6">
+            <div className="space-y-3">
               <DealerQuickStatsBar stats={dealer.quickStats} />
 
               <DealershipVehiclesListingShell slug={slug}>
-                <div className="mb-6 min-w-0">
-                  <div className="mb-4">
-                    <ActiveFilters activeFilters={active_filters} />
-                  </div>
-                  <DealerVehiclesSection
+                <ActiveFilters activeFilters={active_filters} />
+                <DealerVehiclesSection
+                  total={listing.total}
+                  title={active_filters.title}
+                  filtersNode={
+                    <Suspense
+                      fallback={
+                        <div className="h-96 animate-pulse rounded-none bg-slate-100" />
+                      }
+                    >
+                      <VehiclesFilters className="border-none shadow-none ring-0" />
+                    </Suspense>
+                  }
+                />
+                <Suspense fallback={<LoadingComponent />}>
+                  <VehiclesPageContent
+                    vehicles={listing.data}
                     total={listing.total}
-                    filtersNode={
-                      <Suspense
-                        fallback={
-                          <div className="h-96 animate-pulse rounded-none bg-slate-100" />
-                        }
-                      >
-                        <VehiclesFilters />
-                      </Suspense>
-                    }
                   />
-                  <Suspense fallback={<LoadingComponent />}>
-                    <VehiclesPageContent
-                      vehicles={listing.data}
-                      total={listing.total}
-                    />
-                  </Suspense>
-                </div>
+                </Suspense>
               </DealershipVehiclesListingShell>
 
               <div className="mb-6">

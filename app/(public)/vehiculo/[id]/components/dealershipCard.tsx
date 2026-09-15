@@ -81,7 +81,7 @@ export const DealershipCard = ({
   const scheduleRows = buildScheduleRows(dealership.schedules);
   const showHours = hasConfiguredHours(scheduleRows);
   const todayRow = scheduleRows.find((row) => row.isToday);
-  const dealershipHref = `/concesionaria/${dealership.slug}`;
+  const dealershipHref = `/concesionario/${dealership.slug}`;
 
   return (
     <VehicleDetailCard

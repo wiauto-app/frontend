@@ -14,6 +14,7 @@ export interface DealerQuickStats {
 
 export interface DealerProfile {
   id: string;
+  contactProfileId?: string;
   slug: string;
   name: string;
   tagline?: string;

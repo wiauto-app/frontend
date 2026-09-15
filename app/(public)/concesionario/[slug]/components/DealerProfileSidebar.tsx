@@ -1,10 +1,27 @@
 "use client";
 
-import { ShieldCheck, Star, Phone, Mail, MapPin, Clock } from "lucide-react";
+import {
+  Clock,
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+  ShieldCheck,
+  Star,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import { useUser } from "@/app/contexts/auth/useUser";
 import { Button } from "@/components/ui/button";
-import type { DealerProfile } from "../interfaces";
-import { WiautoImage } from "@/components/ui/wiautoImage";
 import { Card, CardContent } from "@/components/ui/card";
+import { WiautoImage } from "@/components/ui/wiautoImage";
+import { AUTH_ROUTES } from "@/constants/auth.constants";
+import { saveAuthReturnTo } from "@/lib/auth/authReturnTo";
+import { openDealershipContactChat } from "@/lib/chat/openDealershipContactChat";
+
+import type { DealerProfile } from "../interfaces";
 
 type DealerProfileSidebarProps = {
   dealer: DealerProfile;
@@ -15,14 +32,54 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading: isLoadingSession } = useUser();
+  const [isStartingChat, setIsStartingChat] = useState(false);
   const has_contact =
     dealer.contact.phone ||
     dealer.contact.email ||
     dealer.contact.location ||
     dealer.contact.schedule;
 
+  const handleSendMessage = async () => {
+    if (isLoadingSession || isStartingChat) return;
+
+    const returnPath = `/concesionario/${dealer.slug}`;
+    if (!isAuthenticated) {
+      saveAuthReturnTo(returnPath);
+      router.push(
+        `${AUTH_ROUTES.LOGIN}?redirect=${encodeURIComponent(returnPath)}`,
+      );
+      return;
+    }
+
+    if (!dealer.contactProfileId) {
+      toast.error("Este concesionario no tiene un contacto disponible");
+      return;
+    }
+
+    if (user?.id === dealer.contactProfileId) {
+      toast.error("No puedes enviarte un mensaje a ti mismo");
+      return;
+    }
+
+    setIsStartingChat(true);
+    try {
+      const { chat_id } = await openDealershipContactChat({
+        dealerProfileId: dealer.contactProfileId,
+        dealerName: dealer.name,
+      });
+      toast.success("Mensaje enviado correctamente");
+      router.push(`/usuario/mensajes?chat_id=${chat_id}`);
+    } catch {
+      toast.error("No se pudo iniciar el chat con el concesionario");
+    } finally {
+      setIsStartingChat(false);
+    }
+  };
+
   return (
-    <div className="relative z-20 mt-5 space-y-4">
+    <div className="relative z-20  space-y-4">
       <Card size="sm">
         <CardContent>
           <div className="relative z-10 size-20 overflow-hidden rounded-full border-[3px] border-white bg-white shadow-sm sm:size-24">
@@ -76,9 +133,16 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
           <div className="mt-5 flex w-full flex-col gap-2.5">
             <Button
               id="dealer-send-message"
+              type="button"
               className="w-full rounded-xl font-semibold text-white shadow-none"
+              onClick={handleSendMessage}
+              disabled={isLoadingSession || isStartingChat}
             >
-              Enviar mensaje
+              {isLoadingSession || isStartingChat ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                "Enviar mensaje"
+              )}
             </Button>
             {dealer.contact.phone ? (
               <Button

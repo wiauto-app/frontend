@@ -7,5 +7,5 @@ export const buildDealershipVehicleHref = (
 ): string => {
   const { dealership_ids: _dealership_ids, ...url_params } = params;
   const query = buildVehiclesQueryString(url_params);
-  return `/concesionaria/${slug}${query}`;
+  return `/concesionario/${slug}${query}`;
 };

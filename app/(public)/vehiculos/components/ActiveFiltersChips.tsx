@@ -54,7 +54,7 @@ export const ActiveFiltersChips = ({
 
   return (
     <section
-      className="mb-4 flex flex-wrap items-center gap-2"
+      className="flex flex-wrap items-center gap-2"
       aria-label="Filtros activos"
     >
       {chips.map((chip) => (

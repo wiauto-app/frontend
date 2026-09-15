@@ -23,7 +23,7 @@ export const TopDealershipCard = ({
 
   return (
     <Link
-      href={`/concesionaria/${dealership.slug}`}
+      href={`/concesionario/${dealership.slug}`}
       aria-label={`Ver perfil de ${dealership.name}`}
       className={cn(
         "home-card-interactive group relative block h-full overflow-hidden rounded-2xl",

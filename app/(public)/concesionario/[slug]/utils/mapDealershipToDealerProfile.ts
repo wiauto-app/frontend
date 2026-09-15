@@ -53,6 +53,10 @@ export const mapDealershipToDealerProfile = ({
   publishedVehicles,
 }: MapDealershipToDealerProfileInput): DealerProfile => {
   const rating = dealership.rating ?? 0;
+  const contact_member =
+    dealership.members?.find((member) => member.role === "owner") ??
+    dealership.members?.find((member) => member.role === "admin") ??
+    dealership.members?.[0];
 
   const phone =
     dealership.show_phone !== false &&
@@ -65,6 +69,7 @@ export const mapDealershipToDealerProfile = ({
 
   return {
     id: dealership.id,
+    contactProfileId: contact_member?.profile_id,
     slug: dealership.slug,
     name: dealership.name,
     tagline: dealership.description?.slice(0, 120) || undefined,

@@ -119,7 +119,7 @@ export const VehicleDetailContactCard = ({
 
           {vehicle.dealership ? (
             <a
-              href={`/concesionaria/${vehicle.dealership.slug}`}
+              href={`/concesionario/${vehicle.dealership.slug}`}
               className="block text-sm font-medium text-primary hover:underline"
             >
               Ver vehículos del concesionario →

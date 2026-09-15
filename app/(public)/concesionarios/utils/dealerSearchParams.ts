@@ -125,5 +125,5 @@ export const buildDealersSearchParams = (
 
 export const buildDealersHref = (params: DealerSearchParams): string => {
   const qs = buildDealersSearchParams(params).toString();
-  return `/concesionarias${qs ? `?${qs}` : ""}`;
+  return `/concesionarios${qs ? `?${qs}` : ""}`;
 };
