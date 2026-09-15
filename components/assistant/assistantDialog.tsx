@@ -33,7 +33,7 @@ const RENDER_DELAY_MS = 700;
 const SECTION_COPY = {
   "/": "Pregúntame cómo aprovechar WiAuto",
   "/vehiculos": "Te ayudo a encontrar y comparar coches",
-  "/concesionarias": "Encuentra la concesionaria adecuada",
+  "/concesionarios": "Encuentra la concesionaria adecuada",
   "/noticias": "Descubre lo más relevante del motor",
 } as const;
 

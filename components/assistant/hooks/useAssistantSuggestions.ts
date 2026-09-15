@@ -13,7 +13,7 @@ const PLACEHOLDER_BY_ROUTE = {
     { label: "Coche para mi presupuesto", prompt: "Ayúdame a buscar un coche que encaje con mi presupuesto y necesidades." },
     { label: "Comparar dos modelos", prompt: "Quiero comparar dos modelos antes de decidir cuál comprar." },
   ],
-  "/concesionarias": [
+  "/concesionarios": [
     { label: "Concesionarias cercanas", prompt: "Busca concesionarias cerca de mi ubicación." },
     { label: "Mejor valoradas", prompt: "Enséñame concesionarias con buenas valoraciones." },
   ],
@@ -26,7 +26,7 @@ const PLACEHOLDER_BY_ROUTE = {
 const CONTEXT_BY_ROUTE = {
   "/": "home",
   "/vehiculos": "vehicles",
-  "/concesionarias": "dealerships",
+  "/concesionarios": "dealerships",
   "/noticias": "news",
 } as const;
 

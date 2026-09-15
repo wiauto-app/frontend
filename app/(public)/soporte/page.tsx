@@ -74,9 +74,9 @@ export default async function Page() {
         floatingContent={<HeroBackdrop />}
       />
       <Channels data={content.canales} />
-      <SupportTicketCta />
+      {/* <SupportTicketCta /> */}
       <SupportFeatures data={content.caracteristicas} />
-      <SupportQuestions data={content.preguntas} />
+      {/* <SupportQuestions data={content.preguntas} /> */}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { Button } from "./button";
 interface StrapiButtonProps {
   button: StrapiLink;
   className?: string;
+  onFunctionClick?: () => void;
 }
 
 const getSamePageHashId = (href: string): string | null => {
@@ -55,7 +56,13 @@ const scrollToHashTarget = (hashId: string): boolean => {
   return true;
 };
 
-export const StrapiButton = ({ button, className }: StrapiButtonProps) => {
+export const StrapiButton = ({
+  button,
+  className,
+  onFunctionClick,
+}: StrapiButtonProps) => {
+  const isFunctionButton = Boolean(button.funcion && onFunctionClick);
+
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (
       event.defaultPrevented ||
@@ -78,28 +85,36 @@ export const StrapiButton = ({ button, className }: StrapiButtonProps) => {
     }
   };
 
+  const renderedButton = (
+    <Button
+      type="button"
+      className={cn(
+        "w-full lg:w-auto",
+        className,
+        button.destacado
+          ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition-all text-xs sm:text-sm"
+          : "bg-white/90 backdrop-blur-xs border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium px-6 py-3 rounded-xl transition-all text-xs sm:text-sm shadow-2xs",
+      )}
+      variant={button.destacado ? "default" : "outline"}
+      size="lg"
+      onClick={isFunctionButton ? onFunctionClick : undefined}
+    >
+      {button.label}
+    </Button>
+  );
+
+  if (isFunctionButton) {
+    return renderedButton;
+  }
+
   return (
     <Link
-      target={
-        button.externo ? "_blank" : undefined
-      }
+      target={button.externo ? "_blank" : undefined}
       className="w-full lg:w-auto"
       href={button.url}
       onClick={handleClick}
     >
-      <Button
-        className={cn(
-          className,
-
-          button.destacado
-            ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition-all text-xs sm:text-sm"
-            : "bg-white/90 backdrop-blur-xs border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium px-6 py-3 rounded-xl transition-all text-xs sm:text-sm shadow-2xs",
-        )}
-        variant={button.destacado ? "default" : "outline"}
-        size="lg"
-      >
-        {button.label}
-      </Button>
+      {renderedButton}
     </Link>
   );
 };

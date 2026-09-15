@@ -1,3 +1,8 @@
+"use client";
+
+import { useState } from "react";
+
+import { CreateTicketDialog } from "@/components/support/CreateTicketDialog";
 import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import {
@@ -8,24 +13,45 @@ import {
 } from "@/components/ui/card";
 import { IconContainer } from "@/components/ui/iconContainer";
 import { SoporteCard } from "../interfaces/soporte.interface";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { StrapiButton } from "@/components/ui/strapiButton";
 
 export const ChannelCard = ({ channel }: { channel: SoporteCard }) => {
+  const [isTicketDialogOpen, setIsTicketDialogOpen] = useState(false);
+
   return (
-    <Card>
-      <CardContent className="flex flex-col items-center justify-center gap-4">
-        {channel.iconName ? (
-          <IconContainer size="xl" Icon={resolveStrapiIconName(channel.iconName, defaultStrapiIconPack)} />
-        ) : null}
-        <CardTitle className="text-2xl font-bold text-center">{channel.titulo}</CardTitle>
-        <CardDescription className="text-sm text-muted-foreground text-center">{channel.descripcion}</CardDescription>
-        <Link href={channel.boton?.url ?? ""}>
-          <Button variant={channel.boton?.destacado ? "default" : "outline"}>
-            {channel.boton?.label}
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center gap-4">
+          {channel.iconName ? (
+            <IconContainer
+              size="xl"
+              Icon={resolveStrapiIconName(
+                channel.iconName,
+                defaultStrapiIconPack,
+              )}
+            />
+          ) : null}
+          <CardTitle className="text-center text-2xl font-bold">
+            {channel.titulo}
+          </CardTitle>
+          <CardDescription className="text-muted-foreground text-center text-sm">
+            {channel.descripcion}
+          </CardDescription>
+          {channel.boton ? (
+            <StrapiButton
+              button={channel.boton}
+              onFunctionClick={() => setIsTicketDialogOpen(true)}
+            />
+          ) : null}
+        </CardContent>
+      </Card>
+
+      {channel.boton?.funcion ? (
+        <CreateTicketDialog
+          open={isTicketDialogOpen}
+          onOpenChange={setIsTicketDialogOpen}
+        />
+      ) : null}
+    </>
   );
 };

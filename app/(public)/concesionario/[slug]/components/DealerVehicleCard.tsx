@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "@/app/(public)/concesionarias/constants";
+import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "@/app/(public)/concesionario/constants";
 import { formatPrice } from "@/app/(public)/vehiculos/utils";
 import { Vehicle } from "@/interfaces/vehicle.interface";
 import { getImageUrl } from "@/lib/utils";

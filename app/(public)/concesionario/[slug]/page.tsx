@@ -22,9 +22,7 @@ import { DealershipVehiclesListingShell } from "./components/DealershipVehiclesL
 import { getDealershipDetailBySlug } from "./services/getDealerBySlug.server";
 import { mapDealershipToDealerProfile } from "./utils/mapDealershipToDealerProfile";
 import { parseDealershipVehicleFilters } from "./utils/parseDealershipVehicleFilters";
-import { cookies } from "next/headers";
-import { cookiesConfig } from "@/config/cookies.config";
-import { DealershipReviewForm } from "../../concesionarias/components/DealershipReviewForm";
+import { DealershipReviewForm } from "../../concesionarios/components/DealershipReviewForm";
 
 type DealerProfilePageProps = {
   params: Promise<{ slug: string }>;

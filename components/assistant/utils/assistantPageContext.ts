@@ -1,7 +1,7 @@
 export const ASSISTANT_PAGE_ROUTES = [
   "/",
   "/vehiculos",
-  "/concesionarias",
+  "/concesionarios",
   "/noticias",
 ] as const;
 
@@ -12,8 +12,8 @@ export const resolveAssistantPageRoute = (pathname: string): AssistantPageRoute 
   if (pathname.startsWith("/vehiculos") || pathname.startsWith("/vehiculo/")) {
     return "/vehiculos";
   }
-  if (pathname.startsWith("/concesionarias") || pathname.startsWith("/concesionaria/")) {
-    return "/concesionarias";
+  if (pathname.startsWith("/concesionarios") || pathname.startsWith("/concesionario/")) {
+    return "/concesionarios";
   }
   if (pathname.startsWith("/noticias")) {
     return "/noticias";
@@ -32,7 +32,7 @@ export const resolveAssistantPageContext = (
   return {
     "/": "home",
     "/vehiculos": "vehicles",
-    "/concesionarias": "dealerships",
+    "/concesionarios": "dealerships",
     "/noticias": "news",
   }[route] as AssistantPageContext;
 };

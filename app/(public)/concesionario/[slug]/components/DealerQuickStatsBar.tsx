@@ -1,5 +1,4 @@
 import { Car, MessageSquareText, CalendarDays } from "lucide-react";
-import { BRAND_BLUE } from "@/app/(public)/concesionarias/constants";
 import type { DealerQuickStats } from "../interfaces";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -31,14 +30,14 @@ export function DealerQuickStatsBar({ stats }: DealerQuickStatsBarProps) {
       key: "publishedVehicles",
       label: "Vehículos publicados",
       icon: Car,
-      value: String(stats.publishedVehicles),
+      value: stats.publishedVehicles > 0 ? String(stats.publishedVehicles) : "Ninguno",
       isAvailable: true,
     },
     {
       key: "reviewCount",
       label: "Reseñas recibidas",
       icon: MessageSquareText,
-      value: String(stats.reviewCount),
+      value: stats.reviewCount > 0 ? String(stats.reviewCount) : "Ninguna",
       isAvailable: true,
     },
     {
@@ -71,10 +70,7 @@ export function DealerQuickStatsBar({ stats }: DealerQuickStatsBarProps) {
           >
             <div
               className="flex size-10 shrink-0 items-center justify-center rounded-xl"
-              style={{
-                backgroundColor: `${BRAND_BLUE}18`,
-                color: BRAND_BLUE,
-              }}
+             
             >
               <Icon className="size-5" />
             </div>

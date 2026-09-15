@@ -9,6 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { useUser } from "@/app/contexts/auth/useUser";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -44,6 +45,18 @@ const createTicketSchema = z.object({
     .trim()
     .min(10, "La descripción debe tener al menos 10 caracteres"),
   file_url: z.string().optional().nullable(),
+  guest_name: z
+    .union([
+      z.literal(""),
+      z.string().trim().min(2, "Escribe tu nombre").max(120),
+    ])
+    .optional(),
+  guest_email: z
+    .union([
+      z.literal(""),
+      z.string().trim().email("Escribe un correo válido").max(254),
+    ])
+    .optional(),
 });
 
 type CreateTicketFormValues = z.infer<typeof createTicketSchema>;
@@ -58,6 +71,7 @@ export const CreateTicketDialog = ({
   onOpenChange,
 }: CreateTicketDialogProps) => {
   const router = useRouter();
+  const { isAuthenticated, isLoading: isLoadingSession } = useUser();
   const form = useForm<CreateTicketFormValues>({
     resolver: zodResolver(createTicketSchema),
     defaultValues: {
@@ -65,6 +79,8 @@ export const CreateTicketDialog = ({
       title: "",
       description: "",
       file_url: null,
+      guest_name: "",
+      guest_email: "",
     },
   });
 
@@ -81,11 +97,31 @@ export const CreateTicketDialog = ({
   }, [open, form]);
 
   const handleSubmit = form.handleSubmit(async (values) => {
+    if (isLoadingSession) return;
+
+    if (!isAuthenticated) {
+      if (!values.guest_name?.trim()) {
+        form.setError("guest_name", { message: "Escribe tu nombre" });
+      }
+      if (!values.guest_email?.trim()) {
+        form.setError("guest_email", { message: "Escribe tu correo" });
+      }
+      if (!values.guest_name?.trim() || !values.guest_email?.trim()) {
+        return;
+      }
+    }
+
     const response = await ticketsService.create({
       category_id: values.category_id,
       title: values.title.trim(),
       description: values.description.trim(),
       file_url: values.file_url,
+      ...(!isAuthenticated
+        ? {
+            guest_name: values.guest_name?.trim(),
+            guest_email: values.guest_email?.trim(),
+          }
+        : {}),
     });
 
     if (!response.ok) {
@@ -93,7 +129,11 @@ export const CreateTicketDialog = ({
       return;
     }
 
-    toast.success("Ticket enviado correctamente");
+    toast.success(
+      isAuthenticated
+        ? "Ticket enviado correctamente"
+        : "Ticket enviado. Te responderemos por correo.",
+    );
     onOpenChange(false);
 
     if (response.data.chat_id) {
@@ -109,13 +149,45 @@ export const CreateTicketDialog = ({
         <DialogHeader>
           <DialogTitle>Enviar un ticket</DialogTitle>
           <DialogDescription>
-            Cuéntanos tu consulta y el equipo de soporte te responderá por el
-            chat.
+            {isAuthenticated
+              ? "Cuéntanos tu consulta y el equipo de soporte te responderá por el chat."
+              : "Cuéntanos tu consulta y el equipo de soporte te responderá por correo."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <FieldGroup>
+            {!isAuthenticated && !isLoadingSession ? (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field>
+                  <FieldLabel htmlFor="ticket-guest-name">Nombre</FieldLabel>
+                  <Input
+                    id="ticket-guest-name"
+                    autoComplete="name"
+                    placeholder="Tu nombre"
+                    {...form.register("guest_name")}
+                    aria-invalid={!!form.formState.errors.guest_name}
+                    disabled={isSubmitting}
+                  />
+                  <FieldError errors={[form.formState.errors.guest_name]} />
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="ticket-guest-email">Correo</FieldLabel>
+                  <Input
+                    id="ticket-guest-email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="tu@correo.com"
+                    {...form.register("guest_email")}
+                    aria-invalid={!!form.formState.errors.guest_email}
+                    disabled={isSubmitting}
+                  />
+                  <FieldError errors={[form.formState.errors.guest_email]} />
+                </Field>
+              </div>
+            ) : null}
+
             <Field>
               <FieldLabel htmlFor="ticket-category">Categoría</FieldLabel>
               <Controller
@@ -176,22 +248,24 @@ export const CreateTicketDialog = ({
               <FieldError errors={[form.formState.errors.description]} />
             </Field>
 
-            <Field>
-              <Controller
-                control={form.control}
-                name="file_url"
-                render={({ field }) => (
-                  <FileInput
-                    label="Adjunto (opcional)"
-                    description="Imagen o documento de apoyo"
-                    bucketName="files"
-                    path="tickets"
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
-            </Field>
+            {isAuthenticated ? (
+              <Field>
+                <Controller
+                  control={form.control}
+                  name="file_url"
+                  render={({ field }) => (
+                    <FileInput
+                      label="Adjunto (opcional)"
+                      description="Imagen o documento de apoyo"
+                      bucketName="files"
+                      path="tickets"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </Field>
+            ) : null}
           </FieldGroup>
 
           <DialogFooter>
@@ -203,8 +277,11 @@ export const CreateTicketDialog = ({
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
+            <Button
+              type="submit"
+              disabled={isSubmitting || isLoadingSession}
+            >
+              {isSubmitting || isLoadingSession ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />
               ) : (
                 "Enviar ticket"

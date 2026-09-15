@@ -1,4 +1,9 @@
-import { apiGet, apiPatch, apiPost, type ApiResponse } from "@/lib/api";
+import {
+  apiGet,
+  apiPatch,
+  fetchOptionalAuth,
+  type ApiResponse,
+} from "@/lib/api";
 import type { PaginatedResult } from "@/interfaces/chat.interface";
 import type {
   CreateTicketPayload,
@@ -13,9 +18,12 @@ export const ticketsService = {
   create: (
     payload: CreateTicketPayload,
   ): Promise<ApiResponse<TicketListItem>> =>
-    apiPost<TicketListItem>(V1_TICKETS, {
-      ...payload,
-      file_url: payload.file_url?.trim() ? payload.file_url : null,
+    fetchOptionalAuth<TicketListItem>(V1_TICKETS, {
+      method: "POST",
+      body: JSON.stringify({
+        ...payload,
+        file_url: payload.file_url?.trim() ? payload.file_url : null,
+      }),
     }),
 
   update: (

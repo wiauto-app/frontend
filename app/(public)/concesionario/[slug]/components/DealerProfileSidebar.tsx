@@ -2,12 +2,9 @@
 
 import { ShieldCheck, Star, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BRAND_BLUE } from "@/app/(public)/concesionarias/constants";
 import type { DealerProfile } from "../interfaces";
 import { WiautoImage } from "@/components/ui/wiautoImage";
 import { Card, CardContent } from "@/components/ui/card";
-
-const BRAND_BLUE_TEXT = BRAND_BLUE;
 
 type DealerProfileSidebarProps = {
   dealer: DealerProfile;
@@ -25,17 +22,10 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
     dealer.contact.schedule;
 
   return (
-    <div className="relative z-20 -mt-20 space-y-4 sm:-mt-24">
+    <div className="relative z-20 mt-5 space-y-4">
       <Card size="sm">
         <CardContent>
-          <div className="absolute inset-x-0 top-0 h-28 overflow-hidden rounded-t-2xl">
-            <div
-              className="absolute inset-x-[-10%] top-[-50%] h-[150%] w-[120%] rounded-[50%]"
-              style={{ backgroundColor: "#001B3D" }}
-            />
-          </div>
-
-          <div className="relative z-10 mt-10 size-20 overflow-hidden rounded-full border-[3px] border-white bg-white shadow-sm sm:size-24">
+          <div className="relative z-10 size-20 overflow-hidden rounded-full border-[3px] border-white bg-white shadow-sm sm:size-24">
             {dealer.avatar ? (
               <WiautoImage
                 src={dealer.avatar ?? ""}
@@ -45,10 +35,7 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
                 className="size-full object-cover"
               />
             ) : (
-              <div
-                className="flex size-full items-center justify-center text-2xl font-bold text-white"
-                style={{ backgroundColor: BRAND_BLUE }}
-              >
+              <div className="flex size-full items-center justify-center text-2xl font-bold text-white">
                 {dealer.name.charAt(0)}
               </div>
             )}
@@ -61,10 +48,7 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
           <div className="mt-1 flex items-center justify-center gap-1.5">
             <h2 className="text-lg font-bold text-slate-900">{dealer.name}</h2>
             {dealer.isVerified ? (
-              <ShieldCheck
-                className="size-4 shrink-0"
-                style={{ color: BRAND_BLUE_TEXT }}
-              />
+              <ShieldCheck className="size-4 shrink-0" />
             ) : null}
           </div>
 
@@ -93,7 +77,6 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
             <Button
               id="dealer-send-message"
               className="w-full rounded-xl font-semibold text-white shadow-none"
-              style={{ backgroundColor: BRAND_BLUE }}
             >
               Enviar mensaje
             </Button>
@@ -102,10 +85,6 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
                 id="dealer-call-btn"
                 variant="outline"
                 className="w-full rounded-xl font-semibold shadow-none hover:bg-slate-50"
-                style={{
-                  borderColor: `${BRAND_BLUE}50`,
-                  color: BRAND_BLUE,
-                }}
                 render={
                   <a href={`tel:${dealer.contact.phone.replace(/\s/g, "")}`}>
                     Llamar
@@ -119,7 +98,7 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
 
       {dealer.about ? (
         <Card>
-          <CardContent >
+          <CardContent>
             <SectionTitle>Sobre nosotros</SectionTitle>
             <p className="text-sm leading-relaxed text-slate-600">
               {dealer.about}
@@ -129,8 +108,8 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
       ) : null}
 
       {has_contact ? (
-        <Card >
-          <CardContent >
+        <Card>
+          <CardContent>
             <SectionTitle>Contacto</SectionTitle>
             <ul className="space-y-3.5 text-sm text-slate-600">
               {dealer.contact.phone ? (
@@ -168,10 +147,7 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
         <div className="overflow-hidden rounded-2xl border-transparent bg-[#F5F8FF] shadow-none">
           <div className="p-5">
             <div className="flex items-start gap-3">
-              <div
-                className="flex size-8 shrink-0 items-center justify-center rounded-full text-white"
-                style={{ backgroundColor: BRAND_BLUE }}
-              >
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-full text-white">
                 <ShieldCheck className="size-4" />
               </div>
               <div>
@@ -186,7 +162,6 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
           </div>
         </div>
       ) : null}
-
     </div>
   );
 }

@@ -71,7 +71,7 @@ type ConcesionariaCardProps = {
 };
 
 export function ConcesionariaCard({ dealer, onReview }: ConcesionariaCardProps) {
-  const dealerHref = `/concesionaria/${dealer.slug}`;
+  const dealerHref = `/concesionario/${dealer.slug}`;
 
   return (
     <article
@@ -170,16 +170,7 @@ export function ConcesionariaCard({ dealer, onReview }: ConcesionariaCardProps) 
                 <MessageSquarePlus className="size-3.5" />
                 Dejar reseña
               </button>
-              <Link
-                href={`/vehiculos?dealer=${dealer.slug}`}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "min-w-[130px] rounded-lg border-[#0061F2]/40 text-xs font-semibold text-[#0061F2] hover:bg-[#0061F2] hover:text-white",
-                )}
-                id={`dealer-inventory-btn-${dealer.id}`}
-              >
-                Ver inventario
-              </Link>
+        
               <Link
                 href={dealerHref}
                 className={cn(

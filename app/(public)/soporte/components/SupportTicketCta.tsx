@@ -1,29 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 
-import { useUser } from "@/app/contexts/auth/useUser";
 import { CreateTicketDialog } from "@/components/support/CreateTicketDialog";
 import { Button } from "@/components/ui/button";
-import { AUTH_ROUTES } from "@/constants/auth.constants";
-import { saveAuthReturnTo } from "@/lib/auth/authReturnTo";
 
 export const SupportTicketCta = () => {
-  const { isAuthenticated, isLoading } = useUser();
-  const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleOpenTicket = () => {
-    if (isLoading) return;
-
-    if (!isAuthenticated) {
-      saveAuthReturnTo("/soporte");
-      router.push(`${AUTH_ROUTES.LOGIN}?redirect=${encodeURIComponent("/soporte")}`);
-      return;
-    }
-
     setIsDialogOpen(true);
   };
 
@@ -44,7 +30,6 @@ export const SupportTicketCta = () => {
         <Button
           type="button"
           onClick={handleOpenTicket}
-          disabled={isLoading}
           aria-label="Abrir formulario de ticket de soporte"
         >
           Enviar un ticket

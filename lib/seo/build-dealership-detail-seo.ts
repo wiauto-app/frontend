@@ -43,7 +43,7 @@ export const buildDealershipBreadcrumbItems = (
   dealership: DealershipDetail,
 ): BreadcrumbItem[] => [
   { label: "Inicio", href: "/" },
-  { label: "Concesionarios", href: "/concesionarias" },
+  { label: "Concesionarios", href: "/concesionarios" },
   { label: dealership.name },
 ];
 
@@ -54,7 +54,7 @@ export const buildDealershipDetailMetadata = (
   const description =
     truncateDescription(dealership.description) ||
     buildDealershipDescriptionFallback(dealership);
-  const canonical = `${FRONTEND_URL}/concesionaria/${dealership.slug}`;
+  const canonical = `${FRONTEND_URL}/concesionario/${dealership.slug}`;
   const ogImage = dealership.banner_url
     ? getImageUrl(dealership.banner_url)
     : dealership.avatar_url
@@ -97,7 +97,7 @@ export const buildDealershipDetailJsonLd = ({
   const description =
     truncateDescription(dealership.description) ||
     buildDealershipDescriptionFallback(dealership);
-  const dealershipUrl = absoluteUrl(`/concesionaria/${dealership.slug}`);
+  const dealershipUrl = absoluteUrl(`/concesionario/${dealership.slug}`);
   const telephone = buildVisiblePhone(dealership);
   const image = dealership.banner_url
     ? getImageUrl(dealership.banner_url)

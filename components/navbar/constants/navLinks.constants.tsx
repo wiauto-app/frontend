@@ -206,7 +206,7 @@ export const NAV_LINKS: NavLink[] = [
       },
     ],
   },
-  { href: "/concesionarias", label: "Concesionarios" },
+  { href: "/concesionarios", label: "Concesionarios" },
 ];
 
 export const isNavLinkActive = (pathname: string, href?: string): boolean => {
