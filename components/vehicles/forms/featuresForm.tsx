@@ -12,12 +12,15 @@ import { Separator } from "@/components/ui/separator";
 import { OptionalFieldLabel } from "./optionalFieldLabel";
 import { VehicleServicesSelector } from "./vehicleServicesSelector";
 import { toggleCatalogIdInList } from "../utils/toggleCatalogIdInList";
+import { GroupedFeaturesAccordion } from "../GroupedFeaturesAccordion";
+import { FEATURES_CATALOG_LIMIT } from "../utils/groupFeaturesByCategory";
 
 export const FeaturesForm = () => {
   const form = useFormContext<VehicleSchema>();
-  const { data: features } = useQuery({
-    queryKey: ["features"],
-    queryFn: () => featuresService.findAll({ page: 1, limit: 100 }),
+  const { data: features, isPending } = useQuery({
+    queryKey: ["features", { page: 1, limit: FEATURES_CATALOG_LIMIT }],
+    queryFn: () =>
+      featuresService.findAll({ page: 1, limit: FEATURES_CATALOG_LIMIT }),
   });
 
   return (
@@ -84,45 +87,58 @@ export const FeaturesForm = () => {
       </div>
       <Separator />
       <div className="flex flex-col gap-4">
-        <OptionalFieldLabel optional>Características</OptionalFieldLabel>
+        <OptionalFieldLabel optional>Equipamiento</OptionalFieldLabel>
         <Controller
           name="features_ids"
           control={form.control}
           render={({ field, fieldState }) => {
             const ids = Array.isArray(field.value) ? field.value : [];
+            const catalogFeatures = features?.data ?? [];
 
             return (
               <>
-                <div className="grid grid-cols-2 gap-4">
-                  {features?.data.map((feature) => {
-                    const checkbox_id = `vehicle-feature-${feature.id}`;
-                    const is_checked = ids.includes(feature.id);
+                <GroupedFeaturesAccordion
+                  features={catalogFeatures}
+                  selectedKeys={ids}
+                  getItemKey={(feature) => feature.id}
+                  accordionMode="first-open"
+                  isLoading={isPending}
+                  renderItems={(groupFeatures) => (
+                    <div className="grid grid-cols-2 gap-4">
+                      {groupFeatures.map((feature) => {
+                        const checkboxId = `vehicle-feature-${feature.id}`;
+                        const isChecked = ids.includes(feature.id);
 
-                    return (
-                      <Field
-                        key={feature.id}
-                        orientation="horizontal"
-                        className="flex-row-reverse items-center gap-3"
-                        data-invalid={fieldState.invalid}
-                      >
-                        <FieldLabel htmlFor={checkbox_id}>
-                          {feature.name}
-                        </FieldLabel>
-                        <Checkbox
-                          id={checkbox_id}
-                          checked={is_checked}
-                          onCheckedChange={(checked) => {
-                            const is_on = checked === true;
-                            field.onChange(
-                              toggleCatalogIdInList(ids, feature.id, is_on),
-                            );
-                          }}
-                          aria-invalid={fieldState.invalid}
-                        />
-                      </Field>
-                    );
-                  })}
-                </div>
+                        return (
+                          <Field
+                            key={feature.id}
+                            orientation="horizontal"
+                            className="flex-row-reverse items-center gap-3"
+                            data-invalid={fieldState.invalid}
+                          >
+                            <FieldLabel htmlFor={checkboxId}>
+                              {feature.name}
+                            </FieldLabel>
+                            <Checkbox
+                              id={checkboxId}
+                              checked={isChecked}
+                              onCheckedChange={(checked) => {
+                                field.onChange(
+                                  toggleCatalogIdInList(
+                                    ids,
+                                    feature.id,
+                                    checked === true,
+                                  ),
+                                );
+                              }}
+                              aria-invalid={fieldState.invalid}
+                            />
+                          </Field>
+                        );
+                      })}
+                    </div>
+                  )}
+                />
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
               </>
             );

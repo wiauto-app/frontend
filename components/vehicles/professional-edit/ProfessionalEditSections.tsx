@@ -37,6 +37,8 @@ import { catalogServicesService } from "@/components/vehicles/services/catalogSe
 import { cuotasService } from "@/components/vehicles/services/cuotasService";
 import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
 import { toggleCatalogIdInList } from "@/components/vehicles/utils/toggleCatalogIdInList";
+import { GroupedFeaturesAccordion } from "@/components/vehicles/GroupedFeaturesAccordion";
+import { FEATURES_CATALOG_LIMIT } from "@/components/vehicles/utils/groupFeaturesByCategory";
 import { cn } from "@/lib/utils";
 import { QuickCatalogFields } from "@/components/vehicles/quick-publish/QuickCatalogFields";
 import { QuickVehicleAiDescriptionCard } from "@/components/vehicles/quick-publish/QuickVehicleAiDescriptionCard";
@@ -96,9 +98,10 @@ export const ProfessionalEditSections = ({
   const phoneValue = form.watch("phone");
   const fuelTypeId = form.watch("catalog_fuel_type_id");
 
-  const { data: features } = useQuery({
-    queryKey: ["features"],
-    queryFn: () => featuresService.findAll({ page: 1, limit: 100 }),
+  const { data: features, isPending: isFeaturesPending } = useQuery({
+    queryKey: ["features", { page: 1, limit: FEATURES_CATALOG_LIMIT }],
+    queryFn: () =>
+      featuresService.findAll({ page: 1, limit: FEATURES_CATALOG_LIMIT }),
   });
 
   const { data: services } = useQuery({
@@ -324,41 +327,56 @@ export const ProfessionalEditSections = ({
       <SectionShell {...getSection("equipamiento")}>
         <div className="flex flex-col gap-6">
           <div>
-            <h4 className="mb-3 text-sm font-medium text-gray-900">Extras</h4>
+            <h4 className="mb-3 text-sm font-medium text-gray-900">
+              Equipamiento
+            </h4>
             <Controller
               name="features_ids"
               control={form.control}
               render={({ field, fieldState }) => {
                 const ids = field.value ?? [];
+                const catalogFeatures = features?.data ?? [];
+
                 return (
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {features?.data.map((feature) => {
-                      const checkboxId = `pro-feature-${feature.id}`;
-                      return (
-                        <Field
-                          key={feature.id}
-                          orientation="horizontal"
-                          className="flex-row-reverse items-center gap-3"
-                        >
-                          <FieldLabel htmlFor={checkboxId}>
-                            {feature.name}
-                          </FieldLabel>
-                          <Checkbox
-                            id={checkboxId}
-                            checked={ids.includes(feature.id)}
-                            onCheckedChange={(checked) =>
-                              field.onChange(
-                                toggleCatalogIdInList(
-                                  ids,
-                                  feature.id,
-                                  checked === true,
-                                ),
-                              )
-                            }
-                          />
-                        </Field>
-                      );
-                    })}
+                  <div className="flex flex-col gap-2">
+                    <GroupedFeaturesAccordion
+                      features={catalogFeatures}
+                      selectedKeys={ids}
+                      getItemKey={(feature) => feature.id}
+                      accordionMode="first-open"
+                      isLoading={isFeaturesPending}
+                      renderItems={(groupFeatures) => (
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          {groupFeatures.map((feature) => {
+                            const checkboxId = `pro-feature-${feature.id}`;
+                            return (
+                              <Field
+                                key={feature.id}
+                                orientation="horizontal"
+                                className="flex-row-reverse items-center gap-3"
+                              >
+                                <FieldLabel htmlFor={checkboxId}>
+                                  {feature.name}
+                                </FieldLabel>
+                                <Checkbox
+                                  id={checkboxId}
+                                  checked={ids.includes(feature.id)}
+                                  onCheckedChange={(checked) =>
+                                    field.onChange(
+                                      toggleCatalogIdInList(
+                                        ids,
+                                        feature.id,
+                                        checked === true,
+                                      ),
+                                    )
+                                  }
+                                />
+                              </Field>
+                            );
+                          })}
+                        </div>
+                      )}
+                    />
                     {fieldState.error ? (
                       <FieldError errors={[fieldState.error]} />
                     ) : null}

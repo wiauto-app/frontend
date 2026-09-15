@@ -46,7 +46,7 @@ export const QuickVehicleForm = ({
     queryFn: () => vehiclesService.findOne(vehicleId ?? ""),
     enabled: isEditMode,
   });
-
+  console.log(vehicleDetail);
 
   const form = useForm<QuickVehicleSchema>({
     resolver: standardSchemaResolver(

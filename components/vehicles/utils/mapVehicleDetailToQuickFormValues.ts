@@ -30,10 +30,11 @@ export const mapVehicleDetailToQuickFormValues = (
     catalog_fuel_can_charge: Boolean(
       (version?.fuel_type as { can_charge?: boolean } | undefined)?.can_charge,
     ),
+    catalog_body_type_id: version?.body_type?.id ?? undefined,
     condition: vehicle.condition,
     mileage: vehicle.mileage,
     price: vehicle.price,
-    color_id: vehicle.color_id ?? undefined,
+    color_id: vehicle.color?.id ?? undefined,
     category_id: vehicle.category?.id ?? undefined,
     dgt_label_id: vehicle.dgt_label?.id ?? undefined,
     lat: vehicle.lat,

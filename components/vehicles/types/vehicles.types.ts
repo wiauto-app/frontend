@@ -217,6 +217,7 @@ export interface Feature {
   id: string;
   name: string;
   slug: string;
+  category: string;
   created_at: Date;
   updated_at: Date;
 }

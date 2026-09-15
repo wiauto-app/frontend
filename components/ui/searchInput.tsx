@@ -10,6 +10,7 @@ interface SearchInputProps {
   onChange?: (value: string) => void;
   onClear?: () => void;
   className?: string;
+  "aria-label"?: string;
 }
 
 export const SearchInput = ({
@@ -34,7 +35,12 @@ export const SearchInput = ({
         onChange={(e) => onChange?.(e.target.value)}
         {...props}
       />
-      <button className="absolute right-3 top-1/2 size-4 -translate-y-1/2" onClick={handleClear}>
+      <button
+        type="button"
+        aria-label="Limpiar búsqueda"
+        className="absolute right-3 top-1/2 size-4 -translate-y-1/2"
+        onClick={handleClear}
+      >
         <X className="size-4 text-slate-400" />
       </button>
     </div>

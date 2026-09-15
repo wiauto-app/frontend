@@ -22,7 +22,7 @@ export const PROFESSIONAL_EDIT_SECTIONS = [
   {
     id: "equipamiento",
     title: "Equipamiento",
-    description: "Extras y servicios del anuncio.",
+    description: "Equipamiento y servicios del anuncio.",
   },
   {
     id: "precio-garantia",
