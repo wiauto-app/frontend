@@ -60,12 +60,12 @@ export const VehicleFeaturedCard = ({
         className,
       )}
     >
-      <Link
+      {/* <Link
         href={vehicleUrl}
         prefetch={false}
         className="absolute inset-0 z-0 rounded-[20px]"
         aria-label={`Ver ${displayName}`}
-      />
+      /> */}
 
       <div className="absolute inset-0 z-0 overflow-hidden bg-slate-200">
         <Image
@@ -184,9 +184,9 @@ export const VehicleFeaturedCard = ({
               </span>
             ) : null}
           </div>
-          <span className="shrink-0 rounded-[22px] bg-white px-3.5 py-2.5 text-[13px] font-extrabold text-[#1769D5]">
+          <Link href={vehicleUrl} className="shrink-0 rounded-[22px] bg-white px-3.5 py-2.5 text-[13px] font-extrabold text-[#1769D5]">
             Ver anuncio →
-          </span>
+          </Link>
         </div>
       </div>
     </Card>

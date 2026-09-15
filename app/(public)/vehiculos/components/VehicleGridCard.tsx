@@ -176,10 +176,8 @@ export const VehicleGridCard = ({
         className,
       )}
     >
-      {/* Enlace de ratón; el CTA "Ver detalle" es el único foco de teclado/lector. */}
       <Link
         href={vehicleUrl}
-        prefetch={false}
         className="absolute inset-0 z-0 rounded-xl"
         aria-hidden
         tabIndex={-1}
