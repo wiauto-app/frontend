@@ -53,10 +53,10 @@ export const NAV_LINKS: NavLink[] = [
             href: "/vehiculos",
             label: "Vehículos de segunda mano",
           },
-          {
-            href: "/vehiculos?km_hasta=5000",
-            label: "Vehículos 0 km",
-          },
+          // {
+          //   href: "/vehiculos?km_hasta=5000",
+          //   label: "Vehículos 0 km",
+          // },
           {
             href: "/vehiculos?combustible=electrico",
             label: "Eléctricos",
