@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import {
   buildVehicleAiContext,
+  DESCRIPTION_GENERATION_COOLDOWN_SECONDS,
+  getDescriptionCooldownMessage,
   isVehicleAiRateLimited,
   VEHICLE_AI_RATE_LIMIT_MESSAGE,
   vehicleAiService,
@@ -62,6 +64,7 @@ type VehicleAiActionResultMap = {
 export interface VehicleAiExecuteResult<TAction extends VehicleAiAction> {
   data: VehicleAiActionResultMap[TAction] | null;
   error: VehicleAiActionError | null;
+  retryAfter?: number;
 }
 
 interface UseVehicleAiActionResult<TAction extends VehicleAiAction> {
@@ -69,6 +72,8 @@ interface UseVehicleAiActionResult<TAction extends VehicleAiAction> {
   isPending: boolean;
   error: VehicleAiActionError | null;
   canExecute: boolean;
+  /** Segundos restantes del cooldown de generación (solo descripción). */
+  cooldownSeconds: number;
 }
 
 export const useVehicleAiAction = <TAction extends VehicleAiAction>(
@@ -79,6 +84,7 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
   const watchedValues = useWatch({ control: form.control });
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<VehicleAiActionError | null>(null);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
   const formValues = useMemo(
     () => ({ ...form.getValues(), ...watchedValues }) as QuickVehicleSchema,
@@ -90,10 +96,27 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
     [action, formValues],
   );
 
+  useEffect(() => {
+    if (cooldownSeconds <= 0) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCooldownSeconds((current) => Math.max(0, current - 1));
+    }, 1000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [cooldownSeconds]);
+
+  const startCooldown = useCallback((seconds: number) => {
+    const nextSeconds = Math.max(1, Math.ceil(seconds));
+    setCooldownSeconds(nextSeconds);
+  }, []);
+
   const execute = useCallback(async (): Promise<
     VehicleAiExecuteResult<TAction>
   > => {
-    if (!canExecute || isPending) {
+    if (!canExecute || isPending || cooldownSeconds > 0) {
       return { data: null, error: null };
     }
 
@@ -123,18 +146,26 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
         };
       }
 
-      const response = await vehicleAiService.generateDescription(context, settings);
+      const response = await vehicleAiService.generateDescription(
+        context,
+        settings,
+      );
 
       if (isVehicleAiRateLimited(response)) {
-        toast.error(VEHICLE_AI_RATE_LIMIT_MESSAGE);
+        const retryAfter =
+          response.retryAfter ?? DESCRIPTION_GENERATION_COOLDOWN_SECONDS;
+        startCooldown(retryAfter);
+        toast.error(getDescriptionCooldownMessage(retryAfter));
         setError("rate_limited");
-        return { data: null, error: "rate_limited" };
+        return { data: null, error: "rate_limited", retryAfter };
       }
 
       if (!response.ok || !response.data?.description) {
         setError("generic");
         return { data: null, error: "generic" };
       }
+
+      startCooldown(DESCRIPTION_GENERATION_COOLDOWN_SECONDS);
 
       return {
         data: response.data as VehicleAiActionResultMap[TAction],
@@ -146,12 +177,21 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
     } finally {
       setIsPending(false);
     }
-  }, [action, canExecute, form, isPending, settings]);
+  }, [
+    action,
+    canExecute,
+    cooldownSeconds,
+    form,
+    isPending,
+    settings,
+    startCooldown,
+  ]);
 
   return {
     execute,
     isPending,
     error,
     canExecute,
+    cooldownSeconds,
   };
 };

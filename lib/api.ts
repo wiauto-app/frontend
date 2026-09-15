@@ -7,6 +7,8 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
   status: number;
+  /** Segundos hasta poder reintentar (p. ej. 429). */
+  retryAfter?: number;
 }
 
 interface FetchWithAuthOptions extends RequestInit {
@@ -23,6 +25,7 @@ interface BackendJsonBody<T> {
   status?: number;
   message?: string;
   data?: T;
+  retryAfter?: number;
 }
 
 interface TryRefreshSessionResult {
@@ -78,11 +81,23 @@ const toApiResponse = <T>(
       ? body.ok
       : response.ok;
 
+  const retryAfterRaw =
+    typeof body === "object" && body !== null && "retryAfter" in body
+      ? body.retryAfter
+      : undefined;
+  const retryAfter =
+    typeof retryAfterRaw === "number" &&
+    Number.isFinite(retryAfterRaw) &&
+    retryAfterRaw > 0
+      ? Math.ceil(retryAfterRaw)
+      : undefined;
+
   return {
     ok,
     message,
     status: response.status,
     data,
+    ...(retryAfter != null ? { retryAfter } : {}),
   };
 };
 

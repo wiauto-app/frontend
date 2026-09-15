@@ -18,9 +18,11 @@ import {
 
 export const QuickVehicleAiDescriptionCard = () => {
   const form = useFormContext<QuickVehicleSchema>();
-  const { execute, isPending, canExecute } = useVehicleAiAction(
-    "generateDescription",
-  );
+  const { execute, isPending, canExecute, cooldownSeconds } =
+    useVehicleAiAction("generateDescription");
+
+  const isCoolingDown = cooldownSeconds > 0;
+  const isButtonDisabled = !canExecute || isPending || isCoolingDown;
 
   const handleGenerateDescription = async () => {
     const { data } = await execute();
@@ -35,7 +37,7 @@ export const QuickVehicleAiDescriptionCard = () => {
   };
 
   return (
-    <Card className=" rounded-md border border-primary bg-primary/5 ">
+    <Card className="rounded-md border border-primary bg-primary/5">
       <CardHeader className="flex items-start gap-4">
         <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary/20">
           <Sparkles className="size-8 text-primary" aria-hidden="true" />
@@ -54,19 +56,36 @@ export const QuickVehicleAiDescriptionCard = () => {
         </div>
       </CardHeader>
 
-      <CardContent>
-
+      <CardContent className="flex flex-col gap-3">
         {!canExecute ? (
           <p className="text-sm text-muted-foreground">
             {VEHICLE_AI_MISSING_FIELDS_MESSAGE}
           </p>
         ) : null}
 
+        {isCoolingDown ? (
+          <p
+            className="text-sm text-muted-foreground"
+            aria-live="polite"
+            role="status"
+          >
+            Podrás generar otra descripción en{" "}
+            <span className="font-semibold tabular-nums text-foreground">
+              {cooldownSeconds} s
+            </span>
+            .
+          </p>
+        ) : null}
+
         <Button
           type="button"
           onClick={handleGenerateDescription}
-          disabled={!canExecute || isPending}
-          aria-label="Generar descripción del vehículo con IA"
+          disabled={isButtonDisabled}
+          aria-label={
+            isCoolingDown
+              ? `Generar descripción disponible en ${cooldownSeconds} segundos`
+              : "Generar descripción del vehículo con IA"
+          }
           className="w-fit"
         >
           {isPending ? (
@@ -74,6 +93,8 @@ export const QuickVehicleAiDescriptionCard = () => {
               <Loader2 className="animate-spin" aria-hidden="true" />
               Generando…
             </>
+          ) : isCoolingDown ? (
+            `Espera ${cooldownSeconds} s`
           ) : (
             "Generar descripción"
           )}

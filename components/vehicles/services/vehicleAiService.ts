@@ -47,6 +47,15 @@ export interface GenerateVehicleDescriptionResponse {
 export const VEHICLE_AI_RATE_LIMIT_MESSAGE =
   "Has alcanzado el límite de solicitudes. Espera un momento e inténtalo de nuevo.";
 
+export const DESCRIPTION_GENERATION_COOLDOWN_SECONDS = 10;
+
+export const getDescriptionCooldownMessage = (seconds: number): string => {
+  const safeSeconds = Math.max(1, Math.ceil(seconds));
+  return safeSeconds === 1
+    ? "Podrás generar otra descripción en 1 s."
+    : `Podrás generar otra descripción en ${safeSeconds} s.`;
+};
+
 export const isVehicleAiRateLimited = (
   response: ApiResponse<unknown>,
 ): boolean => response.status === 429;
