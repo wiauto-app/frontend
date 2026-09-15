@@ -79,7 +79,14 @@ export const StrapiButton = ({ button, className }: StrapiButtonProps) => {
   };
 
   return (
-    <Link className="w-full lg:w-auto" href={button.url} onClick={handleClick}>
+    <Link
+      target={
+        button.externo ? "_blank" : undefined
+      }
+      className="w-full lg:w-auto"
+      href={button.url}
+      onClick={handleClick}
+    >
       <Button
         className={cn(
           className,

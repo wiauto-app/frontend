@@ -82,12 +82,18 @@ describe("quickVehicleSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("valida description solo con min(10) y sin max", () => {
+  it("valida description como string opcional sin mínimo", () => {
     const shortDescription = quickVehicleSchema.safeParse({
       ...baseValidPayload,
       description: "corta",
     });
-    expect(shortDescription.success).toBe(false);
+    expect(shortDescription.success).toBe(true);
+
+    const emptyDescription = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      description: "",
+    });
+    expect(emptyDescription.success).toBe(true);
 
     const longDescription = quickVehicleSchema.safeParse({
       ...baseValidPayload,

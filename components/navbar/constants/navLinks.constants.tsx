@@ -145,13 +145,18 @@ export const NAV_LINKS: NavLink[] = [
         Icon: CreditCard,
         description: "Solicita una garantía mecánica",
       },
+      // {
+      //   href: "/transferir-vehiculo",
+      //   label: "Transferir coche",
+      //   Icon: CreditCard,
+      //   description: "Transferir coche",
+      // },
       {
-        href: "/transferir-vehiculo",
-        label: "Transferir coche",
-        Icon: CreditCard,
-        description: "Transferir coche",
+        label: "Calcula el seguro",
+        description: "Calcula el seguro de tu vehículo",
+        Icon: Shield,
+        href: "/seguros",
       },
-     
     ],
   },
   {
@@ -175,12 +180,7 @@ export const NAV_LINKS: NavLink[] = [
         Icon: CreditCard,
         description: "Calcula tu cuota mensual",
       },
-      {
-        href: "/seguros",
-        label: "Calculadora de seguro",
-        Icon: Shield,
-        description: "Calcula tu seguro",
-      },
+     
     ],
   },
   {

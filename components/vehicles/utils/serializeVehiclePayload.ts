@@ -21,8 +21,7 @@ export const serializeVehiclePayload = (
   data: VehicleSchema | UpdateVehicleSchema,
   options?: { only_temp_images?: boolean; is_update?: boolean },
 ) => {
-  const { phone, images, vehicle_price_id, ...rest } = data;
-  void data.videos;
+  const { phone, images, vehicle_price_id, videos: _videos, ...rest } = data;
 
   const payload: Record<string, unknown> = {
     ...rest,
