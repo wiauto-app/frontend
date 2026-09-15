@@ -116,12 +116,12 @@ export const NAV_LINKS: NavLink[] = [
         Icon: Calculator,
         description: "Obtén una valoración orientativa de tu vehículo",
       },
-      {
-        href: "/simulador",
-        label: "Simulador de financiación",
-        Icon: Percent,
-        description: "Calcula cuotas y compara opciones de pago",
-      },
+      // {
+      //   href: "/simulador",
+      //   label: "Simulador de financiación",
+      //   Icon: Percent,
+      //   description: "Calcula cuotas y compara opciones de pago",
+      // },
     ],
   },
   {

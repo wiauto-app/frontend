@@ -132,8 +132,12 @@ export const PriceSelector = ({ value, onChange }: PriceSelectorProps) => {
       />
 
       <div className="flex items-center justify-between gap-3 text-xs tabular-nums text-muted-foreground">
-        <span>{price_formatter.format(PRICE_MIN)}</span>
-        <span>{price_formatter.format(slider_max)}+</span>
+        <span>{price_formatter.format(range[0])}</span>
+        <span>
+          {range[1] === slider_max
+            ? `${price_formatter.format(slider_max)}+`
+            : price_formatter.format(range[1])}
+        </span>
       </div>
     </div>
   );

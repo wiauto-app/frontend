@@ -46,13 +46,13 @@ export const QuickVehicleForm = ({
     queryFn: () => vehiclesService.findOne(vehicleId ?? ""),
     enabled: isEditMode,
   });
-  console.log(vehicleDetail);
 
   const form = useForm<QuickVehicleSchema>({
     resolver: standardSchemaResolver(
       quickVehicleSchema,
     ) as Resolver<QuickVehicleSchema>,
     defaultValues: { ...createQuickVehicleDefaultValues },
+    mode: "onChange",
   });
 
   useEffect(() => {

@@ -5,20 +5,8 @@ import type { FooterLinkItem, FooterSectionItem } from "../types/footer.types";
 
 import { Separator } from "../../ui/separator";
 import { CookiePreferencesButton } from "@/components/consent/cookiePreferencesButton";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaLinkedin,
-  FaTelegram,
-  FaYoutube,
-} from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import {
-  FACEBOOK_COLOR,
-  INSTAGRAM_COLOR,
-  TELEGRAM_COLOR,
-  YOUTUBE_COLOR,
-} from "./footer.constants";
+import { findSocialNetworkByLabel } from "./footer.constants";
+
 interface FooterSectionColumnProps {
   section: FooterSectionItem;
 }
@@ -30,46 +18,21 @@ interface SocialLinkButtonProps {
 const isExternalUrl = (url: string): boolean =>
   url.startsWith("http://") || url.startsWith("https://");
 
-const normalizeSocialLabel = (label: string): string =>
-  label
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-
 const renderSocialIcon = (label: string) => {
-  const normalized = normalizeSocialLabel(label);
+  const network = findSocialNetworkByLabel(label);
 
-  if (normalized.includes("facebook")) {
+  if (!network) {
     return (
-      <FaFacebook className="size-5 " color={FACEBOOK_COLOR} aria-hidden />
+      <span className="text-xs font-semibold" aria-hidden>
+        {label.charAt(0).toUpperCase()}
+      </span>
     );
   }
 
-  if (normalized.includes("instagram")) {
-    return (
-      <FaInstagram className="size-5" color={INSTAGRAM_COLOR} aria-hidden />
-    );
-  }
-
-  if (normalized.includes("twitter") || normalized === "x") {
-    return <FaXTwitter className="size-5" aria-hidden />;
-  }
-
-  if (normalized.includes("linkedin")) {
-    return <FaLinkedin className="size-5" aria-hidden />;
-  }
-  if (normalized.includes("youtube")) {
-    return <FaYoutube className="size-5" color={YOUTUBE_COLOR} aria-hidden />;
-  }
-  if (normalized.includes("telegram")) {
-    return <FaTelegram className="size-5" color={TELEGRAM_COLOR} aria-hidden />;
-  }
+  const Icon = network.Icon;
 
   return (
-    <span className="text-xs font-semibold" aria-hidden>
-      {label.charAt(0).toUpperCase()}
-    </span>
+    <Icon className="size-5" color={network.color} aria-hidden />
   );
 };
 
