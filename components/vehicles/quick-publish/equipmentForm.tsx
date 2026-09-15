@@ -60,7 +60,7 @@ export const EquipmentForm = () => {
               features={catalogFeatures}
               selectedKeys={ids}
               getItemKey={(feature) => feature.id}
-              accordionMode="all-open"
+              accordionMode="collapsed"
               isLoading={isPending}
               renderItems={(groupFeatures) => (
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
