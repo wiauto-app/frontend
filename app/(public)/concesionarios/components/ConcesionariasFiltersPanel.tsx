@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { MapPin, Star, Car, Shield } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { HiOutlineStar, HiStar } from "react-icons/hi";
+
 import { Separator } from "@/components/ui/separator";
 import {
   Select,
@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { provincesCatalogService } from "@/services/locations/provincesCatalogService";
 import type { ProvinceCatalogItem } from "@/services/locations/types/province.types";
@@ -27,40 +28,61 @@ import {
   DEALER_FILTER_KEYS_LIST,
 } from "../constants/filterKeys.constants";
 
-function SectionTitle({
-  icon: Icon,
-  children,
-}: {
+interface SectionTitleProps {
   icon: React.ElementType;
   children: React.ReactNode;
-}) {
-  return (
-    <p className="flex items-center gap-2 text-sm font-bold text-slate-800">
-      <Icon className="size-4" style={{ color: BRAND_BLUE }} />
-      {children}
-    </p>
-  );
 }
 
+const SectionTitle = ({ icon: Icon, children }: SectionTitleProps) => (
+  <p className="flex items-center gap-2 text-sm font-bold text-slate-800">
+    <Icon className="size-4" style={{ color: BRAND_BLUE }} />
+    {children}
+  </p>
+);
+
+const readStringFilter = (value: string | string[] | undefined): string =>
+  typeof value === "string" ? value : "";
+
+const readNumberFilter = (
+  value: string | string[] | undefined,
+): number | undefined => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
 export function ConcesionariasFiltersPanel() {
-  const router = useRouter();
   const { values, applyUrlUpdates, handleClearAll } = useFiltersManager({
     keys: DEALER_FILTER_KEYS_LIST,
   });
 
   const [provinces, setProvinces] = useState<ProvinceCatalogItem[]>([]);
-  const [provinceSlug, setProvinceSlug] = useState(
-    String(values[DEALER_FILTER_KEYS.PROVINCE_SLUG] ?? ""),
+
+  const provinceSlug = readStringFilter(values[DEALER_FILTER_KEYS.PROVINCE_SLUG]);
+  const radius = readNumberFilter(values[DEALER_FILTER_KEYS.RADIUS]) ?? 0;
+  const minRating = readNumberFilter(values[DEALER_FILTER_KEYS.RATING_SINCE]);
+  const minVehicles =
+    readNumberFilter(values[DEALER_FILTER_KEYS.VEHICLES_NUMBER]) ?? 0;
+
+  const provinceItems = useMemo(
+    () =>
+      provinces.map((province) => ({
+        label: province.name,
+        value: province.slug,
+      })),
+    [provinces],
   );
-  const [radius, setRadius] = useState(
-    Number(values[DEALER_FILTER_KEYS.RADIUS] ?? 50) || 0,
-  );
-  const [minRating, setMinRating] = useState<number | undefined>(() => {
-    const raw = values[DEALER_FILTER_KEYS.RATING_SINCE];
-    return raw ? Number(raw) : undefined;
-  });
-  const [minVehicles, setMinVehicles] = useState(
-    Number(values[DEALER_FILTER_KEYS.VEHICLES_NUMBER] ?? 0) || 0,
+
+  const vehicleItems = useMemo(
+    () =>
+      MIN_VEHICLES_OPTIONS.map(({ value, label }) => ({
+        label,
+        value: String(value),
+      })),
+    [],
   );
 
   useEffect(() => {
@@ -70,27 +92,40 @@ export function ConcesionariasFiltersPanel() {
       .catch(() => setProvinces([]));
   }, []);
 
-  const handleApplyFilters = () => {
+  const handleProvinceChange = (next: string) => {
     applyUrlUpdates({
-      [DEALER_FILTER_KEYS.PROVINCE_SLUG]: provinceSlug || undefined,
+      [DEALER_FILTER_KEYS.PROVINCE_SLUG]: next || undefined,
       [DEALER_FILTER_KEYS.RADIUS]:
-        radius > 0 && provinceSlug ? String(radius) : undefined,
-      [DEALER_FILTER_KEYS.RATING_SINCE]:
-        minRating != null && minRating > 0 ? String(minRating) : undefined,
-      [DEALER_FILTER_KEYS.VEHICLES_NUMBER]:
-        minVehicles > 0 ? String(minVehicles) : undefined,
+        next && radius > 0 ? String(radius) : undefined,
       [DEALER_FILTER_KEYS.PAGE]: undefined,
     });
-    router.refresh();
   };
 
-  const handleClearAllFilters = () => {
-    setProvinceSlug("");
-    setRadius(50);
-    setMinRating(undefined);
-    setMinVehicles(0);
-    handleClearAll();
-    router.refresh();
+  const handleRadiusChange = (next: number) => {
+    if (!provinceSlug) {
+      return;
+    }
+
+    applyUrlUpdates({
+      [DEALER_FILTER_KEYS.RADIUS]: next > 0 ? String(next) : undefined,
+      [DEALER_FILTER_KEYS.PAGE]: undefined,
+    });
+  };
+
+  const handleRatingChange = (next: number) => {
+    applyUrlUpdates({
+      [DEALER_FILTER_KEYS.RATING_SINCE]:
+        minRating === next ? undefined : String(next),
+      [DEALER_FILTER_KEYS.PAGE]: undefined,
+    });
+  };
+
+  const handleMinVehiclesChange = (next: number) => {
+    applyUrlUpdates({
+      [DEALER_FILTER_KEYS.VEHICLES_NUMBER]:
+        next > 0 ? String(next) : undefined,
+      [DEALER_FILTER_KEYS.PAGE]: undefined,
+    });
   };
 
   return (
@@ -100,7 +135,7 @@ export function ConcesionariasFiltersPanel() {
           <CardTitle className="text-base">Filtros</CardTitle>
           <button
             type="button"
-            onClick={handleClearAllFilters}
+            onClick={handleClearAll}
             className="text-xs font-semibold transition-colors hover:opacity-80"
             style={{ color: BRAND_BLUE }}
             id="clear-dealers-filters"
@@ -115,7 +150,8 @@ export function ConcesionariasFiltersPanel() {
             <div className="mt-2">
               <Select
                 value={provinceSlug || undefined}
-                onValueChange={(value) => setProvinceSlug(value ?? "")}
+                onValueChange={(value) => handleProvinceChange(value ?? "")}
+                items={provinceItems}
               >
                 <SelectTrigger
                   className="h-10 w-full rounded-lg border-slate-200 text-sm"
@@ -134,7 +170,7 @@ export function ConcesionariasFiltersPanel() {
             </div>
 
             <div className="mt-4">
-              <div className="mb-1.5 flex items-center justify-between text-xs text-slate-500">
+              <div className="mb-2 flex items-center justify-between text-xs text-slate-500">
                 <span>Radio</span>
                 <span className="font-semibold" style={{ color: BRAND_BLUE }}>
                   {!provinceSlug || radius === 0
@@ -142,19 +178,25 @@ export function ConcesionariasFiltersPanel() {
                     : `${radius} km`}
                 </span>
               </div>
-              <input
-                id="dealer-radius-slider"
-                type="range"
+              <Slider
+                aria-label="Radio de búsqueda en kilómetros"
+                value={[radius]}
                 min={0}
                 max={100}
                 step={10}
-                value={radius}
-                onChange={(e) => setRadius(parseInt(e.target.value, 10))}
                 disabled={!provinceSlug}
-                className="h-1.5 w-full cursor-pointer appearance-none rounded-full disabled:opacity-40"
-                style={{ accentColor: BRAND_BLUE }}
-                aria-label="Radio de búsqueda en kilómetros"
+                onValueChange={(next) => {
+                  const value = Array.isArray(next) ? next[0] : next;
+                  if (!Number.isFinite(value)) {
+                    return;
+                  }
+                  handleRadiusChange(value);
+                }}
               />
+              <div className="mt-2 flex items-center justify-between text-xs tabular-nums text-muted-foreground">
+                <span>0 km</span>
+                <span>100 km</span>
+              </div>
             </div>
           </section>
 
@@ -169,19 +211,16 @@ export function ConcesionariasFiltersPanel() {
                   <button
                     key={n}
                     type="button"
-                    onClick={() =>
-                      setMinRating(minRating === n ? undefined : n)
-                    }
+                    onClick={() => handleRatingChange(n)}
                     aria-label={`${n} estrella${n > 1 ? "s" : ""} o más`}
                     id={`dealer-rating-star-${n}`}
+                    className="flex size-7 items-center justify-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                   >
-                    <svg
-                      className="size-6 transition-transform hover:scale-110"
-                      viewBox="0 0 20 20"
-                      fill={active ? "#FFB800" : "#E2E8F0"}
-                    >
-                      <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32-3.87-3.77 5.34-.78L10 1z" />
-                    </svg>
+                    {active ? (
+                      <HiStar className="size-6 text-[#FFB800] transition-transform hover:scale-110" />
+                    ) : (
+                      <HiOutlineStar className="size-6 text-slate-300 transition-transform hover:scale-110" />
+                    )}
                   </button>
                 );
               })}
@@ -199,8 +238,9 @@ export function ConcesionariasFiltersPanel() {
               <Select
                 value={String(minVehicles)}
                 onValueChange={(val) =>
-                  setMinVehicles(parseInt(val ?? "0", 10))
+                  handleMinVehiclesChange(parseInt(val ?? "0", 10))
                 }
+                items={vehicleItems}
               >
                 <SelectTrigger
                   className="h-9 w-full rounded-lg border-slate-200 text-sm"
@@ -218,16 +258,6 @@ export function ConcesionariasFiltersPanel() {
               </Select>
             </div>
           </section>
-
-          <Button
-            type="button"
-            onClick={handleApplyFilters}
-            className="w-full rounded-lg font-semibold text-white"
-            style={{ backgroundColor: BRAND_BLUE }}
-            id="apply-dealers-filters"
-          >
-            Aplicar filtros
-          </Button>
 
           <section
             className="rounded-xl p-4"

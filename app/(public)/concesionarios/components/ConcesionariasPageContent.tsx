@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Building2 } from "lucide-react";
 import type { DealershipListItem } from "@/services/dealerships/types/dealership.types";
 import { ConcesionariaCard } from "./ConcesionariaCard";
@@ -35,7 +34,6 @@ export function ConcesionariasPageContent({
   page,
   limit,
 }: ConcesionariasPageContentProps) {
-  const router = useRouter();
   const [reviewDealer, setReviewDealer] =
     useState<DealershipListItem | null>(null);
   const { applyUrlUpdates, handleClearAll } = useFiltersManager({
@@ -48,12 +46,10 @@ export function ConcesionariasPageContent({
     applyUrlUpdates({
       [DEALER_FILTER_KEYS.PAGE]: nextPage > 1 ? String(nextPage) : undefined,
     });
-    router.refresh();
   };
 
   const handleClearFilters = () => {
     handleClearAll();
-    router.refresh();
   };
 
   return (

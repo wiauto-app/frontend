@@ -3,6 +3,26 @@ import {
   DEALER_FILTER_KEYS,
 } from "../constants/filterKeys.constants";
 
+const VALID_SORTS = new Set([
+  "rating-desc",
+  "vehicles-desc",
+  "distance-asc",
+  "reviews-desc",
+]);
+
+const parseFiniteNumber = (value: string | undefined): number | undefined => {
+  if (!value) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const parsePositiveInteger = (value: string | undefined): number | undefined => {
+  const parsed = parseFiniteNumber(value);
+  return parsed !== undefined && Number.isInteger(parsed) && parsed > 0
+    ? parsed
+    : undefined;
+};
+
 export type DealerSearchParams = {
   query?: string;
   province_slug?: string;
@@ -28,8 +48,8 @@ export const parseDealerSearchParams = (
   const params: DealerSearchParams = {};
 
   const query = get(DEALER_FILTER_KEYS.QUERY);
-  if (query) {
-    params.query = query;
+  if (query?.trim()) {
+    params.query = query.trim();
   }
 
   const province_slug = get(DEALER_FILTER_KEYS.PROVINCE_SLUG);
@@ -37,50 +57,50 @@ export const parseDealerSearchParams = (
     params.province_slug = province_slug;
   }
 
-  const radius = get(DEALER_FILTER_KEYS.RADIUS);
-  if (radius) {
-    const parsed = parseInt(radius, 10);
-    if (!Number.isNaN(parsed)) {
-      params.radius = parsed;
-    }
+  const radius = parseFiniteNumber(get(DEALER_FILTER_KEYS.RADIUS));
+  if (
+    params.province_slug &&
+    radius !== undefined &&
+    radius >= 0 &&
+    radius <= 100
+  ) {
+    params.radius = radius;
   }
 
-  const rating_since = get(DEALER_FILTER_KEYS.RATING_SINCE);
-  if (rating_since) {
-    const parsed = parseFloat(rating_since);
-    if (!Number.isNaN(parsed)) {
-      params.rating_since = parsed;
-    }
+  const rating_since = parseFiniteNumber(
+    get(DEALER_FILTER_KEYS.RATING_SINCE),
+  );
+  if (
+    rating_since !== undefined &&
+    rating_since >= 1 &&
+    rating_since <= 5
+  ) {
+    params.rating_since = rating_since;
   }
 
-  const vehicles_number = get(DEALER_FILTER_KEYS.VEHICLES_NUMBER);
-  if (vehicles_number) {
-    const parsed = parseInt(vehicles_number, 10);
-    if (!Number.isNaN(parsed)) {
-      params.vehicles_number = parsed;
-    }
+  const vehicles_number = parseFiniteNumber(
+    get(DEALER_FILTER_KEYS.VEHICLES_NUMBER),
+  );
+  if (
+    vehicles_number !== undefined &&
+    Number.isInteger(vehicles_number) &&
+    vehicles_number >= 0
+  ) {
+    params.vehicles_number = vehicles_number;
   }
 
-  const page = get(DEALER_FILTER_KEYS.PAGE);
-  if (page) {
-    const parsed = parseInt(page, 10);
-    if (!Number.isNaN(parsed)) {
-      params.page = parsed;
-    }
+  const page = parsePositiveInteger(get(DEALER_FILTER_KEYS.PAGE));
+  if (page !== undefined) {
+    params.page = page;
   }
 
-  const limit = get(DEALER_FILTER_KEYS.LIMIT);
-  if (limit) {
-    const parsed = parseInt(limit, 10);
-    if (!Number.isNaN(parsed)) {
-      params.limit = parsed;
-    }
-  } else {
-    params.limit = DEFAULT_DEALER_LIMIT;
-  }
+  const limit = parsePositiveInteger(get(DEALER_FILTER_KEYS.LIMIT));
+  params.limit = limit !== undefined && limit <= 100
+    ? limit
+    : DEFAULT_DEALER_LIMIT;
 
   const sort = get(DEALER_FILTER_KEYS.SORT);
-  if (sort) {
+  if (sort && VALID_SORTS.has(sort)) {
     params.sort = sort;
   }
 

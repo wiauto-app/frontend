@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
@@ -15,7 +14,6 @@ const HERO_BG =
   "https://media.wiauto.es/wiauto-strapi/erik_mclean_T_1iy_Plzw_4_unsplash_large_d81404f1c5.webp";
 
 export function ConcesionariasHero() {
-  const router = useRouter();
   const { values, applyUrlUpdates } = useFiltersManager({
     keys: DEALER_FILTER_KEYS_LIST,
   });
@@ -39,7 +37,6 @@ export function ConcesionariasHero() {
       [DEALER_FILTER_KEYS.QUERY]: query.trim() || undefined,
       [DEALER_FILTER_KEYS.PAGE]: undefined,
     });
-    router.refresh();
   };
 
   return (

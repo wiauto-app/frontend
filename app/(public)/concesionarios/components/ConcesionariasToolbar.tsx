@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { ArrowDownWideNarrow, Filter } from "lucide-react";
 import { Suspense } from "react";
 import {
@@ -31,7 +30,6 @@ type ConcesionariasToolbarProps = {
 };
 
 export function ConcesionariasToolbar({ total }: ConcesionariasToolbarProps) {
-  const router = useRouter();
   const { values, applyUrlUpdates } = useFiltersManager({
     keys: DEALER_FILTER_KEYS_LIST,
   });
@@ -48,7 +46,6 @@ export function ConcesionariasToolbar({ total }: ConcesionariasToolbarProps) {
       [DEALER_FILTER_KEYS.SORT]: value === "relevance" ? undefined : value,
       [DEALER_FILTER_KEYS.PAGE]: undefined,
     });
-    router.refresh();
   };
 
   const currentSortLabel =

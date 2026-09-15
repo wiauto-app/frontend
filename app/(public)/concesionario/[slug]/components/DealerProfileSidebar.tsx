@@ -16,6 +16,15 @@ import { toast } from "sonner";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { WiautoImage } from "@/components/ui/wiautoImage";
 import { AUTH_ROUTES } from "@/constants/auth.constants";
 import { saveAuthReturnTo } from "@/lib/auth/authReturnTo";
@@ -34,6 +43,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: isLoadingSession } = useUser();
+  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
+  const [message, setMessage] = useState("");
   const [isStartingChat, setIsStartingChat] = useState(false);
   const has_contact =
     dealer.contact.phone ||
@@ -41,8 +52,26 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
     dealer.contact.location ||
     dealer.contact.schedule;
 
-  const handleSendMessage = async () => {
-    if (isLoadingSession || isStartingChat) return;
+  const handleOpenMessageDialog = () => {
+    if (!dealer.contactProfileId) {
+      toast.error("Este concesionario no tiene un contacto disponible");
+      return;
+    }
+
+    if (user?.id === dealer.contactProfileId) {
+      toast.error("No puedes enviarte un mensaje a ti mismo");
+      return;
+    }
+
+    setMessage(
+      `Hola, me gustaría recibir más información sobre ${dealer.name}.`,
+    );
+    setIsMessageDialogOpen(true);
+  };
+
+  const handleSendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isLoadingSession || isStartingChat || !message.trim()) return;
 
     const returnPath = `/concesionario/${dealer.slug}`;
     if (!isAuthenticated) {
@@ -58,18 +87,15 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
       return;
     }
 
-    if (user?.id === dealer.contactProfileId) {
-      toast.error("No puedes enviarte un mensaje a ti mismo");
-      return;
-    }
-
     setIsStartingChat(true);
     try {
       const { chat_id } = await openDealershipContactChat({
         dealerProfileId: dealer.contactProfileId,
         dealerName: dealer.name,
+        message: message.trim(),
       });
       toast.success("Mensaje enviado correctamente");
+      setIsMessageDialogOpen(false);
       router.push(`/usuario/mensajes?chat_id=${chat_id}`);
     } catch {
       toast.error("No se pudo iniciar el chat con el concesionario");
@@ -79,7 +105,7 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
   };
 
   return (
-    <div className="relative z-20  space-y-4">
+    <div className="relative z-20 space-y-4">
       <Card size="sm">
         <CardContent>
           <div className="relative z-10 size-20 overflow-hidden rounded-full border-[3px] border-white bg-white shadow-sm sm:size-24">
@@ -135,7 +161,7 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
               id="dealer-send-message"
               type="button"
               className="w-full rounded-xl font-semibold text-white shadow-none"
-              onClick={handleSendMessage}
+              onClick={handleOpenMessageDialog}
               disabled={isLoadingSession || isStartingChat}
             >
               {isLoadingSession || isStartingChat ? (
@@ -226,6 +252,73 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
           </div>
         </div>
       ) : null}
+
+      <Dialog
+        open={isMessageDialogOpen}
+        onOpenChange={(open) => {
+          if (!isStartingChat) setIsMessageDialogOpen(open);
+        }}
+      >
+        <DialogContent className="sm:max-w-lg">
+          <form onSubmit={handleSendMessage} className="space-y-5">
+            <DialogHeader>
+              <DialogTitle>Enviar mensaje a {dealer.name}</DialogTitle>
+              <DialogDescription>
+                Escribe tu consulta. Al enviarla abriremos el chat con el
+                concesionario.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="dealer-contact-message"
+                className="text-sm font-medium text-slate-900"
+              >
+                Mensaje
+              </label>
+              <Textarea
+                id="dealer-contact-message"
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                placeholder="Escribe tu mensaje"
+                rows={5}
+                maxLength={2_000}
+                disabled={isStartingChat}
+                autoFocus
+              />
+              <p className="text-right text-xs text-muted-foreground">
+                {message.length}/2000
+              </p>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsMessageDialogOpen(false)}
+                disabled={isStartingChat}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  isLoadingSession || isStartingChat || !message.trim()
+                }
+              >
+                {isStartingChat ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                    Enviando...
+                  </>
+                ) : (
+                  "Enviar mensaje"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
