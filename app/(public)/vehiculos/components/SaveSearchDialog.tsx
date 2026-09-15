@@ -27,6 +27,7 @@ import {
   hasAlertFilters,
 } from "../utils/buildCreateAlertPayload";
 import { ActiveFiltersChips } from "./ActiveFiltersChips";
+import { useActiveFiltersStore } from "../stores/activeFiltersStore";
 
 interface SaveSearchDialogProps {
   open: boolean;
@@ -49,7 +50,7 @@ export const SaveSearchDialog = ({
 }: SaveSearchDialogProps) => {
   const { user, isAuthenticated } = useUser();
   const { filters } = useVehiclesListingFilters();
-
+  const { activeFilters } = useActiveFiltersStore();
   const form = useForm<SaveSearchFormValues>({
     resolver: zodResolver(saveSearchFormSchema),
     defaultValues: EMPTY_FORM_VALUES,
@@ -122,7 +123,7 @@ export const SaveSearchDialog = ({
 
         <div className="space-y-2">
           <p className="text-sm font-medium text-slate-700">Filtros activos</p>
-          <ActiveFiltersChips readOnly />
+          {activeFilters ? <ActiveFiltersChips readOnly activeFilters={activeFilters} /> : null}
         </div>
 
         <form

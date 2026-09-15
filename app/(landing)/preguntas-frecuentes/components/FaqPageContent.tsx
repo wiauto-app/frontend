@@ -19,9 +19,6 @@ interface FaqPageContentProps {
   soporte: StrapiCard | null;
 }
 
-/** Primeras N categorías a ancho completo (como el mockup). */
-const FULL_WIDTH_PREFIX = 3;
-
 export const FaqPageContent = ({ faqs, soporte }: FaqPageContentProps) => {
   const [selectedCategory, setSelectedCategory] = useState(FAQ_CATEGORY_ALL);
 
@@ -38,20 +35,6 @@ export const FaqPageContent = ({ faqs, soporte }: FaqPageContentProps) => {
 
     return groups.filter((group) => group.categoria === selectedCategory);
   }, [groups, selectedCategory]);
-
-  const layout =
-    selectedCategory === FAQ_CATEGORY_ALL &&
-    visibleGroups.length > FULL_WIDTH_PREFIX
-      ? {
-          prefix: visibleGroups.slice(0, FULL_WIDTH_PREFIX),
-          middle: visibleGroups.slice(FULL_WIDTH_PREFIX, -1),
-          suffix: visibleGroups.slice(-1),
-        }
-      : {
-          prefix: visibleGroups,
-          middle: [],
-          suffix: [],
-        };
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
@@ -70,19 +53,7 @@ export const FaqPageContent = ({ faqs, soporte }: FaqPageContentProps) => {
           </div>
         ) : (
           <div className="flex flex-col gap-8">
-            {layout.prefix.map((group) => (
-              <FaqCategorySection key={group.categoria} group={group} />
-            ))}
-
-            {layout.middle.length > 0 ? (
-              <div className="grid gap-8 md:grid-cols-2">
-                {layout.middle.map((group) => (
-                  <FaqCategorySection key={group.categoria} group={group} />
-                ))}
-              </div>
-            ) : null}
-
-            {layout.suffix.map((group) => (
+            {visibleGroups.map((group) => (
               <FaqCategorySection key={group.categoria} group={group} />
             ))}
           </div>
