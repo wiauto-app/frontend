@@ -169,7 +169,7 @@ export const NAV_LINKS: NavLink[] = [
         description: "Conoce el precio del mercado",
       },
       {
-        href: "/vehiculos",
+        href: "/comparador",
         label: "Comparador de coches",
         Icon: Scale,
         description: "Compara y elige mejor",

@@ -99,6 +99,7 @@ export const heroCatalogService = {
     return [...new Set(models.map((model) => model.make_id))];
   },
   getMakes: async (search?: string): Promise<HeroCatalogFacetItem[]> => {
+    // find_all en backend ya matchea por make.name o model.name (EXISTS sobre `model`).
     const makes = await fetchAllPages((page, limit) =>
       makeService.findAll({
         page,
@@ -108,15 +109,7 @@ export const heroCatalogService = {
         order_direction: "ASC",
       }),
     );
-    const modelMatches = search?.trim()
-      ? await modelService.searchGlobal(search.trim())
-      : [];
-    const makeIds = new Set(modelMatches.map((model) => model.make_id));
-    const matchingMakes = modelMatches.length
-      ? await fetchAllPages((page, limit) => makeService.findAll({ page, limit, order_by: "name", order_direction: "ASC" }))
-      : [];
-    const merged = [...makes, ...matchingMakes.filter((make) => makeIds.has(Number(make.id)))];
-    return [...new Map(merged.map((make) => [make.id, make])).values()].map(mapMakeToFacetItem);
+    return makes.map(mapMakeToFacetItem);
   },
 
   getModels: async (
