@@ -1,25 +1,35 @@
 import { getStrapiData } from "@/lib/strapi-api";
+import qs from "qs";
 
 import type {
-  StrapiAboutUsEntry,
-  StrapiAboutUsSingleResponse,
-} from "../types/strapi-about-us.types";
+  AboutUsPageData,
+  StrapiAboutUsResponse,
+} from "../interfaces/aboutUs.interface";
+import { ADVANTAGES_POPULATE, HERO_POPULATE } from "@/lib/strapi-populate";
 
+const ABOUT_US_POPULATE_QUERY = {
+  populate: {
+    hero: HERO_POPULATE,
+    mission: HERO_POPULATE,
+    caracteristicas: ADVANTAGES_POPULATE,
+    personas: HERO_POPULATE,
+  },
+};
 
-
+/**
+ * Contenido de la landing "Sobre nosotros" desde Strapi (single type `sobre-nosotro`).
+ * Retorna `null` si no hay data; propaga errores de red/HTTP.
+ */
 export const aboutUsService = {
-  findAll: async (): Promise<StrapiAboutUsEntry | null> => {
-    const response = await getStrapiData<StrapiAboutUsSingleResponse>(
-      "/sobre-nosotro?" +
-      "populate[caracteristicas][populate]=icon" +
-      "&populate[imagen]=true" +
-      "&populate[businessCard][populate][caracteristicas][populate]=icon" +
-      "&populate[equipo][populate][persona][populate]=imagen"
-    );
-    if (!response.data) {
-      return null;
-    }
+  findAll: async (): Promise<AboutUsPageData | null> => {
+    const query = qs.stringify(ABOUT_US_POPULATE_QUERY, {
+      encodeValuesOnly: true,
+    });
 
-    return response.data;
+    const response = await getStrapiData<StrapiAboutUsResponse>(
+      `/sobre-nosotro?${query}`,
+    );
+
+    return response.data ?? null;
   },
 };

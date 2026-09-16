@@ -15,7 +15,7 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
     color:"#117751",
     icon: Car,
     href: "/vender-vehiculo",
-    description: "Publica tu anuncio gratis y llega a miles de compradores potenciales.",
+    description: "Publica tu anuncio gratis.",
   },
   {
     name: "Seguros",

@@ -21,6 +21,7 @@ import {
   GoShield,
   GoShieldCheck,
 } from "react-icons/go";
+import { RiTargetFill } from "react-icons/ri";
 import {
   HiArrowDown,
   HiArrowRight,
@@ -35,16 +36,19 @@ import {
   HiOutlineColorSwatch,
   HiOutlineDocumentText,
   HiOutlineEye,
+  HiOutlineHeart,
   HiOutlineIdentification,
   HiOutlineLocationMarker,
   HiOutlineChip,
   HiOutlineShoppingCart,
   HiOutlineStar,
+  HiOutlineChartBar,
   HiOutlineSupport,
   HiOutlineTicket,
   HiOutlineUser,
   HiOutlineUserGroup,
   HiOutlineUsers,
+  HiOutlineLightBulb,
   HiOutlineShieldCheck,
   HiShieldCheck,
   HiWifi,
@@ -96,11 +100,13 @@ export const defaultStrapiIconPack = {
   HiOutlineLocationMarker,
   HiOutlineColorSwatch,
   HiOutlineCheckCircle,
+  HiOutlineLightBulb,
   HiOutlineCog,
   HiOutlineIdentification,
   HiBolt,
   HiWifi,
   HiOutlineMapPin,
+  HiOutlineHeart,
   HiCheck,
   HiOutlineTicket,
   HiOutlineEye,
@@ -114,6 +120,7 @@ export const defaultStrapiIconPack = {
   HiMagnifyingGlass,
   HiOutlineSupport,
   HiOutlineStar,
+  HiOutlineChartBar,
   HiArrowRight,
   HiArrowDown,
   HiMiniReceiptPercent,
@@ -128,6 +135,7 @@ export const defaultStrapiIconPack = {
   MdCarRepair,
   MdCalculate,
   MdOutlineDiscount,
+  RiTargetFill,
 } as const satisfies StrapiIconPack;
 
 export type DefaultStrapiIconName = keyof typeof defaultStrapiIconPack;

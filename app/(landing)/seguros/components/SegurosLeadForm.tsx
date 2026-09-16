@@ -6,7 +6,11 @@ import { toast } from "sonner";
 
 import { ControlledInput } from "@/components/forms/controlledInput";
 import { Button } from "@/components/ui/button";
+import { MakeSelector } from "@/components/dynamicSelectors/makeSelector";
+import { ModelSelector } from "@/components/dynamicSelectors/modelSelector";
+import { VersionSelector } from "@/components/dynamicSelectors/versionSelector";
 import { trackLead } from "@/lib/analytics/events";
+import { leadsService } from "@/services/leads/leadsService";
 
 import {
   segurosLeadDefaultValues,
@@ -24,10 +28,31 @@ export const SegurosLeadForm = ({ onSuccess }: SegurosLeadFormProps) => {
     defaultValues: segurosLeadDefaultValues,
   });
 
+  const catalogMakeId = form.watch("catalog_make_id");
+  const catalogModelId = form.watch("catalog_model_id");
+  const versionId = form.watch("version_id");
+
   const handleSubmit = async (data: SegurosLeadFormValues) => {
     try {
-      // TODO: conectar con endpoint Nest de leads de seguros cuando exista.
-      void data;
+      const response = await leadsService.create({
+        type: "seguros",
+        first_name: data.firstName,
+        last_name: data.lastName,
+        dni: data.dni,
+        phone: data.phone,
+        email: data.email,
+        extra_data: {
+          catalog_make_id: data.catalog_make_id,
+          catalog_model_id: data.catalog_model_id,
+          version_id: data.version_id,
+          license_plate: data.licensePlate || undefined,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(response.message);
+      }
+
       trackLead({ contentName: "Solicitud de seguro" });
       toast.success("Solicitud enviada. Te contactaremos pronto.");
       form.reset(segurosLeadDefaultValues);
@@ -102,28 +127,44 @@ export const SegurosLeadForm = ({ onSuccess }: SegurosLeadFormProps) => {
           optional
         />
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <ControlledInput
-            name="make"
-            control={form.control}
-            label="Marca"
-            placeholder="Marca"
-            type="text"
+          <MakeSelector
+            value={catalogMakeId ? String(catalogMakeId) : undefined}
+            ariaInvalid={Boolean(form.formState.errors.catalog_make_id)}
+            onChange={(value) => {
+              form.setValue(
+                "catalog_make_id",
+                value ? Number(value) : (undefined as unknown as number),
+                { shouldDirty: true, shouldValidate: true },
+              );
+              form.setValue("catalog_model_id", undefined as unknown as number, {
+                shouldDirty: true,
+              });
+              form.setValue("version_id", undefined, { shouldDirty: true });
+            }}
           />
-          <ControlledInput
-            name="model"
-            control={form.control}
-            label="Modelo"
-            placeholder="Modelo"
-            type="text"
+          <ModelSelector
+            makeId={catalogMakeId || undefined}
+            value={catalogModelId ? String(catalogModelId) : undefined}
+            ariaInvalid={Boolean(form.formState.errors.catalog_model_id)}
+            onChange={(value) => {
+              form.setValue(
+                "catalog_model_id",
+                value ? Number(value) : (undefined as unknown as number),
+                { shouldDirty: true, shouldValidate: true },
+              );
+              form.setValue("version_id", undefined, { shouldDirty: true });
+            }}
           />
         </div>
-        <ControlledInput
-          name="version"
-          control={form.control}
-          label="Versión"
-          placeholder="Versión"
-          type="text"
-          optional
+        <VersionSelector
+          makeId={catalogMakeId || undefined}
+          modelId={catalogModelId || undefined}
+          value={versionId ? String(versionId) : undefined}
+          onChange={(value) => {
+            form.setValue("version_id", value ? Number(value) : undefined, {
+              shouldDirty: true,
+            });
+          }}
         />
       </fieldset>
 

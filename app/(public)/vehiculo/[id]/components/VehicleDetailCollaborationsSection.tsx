@@ -13,7 +13,7 @@ export const VehicleDetailCollaborationsSection = async () => {
   return (
     <section
       aria-label="Colaboraciones y servicios"
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+      className="grid grid-cols-1  "
     >
       {collaborations.map((collaboration) => (
         <CollaborationHeroCard

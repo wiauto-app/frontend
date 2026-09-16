@@ -40,21 +40,24 @@ export const segurosLeadSchema = z.object({
     .refine(isValidSpanishLicensePlate, {
       message: "Introduce una matrícula válida",
     }),
-  make: requiredText("La marca es obligatoria"),
-  model: requiredText("El modelo es obligatorio"),
-  version: z.string().trim(),
+  catalog_make_id: z
+    .number({ error: "La marca es obligatoria" })
+    .int()
+    .positive("La marca es obligatoria"),
+  catalog_model_id: z
+    .number({ error: "El modelo es obligatorio" })
+    .int()
+    .positive("El modelo es obligatorio"),
+  version_id: z.number().int().positive().optional(),
 });
 
 export type SegurosLeadFormValues = z.infer<typeof segurosLeadSchema>;
 
-export const segurosLeadDefaultValues: SegurosLeadFormValues = {
+export const segurosLeadDefaultValues: Partial<SegurosLeadFormValues> = {
   firstName: "",
   lastName: "",
   dni: "",
   phone: "",
   email: "",
   licensePlate: "",
-  make: "",
-  model: "",
-  version: "",
 };

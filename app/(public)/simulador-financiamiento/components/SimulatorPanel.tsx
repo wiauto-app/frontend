@@ -240,7 +240,7 @@ export const SimulatorPanel = () => {
           />
 
           <SimulatorSlider
-            label="Meses del financiamiento"
+            label="Meses del financiación"
             valueStr={`${termMonths} meses`}
             minStr={`${config.term_months.min} meses`}
             maxStr={`${config.term_months.max} meses`}
@@ -298,7 +298,7 @@ export const SimulatorPanel = () => {
               aria-busy={isLoading}
             >
               <Calculator className="size-4" aria-hidden />
-              {isLoading ? "Calculando..." : "Calcular financiamiento"}
+              {isLoading ? "Calculando..." : "Calcular financiación"}
             </Button>
             <p className="flex items-center justify-center gap-1.5 text-xs text-slate-500">
               <Lock className="size-3.5" aria-hidden />
@@ -330,7 +330,7 @@ export const SimulatorPanel = () => {
             <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white px-6 text-center">
               <Calculator className="mb-3 size-10 text-slate-300" aria-hidden />
               <p className="text-sm font-medium text-slate-600">
-                Ajusta los parámetros y pulsa &quot;Calcular financiamiento&quot; para ver
+                Ajusta los parámetros y pulsa &quot;Calcular financiación&quot; para ver
                 tus resultados.
               </p>
             </div>

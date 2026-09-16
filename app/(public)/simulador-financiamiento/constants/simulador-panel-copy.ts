@@ -8,7 +8,7 @@ export const SIMULADOR_CTA: SimuladorPageViewModel["ctaFinal"] = {
 };
 
 export const SIMULADOR_SEO_DEFAULTS = {
-  title: "Simulador de Financiamiento | WiAuto",
+  title: "Simulador de Financiación | WiAuto",
   description:
-    "Calcula tu cuota mensual, compara opciones y elige el financiamiento que mejor se adapte a ti.",
+    "Calcula tu cuota mensual, compara opciones y elige la financiación que mejor se adapte a ti.",
 } as const;

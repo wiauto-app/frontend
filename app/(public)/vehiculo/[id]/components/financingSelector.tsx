@@ -30,7 +30,7 @@ export const FinancingSelector = ({
   return (
     <div className="flex items-start gap-1 text-sm text-muted-foreground">
       <span>
-        Financiamiento desde <span className="text-primary font-semibold">{financing.monthly_label}</span> a
+        Financiación desde <span className="text-primary font-semibold">{financing.monthly_label}</span> a
       </span>
 
       <select

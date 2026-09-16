@@ -25,9 +25,8 @@ describe("segurosLeadSchema", () => {
     phone: "612345678",
     email: "ana@ejemplo.com",
     licensePlate: "",
-    make: "Seat",
-    model: "León",
-    version: "",
+    catalog_make_id: 1,
+    catalog_model_id: 10,
   };
 
   it("acepta un payload mínimo válido", () => {
@@ -38,17 +37,16 @@ describe("segurosLeadSchema", () => {
   it("exige marca y modelo", () => {
     const result = segurosLeadSchema.safeParse({
       ...validPayload,
-      make: "",
-      model: "",
+      catalog_make_id: undefined,
+      catalog_model_id: undefined,
     });
     expect(result.success).toBe(false);
   });
 
-  it("permite matrícula y versión vacías", () => {
+  it("permite matrícula vacía y versión sin informar", () => {
     const result = segurosLeadSchema.safeParse({
       ...validPayload,
       licensePlate: "   ",
-      version: "  ",
     });
     expect(result.success).toBe(true);
   });

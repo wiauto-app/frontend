@@ -9,6 +9,9 @@ export const VehiclesSuggestions = async () => {
   });
   const vehicles = data.data ?? [];
 
+  if(vehicles.data.length === 0) {
+    return null;
+  }
   return (
       <VehiclesListingSection
         title={{ lead: "Vehículos", highlight: "destacados" }}

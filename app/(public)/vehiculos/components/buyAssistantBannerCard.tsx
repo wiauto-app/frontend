@@ -8,8 +8,7 @@ export const BuyAssistantBannerCard = () => {
         <span className="text-purple">IA</span>
       </h4>
       <p className="text-sm text-white ">
-        Nuestra inteligencia artificial analiza miles de opciones para mostrarte
-        las mejores para tí.
+        Nuestra inteligencia artificial analiza la mejor opción para ti.
       </p>
       <BuyAssistantButton />
     </div>

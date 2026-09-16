@@ -91,9 +91,7 @@ export const VersionSelector = ({
       emptyLabel={
         !modelId
           ? "Selecciona un modelo primero"
-          : !yearId
-            ? "Selecciona un año primero"
-            : "No hay versiones para esta combinación"
+          : "No hay versiones para esta combinación"
       }
       items={items}
       labelKey="label"

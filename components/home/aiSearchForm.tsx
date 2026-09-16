@@ -106,7 +106,7 @@ export const AiSearchForm = ({ className }: AiSearchFormProps) => {
     <div className={cn(className)}>
       <div className="space-y-4">
         <p className="text-white">
-          Cuéntanos qué buscas y nuestra IA encontrará el coche ideal para tí.
+          Cuéntanos qué buscas y nuestra IA encontrará el coche ideal para ti.
         </p>
 
         <form className="space-y-2" onSubmit={handleSubmit}>

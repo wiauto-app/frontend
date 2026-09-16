@@ -1,41 +1,25 @@
-export type {
-  StrapiAboutUsAttributes,
-  StrapiAboutUsBusinessCard,
-  StrapiAboutUsEntry,
-  StrapiAboutUsFeature,
-  StrapiAboutUsSingleResponse,
-  StrapiAboutUsTeamSection,
-} from "../types/strapi-about-us.types";
+import type {
+  StrapiHero,
+  StrapiPlanesCaracteristicas,
+} from "@/interfaces/strapi-components.interface";
 
-/** Vista de dominio para la página (mapeo opcional desde Strapi) */
-export type AboutUsFeature = {
-  id: number;
-  label: string;
-  description: string;
-};
-
-export type AboutUsBusinessCard = {
-  id: number;
-  title: string;
-  subtitle: string;
-  description: string;
-};
-
-export type AboutUsTeamSection = {
-  id: number;
-  title: string;
-  subtitle: string;
-};
-
-export type AboutUs = {
+/** Single type `sobre-nosotro` en Strapi. */
+export interface AboutUsPageData {
   id: number;
   documentId: string;
-  title: string;
-  imageUrl: string | null;
-  features: AboutUsFeature[];
-  businessCard: AboutUsBusinessCard | null;
-  teamSection: AboutUsTeamSection | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
-};
+  /** `shared.hero` — hero principal ("La forma más simple de..."). */
+  hero: StrapiHero | null;
+  /** `shared.hero` — sección "Misión y visión". */
+  mission: StrapiHero | null;
+  /** `planes.caracteristicas` — sección "Lo que nos mueve" (valores). */
+  caracteristicas: StrapiPlanesCaracteristicas | null;
+  /** `shared.hero` — sección "Personas que hacen la diferencia". */
+  personas: StrapiHero | null;
+}
+
+export interface StrapiAboutUsResponse {
+  data: AboutUsPageData | null;
+}
