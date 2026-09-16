@@ -57,10 +57,16 @@ const MakeModels = ({ make, search }: MakeModelsProps) => {
   const { selectedMakes, selectedModels, handleToggleMake, handleToggleModel } =
     useHeroSearchFilters();
 
+  // Si el texto ya matcheó por nombre de marca, no lo usamos para filtrar modelos:
+  // ningún modelo se llama "toyota", así que hay que listarlos todos.
+  const make_name_matches_search =
+    search.length > 0 && make.name.toLowerCase().includes(search.toLowerCase());
+  const model_search = make_name_matches_search ? undefined : search || undefined;
+
   const { data: models = [], isLoading } = useQuery({
-    queryKey: ["hero-catalog", "models", make.id, search],
+    queryKey: ["hero-catalog", "models", make.id, model_search],
     queryFn: () =>
-      heroCatalogService.getModels(make.id, search || undefined, {
+      heroCatalogService.getModels(make.id, model_search, {
         id: make.id,
         slug: make.slug,
         name: make.name,
@@ -257,7 +263,7 @@ export const HeroFiltersMakeSelector = () => {
           aria-label="Buscar marca o modelo"
         />
 
-        <div className="max-h-96 overflow-y-auto " role="list">
+        <div className="max-h-44 overflow-y-auto " role="list">
           {is_loading_makes && <RowSkeletons count={5} />}
           {!is_loading_makes && makes.length === 0 && (
             <p className="px-2 py-2 text-sm text-muted-foreground">
