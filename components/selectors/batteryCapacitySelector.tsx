@@ -40,8 +40,8 @@ export const BatteryCapacitySelector = ({
   };
 
   return (
-    <CheckBoxContainer title="Capacidad de batería">
-      <div className="flex flex-col gap-2">
+    <CheckBoxContainer title="Capacidad de batería" className="col-span-2 ">
+      <div className="flex flex-col gap-2 w-full">
         <Select
           value={value.since?.toString() ?? ""}
           onValueChange={handleSinceChange}

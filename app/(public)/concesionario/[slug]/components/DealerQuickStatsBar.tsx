@@ -28,7 +28,7 @@ export function DealerQuickStatsBar({ stats }: DealerQuickStatsBarProps) {
   const items = [
     {
       key: "publishedVehicles",
-      label: "Vehículos publicados",
+      label: stats.publishedVehicles === 1 ? "Vehículo publicado" : "Vehículos publicados",
       icon: Car,
       value: stats.publishedVehicles > 0 ? String(stats.publishedVehicles) : "Ninguno",
       isAvailable: true,

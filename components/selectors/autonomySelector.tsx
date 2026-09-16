@@ -29,7 +29,7 @@ export const AutonomySelector = ({ value, onChange }: AutonomySelectorProps) => 
   };
 
   return (
-    <CheckBoxContainer title="Autonomía eléctrica">
+    <CheckBoxContainer title="Autonomía eléctrica" className="col-span-2" >
       <Select
         value={value?.toString() ?? ""}
         onValueChange={handleValueChange}

@@ -141,7 +141,7 @@ export function ConcesionariaCard({ dealer, onReview }: ConcesionariaCardProps) 
               >
                 <Car className="size-3.5" />
                 {dealer.vehicles_count != null && dealer.vehicles_count > 0
-                  ? `+${dealer.vehicles_count} vehículos`
+                  ? `${dealer.vehicles_count} ${dealer.vehicles_count === 1 ? "vehículo publicado" : "vehículos publicados"}`
                   : "Sin vehículos publicados"}
               </span>
             </div>

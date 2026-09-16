@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 
 import { ConditionSelector } from "@/components/selectors/conditionSelector";
 import { PriceSelector } from "@/components/selectors/priceSelector";
-import { ServicesSelector } from "@/components/selectors/servicesSelector";
 import { SellersSelector } from "@/components/selectors/sellersSelector";
 import { YearSelector } from "@/components/selectors/yearSelector";
 import { KmSelector } from "@/components/selectors/kmSelector";
@@ -193,7 +192,7 @@ export const VehiclesFiltersPanel = ({
         {/* <LocationSelector /> */}
       </FilterItem>
       <Separator />
-      <FilterItem
+      {/* <FilterItem
         sectionId={FILTER_SECTION_IDS.SERVICES}
         title="Servicios"
         Icon={<HiOutlineShoppingCart size={iconSize} />}
@@ -210,7 +209,7 @@ export const VehiclesFiltersPanel = ({
           }
         />
       </FilterItem>
-      <Separator />
+      <Separator /> */}
       <FilterItem
         sectionId={FILTER_SECTION_IDS.SELLERS}
         title="Vendedores"

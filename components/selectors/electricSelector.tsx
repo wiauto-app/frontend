@@ -19,7 +19,9 @@ export const ElectricSelector = ({
   batteryValue: batteryValueProp,
   onBatteryChange,
 }: ElectricSelectorProps) => {
-  const [internalAutonomy, setInternalAutonomy] = useState<number | undefined>();
+  const [internalAutonomy, setInternalAutonomy] = useState<
+    number | undefined
+  >();
   const [internalBattery, setInternalBattery] = useState<NumericRangeValue>({});
 
   const autonomyValue = autonomyValueProp ?? internalAutonomy;
@@ -28,9 +30,12 @@ export const ElectricSelector = ({
   const handleBatteryChange = onBatteryChange ?? setInternalBattery;
 
   return (
-    <div className="flex flex-col gap-8">
+    <>
       <AutonomySelector value={autonomyValue} onChange={handleAutonomyChange} />
-      <BatteryCapacitySelector value={batteryValue} onChange={handleBatteryChange} />
-    </div>
+      <BatteryCapacitySelector
+        value={batteryValue}
+        onChange={handleBatteryChange}
+      />
+    </>
   );
 };

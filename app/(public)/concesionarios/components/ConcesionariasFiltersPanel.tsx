@@ -255,10 +255,10 @@ export function ConcesionariasFiltersPanel() {
                   ¿Eres concesionario?
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                  Únete a WiAuto y llega a miles de compradores potenciales.
+                  Únete a WiAuto y llega a más compradores potenciales.
                 </p>
                 <Link
-                  href="/registrar-concesionario"
+                  href="/planes"
                   className="mt-3 inline-flex h-8 items-center justify-center rounded-lg border border-white bg-white px-3 text-xs font-semibold hover:bg-white/90"
                   style={{ color: BRAND_BLUE }}
                   id="dealers-cta-btn"

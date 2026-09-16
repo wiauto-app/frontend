@@ -90,7 +90,7 @@ export const GroupedFeaturesAccordion = <T extends GroupableFeature>({
       : "No hay equipamiento disponible");
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 col-span-2">
       <SearchInput
         value={search}
         onChange={handleSearchChange}
