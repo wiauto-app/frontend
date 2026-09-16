@@ -56,14 +56,7 @@ export const PublisherCard = ({
   }
 
 
-  if (location) {
-    detailRows.push({
-      id: "location",
-      label: "Ubicación",
-      value: location,
-      icon: MapPin,
-    });
-  }
+
 
   return (
     <VehicleDetailCard

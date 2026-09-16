@@ -16,20 +16,6 @@ type VehicleDetailLocationSectionProps = {
   vehicle: Vehicle;
 };
 
-const getAddressLines = (vehicle: Vehicle): string[] => {
-  if (vehicle.address_details?.formatted_lines?.length) {
-    return vehicle.address_details.formatted_lines;
-  }
-
-  if (vehicle.address?.trim()) {
-    return vehicle.address
-      .split("\n")
-      .filter((line) => line.trim().length > 0);
-  }
-
-  return [];
-};
-
 const getRandomNearbyPosition = (
   lat: number,
   lng: number,
@@ -56,7 +42,6 @@ const getRandomNearbyPosition = (
 export const VehicleDetailLocationSection = ({
   vehicle,
 }: VehicleDetailLocationSectionProps) => {
-  const addressLines = getAddressLines(vehicle);
   const showExactLocation = vehicle.show_exact_location;
 
   const mapPosition = useMemo(() => {
@@ -123,25 +108,7 @@ export const VehicleDetailLocationSection = ({
         </DynamicCustomMap>
       </div>
 
-      {addressLines.length > 0 && (
-        <div
-          className="mt-4 space-y-1 text-sm"
-          aria-label="Dirección del vehículo"
-        >
-          {addressLines.map((line, index) => (
-            <p
-              key={`${line}-${index}`}
-              className={
-                index === 0
-                  ? "font-semibold uppercase text-slate-800"
-                  : "text-slate-500"
-              }
-            >
-              {line}
-            </p>
-          ))}
-        </div>
-      )}
+     
     </VehicleDetailCard>
   );
 };

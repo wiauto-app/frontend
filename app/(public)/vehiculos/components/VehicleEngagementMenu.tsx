@@ -127,9 +127,7 @@ export const VehicleEngagementMenu = ({
               aria-label="Más opciones del vehículo"
               aria-haspopup="menu"
               className={cn(
-                "rounded-full text-muted-foreground hover:bg-muted hover:text-foreground",
-                variant === "outline" &&
-                  "rounded-md border-2 border-muted-foreground/50",
+          
                 className,
               )}
               onClick={(event) => {

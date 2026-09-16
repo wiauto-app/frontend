@@ -15,12 +15,22 @@ import {
 import { cn } from "@/lib/utils";
 import type { BreadcrumbItem as BreadcrumbItemType } from "@/lib/seo/breadcrumb.types";
 
-type PageBreadcrumbsProps = {
+interface PageBreadcrumbsProps {
   items: BreadcrumbItemType[];
   variant?: "default" | "onDark";
-};
+}
 
 type RenderSegment = BreadcrumbItemType | "ellipsis";
+
+const normalizeBreadcrumbItems = (
+  items: BreadcrumbItemType[],
+): BreadcrumbItemType[] =>
+  items
+    .map((item) => ({
+      label: item.label.trim(),
+      href: item.href?.trim() ? item.href.trim() : undefined,
+    }))
+    .filter((item) => item.label.length > 0);
 
 const collapseItemsForMobile = (
   items: BreadcrumbItemType[],
@@ -49,11 +59,11 @@ const variantClasses = {
   },
 } as const;
 
-type BreadcrumbTrailProps = {
+interface BreadcrumbTrailProps {
   segments: RenderSegment[];
   variant: "default" | "onDark";
   className?: string;
-};
+}
 
 const BreadcrumbTrail = ({
   segments,
@@ -61,6 +71,10 @@ const BreadcrumbTrail = ({
   className,
 }: BreadcrumbTrailProps) => {
   const styles = variantClasses[variant];
+
+  if (segments.length === 0) {
+    return null;
+  }
 
   return (
     <BreadcrumbList className={cn(styles.list, className)}>
@@ -83,7 +97,7 @@ const BreadcrumbTrail = ({
         return (
           <Fragment key={`${segment.label}-${index}`}>
             <BreadcrumbItem className="max-w-44">
-              {segment.href ? (
+              {segment.href && !isLast ? (
                 <BreadcrumbLink
                   render={<Link href={segment.href} />}
                   className={cn(styles.link, "truncate")}
@@ -110,12 +124,18 @@ export const PageBreadcrumbs = ({
   items,
   variant = "default",
 }: PageBreadcrumbsProps) => {
-  const mobileSegments = collapseItemsForMobile(items);
+  const normalizedItems = normalizeBreadcrumbItems(items);
+
+  if (normalizedItems.length === 0) {
+    return null;
+  }
+
+  const mobileSegments = collapseItemsForMobile(normalizedItems);
 
   return (
-    <Breadcrumb aria-label="Breadcrumb">
+    <Breadcrumb aria-label="Miga de pan">
       <BreadcrumbTrail
-        segments={items}
+        segments={normalizedItems}
         variant={variant}
         className="hidden sm:flex"
       />

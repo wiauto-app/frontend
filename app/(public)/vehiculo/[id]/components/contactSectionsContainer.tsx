@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import dynamic from "next/dynamic";
 
 const VehicleDetailContactChannels = dynamic(
@@ -8,7 +9,7 @@ const VehicleDetailContactChannels = dynamic(
     import("./VehicleDetailContactChannels").then(
       (mod) => mod.VehicleDetailContactChannels,
     ),
-  { ssr: false },
+  { ssr: false, loading: () => <Skeleton className="w-full h-170" /> },
 );
 
 const VehicleDetailContactTabs = dynamic(
@@ -37,10 +38,10 @@ export const ContactSectionsContainer = ({
   return (
     <Card
       id="vehicle-contact-section"
-      className="sticky top-26 right-0 hidden h-fit scroll-mt-24 space-y-6 lg:block"
+      className="sticky top-26 right-0 hidden h-fit space-y-6 lg:block "
       size="sm"
     >
-      <CardContent className="space-y-6">
+      <CardContent className="flex flex-col gap-6">
         <VehicleDetailContactChannels
           vehicleId={vehicleId}
           showPhone={showPhone}
@@ -51,6 +52,7 @@ export const ContactSectionsContainer = ({
           vehicleId={vehicleId}
           publisherProfileId={publisherProfileId}
         />
+        
       </CardContent>
     </Card>
   );

@@ -99,17 +99,15 @@ function BreadcrumbEllipsis({
   return (
     <span
       data-slot="breadcrumb-ellipsis"
-      role="presentation"
-      aria-hidden="true"
+      role="img"
+      aria-label="Más niveles de navegación"
       className={cn(
         "flex size-5 items-center justify-center [&>svg]:size-4",
-        className
+        className,
       )}
       {...props}
     >
-      <MoreHorizontalIcon
-      />
-      <span className="sr-only">More</span>
+      <MoreHorizontalIcon aria-hidden="true" />
     </span>
   )
 }

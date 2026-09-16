@@ -127,7 +127,7 @@ export const ImageVisualizer = ({
 
         <div className="relative flex min-h-0 flex-1 items-center justify-center px-12 sm:px-16">
           {currentImage ? (
-            <div className="relative h-full w-full max-w-6xl">
+            <div className="relative h-full w-full max-w-6xl rounded-lg overflow-hidden">
               <Image
                 unoptimized
                 fill

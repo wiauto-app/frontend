@@ -101,14 +101,7 @@ export const ReportButton = (props: ReportButtonProps) => {
         type="button"
         size={showTextLabel ? "default" : "icon"}
         variant={variant}
-        className={cn(
-          variant === "outline" &&
-            "rounded-md border-2 border-muted-foreground/50 text-muted-foreground hover:bg-muted hover:text-foreground",
-          variant === "ghost" &&
-            "rounded-full text-muted-foreground hover:bg-muted hover:text-foreground",
-          variant === "link" && "h-auto px-0 text-sm text-muted-foreground",
-          className,
-        )}
+       
         aria-label={buttonLabel}
         disabled={isLoading}
         onClick={(event) => {

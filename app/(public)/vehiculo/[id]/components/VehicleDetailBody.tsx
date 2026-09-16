@@ -47,6 +47,7 @@ export const VehicleDetailBody = async ({
         vehicleCategory={vehicle.version.make.name ?? null}
       />
       <VehicleDetailTopBar
+      vehicleName={displayName}
         vehicle={vehicle}
         breadcrumbItems={breadcrumbItems}
       />

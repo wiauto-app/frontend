@@ -72,8 +72,6 @@ export const buildVehicleTechnicalSpecs = (vehicle: Vehicle): VehicleDetailSpec[
     vehicle.time_to_charge > 0 ? `${vehicle.time_to_charge} h` : null,
   );
 
-  addSpec(specs, "Matrícula", vehicle.license_plate);
-  addSpec(specs, "VIN", vehicle.vin_code);
 
   return specs;
 };
