@@ -1,7 +1,3 @@
-import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Check, ArrowRight } from "lucide-react";
 import type { StrapiHero } from "@/interfaces/strapi-components.interface";
 import { HeroBackdrop } from "@/components/ui/heroBackdrop";
 import { HeroTitle } from "@/components/ui/heroTitle";
@@ -33,7 +29,7 @@ export const FinanciacionHeroSection = ({
       floatingContent={<HeroBackdrop/>}
       rightContent={
         <div className="flex justify-center items-center h-full">
-          <HeroCard card={hero?.card}></HeroCard>
+          <HeroCard card={hero?.card} className="max-w-full lg:max-w-64"></HeroCard>
         </div>
       }
       image={imageUrl}

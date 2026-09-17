@@ -1,12 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Calculator,
   Car,
-  CirclePlus,
+  CheckCircle,
   CreditCard,
   HelpCircle,
   Newspaper,
-  Percent,
   Rss,
   Scale,
   Shield,
@@ -128,6 +126,12 @@ export const NAV_LINKS: NavLink[] = [
     label: "Servicios",
     items: [
       {
+        href: "/financiacion",
+        label: "Financiación",
+        Icon: CreditCard,
+        description: "Obtén financiación para tu vehículo",
+      },
+      {
         href: "/informe-historial-vehiculo",
         label: "Informe del historial del vehículo",
         Icon: Car,
@@ -142,9 +146,10 @@ export const NAV_LINKS: NavLink[] = [
       {
         href: "/garantia-mecanica",
         label: "Solicita una garantía mecánica",
-        Icon: CreditCard,
+        Icon: CheckCircle,
         description: "Solicita una garantía mecánica",
       },
+
       // {
       //   href: "/transferir-vehiculo",
       //   label: "Transferir coche",
@@ -175,12 +180,11 @@ export const NAV_LINKS: NavLink[] = [
         description: "Compara y elige mejor",
       },
       {
-        href: "/simulador-financiamiento",
+        href: "/simulador-financiacion",
         label: "Simulador de financiación",
         Icon: CreditCard,
         description: "Calcula tu cuota mensual",
       },
-     
     ],
   },
   {

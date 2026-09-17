@@ -5,6 +5,7 @@ import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import type { StrapiHero } from "@/interfaces/strapi-components.interface";
 import { IconContainer } from "@/components/ui/iconContainer";
 import Image from "next/image";
+import { SectionHeading } from "@/components/home/SectionHeading";
 
 interface FinanciacionSoporteSectionProps {
   hero: StrapiHero;
@@ -27,32 +28,29 @@ export const FinanciacionSoporteSection = ({
             height={500}
           />
         </div>
-        <div className="flex-1 flex flex-col justify-center gap-3 px-5 pb-5 ">
-          <div>
-      
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug mt-0.5">
-              {hero?.titulo || "Respaldo que te da tranquilidad"}
-            </h2>
-            <p className="text-[11px] sm:text-xs text-slate-600 mt-1 max-w-xl leading-relaxed">
-              {hero?.descripcion ||
-                "Trabajamos con un aliado sólido que comparte nuestro compromiso de brindarte la mejor experiencia."}
-            </p>
-          </div>
+        <div className="flex-1 flex flex-col justify-center gap-8 px-5 pb-5 ">
+          <SectionHeading
+            lead={hero?.titulo || "Respaldo que te da tranquilidad"}
+            description={hero?.descripcion ?? undefined}
+          />
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-5  lg:gap-2 pt-1">
             {caracteristicasStrapi.map((item, idx: number) => {
-              const Icon = resolveStrapiIconName(item.iconName, defaultStrapiIconPack);
+              const Icon = resolveStrapiIconName(
+                item.iconName,
+                defaultStrapiIconPack,
+              );
               const label = item.label;
               const desc = item.descripcion;
 
               return (
-                <div key={idx} className="flex flex-col items-center gap-0.5 ">
-                  <IconContainer Icon={Icon} />
-
+                <div key={idx} className="flex flex-col items-center gap-2 ">
+                  <IconContainer Icon={Icon} size="lg" />
+                  {/* 
                   <span className="text-xs font-extrabold text-blue-600 leading-none text-center">
                     {label}
-                  </span>
+                  </span> */}
                   {desc && (
-                    <span className="text-[9px] text-slate-500 leading-tight max-w-30 text-center">
+                    <span className="text-xs text-muted-foreground text-center">
                       {desc}
                     </span>
                   )}
@@ -61,8 +59,6 @@ export const FinanciacionSoporteSection = ({
             })}
           </div>
         </div>
-
-    
       </div>
     </section>
   );

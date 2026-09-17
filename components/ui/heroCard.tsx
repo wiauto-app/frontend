@@ -11,10 +11,11 @@ import { IconContainer } from "./iconContainer";
 import { StrapiCard } from "@/interfaces/strapi-components.interface";
 import { StrapiButton } from "./strapiButton";
 import Image from "next/image";
-export const HeroCard = ({ card }: { card?: StrapiCard | null }) => {
+import { cn } from "@/lib/utils";
+export const HeroCard = ({ card,className }: { card?: StrapiCard | null,className?: string }) => {
   const Icon = resolveStrapiIconName(card?.iconName ?? null, defaultStrapiIconPack);
   return (
-    <Card className="max-w-64 h-fit">
+    <Card className={cn("max-w-64 h-fit", className)}>
       <CardContent className="flex flex-col items-center justify-center gap-4">
         {Icon ? <IconContainer size="xl" rounded Icon={Icon} /> : null}
         {card?.imagen?.url ? (
