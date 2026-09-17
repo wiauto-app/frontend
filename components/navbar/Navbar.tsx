@@ -22,7 +22,7 @@ export const Navbar = () => {
       >
         <BrandLogo
           className="w-32 lg:w-44 "
-          sizes="100px"
+          sizes="130px"
           variant={isSubscribed ? "pro" : "primary"}
         />
         <NavbarLinks />
