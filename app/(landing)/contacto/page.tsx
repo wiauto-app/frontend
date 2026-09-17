@@ -1,14 +1,14 @@
 import { LandingHeader } from "@/components/ui/landingHeader";
 
 import { ContactInfo } from "./components/ContactInfo";
-import ContectForm from "./components/ContectForm";
+import ContactForm from "./components/ContactForm";
 
 const ContactoPage = () => {
   return (
     <>
       <LandingHeader title="Datos de contacto" />
       <ContactInfo />
-      <ContectForm />
+      <ContactForm />
     </>
   );
 };

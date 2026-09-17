@@ -1,47 +1,62 @@
+import { MapPin, Mail, Phone, type LucideIcon } from "lucide-react";
 
-type infoProps = {
-  logo:React.ReactNode;
-  title:string;
-  description:string;
-  
+import { IconContainer } from "@/components/ui/iconContainer";
+
+type InfoItem = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  href?: string;
 };
-import {  MapPin, Mail, Phone } from "lucide-react";
 
-
-const info:infoProps[] = [
+const info: InfoItem[] = [
   {
-    logo:<MapPin className="size-5" aria-hidden />,
-    title:"Dirección",
-    description:"España, Madrid",
+    icon: MapPin,
+    title: "Dirección",
+    description: "Paseo Constitución 8, 50008 Zaragoza",
   },
   {
-    logo:<Mail className="size-5" aria-hidden />,
-    title:"Correo electrónico",
-    description:"comercial@wiauto.es",
+    icon: Mail,
+    title: "Correo electrónico",
+    description: "contacto@wiauto.es",
+    href: "mailto:contacto@wiauto.es",
   },
   {
-    logo:<Phone className="size-5" aria-hidden />,
-    title:"Teléfono",
-    description:"+593 99 999 9999",
+    icon: Phone,
+    title: "Teléfono",
+    description: "+34 666 11 27 58",
+    href: "tel:+34666112758",
   },
-]
+];
 
 export const ContactInfo = () => {
   return (
-    <div className="my-10 flex flex-col  gap-2 md:flex-row md:overflow-x-auto md:pb-4 scrollbar-hide justify-evenly">
-      {info.map((info:infoProps) => (
-        <div key={info.title} className="shrink-0">
-          <div className="bg-card/50 backdrop-blur-md  min-w-64 p-4 rounded-xl flex items-center gap-4">
-            <div className="rounded-full shadow-md shadow-primary/25  p-1 inline-flex items-center justify-center">
-              <span className="text-primary border  p-3 rounded-full border-blue-400">{info.logo}</span>
-            </div>
-            <div className="flex flex-col">
-              <h4 className="font-semibold">{info.title}</h4>
-              <p className="text-muted-foreground text-sm">{info.description}</p>
+    <div className="mx-auto my-10 grid w-full max-w-4xl grid-cols-1 gap-4 px-4 sm:grid-cols-3">
+      {info.map((item) => {
+        const Content = (
+          <div className="flex h-full flex-col items-center gap-3 rounded-xl border border-border/60 bg-card/60 p-6 text-center shadow-sm backdrop-blur-md transition-colors hover:border-primary/40 hover:bg-card">
+            <IconContainer Icon={item.icon} size="lg" rounded />
+            <div className="flex flex-col gap-1">
+              <h4 className="text-sm font-bold">{item.title}</h4>
+              <p className="text-sm text-muted-foreground">
+                {item.description}
+              </p>
             </div>
           </div>
-        </div>
-      ))}
+        );
+
+        return (
+          <div key={item.title}>
+            {item.href ? (
+              <a href={item.href} className="block h-full">
+                {Content}
+              </a>
+            ) : (
+              Content
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

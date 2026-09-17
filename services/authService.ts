@@ -11,7 +11,7 @@ import {
   TwoFactorChallengeState,
   VerifyTwoFactorLoginResponse,
 } from "@/validations/auth";
-import { LoginDto, RegisterDto, ResetPasswordDto, ContactDto } from "@/validations/Schemas";
+import { LoginDto, RegisterDto, ResetPasswordDto } from "@/validations/Schemas";
 import { BillingMeResponse } from "@/interfaces/billing.interface";
 
 export interface MeResponseDto extends User {
@@ -138,13 +138,5 @@ export const authService = {
     return data.isLoggedIn
   }
 
-};
-
-export const contactService = {
-  contact: (data: ContactDto): Promise<ApiResponse<ResendEmailVerificationResponseDto>> =>
-    apiPost<ResendEmailVerificationResponseDto>(
-      `/contact`,
-      data,
-    ),
 };
   

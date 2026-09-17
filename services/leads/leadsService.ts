@@ -3,7 +3,7 @@ import { apiPost, type ApiResponse } from "@/lib/api";
 export interface CreateLeadDto {
   type: string;
   first_name: string;
-  last_name: string;
+  last_name?: string;
   dni?: string;
   phone: string;
   email: string;
