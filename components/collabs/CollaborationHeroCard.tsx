@@ -68,50 +68,47 @@ export const CollaborationHeroCard = ({
     <Link
       href={action.url}
       aria-label={action.label || content.titulo}
-      className="group block overflow-hidden rounded-none first:rounded-t-lg last:rounded-b-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-sm ring-1 ring-foreground/10"
+      className={cn("block", className)}
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
-      <Card size="sm" className="rounded-none">
-        <CardContent
-          className={cn("flex items-center justify-between gap-4", className)}
-        >
-          <div className="flex min-w-0 flex-1 flex-col p-3">
-            <div className="flex items-center gap-4">
+      <div className={cn("flex items-center justify-between gap-4",)}>
+        <div className="flex min-w-0 flex-1 flex-col ">
+          <div className="flex items-center gap-4">
+            <div className="relative min-w-20 h-10 md:min-w-32 md:h-16">
               {imageUrl ? (
                 <Image
                   src={imageUrl}
                   alt={imageAlt}
-                  width={112}
-                  height={112}
-                  sizes="112px"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 112px"
                   className="object-contain"
                 />
               ) : null}
-              <div className="min-w-0 space-y-1">
-                <h2 className="text-xl font-bold">{content.titulo}</h2>
-                {content.descripcion ? (
-                  <p className="whitespace-pre-line text-xs text-muted-foreground">
-                    {content.descripcion}
-                  </p>
-                ) : null}
-              </div>
             </div>
-
-            {hasFeatures ? (
-              <ul className="mt-5 divide-y divide-slate-100 border-t border-slate-200 pt-1 sm:grid sm:grid-cols-2 sm:gap-x-5 sm:divide-y-0">
-                {content.caracteristicas.map((feature) => (
-                  <CollaborationFeature key={feature.id} feature={feature} />
-                ))}
-              </ul>
-            ) : null}
+            <div className="min-w-0 space-y-1">
+              <h2 className="text-base lg:text-lg font-semibold">{content.titulo}</h2>
+              {content.descripcion ? (
+                <p className="whitespace-pre-line text-xs text-muted-foreground">
+                  {content.descripcion}
+                </p>
+              ) : null}
+            </div>
           </div>
 
-          <ChevronRight
-            className="size-5 shrink-0 text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-foreground"
-            aria-hidden
-          />
-        </CardContent>
-      </Card>
+          {hasFeatures ? (
+            <ul className="mt-5 divide-y divide-slate-100 border-t border-slate-200 pt-1 sm:grid sm:grid-cols-2 sm:gap-x-5 sm:divide-y-0">
+              {content.caracteristicas.map((feature) => (
+                <CollaborationFeature key={feature.id} feature={feature} />
+              ))}
+            </ul>
+          ) : null}
+        </div>
+
+        <ChevronRight
+          className="size-5 shrink-0 text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-foreground"
+          aria-hidden
+        />
+      </div>
     </Link>
   );
 };
