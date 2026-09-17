@@ -22,7 +22,6 @@ import {
 } from "@/lib/analytics/events";
 import { Button } from "@/components/ui/button";
 import BillTable from "./billTable";
-import AddonsGrid from "./addonsGrid";
 import PlanesGrid from "./planesGrid";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeading } from "@/components/home/SectionHeading";

@@ -106,15 +106,15 @@ export const PlanCard = ({
   return (
     <Card
       className={cn(
-        "relative flex flex-col  gap-2 pt-0 overflow-hidden",
-        isActive && "ring ring-primary",
-        plan.is_featured && "border border-primary bg-primary-soft/10",
+        "relative flex flex-col  gap-2 pt-0 ",
+        isActive && "border border-primary overflow-visible",
+        plan.is_featured && "border border-primary bg-primary-soft/10 overflow-hidden",
       )}
     >
       <div
         className={cn(
           "flex items-center justify-center gap-2 text-white  h-8",
-          plan.is_featured && "  bg-primary",
+          plan.is_featured && !isActive && "bg-primary",
         )}
       >
         {plan.is_featured && (
