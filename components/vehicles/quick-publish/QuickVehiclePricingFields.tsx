@@ -56,6 +56,7 @@ export const QuickVehiclePricingFields = () => {
                 value={field.value == null ? "" : String(field.value)}
                 type="number"
                 min={0}
+                max={9999999}
                 aria-invalid={fieldState.invalid}
               />
             )}
@@ -71,6 +72,7 @@ export const QuickVehiclePricingFields = () => {
                 value={field.value == null ? "" : String(field.value)}
                 type="number"
                 min={0}
+                max={9999999}
                 aria-invalid={fieldState.invalid}
               />
             )}

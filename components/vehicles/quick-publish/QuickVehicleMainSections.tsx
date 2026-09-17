@@ -92,6 +92,7 @@ export const QuickVehicleMainSections = ({
                 onBlur={field.onBlur}
                 id="quick-description"
                 className="h-28 md:h-56 resize-none whitespace-pre-wrap"
+                maxLength={1000}
                 aria-invalid={fieldState.invalid}
               />
             )}

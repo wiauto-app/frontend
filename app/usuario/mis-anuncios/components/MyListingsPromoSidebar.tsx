@@ -1,32 +1,24 @@
 "use client";
 
-import { RefreshCw, ShieldCheck, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import type { FeaturedListingOffer } from "@/interfaces/billing.interface";
+import { toast } from "sonner";
+import { RefreshCw, ShieldCheck } from "lucide-react";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
+import { useFeatureListingAction } from "../hooks/useMyListingMutations";
 import { OfferCard } from "./offerCard";
 
 interface MyListingsPromoSidebarProps {
   listings: OwnerVehicleListItem[];
-  featureOffers: FeaturedListingOffer[];
-  onFeature: (vehicleId: string, offerId: string) => Promise<void>;
-  isFeatureLoading?: boolean;
-  featuringOfferId?: string | null;
 }
-
-const formatEuros = (amount_cents: number) =>
-  new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR",
-  }).format(amount_cents / 100);
 
 export const MyListingsPromoSidebar = ({
   listings,
-  featureOffers,
-  onFeature,
-  isFeatureLoading = false,
-  featuringOfferId = null,
 }: MyListingsPromoSidebarProps) => {
+  const {
+    featureListing,
+    featureOffers,
+    isFeaturing,
+  } = useFeatureListingAction();
+
   const firstFeatureableListing = listings.find(
     (listing) => listing.can_feature,
   );
@@ -36,27 +28,30 @@ export const MyListingsPromoSidebar = ({
       return;
     }
 
-    await onFeature(firstFeatureableListing.id, offerId);
+    try {
+      await featureListing(firstFeatureableListing.id, offerId);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "No se pudo iniciar el checkout de destacado";
+      toast.error(message);
+    }
   };
 
   return (
     <aside className="space-y-4">
       <div>
         {featureOffers.length > 0 ? (
-          <ul
-            className=" space-y-3"
-            aria-label="Ofertas para destacar anuncio"
-          >
-            {featureOffers.map((offer) => {
-              return (
-                <OfferCard
-                  key={offer.id}
-                  offer={offer}
-                  isFeatureLoading={isFeatureLoading}
-                  handleFeatureClick={handleFeatureClick}
-                />
-              );
-            })}
+          <ul className="space-y-3" aria-label="Ofertas para destacar anuncio">
+            {featureOffers.map((offer) => (
+              <OfferCard
+                key={offer.id}
+                offer={offer}
+                isFeatureLoading={isFeaturing}
+                handleFeatureClick={handleFeatureClick}
+              />
+            ))}
           </ul>
         ) : (
           <p className="mt-4 text-xs text-gray-500">
@@ -69,7 +64,7 @@ export const MyListingsPromoSidebar = ({
             No tienes anuncios activos disponibles para destacar.
           </p>
         ) : null}
-        <span className="text-xs text-gray-500 flex items-center text-center justify-center mt-2">
+        <span className="mt-2 flex items-center justify-center text-center text-xs text-gray-500">
           <ShieldCheck className="size-4 text-primary" />
           Pago seguro. Puedes cancelar cuando quieras.
         </span>

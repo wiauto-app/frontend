@@ -37,6 +37,7 @@ export const QuickVehicleElectricFields = () => {
             value={field.value == null ? "" : String(field.value)}
             type="number"
             min={0}
+            max={2000}
             aria-invalid={fieldState.invalid}
           />
         )}
@@ -48,6 +49,7 @@ export const QuickVehicleElectricFields = () => {
             value={field.value == null ? "" : String(field.value)}
             type="number"
             min={0}
+            max={500}
             aria-invalid={fieldState.invalid}
           />
         )}
@@ -59,6 +61,7 @@ export const QuickVehicleElectricFields = () => {
             value={field.value == null ? "" : String(field.value)}
             type="number"
             min={0}
+            max={100}
             step="0.1"
             aria-invalid={fieldState.invalid}
           />

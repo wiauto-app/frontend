@@ -15,16 +15,6 @@ import { MyListingActionsMenu } from "./MyListingActionsMenu";
 
 interface MyListingCardProps {
   listing: OwnerVehicleListItem;
-  onRenew: (id: string) => Promise<void>;
-  onDuplicate: (id: string) => Promise<void>;
-  onSchedule: (listing: OwnerVehicleListItem) => void;
-  onRemove: (id: string) => Promise<void>;
-  onToggleStatus: (
-    id: string,
-    nextStatus: VehicleStatus,
-  ) => Promise<void>;
-  isMutating?: boolean;
-  canUseAdvancedEditor?: boolean;
 }
 
 const formatPrice = (price: number): string =>
@@ -57,41 +47,37 @@ const getExpiryBadge = (listing: OwnerVehicleListItem): string | null => {
   return null;
 };
 
-export const MyListingCard = ({
-  listing,
-  onRenew,
-  onDuplicate,
-  onSchedule,
-  onRemove,
-  onToggleStatus,
-  isMutating = false,
-  canUseAdvancedEditor = false,
-}: MyListingCardProps) => {
+export const MyListingCard = ({ listing }: MyListingCardProps) => {
   const imageUrl = listing.image?.url ? getImageUrl(listing.image.url) : null;
   const expiryBadge = getExpiryBadge(listing);
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div className="min-w-0 flex items-center gap-4 justify-between">
-        <a target="_blank" href={`/vehiculo/${listing.id}`} className="font-semibold text-gray-900 truncate hover:text-[#0061F2] hover:underline">
+      <div className="flex min-w-0 items-center justify-between gap-4">
+        <a
+          target="_blank"
+          href={`/vehiculo/${listing.id}`}
+          className="truncate font-semibold text-gray-900 hover:text-[#0061F2] hover:underline"
+          rel="noreferrer"
+        >
           {listing.display_name}
         </a>
-       <div className="flex items-center gap-1">
-       <p className="text-sm text-gray-500">{formatPrice(listing.price)}</p>
-        <p className="text-sm text-gray-500">
-          {formatMileage(listing.mileage)}
-        </p>
-        {listing.scheduled_publish_at ? (
-          <p className="text-xs text-blue-600 mt-1">
-            Programado:{" "}
-            {new Date(listing.scheduled_publish_at).toLocaleString("es-ES")}
+        <div className="flex items-center gap-1">
+          <p className="text-sm text-gray-500">{formatPrice(listing.price)}</p>
+          <p className="text-sm text-gray-500">
+            {formatMileage(listing.mileage)}
           </p>
-        ) : null}
-       </div>
+          {listing.scheduled_publish_at ? (
+            <p className="mt-1 text-xs text-blue-600">
+              Programado:{" "}
+              {new Date(listing.scheduled_publish_at).toLocaleString("es-ES")}
+            </p>
+          ) : null}
+        </div>
       </div>
-      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 hover:bg-gray-50/50 transition-colors">
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div className="w-24 h-16 bg-gray-200 rounded-lg overflow-hidden relative shrink-0">
+      <div className="flex flex-col items-start justify-between gap-4 transition-colors hover:bg-gray-50/50 xl:flex-row xl:items-center">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
+          <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-200">
             {imageUrl ? (
               <Image
                 src={imageUrl}
@@ -102,7 +88,7 @@ export const MyListingCard = ({
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                <Car className="w-6 h-6" aria-hidden />
+                <Car className="h-6 w-6" aria-hidden />
               </div>
             )}
           </div>
@@ -118,33 +104,20 @@ export const MyListingCard = ({
           <MyListingStatsRow label="Compartidos" trend={listing.stats.shares} />
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex shrink-0 items-center gap-3">
           <div className="flex flex-col items-end gap-1">
             <Badge className={statusBadgeClass[listing.status]}>
               {get_vehicle_status_label(listing.status)}
             </Badge>
             {expiryBadge ? (
-              <span className="text-[10px] text-amber-700 font-medium">
+              <span className="text-[10px] font-medium text-amber-700">
                 {expiryBadge}
               </span>
             ) : null}
           </div>
 
-          <RenewListingButton
-            listing={listing}
-            onRenew={onRenew}
-            disabled={isMutating}
-          />
-
-          <MyListingActionsMenu
-            listing={listing}
-            onDuplicate={onDuplicate}
-            onSchedule={onSchedule}
-            onRemove={onRemove}
-            onToggleStatus={onToggleStatus}
-            canUseAdvancedEditor={canUseAdvancedEditor}
-            disabled={isMutating}
-          />
+          <RenewListingButton listing={listing} />
+          <MyListingActionsMenu listing={listing} />
         </div>
       </div>
     </div>

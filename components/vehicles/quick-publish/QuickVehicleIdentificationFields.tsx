@@ -176,6 +176,7 @@ export const QuickVehicleIdentificationFields = () => {
                 {...field}
                 value={String(field.value ?? "")}
                 placeholder="Ej. 1234 ABC"
+                maxLength={7}
                 aria-invalid={fieldState.invalid}
               />
               {showLookupUi ? (
@@ -209,6 +210,7 @@ export const QuickVehicleIdentificationFields = () => {
                 {...field}
                 value={String(field.value ?? "")}
                 placeholder="Opcional"
+                maxLength={17}
                 aria-invalid={fieldState.invalid}
               />
               {showLookupUi ? (
@@ -244,6 +246,7 @@ export const QuickVehicleIdentificationFields = () => {
               {...field}
               value={String(field.value ?? "")}
               placeholder="Opcional"
+              maxLength={50}
               aria-invalid={fieldState.invalid}
               aria-label="Referencia interna del vehículo"
             />

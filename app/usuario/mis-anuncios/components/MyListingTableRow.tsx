@@ -10,7 +10,6 @@ import {
   FaComment,
   FaEye,
   FaHeart,
-  FaPencilAlt,
   FaPhone,
   FaStar,
   FaWhatsapp,
@@ -18,7 +17,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   get_vehicle_status_label,
   type VehicleStatus,
@@ -34,15 +32,6 @@ import { Eye, Pencil } from "lucide-react";
 
 interface MyListingTableRowProps {
   listing: OwnerVehicleListItem;
-  onRenew: (id: string) => Promise<void>;
-  onFeature: (id: string) => Promise<void>;
-  onDuplicate: (id: string) => Promise<void>;
-  onSchedule: (listing: OwnerVehicleListItem) => void;
-  onRemove: (id: string) => Promise<void>;
-  onToggleStatus: (id: string, nextStatus: VehicleStatus) => Promise<void>;
-  isMutating?: boolean;
-  canUseAdvancedEditor?: boolean;
-  featurePriceLabel?: string | null;
 }
 
 const formatPrice = (price: number): string =>
@@ -122,18 +111,7 @@ const PerformanceCell = ({
   );
 };
 
-export const MyListingTableRow = ({
-  listing,
-  onRenew,
-  onFeature,
-  onDuplicate,
-  onSchedule,
-  onRemove,
-  onToggleStatus,
-  isMutating = false,
-  canUseAdvancedEditor = false,
-  featurePriceLabel,
-}: MyListingTableRowProps) => {
+export const MyListingTableRow = ({ listing }: MyListingTableRowProps) => {
   const imageUrl = listing.image?.url ? getImageUrl(listing.image.url) : null;
   const transmissionLabel = getTransmissionLabel(listing.transmission_type);
   const publishedReference = getPublishedReferenceDate(listing);
@@ -215,15 +193,7 @@ export const MyListingTableRow = ({
                 </div>
               </div>
 
-              <MyListingActionsMenu
-                listing={listing}
-                onDuplicate={onDuplicate}
-                onSchedule={onSchedule}
-                onRemove={onRemove}
-                onToggleStatus={onToggleStatus}
-                canUseAdvancedEditor={canUseAdvancedEditor}
-                disabled={isMutating}
-              />
+              <MyListingActionsMenu listing={listing} />
             </div>
 
             <div className="flex flex-col gap-1 sm:gap-1.5">
@@ -266,17 +236,8 @@ export const MyListingTableRow = ({
             ) : null}
 
             <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-0.5 sm:gap-2 sm:pt-1">
-              <FeatureListingButton
-                listing={listing}
-                onFeature={onFeature}
-                disabled={isMutating}
-                priceLabel={featurePriceLabel}
-              />
-              <RenewListingButton
-                listing={listing}
-                onRenew={onRenew}
-                disabled={isMutating}
-              />
+              <FeatureListingButton listing={listing} />
+              <RenewListingButton listing={listing} />
               <Link
                 href={`/vehiculo/${listing.id}`}
                 target="_blank"

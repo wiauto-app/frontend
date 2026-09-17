@@ -82,7 +82,40 @@ describe("quickVehicleSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("valida description como string opcional sin mínimo", () => {
+  it("acepta matrícula en formato 1234ABC", () => {
+    const result = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      license_plate: "1234ABC",
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.license_plate).toBe("1234ABC");
+    }
+  });
+
+  it("normaliza matrícula con espacios y minúsculas", () => {
+    const result = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      license_plate: "1234 abc",
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.license_plate).toBe("1234ABC");
+    }
+  });
+
+  it("rechaza matrícula con formato inválido", () => {
+    const result = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      license_plate: "ABC1234",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("valida description como string opcional sin mínimo pero con máximo de 1000", () => {
     const shortDescription = quickVehicleSchema.safeParse({
       ...baseValidPayload,
       description: "corta",
@@ -95,10 +128,16 @@ describe("quickVehicleSchema", () => {
     });
     expect(emptyDescription.success).toBe(true);
 
-    const longDescription = quickVehicleSchema.safeParse({
+    const maxDescription = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      description: "a".repeat(1000),
+    });
+    expect(maxDescription.success).toBe(true);
+
+    const tooLongDescription = quickVehicleSchema.safeParse({
       ...baseValidPayload,
       description: "a".repeat(5000),
     });
-    expect(longDescription.success).toBe(true);
+    expect(tooLongDescription.success).toBe(false);
   });
 });

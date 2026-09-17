@@ -129,6 +129,7 @@ export const QuickVehicleTechnicalFields = () => {
                 value={field.value == null ? "" : String(field.value)}
                 type="number"
                 min={1}
+                max={9999}
                 aria-invalid={fieldState.invalid}
               />
             )}
@@ -145,6 +146,7 @@ export const QuickVehicleTechnicalFields = () => {
                 value={field.value == null ? "" : String(field.value)}
                 type="number"
                 min={0}
+                max={20000}
                 aria-invalid={fieldState.invalid}
               />
             )}

@@ -58,13 +58,20 @@ export default defineConfig({
       testMatch: /auth\.setup\.ts/,
     },
     {
+      name: "chromium-public",
+      testMatch: /e2e\/home\/.*\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
+    {
       name: "chromium",
       dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],
         storageState: authFile,
       },
-      testIgnore: /auth\.setup\.ts/,
+      testIgnore: [/auth\.setup\.ts/, /e2e\/home\/.*\.spec\.ts/],
     },
   ],
   webServer: {

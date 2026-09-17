@@ -1,33 +1,45 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { toast } from "sonner";
+import { Loader2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
+import { useFeatureListingAction } from "../hooks/useMyListingMutations";
 
 interface FeatureListingButtonProps {
   listing: OwnerVehicleListItem;
-  onFeature: (id: string) => Promise<void>;
-  disabled?: boolean;
   variant?: "outline" | "default";
-  priceLabel?: string | null;
 }
 
 export const FeatureListingButton = ({
   listing,
-  onFeature,
-  disabled = false,
   variant = "outline",
-  priceLabel,
 }: FeatureListingButtonProps) => {
+  const { featureListing, featurePriceLabel, isFeaturing, canFeatureIncluded } =
+    useFeatureListingAction();
+
   if (listing.is_featured_active || !listing.can_feature) {
     return null;
   }
 
   const handleClick = async () => {
-    await onFeature(listing.id);
+    try {
+      await featureListing(listing.id);
+      if (canFeatureIncluded) {
+        toast.success("Anuncio destacado correctamente");
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "No se pudo destacar el anuncio";
+      toast.error(message);
+    }
   };
 
-  const label = priceLabel ? `Destacar · ${priceLabel}` : "Destacar";
+  const label = featurePriceLabel
+    ? `Destacar · ${featurePriceLabel}`
+    : "Destacar";
 
   if (variant === "default") {
     return (
@@ -35,11 +47,15 @@ export const FeatureListingButton = ({
         type="button"
         size="sm"
         className="bg-blue-600 text-white hover:bg-blue-700"
-        disabled={disabled}
-        onClick={handleClick}
+        disabled={isFeaturing}
+        onClick={() => void handleClick()}
         aria-label={`Destacar anuncio ${listing.display_name}`}
       >
-        <Star className="mr-1.5 size-3.5 fill-current" aria-hidden />
+        {isFeaturing ? (
+          <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden />
+        ) : (
+          <Star className="mr-1.5 size-3.5 fill-current" aria-hidden />
+        )}
         {label}
       </Button>
     );
@@ -49,11 +65,15 @@ export const FeatureListingButton = ({
     <Button
       type="button"
       size="sm"
-      disabled={disabled}
-      onClick={handleClick}
+      disabled={isFeaturing}
+      onClick={() => void handleClick()}
       aria-label={`Destacar anuncio ${listing.display_name}`}
     >
-      <Star aria-hidden className=" fill-current" />
+      {isFeaturing ? (
+        <Loader2 className="animate-spin" aria-hidden />
+      ) : (
+        <Star aria-hidden className="fill-current" />
+      )}
       {label}
     </Button>
   );

@@ -1,15 +1,14 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import type { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
-import type { FeaturedListingOffer } from "@/interfaces/billing.interface";
 import { myListingsService } from "@/services/myListings/myListingsService";
 import { billingService } from "@/services/billingService";
-import { absoluteUrl } from "@/lib/seo/absolute-url";
-import { rememberPendingPurchase } from "@/lib/analytics/events";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
+import { useEntitlements } from "@/hooks/useEntitlements";
+import { resolveLimitUsage } from "@/lib/billing/entitlements";
 import {
   DEFAULT_MY_LISTINGS_ORDER_VALUE,
   getMyListingsOrderOption,
@@ -18,12 +17,17 @@ import {
   MY_LISTINGS_FILTER_KEYS,
   MY_LISTINGS_FILTER_KEYS_LIST,
 } from "../constants/my-listings-filter-keys.constants";
+import {
+  BILLING_ME_QUERY_KEY,
+  MY_LISTINGS_QUERY_KEY,
+} from "./my-listings-query-keys";
+import { useFeaturedListingOffers } from "./useMyListingMutations";
 
-export const MY_LISTINGS_QUERY_KEY = ["my-listings"] as const;
-export const BILLING_ME_QUERY_KEY = ["billing-me"] as const;
-export const FEATURED_LISTING_OFFERS_QUERY_KEY = [
-  "featured-listing-offers-catalog",
-] as const;
+export {
+  BILLING_ME_QUERY_KEY,
+  FEATURED_LISTING_OFFERS_QUERY_KEY,
+  MY_LISTINGS_QUERY_KEY,
+} from "./my-listings-query-keys";
 
 const MY_LISTINGS_PAGE_LIMIT = 20;
 
@@ -66,7 +70,7 @@ interface UseMyListingsPageOptions {
 export const useMyListingsPage = ({
   enabled = true,
 }: UseMyListingsPageOptions = {}) => {
-  const queryClient = useQueryClient();
+  const { isPrivileged, getLimitUsage } = useEntitlements();
   const {
     values,
     applyUrlUpdates,
@@ -188,148 +192,14 @@ export const useMyListingsPage = ({
     enabled,
   });
 
-  const featuredOffersQuery = useQuery({
-    queryKey: FEATURED_LISTING_OFFERS_QUERY_KEY,
-    queryFn: () => billingService.getFeaturedListingOffersCatalog(),
-    enabled,
-  });
+  const { featureOffers, featureOffer, isLoading: isOffersLoading } =
+    useFeaturedListingOffers(enabled);
 
-  const featureOffers = useMemo((): FeaturedListingOffer[] => {
-    return (featuredOffersQuery.data ?? [])
-      .filter((offer) => offer.is_active && offer.stripe_price_id)
-      .sort((left, right) => {
-        if (left.sort_order !== right.sort_order) {
-          return left.sort_order - right.sort_order;
-        }
-        return left.amount_cents - right.amount_cents;
-      });
-  }, [featuredOffersQuery.data]);
-
-  const featureOffer = featureOffers[0] ?? null;
-
-  const invalidateListings = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: MY_LISTINGS_QUERY_KEY });
-  }, [queryClient]);
-
-  const refetchBillingMe = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: BILLING_ME_QUERY_KEY });
-  }, [queryClient]);
-
-  const duplicateMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await myListingsService.duplicate(id);
-      if (!response.ok) {
-        throw new Error(response.message || "No se pudo duplicar el anuncio");
-      }
-      return response.data;
-    },
-    onSuccess: invalidateListings,
-  });
-
-  const renewMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await myListingsService.renew(id);
-      if (!response.ok) {
-        throw new Error(response.message || "No se pudo renovar el anuncio");
-      }
-      return response.data;
-    },
-    onSuccess: invalidateListings,
-  });
-
-  const featureIncludedMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await myListingsService.feature(id);
-      if (!response.ok) {
-        throw new Error(response.message || "No se pudo destacar el anuncio");
-      }
-      return response.data;
-    },
-    onSuccess: async () => {
-      await invalidateListings();
-      await refetchBillingMe();
-    },
-  });
-
-  const featureCheckoutMutation = useMutation({
-    mutationFn: async ({
-      vehicleId,
-      offerId,
-    }: {
-      vehicleId: string;
-      offerId: string;
-    }) => {
-      const checkoutUrl = await billingService.createFeaturedListingCheckout(
-        offerId,
-        vehicleId,
-        {
-          success_url: absoluteUrl(
-            "/usuario/mis-anuncios?checkout=success",
-          ),
-          cancel_url: absoluteUrl("/usuario/mis-anuncios?checkout=cancel"),
-        },
-      );
-      if (!checkoutUrl) {
-        throw new Error("No se pudo iniciar el checkout de destacado");
-      }
-
-      const offer = featureOffers.find((item) => item.id === offerId);
-      if (offer) {
-        rememberPendingPurchase({
-          value: offer.amount_cents / 100,
-          currency: offer.currency.toUpperCase(),
-          contentName: offer.title,
-          contentIds: [offer.id],
-        });
-      }
-
-      window.location.assign(checkoutUrl);
-    },
-  });
-
-  const scheduleMutation = useMutation({
-    mutationFn: async ({
-      id,
-      scheduled_publish_at,
-    }: {
-      id: string;
-      scheduled_publish_at: string;
-    }) => {
-      const response = await myListingsService.schedule(id, scheduled_publish_at);
-      if (!response.ok) {
-        throw new Error(response.message || "No se pudo programar el anuncio");
-      }
-      return response.data;
-    },
-    onSuccess: invalidateListings,
-  });
-
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: VehicleStatus
-    }) => {
-      const response = await myListingsService.updateStatus(id, status);
-      if (!response.ok) {
-        throw new Error(response.message || "No se pudo actualizar el estado");
-      }
-      return response.data;
-    },
-    onSuccess: invalidateListings,
-  });
-
-  const removeMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await myListingsService.remove(id);
-      if (!response.ok && response.status !== 204) {
-        throw new Error(response.message || "No se pudo eliminar el anuncio");
-      }
-    },
-    onSuccess: invalidateListings,
-  });
+  const featuredSlots = billingMeQuery.data?.entitlements?.featured_listings
+    ? resolveLimitUsage(billingMeQuery.data.entitlements.featured_listings, {
+        isPrivileged,
+      })
+    : getLimitUsage("featured_listings");
 
   const listings: OwnerVehicleListItem[] = listingsQuery.data?.data ?? [];
 
@@ -346,25 +216,12 @@ export const useMyListingsPage = ({
     featureOffers,
     featureOffer,
     featureDurationDays: featureOffer?.duration_days ?? null,
+    featuredSlots,
     isLoading: listingsQuery.isLoading,
-    isBillingLoading: billingMeQuery.isLoading || featuredOffersQuery.isLoading,
+    isBillingLoading: billingMeQuery.isLoading || isOffersLoading,
     isFetching: listingsQuery.isFetching,
     error: listingsQuery.error,
     refetch: listingsQuery.refetch,
-    refetchBillingMe,
-    duplicate: duplicateMutation.mutateAsync,
-    isDuplicating: duplicateMutation.isPending,
-    renew: renewMutation.mutateAsync,
-    isRenewing: renewMutation.isPending,
-    featureIncluded: featureIncludedMutation.mutateAsync,
-    featureListing: featureCheckoutMutation.mutateAsync,
-    isFeaturing:
-      featureIncludedMutation.isPending || featureCheckoutMutation.isPending,
-    schedule: scheduleMutation.mutateAsync,
-    isScheduling: scheduleMutation.isPending,
-    updateStatus: updateStatusMutation.mutateAsync,
-    isUpdatingStatus: updateStatusMutation.isPending,
-    remove: removeMutation.mutateAsync,
-    isRemoving: removeMutation.isPending,
+    refetchBillingMe: billingMeQuery.refetch,
   };
 };

@@ -24,10 +24,12 @@ const optionalUuidArray = z
   .optional()
   .default([]);
 
-const optionalNonNegativeNumber = z.coerce
-  .number({ error: "Introduce un número válido." })
-  .min(0, { error: "El valor no puede ser negativo." })
-  .optional();
+const optionalBoundedNumber = (max: number, maxMessage: string) =>
+  z.coerce
+    .number({ error: "Introduce un número válido." })
+    .min(0, { error: "El valor no puede ser negativo." })
+    .max(max, { error: maxMessage })
+    .optional();
 
 const optional_vehicle_videos_array = z
   .array(vehicle_video_schema)
@@ -36,21 +38,32 @@ const optional_vehicle_videos_array = z
 
 const quickVehicleBaseSchema = z.object({
   vehicle_type_id: z.uuid({ error: "Selecciona un tipo de vehículo." }),
-  ref: z.string().optional(),
+  ref: z
+    .string()
+    .max(50, { error: "La referencia no puede tener más de 50 caracteres." })
+    .optional(),
   license_plate: z
-    .union([
-      z.literal(""),
-      z
-        .string()
-        .min(5, { error: "La matrícula debe tener al menos 5 caracteres." }),
-    ])
-    .optional(),
+    .string()
+    .optional()
+    .transform((value) => {
+      if (!value?.trim()) return "";
+      return value.trim().toUpperCase().replace(/\s+/g, "");
+    })
+    .refine(
+      (value) => value === "" || /^\d{4}[A-Z]{3}$/.test(value),
+      { error: "La matrícula debe tener el formato 1234ABC." },
+    ),
   vin_code: z
-    .union([
-      z.literal(""),
-      z.string().min(1, { error: "El VIN debe tener al menos 1 carácter." }),
-    ])
-    .optional(),
+    .string()
+    .optional()
+    .transform((value) => {
+      if (!value?.trim()) return "";
+      return value.trim().toUpperCase();
+    })
+    .refine(
+      (value) => value === "" || /^[A-HJ-NPR-Z0-9]{17}$/.test(value),
+      { error: "El VIN debe tener exactamente 17 caracteres válidos." },
+    ),
   images: z
     .array(vehicle_image_schema)
     .min(3, { error: "Añade al menos 3 fotos del vehículo." }),
@@ -67,9 +80,9 @@ const quickVehicleBaseSchema = z.object({
   /** Solo formulario: indica si el combustible admite recarga. No se envía al API. */
   catalog_fuel_can_charge: z.boolean().optional().default(false),
   condition: z.enum(VEHICLE_CONDITION_VALUES),
-  mileage: z.coerce.number().min(0, { error: "El kilometraje no puede ser negativo." }),
-  price: z.coerce.number().min(0, { error: "El precio no puede ser negativo." }),
-  finance_price: optionalNonNegativeNumber,
+  mileage: z.coerce.number().min(0, { error: "El kilometraje no puede ser negativo." }).max(9999999, { error: "El kilometraje no puede ser mayor a 9999999." }).nonnegative({ error: "El kilometraje no puede ser negativo." }),
+  price: z.coerce.number().min(0, { error: "El precio no puede ser negativo." }).max(9999999, { error: "El precio no puede ser mayor a 9999999." }).nonnegative({ error: "El precio no puede ser negativo." }),
+  finance_price: optionalBoundedNumber(9999999, "El precio financiado no puede ser mayor a 9999999."),
   show_first_cuota: z.boolean().default(false),
   by_brand_warranty: z.boolean().default(false),
   show_exact_location: z.boolean().default(false),
@@ -84,15 +97,22 @@ const quickVehicleBaseSchema = z.object({
   email: z.email({ error: "Introduce un correo electrónico válido." }),
   description: z
     .string()
+    .max(1000, { error: "La descripción no puede tener más de 1000 caracteres." })
     .optional(),
   transmission_type: z.enum(["manual", "automatic"], {
     error: "Selecciona un tipo de transmisión.",
   }),
-  power: z.coerce.number().min(1, { error: "Introduce la potencia del vehículo." }),
-  displacement: z.coerce.number().min(0, { error: "Introduce la cilindrada del vehículo." }),
-  autonomy: optionalNonNegativeNumber,
-  battery_capacity: optionalNonNegativeNumber,
-  time_to_charge: optionalNonNegativeNumber,
+  power: z.coerce
+    .number()
+    .min(1, { error: "Introduce la potencia del vehículo." })
+    .max(9999, { error: "La potencia no puede ser mayor a 9999 CV." }),
+  displacement: z.coerce
+    .number()
+    .min(0, { error: "Introduce la cilindrada del vehículo." })
+    .max(20000, { error: "La cilindrada no puede ser mayor a 20000 cc." }),
+  autonomy: optionalBoundedNumber(2000, "La autonomía no puede ser mayor a 2000 km."),
+  battery_capacity: optionalBoundedNumber(500, "La capacidad de la batería no puede ser mayor a 500 kWh."),
+  time_to_charge: optionalBoundedNumber(100, "El tiempo de carga no puede ser mayor a 100 h."),
   traction_id: z.uuid({ error: "Selecciona un tipo de tracción." }),
   features_ids: optionalUuidArray,
   services_ids: optionalUuidArray,

@@ -7,12 +7,13 @@ import {
   CalendarClock,
   Copy,
   FileText,
-  FormInput,
+  Loader2,
   MoreVertical,
   Pencil,
   Power,
   Trash2,
 } from "lucide-react";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,52 +22,58 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
+import {
+  useRemoveListingMutation,
+  useUpdateListingStatusMutation,
+} from "../hooks/useMyListingMutations";
+import { ScheduleListingDialog } from "./ScheduleListingDialog";
 
 interface MyListingActionsMenuProps {
   listing: OwnerVehicleListItem;
-  onDuplicate: (id: string) => Promise<void>;
-  onSchedule: (listing: OwnerVehicleListItem) => void;
-  onRemove: (id: string) => Promise<void>;
-  onToggleStatus: (id: string, nextStatus: VehicleStatus) => Promise<void>;
-  canUseAdvancedEditor?: boolean;
-  disabled?: boolean;
 }
 
 export const MyListingActionsMenu = ({
   listing,
-  onDuplicate,
-  onSchedule,
-  onRemove,
-  onToggleStatus,
-  canUseAdvancedEditor = false,
-  disabled = false,
 }: MyListingActionsMenuProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
 
-  const handleDuplicate = async () => {
-    await onDuplicate(listing.id);
-  };
+  const removeMutation = useRemoveListingMutation();
+  const updateStatusMutation = useUpdateListingStatusMutation();
 
-  const handleSchedule = () => {
-    onSchedule(listing);
-  };
+  const isMutating =
+    removeMutation.isPending || updateStatusMutation.isPending;
 
   const handleToggleStatus = async (nextStatus: VehicleStatus) => {
-    await onToggleStatus(listing.id, nextStatus);
+    try {
+      await updateStatusMutation.mutateAsync({
+        id: listing.id,
+        status: nextStatus,
+      });
+    } catch {
+      toast.error("No se pudo cambiar el estado del anuncio");
+    }
   };
 
-  const handleRemove = async () => {
-    await onRemove(listing.id);
-    setDeleteDialogOpen(false);
+  const handleConfirmRemove = async () => {
+    try {
+      await removeMutation.mutateAsync(listing.id);
+      setDeleteDialogOpen(false);
+      toast.success("Anuncio eliminado correctamente");
+    } catch {
+      toast.error("No se pudo eliminar el anuncio");
+    }
   };
 
   const canToggleStatus =
@@ -75,11 +82,12 @@ export const MyListingActionsMenu = ({
   const isActive = listing.status === "active";
   const isSold = listing.status === "sold";
   const isArchived = listing.status === "archived";
+
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger
-          disabled={disabled}
+          disabled={isMutating}
           render={
             <Button
               type="button"
@@ -99,20 +107,6 @@ export const MyListingActionsMenu = ({
             <Pencil className="size-4" aria-hidden />
             Editar
           </DropdownMenuItem>
-          {/* {canUseAdvancedEditor ? (
-            <DropdownMenuItem
-              render={
-                <Link href={`/editar-vehiculo-profesional/${listing.id}`} />
-              }
-            >
-              <FormInput className="size-4" aria-hidden />
-              Edición completa
-            </DropdownMenuItem>
-          ) : null} */}
-          {/* <DropdownMenuItem onClick={handleDuplicate}>
-            <Copy className="size-4" aria-hidden />
-            Duplicar
-          </DropdownMenuItem> */}
           <DropdownMenuItem
             render={
               <Link
@@ -126,7 +120,7 @@ export const MyListingActionsMenu = ({
             Exportar informe
           </DropdownMenuItem>
           {listing.can_schedule ? (
-            <DropdownMenuItem onClick={handleSchedule}>
+            <DropdownMenuItem onClick={() => setScheduleDialogOpen(true)}>
               <CalendarClock className="size-4" aria-hidden />
               Programar
             </DropdownMenuItem>
@@ -139,19 +133,21 @@ export const MyListingActionsMenu = ({
             Eliminar
           </DropdownMenuItem>
           {!isSold ? (
-            <DropdownMenuItem onClick={() => handleToggleStatus("sold")}>
+            <DropdownMenuItem onClick={() => void handleToggleStatus("sold")}>
               <Copy className="size-4" aria-hidden />
               Marcar como vendido
             </DropdownMenuItem>
           ) : null}
           {!isArchived ? (
-            <DropdownMenuItem onClick={() => handleToggleStatus("archived")}>
+            <DropdownMenuItem
+              onClick={() => void handleToggleStatus("archived")}
+            >
               <Archive className="size-4" aria-hidden />
               Archivar
             </DropdownMenuItem>
           ) : null}
           {!isActive ? (
-            <DropdownMenuItem onClick={() => handleToggleStatus("active")}>
+            <DropdownMenuItem onClick={() => void handleToggleStatus("active")}>
               <Power className="size-4" aria-hidden />
               Activar
             </DropdownMenuItem>
@@ -159,7 +155,7 @@ export const MyListingActionsMenu = ({
           {canToggleStatus ? (
             <DropdownMenuItem
               onClick={() =>
-                handleToggleStatus(
+                void handleToggleStatus(
                   listing.status === "active" ? "inactive" : "active",
                 )
               }
@@ -171,29 +167,53 @@ export const MyListingActionsMenu = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Eliminar anuncio</DialogTitle>
-            <DialogDescription>
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          if (removeMutation.isPending) {
+            return;
+          }
+          setDeleteDialogOpen(open);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminar anuncio</AlertDialogTitle>
+            <AlertDialogDescription>
               Esta acción no se puede deshacer. ¿Seguro que quieres eliminar
               &quot;{listing.display_name}&quot;?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={removeMutation.isPending}>
               Cancelar
-            </Button>
-            <Button type="button" variant="destructive" onClick={handleRemove}>
-              Eliminar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={removeMutation.isPending}
+              onClick={(event) => {
+                event.preventDefault();
+                void handleConfirmRemove();
+              }}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {removeMutation.isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" aria-hidden />
+                  Eliminando…
+                </>
+              ) : (
+                "Eliminar"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <ScheduleListingDialog
+        listing={listing}
+        open={scheduleDialogOpen}
+        onOpenChange={setScheduleDialogOpen}
+      />
     </>
   );
 };

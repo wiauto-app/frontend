@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,13 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
+import { useScheduleListingMutation } from "../hooks/useMyListingMutations";
 
 interface ScheduleListingDialogProps {
   listing: OwnerVehicleListItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSchedule: (id: string, scheduled_publish_at: string) => Promise<void>;
-  isSubmitting?: boolean;
 }
 
 const toLocalDateTimeInputValue = (date: Date): string => {
@@ -35,11 +36,12 @@ export const ScheduleListingDialog = ({
   listing,
   open,
   onOpenChange,
-  onSchedule,
-  isSubmitting = false,
 }: ScheduleListingDialogProps) => {
   const [dateTimeValue, setDateTimeValue] = useState(getDefaultScheduleValue);
-  const [minDateTimeValue, setMinDateTimeValue] = useState(getDefaultScheduleValue);
+  const [minDateTimeValue, setMinDateTimeValue] = useState(
+    getDefaultScheduleValue,
+  );
+  const scheduleMutation = useScheduleListingMutation();
 
   useEffect(() => {
     if (!open) {
@@ -55,13 +57,28 @@ export const ScheduleListingDialog = ({
       return;
     }
 
-    const scheduled_at = new Date(dateTimeValue).toISOString();
-    await onSchedule(listing.id, scheduled_at);
-    onOpenChange(false);
+    try {
+      await scheduleMutation.mutateAsync({
+        id: listing.id,
+        scheduled_publish_at: new Date(dateTimeValue).toISOString(),
+      });
+      toast.success("Publicación programada correctamente");
+      onOpenChange(false);
+    } catch {
+      toast.error("No se pudo programar el anuncio");
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (scheduleMutation.isPending) {
+          return;
+        }
+        onOpenChange(nextOpen);
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Programar publicación</DialogTitle>
@@ -78,6 +95,7 @@ export const ScheduleListingDialog = ({
             value={dateTimeValue}
             onChange={(event) => setDateTimeValue(event.target.value)}
             min={minDateTimeValue}
+            disabled={scheduleMutation.isPending}
           />
         </div>
 
@@ -86,16 +104,23 @@ export const ScheduleListingDialog = ({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
+            disabled={scheduleMutation.isPending}
           >
             Cancelar
           </Button>
           <Button
             type="button"
             onClick={() => void handleSubmit()}
-            disabled={isSubmitting || !listing}
+            disabled={scheduleMutation.isPending || !listing}
           >
-            Programar
+            {scheduleMutation.isPending ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                Programando…
+              </>
+            ) : (
+              "Programar"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
