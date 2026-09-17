@@ -10,7 +10,7 @@ import { z } from "zod";
 
 import { useUser } from "@/app/contexts/auth/useUser";
 import { SignInDialog } from "@/components/auth/signInDialog";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
@@ -43,7 +43,7 @@ type CreateListFormValues = z.infer<typeof createListSchema>;
 
 type VehicleFavoriteButtonProps = {
   vehicleId: string;
-  variant?: "ghost" | "outline";
+  variant?: ButtonVariants["variant"];
   className?: string;
 };
 
@@ -158,28 +158,32 @@ export const VehicleFavoriteButton = ({
     <>
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger
-          type="button"
-          aria-expanded={open}
-          aria-label="Guardar en listas"
-          disabled={isAuthLoading}
-          className={cn(
-            "rounded-full p-2 transition-colors hover:bg-muted",
-            variant === "outline" &&
-              "border-2 border-muted-foreground/50 rounded-md",
-            isFavorited
-              ? "text-red-500"
-              : "text-muted-foreground hover:text-foreground",
-            className,
-          )}
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-        >
-          <Heart
-            className={cn("size-4", isFavorited && "fill-current")}
-            aria-hidden
-          />
-        </PopoverTrigger>
+          render={
+            <Button
+              type="button"
+              variant={variant}
+              size="icon"
+              disabled={isAuthLoading}
+              aria-expanded={open}
+              aria-label="Guardar en listas"
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              className={cn(
+                "rounded-full p-2 transition-colors hover:bg-muted",
+                className,
+              )}
+            >
+              <Heart
+                className={cn(
+                  "size-4",
+                  isFavorited && "fill-red-500 text-red-500",
+                )}
+                aria-hidden
+              />
+            </Button>
+          }
+        />
 
         <PopoverContent
           align="end"

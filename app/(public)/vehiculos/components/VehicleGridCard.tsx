@@ -189,7 +189,7 @@ export const VehicleGridCard = ({
             vehicleId={vehicle.id}
             className="rounded-full bg-white shadow-sm"
           />
-          <VehicleShareButton
+          {/* <VehicleShareButton
             vehicleId={vehicle.id}
             vehicleTitle={displayName}
           />
@@ -197,7 +197,7 @@ export const VehicleGridCard = ({
             vehicleId={vehicle.id}
             className="rounded-full bg-white shadow-sm"
             onDismissed={onDismissed}
-          />
+          /> */}
         </div>
 
         <VehicleGridCardBadges vehicle={vehicle} />
