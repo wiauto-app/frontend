@@ -58,7 +58,7 @@ export const USER_SIDEBAR_PRO_LINKS = [
   { href: `${basePath}/estadisticas`, label: "Estadísticas", icon: BarChart3 },
   { href: `${basePath}/mi-tasador`, label: "Tasador", icon: Calculator },
   {
-    href: `${basePath}/perfil?tab=dealership`,
+    href: `${basePath}/concesionario`,
     label: "Concesionario",
     icon: Building2,
   },

@@ -1,6 +1,6 @@
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { UserSidebarLink } from "../constants/user.constants";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
@@ -14,9 +14,7 @@ export const ProfessionalSidebarItem = ({
   className?: string;
 }) => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const tab = searchParams.get("tab");
-  const isActive = isSidebarLinkActive(item.href, pathname, tab);
+  const isActive = isSidebarLinkActive(item.href, pathname);
   const Icon = item.icon;
 
   return (
@@ -24,9 +22,7 @@ export const ProfessionalSidebarItem = ({
       <SidebarMenuButton
         tooltip={item.label}
         isActive={isActive}
-        className={cn(
-          className,
-        )}
+        className={cn(className)}
         render={
           <Link
             className={cn(

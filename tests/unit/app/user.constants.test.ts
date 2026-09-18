@@ -48,7 +48,7 @@ describe("getUserSidebarLinks", () => {
       true,
     );
     expect(
-      withPlan.some((link) => link.href === "/usuario/perfil?tab=dealership"),
+      withPlan.some((link) => link.href === "/usuario/concesionario"),
     ).toBe(true);
   });
 

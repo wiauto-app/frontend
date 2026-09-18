@@ -5,7 +5,7 @@ import {
   dealershipScheduleFormSchema,
   mapScheduleFormToPayload,
   mapSchedulesToFormValues,
-} from "@/app/(user)/perfil/schemas/dealership-schedule.schema";
+} from "@/app/usuario/concesionario/schemas/dealership-schedule.schema";
 
 describe("dealershipScheduleFormSchema", () => {
   it("acepta 7 días con tramos válidos", () => {

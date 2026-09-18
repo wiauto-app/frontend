@@ -30,7 +30,7 @@ import {
 } from "../schemas/dealership-profile.schema";
 import { DealershipScheduleSection } from "./DealershipScheduleSection";
 
-export const DealershipProfileTabContent = () => {
+export const ConcesionarioContent = () => {
   const { user, isLoading: isUserLoading, refreshUser } = useUser();
   const queryClient = useQueryClient();
   const dealershipId = user?.dealership_membership?.dealership_id;

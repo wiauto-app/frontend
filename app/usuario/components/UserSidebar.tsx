@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LogOut, Edit } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,16 +17,7 @@ const PERFIL_PATH = `${USER_AREA_BASE_PATH}/perfil`;
 export const isSidebarLinkActive = (
   linkHref: string,
   pathname: string | null,
-  tab: string | null,
 ): boolean => {
-  if (linkHref.startsWith(PERFIL_PATH)) {
-    if (linkHref.includes("tab=dealership")) {
-      return pathname === PERFIL_PATH && tab === "dealership";
-    }
-
-    return pathname === PERFIL_PATH && tab !== "dealership";
-  }
-
   return (
     pathname === linkHref ||
     (Boolean(pathname?.startsWith(linkHref)) && linkHref !== "/")
@@ -56,8 +47,6 @@ export const UserSidebarFallback = () => (
 
 export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const tab = searchParams.get("tab");
 
   const { user, logout } = useUser();
   const { isSubscribed } = useEntitlements();
@@ -105,7 +94,7 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
         <CardContent>
           <nav className="flex flex-col space-y-1">
             {sidebarItems.map((link) => {
-              const isActive = isSidebarLinkActive(link.href, pathname, tab);
+              const isActive = isSidebarLinkActive(link.href, pathname);
               const Icon = link.icon;
               return (
                 <Link
