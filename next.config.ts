@@ -43,6 +43,11 @@ const nextConfig: NextConfig = {
         hostname: "media.wiauto.es",
 
       },
+      {
+        protocol: "https",
+        hostname: "maps.googleapis.com",
+        pathname: "/maps/api/**",
+      },
       ...(strapiRemote ? [strapiRemote] : []),
     ],
   },
