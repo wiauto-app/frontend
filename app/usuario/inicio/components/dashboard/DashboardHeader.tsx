@@ -1,8 +1,9 @@
 "use client";
 
-import { FileDown } from "lucide-react";
+import { FileDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DateRangeSelector } from "@/components/date-range-selector/DateRangeSelector";
+import { useExportDashboard } from "../../hooks/useExportDashboard";
 
 interface DashboardHeaderProps {
   startDate: string;
@@ -19,6 +20,12 @@ export const DashboardHeader = ({
   onEndDateChange,
   dateRangeError,
 }: DashboardHeaderProps) => {
+  const { mutate: exportPdf, isPending } = useExportDashboard();
+
+  const handleExport = () => {
+    exportPdf({ startDate, endDate });
+  };
+
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div className="space-y-1">
@@ -41,15 +48,18 @@ export const DashboardHeader = ({
         <Button
           type="button"
           variant="outline"
-          className="border-gray-200 text-gray-500"
-          disabled
-          title="Próximamente"
+          className="border-gray-200"
+          onClick={handleExport}
+          disabled={isPending}
+          title={isPending ? "Generando PDF..." : "Exportar dashboard a PDF"}
         >
-          <FileDown className="size-4" aria-hidden />
-          Exportar PDF
-          <span className="sr-only">Próximamente</span>
+          {isPending ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : (
+            <FileDown className="size-4" aria-hidden />
+          )}
+          {isPending ? "Generando..." : "Exportar PDF"}
         </Button>
-        <span className="text-xs text-gray-400">Próximamente</span>
       </div>
     </header>
   );

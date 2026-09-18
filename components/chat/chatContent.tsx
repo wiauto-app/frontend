@@ -2,161 +2,44 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  Ban,
-  Flag,
-  MessageSquare,
-  MoreVertical,
-} from "lucide-react";
+import { ArrowLeft, Ban, MessageSquare, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
 
 import { useUser } from "@/app/contexts/auth/useUser";
-import { MessageStatusIcon } from "@/components/chat/components/MessageStatusIcon";
+import { MessageBubble } from "@/components/chat/components/messageBubble";
+import {
+  MessagesContainer,
+  type MessagesContainerHandle,
+} from "@/components/chat/components/messagesContainer";
 import { ChatMessageComposer } from "@/components/chat/chatMessageComposer";
 import { ChatTicketStatusPanel } from "@/components/chat/ChatTicketStatusPanel";
 import { useChatSocket } from "@/components/chat/context/chatSocketContext";
 import { useChatFilters } from "@/components/chat/hooks/useChatFilters";
-import { formatMessageTime } from "@/components/chat/utils/formatMessageTime";
 import { formatParticipantNames } from "@/components/chat/utils/formatParticipantNames";
 import { ReportDialog } from "@/components/reports/ReportDialog";
-import CustomAlertDialog from "@/components/ui/customAlertDialog";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import CustomAlertDialog from "@/components/ui/customAlertDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Marker, MarkerContent } from "@/components/ui/marker";
+import { MessageScrollerItem } from "@/components/ui/message-scroller";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  CHAT_MESSAGE_TYPE,
-  type ChatListItem,
-  type ChatMessageListItem,
-  type ChatParticipantSummary,
+import type {
+  ChatListItem,
+  ChatMessageListItem,
+  ChatParticipantSummary,
 } from "@/interfaces/chat.interface";
 import {
   REPORT_TARGET_TYPE,
   type ReportTarget,
 } from "@/interfaces/report.interface";
-import { cn } from "@/lib/utils";
-import {
-  BLOCKS_QUERY_KEY,
-  blocksService,
-} from "@/services/blocksService";
+import { BLOCKS_QUERY_KEY, blocksService } from "@/services/blocksService";
 import { chatService, unwrapChatResponse } from "@/services/chatService";
-
-interface MessageBubbleProps {
-  message: ChatMessageListItem;
-  isOwn: boolean;
-  onReport?: (message: ChatMessageListItem) => void;
-}
-
-const MessageBubble = ({ message, isOwn, onReport }: MessageBubbleProps) => {
-  const renderBody = () => {
-    if (message.type === CHAT_MESSAGE_TYPE.TEXT) {
-      return (
-        <p className="whitespace-pre-wrap break-words text-sm">
-          {message.content}
-        </p>
-      );
-    }
-    if (message.type === CHAT_MESSAGE_TYPE.IMAGE && message.media_url) {
-      return (
-        <a href={message.media_url} target="_blank" rel="noreferrer">
-          <img
-            src={message.media_url}
-            alt={message.metadata?.caption ?? "Imagen"}
-            className="max-h-64 max-w-full rounded-md object-cover"
-          />
-        </a>
-      );
-    }
-    if (message.type === CHAT_MESSAGE_TYPE.AUDIO && message.media_url) {
-      return (
-        <audio controls src={message.media_url} className="max-w-full">
-          <track kind="captions" />
-        </audio>
-      );
-    }
-    if (message.type === CHAT_MESSAGE_TYPE.FILE && message.media_url) {
-      return (
-        <a
-          href={message.media_url}
-          target="_blank"
-          rel="noreferrer"
-          className="text-sm underline"
-        >
-          {message.metadata?.file_name ?? "Descargar archivo"}
-        </a>
-      );
-    }
-    return (
-      <p className="text-sm text-muted-foreground">Adjunto no disponible</p>
-    );
-  };
-
-  return (
-    <div
-      className={cn(
-        "group flex w-full items-end gap-1",
-        isOwn ? "justify-end" : "justify-start",
-      )}
-    >
-      {!isOwn && onReport ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="shrink-0 text-muted-foreground opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100 data-popup-open:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 sm:data-popup-open:opacity-100"
-                aria-label="Opciones del mensaje"
-              >
-                <MoreVertical className="size-4" aria-hidden />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem
-              onClick={() => {
-                onReport(message);
-              }}
-            >
-              <Flag className="size-4" aria-hidden />
-              Reportar mensaje
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : null}
-
-      <div
-        className={cn(
-          "max-w-[min(85%,28rem)] rounded-2xl px-3 py-2 shadow-sm",
-          isOwn ? "bg-primary text-primary-foreground" : "bg-muted",
-        )}
-      >
-        {renderBody()}
-        <div
-          className={cn(
-            "mt-1 flex items-center justify-end gap-1 text-[10px]",
-            isOwn ? "text-primary-foreground/80" : "text-muted-foreground",
-          )}
-        >
-          {message.edited_at ? <span>editado</span> : null}
-          <span>{formatMessageTime(message.created_at)}</span>
-          {isOwn ? <MessageStatusIcon status={message.status} /> : null}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const getParticipantDisplayName = (
   participant: ChatParticipantSummary,
@@ -166,9 +49,8 @@ export const ChatContent = () => {
   const { user } = useUser();
   const { chatId, handleChange } = useChatFilters();
   const queryClient = useQueryClient();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<MessagesContainerHandle>(null);
   const markedReadRef = useRef<string | null>(null);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const {
     isConnected,
     joinChat,
@@ -203,7 +85,9 @@ export const ChatContent = () => {
     queryFn: async () => {
       const response = await blocksService.findAll();
       if (!response.ok) {
-        throw new Error(response.message || "No se pudieron cargar los bloqueos");
+        throw new Error(
+          response.message || "No se pudieron cargar los bloqueos",
+        );
       }
       return response.data ?? [];
     },
@@ -214,24 +98,15 @@ export const ChatContent = () => {
     [blocksData],
   );
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (messagesContainerRef.current) {
-        messagesContainerRef.current.scrollTo({
-          top: messagesContainerRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }
-    }, 500);
-  }, [chatListData]);
-
   const selectedChat: ChatListItem | undefined = useMemo(
     () => chatListData?.data.find((chat) => chat.id === chatId),
     [chatListData, chatId],
   );
 
   const otherParticipantIds = useMemo(
-    () => selectedChat?.other_participants.map((participant) => participant.id) ?? [],
+    () =>
+      selectedChat?.other_participants.map((participant) => participant.id) ??
+      [],
     [selectedChat],
   );
 
@@ -250,10 +125,6 @@ export const ChatContent = () => {
 
   const messages = useMemo(() => messagesData?.data ?? [], [messagesData]);
 
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
   useEffect(() => {
     if (!chatId || !isConnected) return;
     void joinChat(chatId);
@@ -266,10 +137,6 @@ export const ChatContent = () => {
     if (!chatId || !isConnected || otherParticipantIds.length === 0) return;
     void subscribePresence(otherParticipantIds);
   }, [chatId, isConnected, otherParticipantIds, subscribePresence]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
 
   const markMessagesRead = useCallback(async () => {
     if (!chatId || messages.length === 0) return;
@@ -291,9 +158,9 @@ export const ChatContent = () => {
   }, [chatId, messages, markMessagesRead]);
 
   const handleMessageSent = useCallback(() => {
-    scrollToBottom();
+    messagesContainerRef.current?.scrollToEnd({ behavior: "smooth" });
     void markMessagesRead();
-  }, [scrollToBottom, markMessagesRead]);
+  }, [markMessagesRead]);
 
   const typingUserIds = useMemo(() => {
     if (!chatId) return [];
@@ -301,6 +168,22 @@ export const ChatContent = () => {
     if (!set) return [];
     return Array.from(set).filter((id) => id !== user?.id);
   }, [typingByChatId, chatId, user?.id]);
+
+  const typingLabel = useMemo(() => {
+    if (typingUserIds.length === 0) return null;
+    const names = typingUserIds
+      .map((id) => {
+        const participant = selectedChat?.other_participants.find(
+          (item) => item.id === id,
+        );
+        return participant ? getParticipantDisplayName(participant) : null;
+      })
+      .filter(Boolean);
+
+    if (names.length === 0) return "Escribiendo…";
+    if (names.length === 1) return `${names[0]} está escribiendo…`;
+    return "Varias personas están escribiendo…";
+  }, [selectedChat?.other_participants, typingUserIds]);
 
   const headerTitle = selectedChat
     ? selectedChat.ticket?.title?.trim() ||
@@ -328,17 +211,25 @@ export const ChatContent = () => {
     handleChange("chat_id", undefined);
   };
 
+  const resolveSender = useCallback(
+    (senderId: string): ChatParticipantSummary | null => {
+      return (
+        selectedChat?.other_participants.find((item) => item.id === senderId) ??
+        null
+      );
+    },
+    [selectedChat?.other_participants],
+  );
+
   const resolveSenderName = useCallback(
     (senderId: string) => {
-      const participant = selectedChat?.other_participants.find(
-        (item) => item.id === senderId,
-      );
+      const participant = resolveSender(senderId);
       if (participant) {
         return getParticipantDisplayName(participant);
       }
       return "usuario";
     },
-    [selectedChat?.other_participants],
+    [resolveSender],
   );
 
   const handleReportMessage = useCallback(
@@ -412,8 +303,8 @@ export const ChatContent = () => {
   }
 
   return (
-    <div className="flex min-h-[60vh] flex-col">
-      <header className="flex flex-col gap-3 border-b pb-3">
+    <div className="flex h-[min(70vh,720px)] min-h-[60vh] w-full flex-col">
+      <header className="flex shrink-0 flex-col gap-3 border-b pb-3">
         <div className="flex items-center gap-3">
           <Button
             type="button"
@@ -423,10 +314,12 @@ export const ChatContent = () => {
             onClick={handleBackToList}
             aria-label="Volver a la lista de chats"
           >
-            <ArrowLeft className="size-4" />
+            <ArrowLeft />
           </Button>
           <Avatar className="size-10">
-            <AvatarImage src={selectedChat?.other_participants[0]?.avatar_url} />
+            <AvatarImage
+              src={selectedChat?.other_participants[0]?.avatar_url}
+            />
             <AvatarFallback>
               {selectedChat?.ticket
                 ? "S"
@@ -450,7 +343,7 @@ export const ChatContent = () => {
                     size="icon-sm"
                     aria-label="Opciones de la conversación"
                   >
-                    <MoreVertical className="size-4" aria-hidden />
+                    <MoreVertical aria-hidden />
                   </Button>
                 }
               />
@@ -471,7 +364,7 @@ export const ChatContent = () => {
                         handleRequestBlock(participant);
                       }}
                     >
-                      <Ban className="size-4" aria-hidden />
+                      <Ban aria-hidden />
                       {isBlocked
                         ? `Desbloquear a ${name}`
                         : `Bloquear a ${name}`}
@@ -487,49 +380,65 @@ export const ChatContent = () => {
         ) : null}
       </header>
 
-      <div
-        ref={messagesContainerRef}
-        className="flex max-h-[70vh] flex-1 flex-col gap-3 overflow-y-auto py-4"
-      >
+      <MessagesContainer ref={messagesContainerRef}>
         {isLoadingMessages ? (
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton
-                key={`msg-skel-${index}`}
-                className="h-12 w-2/3 rounded-xl"
-              />
-            ))}
-          </div>
+          <MessageScrollerItem messageId="loading">
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton
+                  key={`msg-skel-${index}`}
+                  className="h-12 w-2/3 rounded-xl"
+                />
+              ))}
+            </div>
+          </MessageScrollerItem>
         ) : messages.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground">
-            Aún no hay mensajes. Envía el primero.
-          </p>
+          <MessageScrollerItem messageId="empty">
+            <p className="text-center text-sm text-muted-foreground">
+              Aún no hay mensajes. Envía el primero.
+            </p>
+          </MessageScrollerItem>
         ) : (
-          messages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              message={message}
-              isOwn={message.sender_id === user?.id}
-              onReport={
-                message.sender_id === user?.id
-                  ? undefined
-                  : handleReportMessage
-              }
-            />
-          ))
-        )}
-        {typingUserIds.length > 0 ? (
-          <p className="text-xs italic text-muted-foreground">Escribiendo…</p>
-        ) : null}
-        <div ref={messagesEndRef} />
-      </div>
+          messages.map((message, index) => {
+            const isOwn = message.sender_id === user?.id;
+            const isLast = index === messages.length - 1;
 
-      <ChatMessageComposer
-        chatId={chatId}
-        onMessageSent={handleMessageSent}
-        onTypingStart={() => emitTypingStart(chatId)}
-        onTypingStop={() => emitTypingStop(chatId)}
-      />
+            return (
+              <MessageScrollerItem
+                key={message.id}
+                messageId={message.id}
+                scrollAnchor={isOwn && isLast}
+              >
+                <MessageBubble
+                  message={message}
+                  isOwn={isOwn}
+                  sender={resolveSender(message.sender_id)}
+                  currentUserAvatarUrl={user?.avatar_url}
+                  currentUserName={user?.name}
+                  onReport={isOwn ? undefined : handleReportMessage}
+                />
+              </MessageScrollerItem>
+            );
+          })
+        )}
+
+        {typingLabel ? (
+          <MessageScrollerItem messageId="typing">
+            <Marker role="status">
+              <MarkerContent>{typingLabel}</MarkerContent>
+            </Marker>
+          </MessageScrollerItem>
+        ) : null}
+      </MessagesContainer>
+
+      <div className="shrink-0 border-t pt-3">
+        <ChatMessageComposer
+          chatId={chatId}
+          onMessageSent={handleMessageSent}
+          onTypingStart={() => emitTypingStart(chatId)}
+          onTypingStop={() => emitTypingStop(chatId)}
+        />
+      </div>
 
       {reportTarget ? (
         <ReportDialog

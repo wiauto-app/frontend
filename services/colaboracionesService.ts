@@ -1,12 +1,9 @@
 import { getStrapiData } from "@/lib/strapi-api";
 import {
   mapStrapiColaboracionToInternal,
-  mapStrapiListItemsToInternal,
+  StrapiColaboracionLanding,
   type ColaboracionLanding,
-  type ColaboracionListItem,
-  type StrapiColaboracionListItem,
   type StrapiColaboracionResponse,
-  type StrapiColaboracionSingleResponse,
 } from "@/interfaces/landings-colaboracion.interface";
 import { HERO_POPULATE, ADVANTAGES_POPULATE } from "@/lib/strapi-populate";
 import qs from "qs";
@@ -16,18 +13,18 @@ const COLABORACION_POPULATE = {
     hero: HERO_POPULATE,
     caracteristicas: ADVANTAGES_POPULATE,
     contenido: HERO_POPULATE,
-    contenido_dinamico: {
-      populate: {
-        acciones: true,
-        imagen: true,
-        caracteristicas: {
-          populate: {
-            icon: true,
-          },
-        },
-        header: true,
-      },
-    },
+    // contenido_dinamico: {
+    //   populate: {
+    //     acciones: true,
+    //     imagen: true,
+    //     caracteristicas: {
+    //       populate: {
+    //         icon: true,
+    //       },
+    //     },
+    //     header: true,
+    //   },
+    // },
     contenido_extra: HERO_POPULATE,
   },
 };
@@ -43,7 +40,7 @@ export const getColaboracionBySlug = async (
     const query = qs.stringify(
       {
         filters: {
-          nombre: {
+          slug: {
             $eq: slug,
           },
         },
@@ -53,9 +50,8 @@ export const getColaboracionBySlug = async (
         encodeValuesOnly: true,
       },
     );
-
     const response = await getStrapiData<StrapiColaboracionResponse>(
-      `/landings-colaboracion?${query}`,
+      `/landings-colaboracions?${query}`,
       { revalidate: 3600 }, // 1 hour
     );
 
@@ -75,7 +71,7 @@ export const getColaboracionBySlug = async (
  * Fetch todas las colaboraciones para navbar/lista.
  * Retorna solo id, nombre y publishedAt (minimal data).
  */
-export const getAllColaboraciones = async (): Promise<ColaboracionListItem[]> => {
+export const getAllColaboraciones = async (): Promise<StrapiColaboracionLanding[]> => {
   try {
     const query = qs.stringify(
       {
@@ -93,13 +89,9 @@ export const getAllColaboraciones = async (): Promise<ColaboracionListItem[]> =>
       },
     );
 
-    const response = await getStrapiData<{
-      data: StrapiColaboracionListItem[];
-    }>(`/landings-colaboracion?${query}`, {
-      revalidate: 1800, // 30 minutes
-    });
+    const response = await getStrapiData<StrapiColaboracionResponse>(`/landings-colaboracions?${query}`);
 
-    return mapStrapiListItemsToInternal(response.data ?? []);
+    return response.data ?? [];
   } catch (error) {
     console.error(`[colaboracionesService] Error fetching all colaboraciones:`, error);
     throw error;

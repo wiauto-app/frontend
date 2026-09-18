@@ -1,27 +1,26 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
-import { LandingContainer } from '@/components/ui/landingContainer';
+import { LandingContainer } from "@/components/ui/landingContainer";
 
-import { CalculationHero } from './components/CalculationHero';
-import { CarPartsGrid } from './components/CarPartsGrid';
-import { GuaranteeBenefits } from './components/GuaranteeBenefits';
-import { GuaranteeCtaCard } from './components/GuaranteeCtaCard';
+import { CalculationHero } from "./components/CalculationHero";
+import { CarPartsGrid } from "./components/CarPartsGrid";
+import { GuaranteeBenefits } from "./components/GuaranteeBenefits";
+import { GuaranteeCtaCard } from "./components/GuaranteeCtaCard";
+import { SectionContainer } from "@/components/home";
 
 export const metadata: Metadata = {
-  title: 'Garantía Mecánica | WiAuto',
+  title: "Garantía Mecánica | WiAuto",
   description:
-    'Conduce tranquilo con la garantía mecánica WiAuto. Cobertura frente a averías mecánicas, eléctricas y electrónicas.',
+    "Conduce tranquilo con la garantía mecánica WiAuto. Cobertura frente a averías mecánicas, eléctricas y electrónicas.",
 };
 
 export default function GarantiaMecanicaPage() {
   return (
-    <>
+    <LandingContainer>
       <CalculationHero />
-      <LandingContainer className='py-6 md:py-10 space-y-2'>
-        <CarPartsGrid />
-        <GuaranteeBenefits />
-        <GuaranteeCtaCard />
-      </LandingContainer>
-    </>
+      <CarPartsGrid />
+      <GuaranteeBenefits />
+      <GuaranteeCtaCard />
+    </LandingContainer>
   );
 }

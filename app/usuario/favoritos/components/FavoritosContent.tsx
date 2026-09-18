@@ -66,7 +66,7 @@ export const FavoritosContent = () => {
     copyItem,
     isMovingOrCopying,
   } = useFavoritesPage();
-
+  console.log(lists);
   const pageNumbers = useMemo(
     () => buildPageNumbers(page, totalPages),
     [page, totalPages],

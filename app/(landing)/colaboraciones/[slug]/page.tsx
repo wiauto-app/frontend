@@ -5,7 +5,8 @@ import { HeroSection } from "@/components/landings/HeroSection";
 import { FeaturesSection } from "@/components/landings/FeaturesSection";
 import { ContentSection } from "@/components/landings/ContentSection";
 import { DynamicContentSection } from "@/components/landings/DynamicContentSection";
-import { getColaboracionBySlug } from "../services/getColaboracionBySlug";
+import { getColaboracionBySlug } from "@/services/colaboracionesService";
+import { LandingContainer } from "@/components/ui/landingContainer";
 
 interface ColaboracionDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -36,8 +37,7 @@ export default async function ColaboracionDetailPage({
   params,
 }: ColaboracionDetailPageProps) {
   const { slug } = await params;
-
-  let colaboracion: Awaited<ReturnType<typeof getColaboracionBySlug>>;
+  let colaboracion;
   try {
     colaboracion = await getColaboracionBySlug(slug);
   } catch {
@@ -49,43 +49,29 @@ export default async function ColaboracionDetailPage({
   }
 
   return (
-    <div className="bg-white min-h-screen flex flex-col gap-12 pb-16">
+    <LandingContainer>
       {/* Hero Section */}
-      {colaboracion.hero && (
-        <HeroSection hero={colaboracion.hero} />
-      )}
+      {colaboracion.hero && <HeroSection hero={colaboracion.hero} />}
 
       {/* Features/Characteristics Section */}
       {colaboracion.caracteristicas && (
-        <FeaturesSection
-          data={colaboracion.caracteristicas}
-          className="container-custom mx-auto"
-        />
+        <FeaturesSection data={colaboracion.caracteristicas} />
       )}
 
-      {/* Content Section */}
+      {/* Content Section — editorial split */}
       {colaboracion.contenido && (
-        <ContentSection
-          content={colaboracion.contenido}
-          className="container-custom mx-auto"
-        />
+        <ContentSection content={colaboracion.contenido} variant="split" />
       )}
 
       {/* Dynamic Content Blocks */}
       {colaboracion.contenido_dinamico && (
-        <DynamicContentSection
-          blocks={colaboracion.contenido_dinamico}
-          className="container-custom mx-auto"
-        />
+        <DynamicContentSection blocks={colaboracion.contenido_dinamico} />
       )}
 
-      {/* Extra Content Section */}
+      {/* Extra Content Section — brand band */}
       {colaboracion.contenido_extra && (
-        <ContentSection
-          content={colaboracion.contenido_extra}
-          className="container-custom mx-auto"
-        />
+        <ContentSection content={colaboracion.contenido_extra} variant="band" />
       )}
-    </div>
+    </LandingContainer>
   );
 }

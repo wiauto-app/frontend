@@ -18,6 +18,8 @@ interface FetchWithAuthOptions extends RequestInit {
   skipAuthRefresh?: boolean;
   isFileUpload?: boolean;
   isFormData?: boolean;
+  /** Devuelve el body como Blob cuando la respuesta es OK (errores siguen siendo JSON). */
+  responseType?: "blob";
 }
 
 interface BackendJsonBody<T> {
@@ -176,6 +178,7 @@ export const fetchWithAuth = async <T>(
     headers: requestHeaders,
     isFileUpload,
     isFormData,
+    responseType,
     ...fetchOptions
   } = options;
 
@@ -246,6 +249,15 @@ export const fetchWithAuth = async <T>(
       message: res.statusText,
       status: res.status,
       data: null as T,
+    };
+  }
+
+  if (responseType === "blob" && res.ok) {
+    return {
+      ok: true,
+      message: res.statusText,
+      status: res.status,
+      data: (await res.blob()) as T,
     };
   }
 
@@ -331,21 +343,11 @@ export const apiPostBlob = async (
   path: string,
   data?: unknown,
 ): Promise<ApiResponse<Blob>> => {
-  const response = await fetch(buildApiUrl(path), {
+  return fetchWithAuth<Blob>(path, {
     method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
     body: data !== undefined ? JSON.stringify(data) : undefined,
+    responseType: "blob",
   });
-
-  const blob = await response.blob();
-
-  return {
-    ok: response.ok,
-    message: response.statusText,
-    status: response.status,
-    data: blob,
-  };
 };
 
 export const apiPut = async <T>(

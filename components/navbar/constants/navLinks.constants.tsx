@@ -124,47 +124,7 @@ export const NAV_LINKS: NavLink[] = [
   // },
   {
     label: "Servicios",
-    items: [
-      {
-        href: "/financiacion",
-        label: "Financiación",
-        Icon: CreditCard,
-        description: "Obtén financiación para tu vehículo",
-      },
-      {
-        href: "/informe-historial-vehiculo",
-        label: "Informe del historial del vehículo",
-        Icon: Car,
-        description: "Conoce el historial del vehículo",
-      },
-      {
-        href: "/revision-vehiculo",
-        label: "Revisa tu vehículo por un profesional",
-        Icon: Scale,
-        description: "Revisa tu vehículo por un profesional",
-      },
-      {
-        href: "/garantia-mecanica",
-        label: "Solicita una garantía mecánica",
-        Icon: CheckCircle,
-        description: "Solicita una garantía mecánica",
-      },
-
-      // {
-      //   href: "/transferir-vehiculo",
-      //   label: "Transferir coche",
-      //   Icon: CreditCard,
-      //   description: "Transferir coche",
-      // },
-      {
-        label: "Calcula el seguro",
-        description: "Calcula el seguro de tu vehículo",
-        Icon: Shield,
-        href: "/seguros",
-      },
-      // NOTA: Las colaboraciones dinámicas se inyectan vía servicesDropdown.tsx
-      // usando useQuery + servicesService. Ver ServicesDropdown component.
-    ],
+    items: [],
   },
   {
     label: "Herramientas",

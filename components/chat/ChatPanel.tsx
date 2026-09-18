@@ -18,17 +18,18 @@ export const ChatPanel = () => {
 
   return (
     <ChatSocketProvider>
-      <div className="space-y-6 pb-20">
+      <div className="space-y-6 ">
         <div className="flex items-center gap-2">
           <MessageSquare className="size-6 text-gray-700" aria-hidden />
           <h1 className="text-2xl font-bold text-gray-900">Mensajes</h1>
         </div>
 
-        <Card size="sm" className="border-gray-100 shadow-sm">
+        <Card size="sm">
           <CardContent>
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[23rem_auto_minmax(0,1fr)]">
+            <div className="flex gap-5">
               <div
                 className={cn(
+                  "w-96",
                   blockStyles,
                   hasSelectedChat ? "hidden lg:flex" : "flex",
                 )}
@@ -38,12 +39,10 @@ export const ChatPanel = () => {
                 <ChatList />
               </div>
 
-              <Separator orientation="vertical" className="hidden lg:block" />
 
               <div
                 className={cn(
-                  "min-h-[70vh]",
-                  blockStyles,
+                  "min-h-0 min-w-0 flex-1",
                   hasSelectedChat ? "flex" : "hidden lg:flex",
                 )}
               >

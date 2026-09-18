@@ -51,7 +51,7 @@ export const ContactosContent = () => {
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:items-end">
+        <div className="flex  gap-3 sm:items-end">
           <DateRangeSelector
             startDate={startDate}
             endDate={endDate}

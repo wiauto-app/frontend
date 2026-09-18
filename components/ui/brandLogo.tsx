@@ -1,7 +1,9 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { LOGOS } from "@/lib/logos";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 /** Variantes canónicas: familia + tono. */
 export type BrandLogoCanonicalVariant =
@@ -72,7 +74,9 @@ export const BrandLogo = ({
   className,
   sizes = "176px",
 }: BrandLogoProps) => {
-  const canonicalVariant = resolveCanonicalVariant(variant);
+  const { isSubscribed } = useEntitlements();
+  const variantSelected = isSubscribed ? "pro" : "primary";
+  const canonicalVariant = resolveCanonicalVariant(variantSelected);
   const logoUrl = LOGO_URL_BY_VARIANT[canonicalVariant];
   return (
     <Link

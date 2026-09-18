@@ -62,7 +62,10 @@ export const ChatList = () => {
   if (chats.length === 0) {
     return (
       <div className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-6 text-center">
-        <MessageSquareText className="size-5 text-muted-foreground" aria-hidden />
+        <MessageSquareText
+          className="size-5 text-muted-foreground"
+          aria-hidden
+        />
         <p className="text-sm text-muted-foreground">
           No hay chats disponibles{search ? " para esta búsqueda." : "."}
         </p>
@@ -71,9 +74,10 @@ export const ChatList = () => {
   }
 
   return (
-    <div className="flex max-h-[70vh] flex-col gap-2 overflow-y-auto">
+    <div className="flex max-h-[70vh] flex-col  overflow-y-auto">
       {chats.map((chat) => {
-        const isSupport = Boolean(chat.ticket_id) || chat.chat_type === "support";
+        const isSupport =
+          Boolean(chat.ticket_id) || chat.chat_type === "support";
         const title = isSupport
           ? chat.ticket?.title?.trim() || "Soporte"
           : formatParticipantNames(chat.other_participants);
@@ -83,19 +87,16 @@ export const ChatList = () => {
           "Sin mensajes";
         const timeLabel = formatListMessageTime(chat.last_message_at);
         const hasUnread = chat.unread_count > 0;
-
+        const isSelected = selectedChatId === chat.id;
+        const isNotSelected = selectedChatId !== chat.id;
         return (
           <button
             key={chat.id}
             type="button"
             className={cn(
-              "flex w-full items-center justify-between gap-3 rounded-lg border p-3 text-left transition-colors",
-              selectedChatId === chat.id
-                ? "border-primary bg-primary/5"
-                : "hover:bg-muted/50",
-              hasUnread &&
-                selectedChatId !== chat.id &&
-                "border-primary/30 bg-primary/5",
+              "flex w-full items-center justify-between gap-3 rounded-lg  p-3 text-left transition-colors",
+              isSelected ? " bg-primary" : "hover:bg-muted",
+              hasUnread && isNotSelected && " bg-primary/5",
             )}
             onClick={() => handleSelectChat(chat.id)}
             aria-label={`Abrir chat ${title}`}
@@ -123,7 +124,11 @@ export const ChatList = () => {
                     <p
                       className={cn(
                         "truncate text-sm",
-                        hasUnread ? "font-semibold" : "font-medium",
+                        isSelected
+                          ? "font-semibold text-white"
+                          : hasUnread
+                            ? "font-semibold"
+                            : "font-medium",
                       )}
                     >
                       {title}
@@ -134,20 +139,25 @@ export const ChatList = () => {
                       </span>
                     ) : null}
                   </div>
+                </div>
+                <div
+                  className={cn(
+                    "flex items-center gap-1 text-xs",
+                    isSelected
+                      ? "text-white"
+                      : hasUnread && isNotSelected
+                        ? "text-foreground"
+                        : "text-muted-foreground",
+                  )}
+                >
+                  <p className="truncate ">{subtitle}</p>
+                  <span>·</span>
                   {timeLabel ? (
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                    <span className="shrink-0">
                       {timeLabel}
                     </span>
                   ) : null}
                 </div>
-                <p
-                  className={cn(
-                    "truncate text-xs",
-                    hasUnread ? "text-foreground" : "text-muted-foreground",
-                  )}
-                >
-                  {subtitle}
-                </p>
               </div>
             </div>
             {hasUnread ? (

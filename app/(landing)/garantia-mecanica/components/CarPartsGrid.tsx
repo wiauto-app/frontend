@@ -18,7 +18,6 @@ export const CarPartsGrid = () => {
           return (
             <Card
               key={part.title}
-              className='h-full rounded-2xl border-0 bg-white py-0 shadow-[0_2px_12px_rgba(15,23,42,0.06)] ring-1 ring-slate-100 transition-all hover:shadow-md'
             >
               <CardContent className='flex h-full flex-col items-center p-4 text-center sm:p-5'>
                 <div className='flex size-12 items-center justify-center rounded-2xl border border-blue-100/80 bg-blue-50/50 text-primary'>
