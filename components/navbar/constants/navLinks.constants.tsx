@@ -162,6 +162,8 @@ export const NAV_LINKS: NavLink[] = [
         Icon: Shield,
         href: "/seguros",
       },
+      // NOTA: Las colaboraciones dinámicas se inyectan vía servicesDropdown.tsx
+      // usando useQuery + servicesService. Ver ServicesDropdown component.
     ],
   },
   {
