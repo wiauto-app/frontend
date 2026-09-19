@@ -45,7 +45,7 @@ export function AppDownloadBanner({ data }: AppDownloadBannerProps) {
                 {data.description}
               </p>
             ) : null}
-            <StoreButtons className=" justify-center lg:justify-start" />
+            <StoreButtons soon={true} className=" justify-center lg:justify-start" />
           </div>
         </div>
       </div>

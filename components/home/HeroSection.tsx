@@ -68,7 +68,7 @@ export function HeroSection({ data }: HeroSectionProps) {
         floatingContent={
           <>
             <div className="absolute z-10 hidden flex-col gap-1 rounded-s-lg bg-black/50 p-2 lg:top-0 lg:right-0 lg:flex">
-              <StoreButtons className="flex flex-col gap-1" />
+              <StoreButtons soon={true} className="flex flex-col gap-1" />
             </div>
 
             {/* <HeroBackdrop /> */}

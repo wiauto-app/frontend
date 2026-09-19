@@ -52,18 +52,12 @@ export const NewsCard = ({ item }: NewsCardProps) => {
         </Link>
         
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-slate-500">
-          <div className="flex items-center gap-1.5">
-            <UserCircle2 className="h-4 w-4 text-slate-400" />
-            <span className="text-slate-700">Jesica Koli</span>
-          </div>
+         
           <div className="flex items-center gap-1.5">
             <Calendar className="h-4 w-4 text-slate-400" />
             <span>{formatDate(item.published_at)}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-slate-400" />
-            <span>3 Min. de lectura</span>
-          </div>
+        
         </div>
         
         <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600">

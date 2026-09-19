@@ -36,19 +36,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Providers>
-      <html
-        lang="es"
-        className={cn(
-          "antialiased",
-          geistSans.variable,
-          geistMono.variable,
-          "font-sans",
-          inter.variable,
-        )}
-      >
-        <body className="flex flex-col relative">
-          <ConsentModeScript />
+    <html
+      lang="es"
+      className={cn(
+        "antialiased",
+        geistSans.variable,
+        geistMono.variable,
+        "font-sans",
+        inter.variable,
+      )}
+    >
+      <body className="flex flex-col relative">
+        <ConsentModeScript />
+        <Providers>
           <AssistantChatProvider>
             <Navbar />
             <main className="flex flex-1 flex-col pb-14 md:pb-0 mb-10">
@@ -70,14 +70,14 @@ export default async function RootLayout({
             <MobileNavbar />
             <CookieConsentBanner />
           </AssistantChatProvider>
-          {GOOGLE_ANALYTICS_ID ? (
-            <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
-          ) : null}
-          {GOOGLE_TAG_MANAGER_ID ? (
-            <GoogleTagManager gtmId={GOOGLE_TAG_MANAGER_ID} />
-          ) : null}
-        </body>
-      </html>
-    </Providers>
+        </Providers>
+        {GOOGLE_ANALYTICS_ID ? (
+          <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
+        ) : null}
+        {GOOGLE_TAG_MANAGER_ID ? (
+          <GoogleTagManager gtmId={GOOGLE_TAG_MANAGER_ID} />
+        ) : null}
+      </body>
+    </html>
   );
 }
