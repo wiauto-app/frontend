@@ -2,16 +2,14 @@
 
 import { AssistantInput } from "./assistantInput";
 import { AssistantMessages } from "./assistantMessages";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-} from "../ui/card";
+import { Card, CardContent, CardFooter } from "../ui/card";
 
 export const AssistantContent = () => {
   return (
-    <Card size="sm" className="flex min-h-0 flex-1 flex-col overflow-hidden border-none ">
-   
+    <Card
+      size="sm"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden border-none "
+    >
       <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden ">
         <AssistantMessages />
       </CardContent>
@@ -19,8 +17,8 @@ export const AssistantContent = () => {
         <AssistantInput />
 
         <p className="text-center text-[10px] text-muted-foreground sm:text-xs">
-          <span className="font-bold text-primary">WiAuto AI</span> es una
-          modelo para ayudar a los usuarios a encontrar vehículos de forma
+          <span className="font-bold text-primary">WiAuto AI</span> es un
+          asistente para ayudar a los usuarios a encontrar vehículos de forma
           rápida y sencilla.
         </p>
       </CardFooter>

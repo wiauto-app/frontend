@@ -33,7 +33,9 @@ export const AssistantLayoutPreview = () => {
       >
         <div className="flex h-12 items-center gap-2 border-b px-4">
           <Sparkles className="size-4 text-primary" />
-          <span className="text-sm font-semibold text-slate-900">Asistente</span>
+          <span className="text-sm font-semibold text-slate-900">
+            Asistente
+          </span>
         </div>
 
         <div className="flex flex-1 flex-col gap-4 p-3">
@@ -83,7 +85,9 @@ export const AssistantLayoutPreview = () => {
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4 md:hidden">
           <Skeleton className="size-8 rounded-md" />
-          <span className="text-sm font-semibold text-slate-900">Asistente</span>
+          <span className="text-sm font-semibold text-slate-900">
+            Asistente
+          </span>
         </header>
 
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-2 sm:gap-4 sm:p-3 lg:grid-cols-12 lg:p-4">
@@ -126,15 +130,18 @@ export const AssistantLayoutPreview = () => {
             <CardFooter className="shrink-0 flex-col gap-2 px-3 pb-3 sm:px-4 sm:pb-4">
               <Skeleton className="h-10 w-full rounded-lg" />
               <p className="text-center text-[10px] text-muted-foreground sm:text-xs">
-                <span className="font-bold text-primary">WiAuto AI</span> es una
-                modelo para ayudar a los usuarios a encontrar vehículos de forma
-                rápida y sencilla.
+                <span className="font-bold text-primary">WiAuto AI</span> es un
+                asistente para ayudar a los usuarios a encontrar vehículos de
+                forma rápida y sencilla.
               </p>
             </CardFooter>
           </Card>
 
           <aside className="@container/panel col-span-5 hidden min-h-0 flex-col gap-3 overflow-y-auto p-1 sm:gap-4 sm:p-2 lg:flex">
-            <Card size="sm" className="relative min-h-36 overflow-hidden sm:min-h-40">
+            <Card
+              size="sm"
+              className="relative min-h-36 overflow-hidden sm:min-h-40"
+            >
               <CardHeader className="relative z-10 gap-1">
                 <CardTitle className="text-base font-semibold text-white sm:text-lg">
                   Hola! 👋
