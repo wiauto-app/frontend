@@ -52,7 +52,7 @@ export default async function ColaboracionDetailPage({
   return (
     <LandingContainer>
       {/* Hero Section */}
-      {colaboracion.hero && <HeroSection hero={colaboracion.hero} iconPack={collabsIconPack} />}
+      {colaboracion.hero && <HeroSection hero={colaboracion.hero} />}
 
       {/* Features/Characteristics Section */}
       {colaboracion.caracteristicas && (

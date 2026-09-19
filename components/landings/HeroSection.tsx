@@ -13,14 +13,14 @@ import { HeroCard } from "../ui/heroCard";
 import { StrapiHero } from "@/interfaces/strapi-components.interface";
 import { HeroActions } from "../ui/heroActions";
 import { HeroFeatures } from "../home/heroFeatures";
+import { collabsIconPack } from "@/app/(landing)/colaboraciones/components/collabsIconPack";
 
 interface HeroSectionProps {
   hero?: StrapiHero;
   className?: string;
-  iconPack?: StrapiIconPack;
 }
 
-export const HeroSection = ({ hero, className, iconPack }: HeroSectionProps) => {
+export const HeroSection = ({ hero, className }: HeroSectionProps) => {
   if (!hero) {
     return null;
   }
@@ -38,7 +38,7 @@ export const HeroSection = ({ hero, className, iconPack }: HeroSectionProps) => 
           {hero.descripcion ? (
             <HeroDescription>{hero.descripcion}</HeroDescription>
           ) : null}
-          <HeroFeatures features={hero.caracteristicas} iconPack={iconPack} />
+          <HeroFeatures features={hero.caracteristicas} iconPack={collabsIconPack} />
           <HeroActions actions={hero.acciones} />
         </>
       }
