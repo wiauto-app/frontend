@@ -1,5 +1,8 @@
 import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
-import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
+import {
+  resolveStrapiIconName,
+  type StrapiIconPack,
+} from "@/lib/strapi/resolveStrapiIconName";
 
 import type { StrapiIconFeature } from "@/interfaces/strapi-components.interface";
 import { cn } from "@/lib/utils";
@@ -11,11 +14,13 @@ export const HeroFeatures = ({
   containerClassName,
   className,
   orientation = "vertical",
+  iconPack = defaultStrapiIconPack,
 }: {
   features: StrapiIconFeature[];
   containerClassName?: string;
   className?: string;
   orientation?: "horizontal" | "vertical";
+  iconPack?: StrapiIconPack;
 }) => {
   if (features.length === 0) {
     return null;
@@ -32,7 +37,7 @@ export const HeroFeatures = ({
       {features.map((feature) => (
         <li key={feature.id} className="flex items-center gap-1 lg:gap-2">
           <IconContainer
-            Icon={resolveStrapiIconName(feature.iconName, defaultStrapiIconPack)}
+            Icon={resolveStrapiIconName(feature.iconName, iconPack)}
             justIcon
           />
           <div className="min-w-0">

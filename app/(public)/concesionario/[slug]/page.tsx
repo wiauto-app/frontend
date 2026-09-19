@@ -118,6 +118,7 @@ export default async function DealerProfilePage({
                   <VehiclesPageContent
                     vehicles={listing.data}
                     total={listing.total}
+                    showMapButton={false}
                   />
                 </Suspense>
               </DealershipVehiclesListingShell>
@@ -128,15 +129,17 @@ export default async function DealerProfilePage({
                   dealership_name={dealership.name}
                 />
               </div>
-              <Suspense
-                key={`${dealership.id}-${reviews_page}`}
-                fallback={<DealerReviewsSkeleton />}
-              >
-                <DealerReviewsSection
-                  dealershipId={dealership.id}
-                  page={reviews_page}
-                />
-              </Suspense>
+              {dealership.reviews_count > 0 && (
+                <Suspense
+                  key={`${dealership.id}-${reviews_page}`}
+                  fallback={<DealerReviewsSkeleton />}
+                >
+                  <DealerReviewsSection
+                    dealershipId={dealership.id}
+                    page={reviews_page}
+                  />
+                </Suspense>
+              )}
             </div>
           </main>
         </div>

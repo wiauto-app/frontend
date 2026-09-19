@@ -56,7 +56,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?q=80&w=1200&auto=format&fit=crop";
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className=" min-h-screen">
       {/* ── Blue header zone – extra pb so image can overlap ── */}
       <div className="bg-[#E8F0FE] pb-52">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-4">
@@ -124,10 +124,6 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
               </time>
             </div>
           )}
-          <div className="flex items-center gap-1.5">
-            <Eye className="h-4 w-4 text-slate-400" />
-            <span>738</span>
-          </div>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
@@ -185,12 +181,14 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             news_slug={news.slug}
           />
 
-          <div className="mt-10">
-            <h2 className="text-xl font-bold text-slate-900 mb-6">
-              Comentarios
-            </h2>
-            <CommentsList comments={news.comments} />
-          </div>
+          {news.comments && news.comments.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-xl font-bold text-slate-900 mb-6">
+                Comentarios
+              </h2>
+              <CommentsList comments={news.comments} />
+            </div>
+          )}
         </section>
       </article>
     </div>

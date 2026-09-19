@@ -14,11 +14,12 @@ import {
 } from "@/components/ui/navigation-menu";
 import { StrapiColaboracionLanding } from "@/interfaces/landings-colaboracion.interface";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
+import { collabsIconPack } from "@/app/(landing)/colaboraciones/components/collabsIconPack";
 
 export function NavbarLinks({ colaboraciones }: { colaboraciones: StrapiColaboracionLanding[] }) {
   const pathname = usePathname();
-  const navItems =  colaboraciones.map((col) => {
-    const Icon =  resolveStrapiIconName(col.iconName);
+  const navItems = colaboraciones.map((col) => {
+    const Icon = resolveStrapiIconName(col.iconName, collabsIconPack);
     return {
       href: `/colaboraciones/${col.slug}`,
       label: col.nombre,

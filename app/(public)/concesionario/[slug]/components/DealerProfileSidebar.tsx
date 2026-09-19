@@ -108,7 +108,7 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
     <div className="relative z-20 space-y-4">
       <Card size="sm">
         <CardContent>
-          <div className="relative z-10 size-20 overflow-hidden rounded-full border-[3px] border-white bg-white shadow-sm sm:size-24">
+          <div className="relative z-10 size-20 overflow-hidden rounded-full border-[3px] border-white bg-white shadow-sm sm:size-24 mx-auto">
             {dealer.avatar ? (
               <WiautoImage
                 src={dealer.avatar ?? ""}
@@ -123,11 +123,6 @@ export function DealerProfileSidebar({ dealer }: DealerProfileSidebarProps) {
               </div>
             )}
           </div>
-
-          <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-            Concesionaria
-          </p>
-
           <div className="mt-1 flex items-center justify-center gap-1.5">
             <h2 className="text-lg font-bold text-slate-900">{dealer.name}</h2>
             {dealer.isVerified ? (

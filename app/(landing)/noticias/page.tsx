@@ -47,7 +47,7 @@ export default async function NewsPage({
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      <LandingHeader title="Noticias" description="Noticias de actualidad" />
+      <LandingHeader title="Noticias de la actualidad" description="Noticias de actualidad" />
 
       <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
         {error_message && items.length === 0 ? (

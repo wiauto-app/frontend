@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
-import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
+import { resolveStrapiIconName, StrapiIconPack } from "@/lib/strapi/resolveStrapiIconName";
 
 import { Hero } from "@/components/ui/hero";
 import { HeroBackdrop } from "@/components/ui/heroBackdrop";
@@ -17,9 +17,10 @@ import { HeroFeatures } from "../home/heroFeatures";
 interface HeroSectionProps {
   hero?: StrapiHero;
   className?: string;
+  iconPack?: StrapiIconPack;
 }
 
-export const HeroSection = ({ hero, className }: HeroSectionProps) => {
+export const HeroSection = ({ hero, className, iconPack }: HeroSectionProps) => {
   if (!hero) {
     return null;
   }
@@ -37,7 +38,7 @@ export const HeroSection = ({ hero, className }: HeroSectionProps) => {
           {hero.descripcion ? (
             <HeroDescription>{hero.descripcion}</HeroDescription>
           ) : null}
-          <HeroFeatures features={hero.caracteristicas} />
+          <HeroFeatures features={hero.caracteristicas} iconPack={iconPack} />
           <HeroActions actions={hero.acciones} />
         </>
       }

@@ -98,6 +98,7 @@ export interface VehiclesPageContentProps {
   isMapVisible?: boolean;
   titleNode?: ReactNode;
   activeFiltersNode?: ReactNode;
+  showMapButton?: boolean;
 }
 
 export const VehiclesPageContent = ({
@@ -106,6 +107,7 @@ export const VehiclesPageContent = ({
   isMapVisible = false,
   titleNode,
   activeFiltersNode,
+  showMapButton = true,
 }: VehiclesPageContentProps) => {
   const { resetFilters, goToPage, filters } = useVehiclesListingFilters();
 
@@ -133,7 +135,7 @@ export const VehiclesPageContent = ({
       <div className="mx-auto min-w-0 flex-1 space-y-2">
         <div className="flex items-center justify-between">
           {titleNode}
-          <MapButton />
+          {showMapButton ? <MapButton /> : null}
         </div>
         {activeFiltersNode}
         <VehiclesListingView
@@ -146,7 +148,7 @@ export const VehiclesPageContent = ({
         />
       </div>
 
-      {isMapVisible ? (
+      {isMapVisible && showMapButton ? (
         <div className="hidden min-w-0 shrink-0 basis-[min(100%,600px)] lg:block xl:basis-180">
           <VehiclesMap
             vehicles={vehicles}

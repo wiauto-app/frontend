@@ -2,6 +2,13 @@ import { PressContent } from "./components/PressContent";
 import { pressService } from "./services/pressService";
 import type { PressPaginatedResult } from "./types/press.types";
 import { parsePressSearchParams } from "./utils/parse-press-search-params";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Prensa",
+  description: "Prensa de Wiauto",
+};
+
 
 export default async function PressPage({
   searchParams,

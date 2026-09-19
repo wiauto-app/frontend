@@ -40,9 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <VehiclesFilters />
             </Suspense>
           </aside>
-          <div className="relative w-full">
-            {children}
-          </div>
+          <div className="relative w-full">{children}</div>
         </ListingContainer>
       </HeroSearchFiltersProvider>
     </VehiclesListingShell>

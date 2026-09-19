@@ -7,6 +7,7 @@ import { ContentSection } from "@/components/landings/ContentSection";
 import { DynamicContentSection } from "@/components/landings/DynamicContentSection";
 import { getColaboracionBySlug } from "@/services/colaboracionesService";
 import { LandingContainer } from "@/components/ui/landingContainer";
+import { collabsIconPack } from "../components/collabsIconPack";
 
 interface ColaboracionDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -51,7 +52,7 @@ export default async function ColaboracionDetailPage({
   return (
     <LandingContainer>
       {/* Hero Section */}
-      {colaboracion.hero && <HeroSection hero={colaboracion.hero} />}
+      {colaboracion.hero && <HeroSection hero={colaboracion.hero} iconPack={collabsIconPack} />}
 
       {/* Features/Characteristics Section */}
       {colaboracion.caracteristicas && (

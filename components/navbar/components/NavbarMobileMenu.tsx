@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { BrandLogo } from "@/components/ui/brandLogo";
 import { StrapiColaboracionLanding } from "@/interfaces/landings-colaboracion.interface";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
+import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
 
 export const NavbarMobileMenu = ({ colaboraciones }: { colaboraciones: StrapiColaboracionLanding[] }) => {
   const [open, setOpen] = useState(false);
@@ -28,7 +29,7 @@ export const NavbarMobileMenu = ({ colaboraciones }: { colaboraciones: StrapiCol
     setOpen(false);
   };
   const navItems =  colaboraciones.map((col) => {
-    const Icon =  resolveStrapiIconName(col.iconName);
+    const Icon =  resolveStrapiIconName(col.iconName,defaultStrapiIconPack);
     return {
       href: `/colaboraciones/${col.slug}`,
       label: col.nombre,
