@@ -1,25 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
-import { cookiesConfig } from "@/config/cookies.config";
-import { FRONTEND_URL } from "@/constants";
-import { isValidReturnPath } from "@/lib/auth/authReturnTo";
+import {
+  handleAuthSessionCallback,
+  setAuthSessionCookies,
+} from "@/lib/auth/handleAuthSessionCallback";
 import { buildPopupCompleteUrl } from "./utils";
-
-const resolvePostLoginPath = (
-  redirectUrl: string | undefined,
-  next: string | null,
-): string => {
-  if (redirectUrl && isValidReturnPath(redirectUrl)) {
-    return redirectUrl;
-  }
-
-  if (next && isValidReturnPath(next)) {
-    return next;
-  }
-
-  return "/";
-};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -44,51 +29,27 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const loginError = new URL("/iniciar-sesion", FRONTEND_URL);
-    loginError.searchParams.set(
-      "error",
-      message ?? "No se pudo iniciar sesión",
+    return handleAuthSessionCallback({
+      token,
+      refreshToken,
+      type,
+      message,
+      next: searchParams.get("next"),
+    });
+  }
+
+  if (isPopup && type === "2fa_challenge") {
+    await setAuthSessionCookies(token, refreshToken);
+    return NextResponse.redirect(
+      buildPopupCompleteUrl(provider, "2fa_required"),
     );
-    return NextResponse.redirect(loginError);
   }
 
-  const cookieStore = await cookies();
-  const redirectUrl = cookieStore.get(cookiesConfig.redirectUrl.name)?.value;
-
-  cookieStore.set(
-    cookiesConfig.accessToken.name,
+  return handleAuthSessionCallback({
     token,
-    cookiesConfig.accessToken.options,
-  );
-  cookieStore.set(
-    cookiesConfig.refreshToken.name,
     refreshToken,
-    cookiesConfig.refreshToken.options,
-  );
-  cookieStore.delete({
-    name: cookiesConfig.redirectUrl.name,
-    path: cookiesConfig.redirectUrl.options.path,
-    domain: cookiesConfig.redirectUrl.options.domain,
+    type,
+    message,
+    next: searchParams.get("next"),
   });
-
-  if (type === "2fa_challenge") {
-    if (isPopup) {
-      return NextResponse.redirect(
-        buildPopupCompleteUrl(provider, "2fa_required"),
-      );
-    }
-
-    return NextResponse.redirect(new URL("/verificacion-2fa", FRONTEND_URL));
-  }
-
-  if (message) {
-    return NextResponse.redirect(new URL("/?verified=1", FRONTEND_URL));
-  }
-
-  const redirectPath = resolvePostLoginPath(
-    redirectUrl,
-    searchParams.get("next"),
-  );
-
-  return NextResponse.redirect(new URL(redirectPath, FRONTEND_URL));
 }

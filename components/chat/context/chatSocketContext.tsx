@@ -139,7 +139,12 @@ export const ChatSocketProvider = ({ children }: { children: ReactNode }) => {
     socketRef.current = socket;
 
     const handleConnect = () => setIsConnected(true);
-    const handleDisconnect = () => setIsConnected(false);
+    const handleDisconnect = () => {
+      // Server-side rooms are gone after a disconnect; forget them so the
+      // next `joinChat` after reconnect re-emits `join_chat`.
+      joinedChatsRef.current.clear();
+      setIsConnected(false);
+    };
 
     const handleMessageCreated = (message: ChatMessageListItem) => {
       upsertMessageInCache(message);
@@ -232,9 +237,12 @@ export const ChatSocketProvider = ({ children }: { children: ReactNode }) => {
 
   const leaveChat = useCallback(async (chatId: string) => {
     const socket = socketRef.current;
-    if (!socket?.connected || !joinedChatsRef.current.has(chatId)) return;
-    await socket.emitWithAck(CHAT_SOCKET_EVENTS.LEAVE_CHAT, { chat_id: chatId });
+    if (!joinedChatsRef.current.has(chatId)) return;
+    // Forget the room even when offline, otherwise `joinChat` after a
+    // reconnect thinks it is still joined and never re-emits `join_chat`.
     joinedChatsRef.current.delete(chatId);
+    if (!socket?.connected) return;
+    await socket.emitWithAck(CHAT_SOCKET_EVENTS.LEAVE_CHAT, { chat_id: chatId });
   }, []);
 
   const emitTypingStart = useCallback((chatId: string) => {
