@@ -240,7 +240,7 @@ export const SimulatorPanel = () => {
           />
 
           <SimulatorSlider
-            label="Meses del financiación"
+            label="Plazo de financiación"
             valueStr={`${termMonths} meses`}
             minStr={`${config.term_months.min} meses`}
             maxStr={`${config.term_months.max} meses`}

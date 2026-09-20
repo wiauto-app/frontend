@@ -52,6 +52,7 @@ import {
   HiOutlineShieldCheck,
   HiShieldCheck,
   HiWifi,
+  HiOutlineDatabase
 } from "react-icons/hi";
 import {
   HiBolt,
@@ -77,7 +78,8 @@ export const defaultStrapiIconPack = {
   BiSupport,
   BiSolidCar,
   FaCrown,
-  FaQuoteLeft,
+  FaQuoteLeft,  
+  HiOutlineDatabase,
   FaRegCheckCircle,
   FaClipboardList,
   FaUsersCog,

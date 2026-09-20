@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost, apiPut, type ApiResponse } from "@/lib/api";
+import { apiDelete, apiGet, apiPatch, apiPost, apiPut, type ApiResponse } from "@/lib/api";
 import { objectToQueryString } from "@/lib/utils";
 import type { PaginatedResult, PaginationParams } from "@/types/general.types";
 import {
@@ -104,6 +104,10 @@ export const dealershipService = {
     data: UpdateDealershipPayload,
   ): Promise<ApiResponse<DealershipDetail>> =>
     apiPatch<DealershipDetail>(`${V1_DEALERSHIPS}/${id}`, data),
+
+  /** Solo el propietario (o un admin de la plataforma) puede eliminar el concesionario. */
+  remove: async (id: string): Promise<ApiResponse<null>> =>
+    apiDelete<null>(`${V1_DEALERSHIPS}/${id}`),
 
   updateSchedules: async (
     dealershipId: string,

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { HeroSection } from "@/components/landings/HeroSection";
 import { FeaturesSection } from "@/components/landings/FeaturesSection";
 import { ContentSection } from "@/components/landings/ContentSection";
 import { DynamicContentSection } from "@/components/landings/DynamicContentSection";
+import { StrapiActionProvider } from "@/components/strapi-actions/strapi-action-context";
 import { getColaboracionBySlug } from "@/services/colaboracionesService";
 import { LandingContainer } from "@/components/ui/landingContainer";
-import { collabsIconPack } from "../components/collabsIconPack";
+import { CollabsHeroSection } from "../components/collabsHeroSection";
 
 interface ColaboracionDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -50,29 +50,34 @@ export default async function ColaboracionDetailPage({
   }
 
   return (
-    <LandingContainer>
-      {/* Hero Section */}
-      {colaboracion.hero && <HeroSection hero={colaboracion.hero} />}
+    <StrapiActionProvider actionKey={colaboracion.key}>
+      <LandingContainer>
+        {/* Hero Section */}
+        {colaboracion.hero && <CollabsHeroSection hero={colaboracion.hero} />}
 
-      {/* Features/Characteristics Section */}
-      {colaboracion.caracteristicas && (
-        <FeaturesSection data={colaboracion.caracteristicas} />
-      )}
+        {/* Features/Characteristics Section */}
+        {colaboracion.caracteristicas && (
+          <FeaturesSection data={colaboracion.caracteristicas} />
+        )}
 
-      {/* Content Section — editorial split */}
-      {colaboracion.contenido && (
-        <ContentSection content={colaboracion.contenido} variant="split" />
-      )}
+        {/* Content Section — editorial split */}
+        {colaboracion.contenido && (
+          <ContentSection content={colaboracion.contenido} variant="split" />
+        )}
 
-      {/* Dynamic Content Blocks */}
-      {colaboracion.contenido_dinamico && (
-        <DynamicContentSection blocks={colaboracion.contenido_dinamico} />
-      )}
+        {/* Dynamic Content Blocks */}
+        {colaboracion.contenido_dinamico && (
+          <DynamicContentSection blocks={colaboracion.contenido_dinamico} />
+        )}
 
-      {/* Extra Content Section — brand band */}
-      {colaboracion.contenido_extra && (
-        <ContentSection content={colaboracion.contenido_extra} variant="band" />
-      )}
-    </LandingContainer>
+        {/* Extra Content Section — brand band */}
+        {colaboracion.contenido_extra && (
+          <ContentSection
+            content={colaboracion.contenido_extra}
+            variant="band"
+          />
+        )}
+      </LandingContainer>
+    </StrapiActionProvider>
   );
 }

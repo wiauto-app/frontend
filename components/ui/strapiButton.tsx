@@ -3,6 +3,7 @@
 import type { MouseEvent } from "react";
 import Link from "next/link";
 
+import { useStrapiAction } from "@/components/strapi-actions/strapi-action-context";
 import { StrapiLink } from "@/interfaces/strapi-components.interface";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
@@ -61,7 +62,18 @@ export const StrapiButton = ({
   className,
   onFunctionClick,
 }: StrapiButtonProps) => {
+  const strapiAction = useStrapiAction();
+  const hasActionKey = Boolean(strapiAction?.actionKey);
   const isFunctionButton = Boolean(button.funcion && onFunctionClick);
+  const isActionButton = hasActionKey || isFunctionButton;
+
+  const handleActionClick = () => {
+    if (hasActionKey) {
+      strapiAction?.openAction();
+      return;
+    }
+    onFunctionClick?.();
+  };
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (
@@ -97,13 +109,13 @@ export const StrapiButton = ({
       )}
       variant={button.destacado ? "default" : "outline"}
       size="lg"
-      onClick={isFunctionButton ? onFunctionClick : undefined}
+      onClick={isActionButton ? handleActionClick : undefined}
     >
       {button.label}
     </Button>
   );
 
-  if (isFunctionButton) {
+  if (isActionButton) {
     return renderedButton;
   }
 

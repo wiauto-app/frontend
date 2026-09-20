@@ -79,7 +79,7 @@ export const CollaborationHeroCard = ({
     content.nombre ||
     "";
   const action = hero.acciones?.[0];
-  const href = action?.url ?? `/colaboraciones/${content.slug}`;
+  const href = `/colaboraciones/${content.slug}`;
   const Icon = resolveStrapiIconName(content.iconName, collabsIconPack);
 
   return (
@@ -91,29 +91,24 @@ export const CollaborationHeroCard = ({
         ? { target: "_blank", rel: "noopener noreferrer" }
         : {})}
     >
-      <div
-        className={cn(
-          "flex items-center justify-between",
-          styles.rowGap,
-        )}
-      >
+      <div className={cn("flex items-center justify-between", styles.rowGap)}>
         <div className="flex min-w-0 flex-1 flex-col">
           <div
-            className={cn(
-              "flex items-center justify-between",
-              styles.rowGap,
-            )}
+            className={cn("flex items-center justify-between", styles.rowGap)}
           >
             <div className={cn("flex min-w-0 items-center", styles.contentGap)}>
               {Icon ? <IconContainer Icon={Icon} size={styles.icon} /> : null}
               <div className="min-w-0 space-y-1">
-                <h2 className={styles.title}>{hero.titulo}</h2>
+                <h2 className={styles.title} title={content.nombre}>
+                  {content.nombre}
+                </h2>
                 {content.descripcion ? (
                   <p
                     className={cn(
-                      "whitespace-pre-line text-muted-foreground",
+                      "text-muted-foreground max-w-sm truncate",
                       styles.description,
                     )}
+                    title={content.descripcion}
                   >
                     {content.descripcion}
                   </p>

@@ -104,6 +104,7 @@ export interface StrapiColaboracionLanding {
   documentId: string;
   nombre: string;
   slug: string;
+  key?: string | null;
   descripcion: string;
   iconName: string;
   hero?: StrapiHero;
@@ -197,6 +198,7 @@ export interface DynamicZoneBlock {
 export interface ColaboracionLanding {
   id: string;
   nombre: string;
+  key?: string | null;
   hero?: StrapiHero;
   caracteristicas?: Caracteristicas;
   contenido?: StrapiHero;
@@ -233,6 +235,7 @@ export const mapStrapiColaboracionToInternal = (
 ): ColaboracionLanding => {
   return {
     id: strapi.documentId,
+    key: strapi.key,
     nombre: strapi.nombre,
     hero: strapi.hero ? strapi.hero : undefined,
     caracteristicas: strapi.caracteristicas,

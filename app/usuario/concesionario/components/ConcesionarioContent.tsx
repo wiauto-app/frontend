@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +13,7 @@ import { canManageTeam } from "@/app/usuario/equipo/utils/teamPermissions";
 import { MapInput } from "@/components/forms/mapInput";
 import { PhoneInput, DEFAULT_PHONE_CODE } from "@/components/forms/phoneInput";
 import { Button } from "@/components/ui/button";
+import CustomAlertDialog from "@/components/ui/customAlertDialog";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import { ImageInput } from "@/components/ui/imageInput";
@@ -38,6 +39,9 @@ export const ConcesionarioContent = () => {
   const isCreateMode = !dealershipId;
   const canEditProfile = !dealershipId || canManageTeam(membershipRole);
   const canEditSchedule = canManageTeam(membershipRole);
+  const canDeleteProfile = Boolean(dealershipId) && membershipRole === "owner";
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const {
     data: dealership,
     isLoading: isDealershipLoading,
@@ -140,6 +144,32 @@ export const ConcesionarioContent = () => {
     await queryClient.invalidateQueries({ queryKey: ["dealership-profile"] });
   };
 
+  const handleDeleteDealership = async () => {
+    if (!dealershipId || isDeleting) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const response = await dealershipService.remove(dealershipId);
+
+      if (!response.ok) {
+        toast.error(
+          response.message || "No se pudo eliminar la concesionaria",
+        );
+        return;
+      }
+
+      toast.success("Concesionaria eliminada");
+      setIsDeleteOpen(false);
+      queryClient.removeQueries({ queryKey: ["dealership-profile"] });
+      // Sin membresía el formulario vuelve solo al modo "crear".
+      await refreshUser();
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (isUserLoading) {
     return (
       <div className="p-6 text-center text-gray-500">Cargando perfil...</div>
@@ -204,7 +234,7 @@ export const ConcesionarioContent = () => {
     "Tu concesionaria";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <div className="overflow-hidden rounded-xl border border-blue-100 bg-blue-100/50">
         {bannerUrl ? (
           <div className="relative h-32 w-full bg-blue-200">
@@ -457,6 +487,38 @@ export const ConcesionarioContent = () => {
           schedules={dealership?.schedules}
           canEdit={canEditSchedule}
         />
+      ) : null}
+
+      {canDeleteProfile ? (
+        <div className="rounded-xl border border-red-100 bg-white p-6 shadow-sm sm:p-8">
+          <h3 className="text-base font-semibold text-red-700">
+            Eliminar concesionaria
+          </h3>
+          <p className="mt-1 text-sm text-gray-600">
+            Se eliminará el perfil público, el equipo, los horarios y las
+            reseñas. Tus anuncios seguirán publicados pero dejarán de estar
+            vinculados a la concesionaria. Esta acción no se puede deshacer.
+          </p>
+          <Button
+            type="button"
+            variant="destructive"
+            className="mt-4"
+            disabled={isDeleting}
+            onClick={() => setIsDeleteOpen(true)}
+          >
+            Eliminar concesionaria
+          </Button>
+
+          <CustomAlertDialog
+            open={isDeleteOpen}
+            onOpenChange={setIsDeleteOpen}
+            title="¿Eliminar la concesionaria?"
+            description={`Vas a eliminar "${displayName}" de forma permanente. Esta acción no se puede deshacer.`}
+            confirmText="Sí, eliminar"
+            isConfirming={isDeleting}
+            onConfirm={handleDeleteDealership}
+          />
+        </div>
       ) : null}
     </div>
   );

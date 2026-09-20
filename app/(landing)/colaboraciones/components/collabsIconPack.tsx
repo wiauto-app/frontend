@@ -13,6 +13,7 @@ import {
 import { GoShieldCheck, GoClock, GoGitCompare } from "react-icons/go";
 import { FaHandsHelping } from "react-icons/fa";
 import { MdOutlineDiscount, MdCarRepair } from "react-icons/md";
+import { IoSpeedometerOutline } from "react-icons/io5";
 
 export const collabsIconPack = {
   HiOutlineLightningBolt,
@@ -30,5 +31,6 @@ export const collabsIconPack = {
   MdOutlineDiscount,
   HiOutlineLockClosed,
   HiOutlineCheckCircle,
-  MdCarRepair
+  MdCarRepair,
+  IoSpeedometerOutline
 };

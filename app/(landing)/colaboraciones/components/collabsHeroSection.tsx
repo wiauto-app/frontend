@@ -4,18 +4,18 @@ import { HeroBackdrop } from "@/components/ui/heroBackdrop";
 import { HeroDescription } from "@/components/ui/heroDescription";
 import { HeroTitle } from "@/components/ui/heroTitle";
 
-import { HeroCard } from "../ui/heroCard";
 import { StrapiHero } from "@/interfaces/strapi-components.interface";
-import { HeroActions } from "../ui/heroActions";
-import { HeroFeatures } from "../home/heroFeatures";
 import { collabsIconPack } from "@/app/(landing)/colaboraciones/components/collabsIconPack";
+import { HeroFeatures } from "@/components/home/heroFeatures";
+import { HeroActions } from "@/components/ui/heroActions";
+import { HeroCard } from "@/components/ui/heroCard";
 
 interface HeroSectionProps {
   hero?: StrapiHero;
   className?: string;
 }
 
-export const HeroSection = ({ hero, className }: HeroSectionProps) => {
+export const CollabsHeroSection = ({ hero, className }: HeroSectionProps) => {
   if (!hero) {
     return null;
   }

@@ -215,7 +215,7 @@ export const VehicleDetailContactForm = ({
             variant="link"
             className="w-full"
             onClick={() =>
-              router.push(`/simulador-financiamiento?vehicleId=${vehicleId}`)
+              router.push(`/simulador-financiacion?vehicleId=${vehicleId}`)
             }
           >
             Ir al simulador de financiación →

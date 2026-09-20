@@ -43,7 +43,7 @@ export const VehicleDetailFinancingSection = ({
           </div>
         </div>
         <Link
-          href={`/simulador-financiamiento?vehicleId=${vehicle.id}`}
+          href={`/simulador-financiacion?vehicleId=${vehicle.id}`}
           className={cn(buttonVariants({ variant: "outline" }), "shrink-0")}
         >
           Simular financiación

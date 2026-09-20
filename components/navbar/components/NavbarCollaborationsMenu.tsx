@@ -62,7 +62,7 @@ export const NavbarCollaborationsMenu = ({
         Servicios
       </NavigationMenuTrigger>
       <NavigationMenuContent className="p-2">
-        <ul className="flex min-w-md flex-col gap-0">
+        <ul className="flex min-w-md flex-col gap-3">
           {colaboraciones.map((collaboration) => (
             <li key={collaboration.id}>
               <CollaborationHeroCard

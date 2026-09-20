@@ -7,7 +7,7 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
     name: "Financiación",
     color:"#0F45CA",
     icon: Landmark,
-    href: "/simulador-financiamiento",
+    href: "/simulador-financiacion",
     description: "Calcula tu cuota online en segundos.",
   },
   {
@@ -43,7 +43,7 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
 
 export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
   {
-    name: "Miles de anuncios",
+    name: "Anuncios verificados",
     icon: Check,
     href: "/vehiculos",
     description: "Compra con confianza.",
