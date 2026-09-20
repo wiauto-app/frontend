@@ -68,8 +68,8 @@ export const getColaboracionBySlug = async (
 };
 
 /**
- * Fetch todas las colaboraciones para navbar/lista.
- * Retorna solo id, nombre y publishedAt (minimal data).
+ * Fetch todas las colaboraciones publicadas (navbar + detalle vehículo).
+ * Incluye hero.imagen como logo para la tarjeta de listado.
  */
 export const getAllColaboraciones = async (): Promise<StrapiColaboracionLanding[]> => {
   try {
@@ -83,13 +83,19 @@ export const getAllColaboraciones = async (): Promise<StrapiColaboracionLanding[
         pagination: {
           limit: 100,
         },
+        populate: {
+          hero: HERO_POPULATE,
+        },
       },
       {
         encodeValuesOnly: true,
       },
     );
 
-    const response = await getStrapiData<StrapiColaboracionResponse>(`/landings-colaboracions?${query}`);
+    const response = await getStrapiData<StrapiColaboracionResponse>(
+      `/landings-colaboracions?${query}`,
+      { revalidate: 1800 },
+    );
 
     return response.data ?? [];
   } catch (error) {

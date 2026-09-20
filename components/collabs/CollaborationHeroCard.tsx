@@ -1,111 +1,143 @@
-import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
+import { collabsIconPack } from "@/app/(landing)/colaboraciones/components/collabsIconPack";
+import { IconContainer } from "@/components/ui/iconContainer";
+import type { StrapiColaboracionLanding } from "@/interfaces/landings-colaboracion.interface";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
-import { Check, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { IconContainer } from "@/components/ui/iconContainer";
-import type {
-  StrapiHero,
-  StrapiIconFeature,
-} from "@/interfaces/strapi-components.interface";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "../ui/card";
+export type CollaborationHeroCardSize = "sm" | "md" | "lg";
 
 export interface CollaborationHeroCardProps {
-  content: StrapiHero;
+  content: StrapiColaboracionLanding;
   className?: string;
+  size?: CollaborationHeroCardSize;
 }
 
-interface CollaborationFeatureProps {
-  feature: StrapiIconFeature;
-}
-
-const CollaborationFeature = ({ feature }: CollaborationFeatureProps) => {
-  return (
-    <li className="flex min-w-0 items-start gap-3 py-2.5">
-      <IconContainer
-        Icon={
-          resolveStrapiIconName(feature.iconName, defaultStrapiIconPack) ??
-          Check
-        }
-        size="xs"
-        className="size-7 rounded-md bg-primary/8 [&_svg]:size-3.5"
-      />
-      <div className="min-w-0">
-        <p className="text-sm font-medium leading-5 text-slate-900">
-          {feature.label}
-        </p>
-        {feature.descripcion ? (
-          <p className="mt-0.5 text-xs leading-5 text-slate-500">
-            {feature.descripcion}
-          </p>
-        ) : null}
-      </div>
-    </li>
-  );
+const SIZE_STYLES: Record<
+  CollaborationHeroCardSize,
+  {
+    rowGap: string;
+    contentGap: string;
+    icon: "sm" | "md" | "lg";
+    title: string;
+    description: string;
+    logo: string;
+    logoSizes: string;
+    chevron: string;
+  }
+> = {
+  sm: {
+    rowGap: "gap-3",
+    contentGap: "gap-3",
+    icon: "sm",
+    title: "text-sm font-semibold",
+    description: "text-xs",
+    logo: "relative h-8 min-w-16 md:h-10 md:min-w-24",
+    logoSizes: "96px",
+    chevron: "size-4",
+  },
+  md: {
+    rowGap: "gap-4",
+    contentGap: "gap-4",
+    icon: "md",
+    title: "text-base font-semibold lg:text-lg",
+    description: "text-xs",
+    logo: "relative h-10 min-w-20 md:h-16 md:min-w-32",
+    logoSizes: "(max-width: 768px) 100vw, 112px",
+    chevron: "size-5",
+  },
+  lg: {
+    rowGap: "gap-5",
+    contentGap: "gap-5",
+    icon: "lg",
+    title: "text-lg font-semibold lg:text-xl",
+    description: "text-sm",
+    logo: "relative h-12 min-w-24 md:h-20 md:min-w-40",
+    logoSizes: "(max-width: 768px) 100vw, 160px",
+    chevron: "size-6",
+  },
 };
 
 export const CollaborationHeroCard = ({
   content,
   className,
+  size = "md",
 }: CollaborationHeroCardProps) => {
-  const imageUrl = content.imagen?.url ?? content.card?.imagen?.url;
-  const imageAlt =
-    content.imagen?.alternativeText?.trim() ||
-    content.card?.imagen?.alternativeText?.trim() ||
-    content.titulo ||
-    "";
-  const action = content.acciones?.[0] ?? content.card?.boton ?? null;
-  const hasFeatures = (content.caracteristicas?.length ?? 0) > 0;
-  const isExternal = action?.externo === true;
-
-  if (!action) {
+  const hero = content.hero;
+  if (!hero) {
     return null;
   }
 
+  const styles = SIZE_STYLES[size];
+  const imageUrl = hero.card?.imagen?.url ?? hero.imagen?.url;
+  const imageAlt =
+    hero.card?.imagen?.alternativeText ||
+    hero.imagen?.alternativeText ||
+    hero.titulo ||
+    content.nombre ||
+    "";
+  const action = hero.acciones?.[0];
+  const href = action?.url ?? `/colaboraciones/${content.slug}`;
+  const Icon = resolveStrapiIconName(content.iconName, collabsIconPack);
+
   return (
     <Link
-      href={action.url}
-      aria-label={action.label || content.titulo}
-      className={cn("block", className)}
-      {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      href={href}
+      aria-label={hero.titulo || content.nombre}
+      className={cn("group block", className)}
+      {...(action?.externo
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : {})}
     >
-      <div className={cn("flex items-center justify-between gap-4",)}>
-        <div className="flex min-w-0 flex-1 flex-col ">
-          <div className="flex items-center gap-4">
-            <div className="relative min-w-20 h-10 md:min-w-32 md:h-16">
+      <div
+        className={cn(
+          "flex items-center justify-between",
+          styles.rowGap,
+        )}
+      >
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div
+            className={cn(
+              "flex items-center justify-between",
+              styles.rowGap,
+            )}
+          >
+            <div className={cn("flex min-w-0 items-center", styles.contentGap)}>
+              {Icon ? <IconContainer Icon={Icon} size={styles.icon} /> : null}
+              <div className="min-w-0 space-y-1">
+                <h2 className={styles.title}>{hero.titulo}</h2>
+                {content.descripcion ? (
+                  <p
+                    className={cn(
+                      "whitespace-pre-line text-muted-foreground",
+                      styles.description,
+                    )}
+                  >
+                    {content.descripcion}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            <div className={styles.logo}>
               {imageUrl ? (
                 <Image
                   src={imageUrl}
                   alt={imageAlt}
                   fill
-                  sizes="(max-width: 768px) 100vw, 112px"
+                  sizes={styles.logoSizes}
                   className="object-contain"
                 />
               ) : null}
             </div>
-            <div className="min-w-0 space-y-1">
-              <h2 className="text-base lg:text-lg font-semibold">{content.titulo}</h2>
-              {content.descripcion ? (
-                <p className="whitespace-pre-line text-xs text-muted-foreground">
-                  {content.descripcion}
-                </p>
-              ) : null}
-            </div>
           </div>
-
-          {hasFeatures ? (
-            <ul className="mt-5 divide-y divide-slate-100 border-t border-slate-200 pt-1 sm:grid sm:grid-cols-2 sm:gap-x-5 sm:divide-y-0">
-              {content.caracteristicas.map((feature) => (
-                <CollaborationFeature key={feature.id} feature={feature} />
-              ))}
-            </ul>
-          ) : null}
         </div>
-
         <ChevronRight
-          className="size-5 shrink-0 text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-foreground"
+          className={cn(
+            "shrink-0 text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-foreground",
+            styles.chevron,
+          )}
           aria-hidden
         />
       </div>

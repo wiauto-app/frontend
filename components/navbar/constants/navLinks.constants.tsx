@@ -123,10 +123,6 @@ export const NAV_LINKS: NavLink[] = [
   //   ],
   // },
   {
-    label: "Servicios",
-    items: [],
-  },
-  {
     label: "Herramientas",
     items: [
       {
