@@ -11,11 +11,12 @@ vi.mock("@/lib/utils", () => ({
   getImageUrl: (key: string) => `https://media.test/${key}`,
 }));
 
-const buildMockVehicle = (): Vehicle =>
+const buildMockVehicle = (overrides: Partial<Vehicle> = {}): Vehicle =>
   ({
     id: "veh-1",
     price: 18500,
     mileage: 42000,
+    status: "active",
     description: "Descripción del vehículo de prueba para SEO.",
     images: [{ id: "img-1", url: "vehicles/car.jpg" }],
     version: {
@@ -31,6 +32,7 @@ const buildMockVehicle = (): Vehicle =>
       },
       year: { id: 1, year: 2020, slug: "2020", created_at: new Date() },
     },
+    ...overrides,
   }) as Vehicle;
 
 describe("buildVehicleDetailSeo", () => {
@@ -60,6 +62,7 @@ describe("buildVehicleDetailSeo", () => {
     const seo = buildVehicleDetailSeo(buildMockVehicle());
 
     expect(seo.metadata.title).toBe("Volkswagen Golf 1.6 TDI");
+    expect(seo.metadata.robots).toBeUndefined();
     expect(seo.metadata.alternates?.canonical).toBe(
       "https://wiauto.test/vehiculo/veh-1",
     );
@@ -67,6 +70,12 @@ describe("buildVehicleDetailSeo", () => {
       "https://wiauto.test/vehiculo/veh-1",
     );
     expect(seo.metadata.twitter?.card).toBe("summary_large_image");
+  });
+
+  it("marca noindex nofollow cuando el vehículo no está active", () => {
+    const seo = buildVehicleDetailSeo(buildMockVehicle({ status: "sold" }));
+
+    expect(seo.metadata.robots).toEqual({ index: false, follow: false });
   });
 
   it("genera JSON-LD @graph con BreadcrumbList y Car", () => {

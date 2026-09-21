@@ -1,7 +1,23 @@
+"use client";
+
 import { useId } from "react";
-import { SearchSelect } from "@/components/ui/searchSelect";
+import {
+  SearchSelect,
+  type SearchSelectPageResult,
+} from "@/components/ui/searchSelect";
 import { modelService } from "../vehicles/services/modelService";
 import { Field, FieldLabel } from "@/components/ui/field";
+
+const PAGE_SIZE = 40;
+
+interface ModelSelectorProps {
+  value?: string;
+  onChange?: (value: string | undefined) => void;
+  ariaInvalid?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+  makeId?: number;
+}
 
 export const ModelSelector = ({
   value,
@@ -10,29 +26,37 @@ export const ModelSelector = ({
   disabled,
   placeholder = "Modelo",
   makeId,
-}: {
-  value?: string;
-  onChange?: (value: string | undefined) => void;
-  ariaInvalid?: boolean;
-  disabled?: boolean;
-  placeholder?: string;
-  makeId?: number;
-}) => {
+}: ModelSelectorProps) => {
   const fieldId = useId();
 
-  const searchModels = async (query: string) => {
-    if (!makeId) return [];
+  const searchModels = async (
+    query: string,
+    page: number,
+  ): Promise<SearchSelectPageResult> => {
+    if (!makeId) {
+      return { options: [], total: 0, page: 1, limit: PAGE_SIZE };
+    }
+
     const response = await modelService.findAll({
-      limit: 100,
-      page: 1,
-      search: query,
+      limit: PAGE_SIZE,
+      page,
+      search: query.trim() || undefined,
       make_id: makeId,
+      order_by: "name",
+      order_direction: "ASC",
     });
+
     const models = response.data ?? [];
-    return models.map((model) => ({
-      label: model.name,
-      value: String(model.id),
-    }));
+
+    return {
+      options: models.map((model) => ({
+        label: model.name,
+        value: String(model.id),
+      })),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+    };
   };
 
   return (
@@ -45,7 +69,11 @@ export const ModelSelector = ({
         onChange={(nextValue) => onChange?.(nextValue)}
         placeholder={placeholder ?? "Seleccionar modelo"}
         searchPlaceholder="Buscar modelo"
-        searchFn={searchModels}
+        emptyText={
+          !makeId ? "Selecciona una marca primero" : "No se encontraron modelos"
+        }
+        searchKey={makeId}
+        searchPageFn={searchModels}
         resolveOption={async (modelId) => {
           const model = await modelService.findOne(Number(modelId));
           return { label: model.name, value: String(model.id) };

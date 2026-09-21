@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { ActiveFilters } from "../components/activeFilters";
 import { VehiclesPageContent } from "../components/VehiclesPageContent";
-import { VehiclesToolbar } from "../components/VehiclesToolbar";
-import { VehiclesFilters } from "../components/VehiclesFilters";
-import { VehiclesListingShell } from "../components/VehiclesListingShell";
 import { findAllVehicles } from "./services/findAllVehicles.server";
 import { toUrlSearchParams } from "./utils/toUrlSearchParams";
 import {
@@ -17,13 +13,12 @@ import {
 } from "@/lib/vehicles/listing-url";
 import { activeFiltersService } from "../services/activeFiltersService";
 import { FRONTEND_URL } from "@/constants";
-import { Skeleton } from "@/components/ui/skeleton";
+import { NOINDEX_ROBOTS } from "@/lib/seo/noindex";
 import { FiltersTitle } from "../components/filtersTitle";
-import { FiltersLoading } from "../components/filtersLoading";
 import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
-import { cn } from "@/lib/utils";
-import { SaveSearchButton } from "../components/SaveSearchButton";
-import { BuyAssistantBannerCard } from "../components/buyAssistantBannerCard";
+
+/** Listados con menos de 2 resultados se tratan como thin content. */
+const THIN_LISTING_RESULT_THRESHOLD = 2;
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
@@ -55,6 +50,9 @@ export async function generateMetadata(props: {
   return {
     title: `${listing.total} resultados de ${activeFilters.title}`,
     description: `Encuentra ${listing.total} vehículos en ${activeFilters.title} en Wiauto.com`,
+    ...(listing.total < THIN_LISTING_RESULT_THRESHOLD
+      ? { robots: NOINDEX_ROBOTS }
+      : {}),
     openGraph: {
       title: `${listing.total} resultados de ${activeFilters.title}`,
       description: `Encuentra ${listing.total} vehículos en ${activeFilters.title} en Wiauto.com`,

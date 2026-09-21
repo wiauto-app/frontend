@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
 import { FRONTEND_URL } from "@/constants";
-import type { Vehicle } from "@/interfaces/vehicle.interface";
+import {
+  STATUS_VEHICLE,
+  type Vehicle,
+} from "@/interfaces/vehicle.interface";
 import { getImageUrl } from "@/lib/utils";
 import { buildVehicleListingHref } from "@/lib/vehicles/listing-url/build-listing-url";
 import { VEHICLES_LISTING_BASE_PATH } from "@/lib/vehicles/listing-url/constants";
@@ -10,6 +13,7 @@ import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import { absoluteUrl } from "./absolute-url";
 import { buildBreadcrumbListJsonLd } from "./build-breadcrumb-list-json-ld";
 import type { BreadcrumbItem } from "./breadcrumb.types";
+import { NOINDEX_NOFOLLOW_ROBOTS } from "./noindex";
 
 const truncateDescription = (
   text: string | undefined | null,
@@ -71,6 +75,9 @@ export const buildVehicleDetailMetadata = (vehicle: Vehicle): Metadata => {
   return {
     title,
     description,
+    ...(vehicle.status !== STATUS_VEHICLE.ACTIVE
+      ? { robots: NOINDEX_NOFOLLOW_ROBOTS }
+      : {}),
     alternates: {
       canonical,
     },

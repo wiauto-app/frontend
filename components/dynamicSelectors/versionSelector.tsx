@@ -1,16 +1,17 @@
+"use client";
+
+import { useEffect, useId, useRef } from "react";
 import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
 import type {
   CatalogVersionItem,
   CatalogVersionListItem,
 } from "@/components/vehicles/types/catalog.types";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
-import { BaseSelector } from "./baseSelector";
-
-interface VersionOption extends CatalogVersionListItem {
-  label: string;
-}
+import {
+  SearchSelect,
+  type SearchSelectPageResult,
+  type SelectOption,
+} from "@/components/ui/searchSelect";
 
 interface VersionSelectorProps {
   makeId?: number;
@@ -26,6 +27,8 @@ interface VersionSelectorProps {
   /** Si true, no se muestra `FieldLabel` (útil cuando el padre ya tiene label, p. ej. react-hook-form). */
   hideLabel?: boolean;
 }
+
+const PAGE_SIZE = 40;
 
 const getVersionLabel = (item: CatalogVersionListItem) => {
   const year = item.year?.year;
@@ -45,83 +48,79 @@ export const VersionSelector = ({
   placeholder = "Versión",
   hideLabel = false,
 }: VersionSelectorProps) => {
+  const fieldId = useId();
   const canFetch = Boolean(modelId);
-  const { data, isLoading } = useQuery({
-    queryKey: [
-      "catalogVersions",
-      makeId,
-      modelId,
-      bodyTypeId,
-      fuelTypeId,
-      yearId,
-    ],
-    queryFn: () =>
-      catalogVersionsService.findAll({
-        make_id: makeId,
-        model_id: modelId,
-        body_type_id: bodyTypeId,
-        year_id: yearId,
-        page: 1,
-        limit: 100,
-      }),
-    enabled: canFetch,
-  });
+  const versionsByIdRef = useRef<Map<string, CatalogVersionListItem>>(new Map());
 
-  const items = useMemo<VersionOption[]>(
-    () =>
-      (data?.data ?? []).map((item) => ({
-        ...item,
+  useEffect(() => {
+    versionsByIdRef.current = new Map();
+  }, [makeId, modelId, bodyTypeId, fuelTypeId, yearId]);
+
+  const searchVersions = async (
+    query: string,
+    page: number,
+  ): Promise<SearchSelectPageResult> => {
+    if (!modelId) {
+      return { options: [], total: 0, page: 1, limit: PAGE_SIZE };
+    }
+
+    const response = await catalogVersionsService.findAll({
+      make_id: makeId,
+      model_id: modelId,
+      body_type_id: bodyTypeId,
+      fuel_type_id: fuelTypeId,
+      year_id: yearId,
+      page,
+      limit: PAGE_SIZE,
+      search: query.trim() || undefined,
+      order_by: "name",
+      order_direction: "ASC",
+    });
+
+    const options: SelectOption[] = (response.data ?? []).map((item) => {
+      versionsByIdRef.current.set(String(item.id), item);
+      return {
         label: getVersionLabel(item),
-      })),
-    [data?.data],
-  );
+        value: String(item.id),
+      };
+    });
 
-  const content = isLoading ? (
-    <div
-      className="flex h-9 w-full items-center rounded-md border border-input bg-transparent px-3 text-sm text-muted-foreground"
-      aria-live="polite"
-    >
-      Cargando versiones...
-    </div>
-  ) : (
-    <BaseSelector
-      align="start"
-      contentClassName="w-84"
+    return {
+      options,
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+    };
+  };
+
+  const content = (
+    <SearchSelect
+      id={fieldId}
       disabled={disabled || !canFetch}
-      emptyLabel={
+      emptyText={
         !modelId
           ? "Selecciona un modelo primero"
           : "No hay versiones para esta combinación"
       }
-      items={items}
-      labelKey="label"
-      onChange={(nextValue) => {
-        const version = data?.data.find(
-          (item) => Number(item.id) === Number(nextValue),
-        );
+      placeholder={placeholder}
+      resolveOption={async (versionId) => {
+        const version = await catalogVersionsService.findOne(Number(versionId));
+        versionsByIdRef.current.set(String(version.id), version);
+        return {
+          label: version.name,
+          value: String(version.id),
+        };
+      }}
+      searchKey={[makeId, modelId, bodyTypeId, fuelTypeId, yearId]}
+      searchPageFn={searchVersions}
+      searchPlaceholder="Buscar versión..."
+      value={value}
+      onChange={(nextValue, option) => {
+        const version =
+          versionsByIdRef.current.get(option.value) ??
+          versionsByIdRef.current.get(nextValue);
         onChange?.(nextValue, version);
       }}
-      placeholder={placeholder}
-      renderItem={(item) => {
-        const year = item.year?.year;
-        if (!year) {
-          return item.name;
-        }
-
-        return (
-          <span className="flex min-w-0 items-center gap-1.5">
-            <span className="min-w-0 truncate">{item.name}</span>
-            <span aria-hidden className="text-muted-foreground">
-              -
-            </span>
-            <span className="shrink-0 text-muted-foreground tabular-nums">
-              {year}
-            </span>
-          </span>
-        );
-      }}
-      value={value}
-      valueKey="id"
     />
   );
 
@@ -135,7 +134,7 @@ export const VersionSelector = ({
 
   return (
     <Field data-invalid={ariaInvalid}>
-      <FieldLabel htmlFor="version-selector">Versión</FieldLabel>
+      <FieldLabel htmlFor={fieldId}>Versión</FieldLabel>
       {content}
     </Field>
   );

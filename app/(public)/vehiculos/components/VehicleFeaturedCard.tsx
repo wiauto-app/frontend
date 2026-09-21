@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Camera } from "lucide-react";
+import { Camera, ChevronRight } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { useVehicleImpressionTracker } from "@/components/vehicles/hooks/useVehicleImpressionTracker";
@@ -174,7 +174,9 @@ export const VehicleFeaturedCard = ({
         <div className="mt-auto flex items-center justify-between gap-3 pt-3">
           <div className="flex min-w-0 items-center gap-1">
             {isProfessional ? (
-              <span className="text-xs font-bold text-white">◈ Profesional</span>
+              <span className="text-xs font-bold text-white">
+                ◈ Profesional
+              </span>
             ) : (
               <span className="text-xs font-bold text-white">Particular</span>
             )}
@@ -184,8 +186,11 @@ export const VehicleFeaturedCard = ({
               </span>
             ) : null}
           </div>
-          <Link href={vehicleUrl} className="shrink-0 rounded-[22px] bg-white px-3.5 py-2.5 text-[13px] font-extrabold text-[#1769D5]">
-            Ver anuncio →
+          <Link
+            href={vehicleUrl}
+            className="shrink-0 rounded-[22px] bg-white px-3.5 py-2.5 text-[13px]  text-[#1769D5]"
+          >
+            Ver anuncio <ChevronRight />
           </Link>
         </div>
       </div>

@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,11 @@ interface BrandLogoProps {
   variant?: BrandLogoVariants;
   className?: string;
   sizes?: string;
+  /**
+   * Si true (default), un logo `normal-*` pasa a `pro-*` (mismo tono) cuando
+   * el usuario está suscrito. Variantes `pro-*` / `pro-sm-*` no se alteran.
+   */
+  respectSubscription?: boolean;
 }
 
 const LEGACY_VARIANT_ALIASES: Record<
@@ -68,16 +74,32 @@ const resolveCanonicalVariant = (
   return variant as BrandLogoCanonicalVariant;
 };
 
+/** Solo `normal-{tone}` → `pro-{tone}` si hay suscripción; el resto se respeta. */
+const applySubscriptionUpgrade = (
+  canonical: BrandLogoCanonicalVariant,
+  isSubscribed: boolean,
+): BrandLogoCanonicalVariant => {
+  if (!isSubscribed || !canonical.startsWith("normal-")) {
+    return canonical;
+  }
+
+  const tone = canonical.slice("normal-".length) as "black" | "base" | "white";
+  return `pro-${tone}`;
+};
 
 export const BrandLogo = ({
   variant = "primary",
   className,
   sizes = "176px",
+  respectSubscription = true,
 }: BrandLogoProps) => {
   const { isSubscribed } = useEntitlements();
-  const variantSelected = isSubscribed ? "pro" : "primary";
-  const canonicalVariant = resolveCanonicalVariant(variantSelected);
-  const logoUrl = LOGO_URL_BY_VARIANT[canonicalVariant];
+  const canonicalVariant = resolveCanonicalVariant(variant);
+  const resolvedVariant = respectSubscription
+    ? applySubscriptionUpgrade(canonicalVariant, isSubscribed)
+    : canonicalVariant;
+  const logoUrl = LOGO_URL_BY_VARIANT[resolvedVariant];
+
   return (
     <Link
       href="/"

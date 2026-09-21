@@ -1,7 +1,19 @@
+"use client";
+
 import { useId } from "react";
 import { makesService } from "@/components/vehicles/services/makesService";
-import { SearchSelect } from "@/components/ui/searchSelect";
+import { SearchSelect, type SearchSelectPageResult } from "@/components/ui/searchSelect";
 import { Field, FieldLabel } from "@/components/ui/field";
+
+const PAGE_SIZE = 40;
+
+interface MakeSelectorProps {
+  value?: string;
+  onChange?: (value: string | undefined) => void;
+  ariaInvalid?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+}
 
 export const MakeSelector = ({
   value,
@@ -9,28 +21,32 @@ export const MakeSelector = ({
   ariaInvalid,
   disabled,
   placeholder = "Marca",
-}: {
-  value?: string;
-  onChange?: (value: string | undefined) => void;
-  ariaInvalid?: boolean;
-  disabled?: boolean;
-  placeholder?: string;
-}) => {
+}: MakeSelectorProps) => {
   const fieldId = useId();
 
-  const searchMakes = async (query: string) => {
+  const searchMakes = async (
+    query: string,
+    page: number,
+  ): Promise<SearchSelectPageResult> => {
     const response = await makesService.findAll({
-      limit: 100,
-      page: 1,
-      search: query,
+      limit: PAGE_SIZE,
+      page,
+      search: query.trim() || undefined,
+      order_by: "name",
+      order_direction: "ASC",
     });
 
     const makes = response.data ?? [];
 
-    return makes.map((make) => ({
-      label: make.name,
-      value: String(make.id),
-    }));
+    return {
+      options: makes.map((make) => ({
+        label: make.name,
+        value: String(make.id),
+      })),
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+    };
   };
 
   return (
@@ -43,7 +59,7 @@ export const MakeSelector = ({
         placeholder={placeholder}
         searchPlaceholder="Buscar marca..."
         emptyText="No se encontraron marcas"
-        searchFn={searchMakes}
+        searchPageFn={searchMakes}
         resolveOption={async (makeId) => {
           const make = await makesService.findOne(Number(makeId));
           return { label: make.name, value: String(make.id) };

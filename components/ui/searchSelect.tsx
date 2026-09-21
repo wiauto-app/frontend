@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useId, useMemo, useRef, useState, type UIEvent } from "react";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Check, ChevronDown, Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,13 @@ export interface SelectOption {
   value: string;
 }
 
+export interface SearchSelectPageResult {
+  options: SelectOption[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 interface SearchSelectProps {
   id?: string;
   value?: string;
@@ -32,8 +39,19 @@ interface SearchSelectProps {
   emptyText?: string;
   disabled?: boolean;
   debounceMs?: number;
+  /**
+   * Extra cache key (filters, parent ids…). Required when the same instance
+   * re-fetches under different constraints (p. ej. modelId en versiones).
+   */
+  searchKey?: unknown;
   onChange?: (value: string, option: SelectOption) => void;
-  searchFn: (query: string) => Promise<SelectOption[]>;
+  /** Modo simple: una sola página de resultados. */
+  searchFn?: (query: string) => Promise<SelectOption[]>;
+  /** Modo infinito: página N; si se define, tiene prioridad sobre `searchFn`. */
+  searchPageFn?: (
+    query: string,
+    page: number,
+  ) => Promise<SearchSelectPageResult>;
   /** Resuelve label cuando `value` viene del exterior (edición, defaultValues). */
   resolveOption?: (value: string) => Promise<SelectOption | undefined>;
 }
@@ -60,6 +78,8 @@ const suppressCmdkDocumentScroll = () => {
   };
 };
 
+const END_REACHED_OFFSET_PX = 72;
+
 export const SearchSelect = ({
   id,
   value,
@@ -68,8 +88,10 @@ export const SearchSelect = ({
   emptyText = "Sin resultados",
   disabled,
   debounceMs = 500,
+  searchKey,
   onChange,
   searchFn,
+  searchPageFn,
   resolveOption,
 }: SearchSelectProps) => {
   const instanceId = useId();
@@ -80,6 +102,7 @@ export const SearchSelect = ({
   const [selectedOption, setSelectedOption] = useState<SelectOption | null>(
     null,
   );
+  const isInfinite = Boolean(searchPageFn);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -105,11 +128,61 @@ export const SearchSelect = ({
     enabled: needsResolve,
   });
 
-  const { data: options = [], isLoading } = useQuery({
-    queryKey: ["async-search-select", instanceId, debouncedQuery],
-    queryFn: () => searchFn(debouncedQuery),
-    enabled: open,
+  const simpleQuery = useQuery({
+    queryKey: ["async-search-select", instanceId, debouncedQuery, searchKey],
+    queryFn: () => searchFn!(debouncedQuery),
+    enabled: open && !isInfinite && Boolean(searchFn),
   });
+
+  const infiniteQuery = useInfiniteQuery({
+    queryKey: [
+      "async-search-select-infinite",
+      instanceId,
+      debouncedQuery,
+      searchKey,
+    ],
+    queryFn: ({ pageParam }) => searchPageFn!(debouncedQuery, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const loaded = lastPage.page * lastPage.limit;
+      if (loaded >= lastPage.total) {
+        return undefined;
+      }
+      return lastPage.page + 1;
+    },
+    enabled: open && isInfinite,
+  });
+
+  const options = useMemo(() => {
+    if (isInfinite) {
+      return (
+        infiniteQuery.data?.pages.flatMap((page) => page.options) ?? []
+      );
+    }
+    return simpleQuery.data ?? [];
+  }, [infiniteQuery.data?.pages, isInfinite, simpleQuery.data]);
+
+  const isLoading = isInfinite
+    ? infiniteQuery.isLoading
+    : simpleQuery.isLoading;
+  const isFetchingNextPage = isInfinite
+    ? infiniteQuery.isFetchingNextPage
+    : false;
+  const hasNextPage = isInfinite ? Boolean(infiniteQuery.hasNextPage) : false;
+
+  const handleListScroll = (event: UIEvent<HTMLDivElement>) => {
+    if (!isInfinite || !hasNextPage || isFetchingNextPage) {
+      return;
+    }
+
+    const target = event.currentTarget;
+    const distanceFromEnd =
+      target.scrollHeight - target.scrollTop - target.clientHeight;
+
+    if (distanceFromEnd <= END_REACHED_OFFSET_PX) {
+      void infiniteQuery.fetchNextPage();
+    }
+  };
 
   const handleSelect = (option: SelectOption) => {
     setSelectedOption(option);
@@ -191,7 +264,7 @@ export const SearchSelect = ({
             />
           </div>
 
-          <CommandList>
+          <CommandList onScroll={handleListScroll}>
             {isLoading ? (
               <div className="flex items-center justify-center gap-2 p-4 text-sm text-muted-foreground">
                 <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -221,6 +294,13 @@ export const SearchSelect = ({
                     );
                   })}
                 </CommandGroup>
+
+                {isFetchingNextPage ? (
+                  <div className="flex items-center justify-center gap-2 p-3 text-sm text-muted-foreground">
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                    Cargando más...
+                  </div>
+                ) : null}
               </>
             )}
           </CommandList>

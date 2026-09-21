@@ -110,7 +110,7 @@ export const MessageBubble = ({
         <Bubble variant={bubbleVariant} align={align}>
           <BubbleContent>{renderBody()}</BubbleContent>
         </Bubble>
-        <MessageFooter className="gap-2">
+        <MessageFooter className="gap-2 bg-black">
           {!isOwn && onReport ? (
             <Button
               type="button"
