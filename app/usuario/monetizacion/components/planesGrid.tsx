@@ -9,6 +9,8 @@ interface PlanesGridProps {
   loading?: boolean;
   onSelectPlan: (plan: BillingCatalogPlan, price_id: string) => void;
   formatPrice: (amount_cents: number) => string;
+  /** Frontend-only launch promo on plan cards. Checkout still uses the real Stripe price. */
+  showDiscount?: boolean;
 }
 
 const PlanesGrid = ({
@@ -16,6 +18,7 @@ const PlanesGrid = ({
   active_plan_id,
   onSelectPlan,
   formatPrice,
+  showDiscount = true,
 }: PlanesGridProps) => {
   if (!plans.length) {
     return (
@@ -42,6 +45,7 @@ const PlanesGrid = ({
           plan={plan}
           isActive={active_plan_id === plan.id}
           formatPrice={formatPrice}
+          showDiscount={showDiscount}
           onSelect={() => handleSelectPlan(plan)}
         />
       ))}

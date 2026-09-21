@@ -18,6 +18,8 @@ interface PlansPricingSectionProps {
   actionCallSection: StrapiHero;
   plans: BillingCatalogPlan[];
   catalogError?: boolean;
+  /** Frontend-only launch promo on plan cards. Checkout still uses the real Stripe price. */
+  showDiscount?: boolean;
 }
 
 const formatEuros = (amountCents: number) =>
@@ -37,6 +39,7 @@ export const PlansPricingSection = ({
   actionCallSection,
   plans,
   catalogError = false,
+  showDiscount = true,
 }: PlansPricingSectionProps) => {
   const router = useRouter();
   const { planName } = useEntitlements();
@@ -124,6 +127,7 @@ export const PlansPricingSection = ({
               plan={plan}
               isActive={planName === plan.name}
               formatPrice={formatEuros}
+              showDiscount={showDiscount}
               onSelect={() => {
                 handleSelectPlan(plan);
               }}

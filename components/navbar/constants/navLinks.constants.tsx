@@ -148,12 +148,12 @@ export const NAV_LINKS: NavLink[] = [
   {
     label: "Noticias",
     items: [
-      {
-        href: "/prensa",
-        label: "Prensa",
-        Icon: Newspaper,
-        description: "Cobertura y menciones de WiAuto en medios",
-      },
+      // {
+      //   href: "/prensa",
+      //   label: "Prensa",
+      //   Icon: Newspaper,
+      //   description: "Cobertura y menciones de WiAuto en medios",
+      // },
       {
         href: "/noticias",
         label: "Noticias",

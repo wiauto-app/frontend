@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils";
 import { VehicleType } from "@/interfaces/vehicle.interface";
 import { WiautoImage } from "@/components/ui/wiautoImage";
-import { Check } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -44,14 +43,15 @@ export const VehicleTypeSelector = ({
           >
             <div className="flex items-center gap-2">
               {vehicleType.image_url && (
-                <WiautoImage
-                  src={vehicleType.image_url}
-                  alt={vehicleType.name}
-                  width={20}
-                  height={20}
-                  sizes="20px"
-                  className="rounded-full object-cover"
-                />
+                <picture className="min-w-6 h-6 relative  rounded-sm overflow-hidden">
+                  <WiautoImage
+                    src={vehicleType.image_url}
+                    alt={vehicleType.name}
+                    fill
+                    sizes="40px"
+                    className=" object-cover"
+                  />
+                </picture>
               )}
               <span>{vehicleType.name}</span>
             </div>

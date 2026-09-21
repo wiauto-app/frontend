@@ -29,6 +29,11 @@ interface HeroSearchFiltersContextValue {
   untilPrice?: number;
   handleToggleMake: (make: HeroCatalogFacetItem, checked: boolean) => void;
   handleToggleModel: (model: HeroCatalogFacetItem, checked: boolean) => void;
+  /** Sustituye la selección (hidratación desde URL / filtros activos). */
+  replaceMakeModelSelection: (
+    makes: HeroCatalogFacetItem[],
+    models: HeroCatalogFacetItem[],
+  ) => void;
   setLocationPayload: (payload: LocationUrlPayload) => void;
   setUntilPrice: (until_price?: number) => void;
   /** Cascada facet desactivada en UI (hero usa catálogo Postgres). Se mantiene por compatibilidad. */
@@ -149,6 +154,17 @@ export const HeroSearchFiltersProvider = ({
     [],
   );
 
+  const replaceMakeModelSelection = useCallback(
+    (
+      nextMakes: HeroCatalogFacetItem[],
+      nextModels: HeroCatalogFacetItem[],
+    ) => {
+      setSelectedMakes(nextMakes);
+      setSelectedModels(nextModels);
+    },
+    [],
+  );
+
   const facetQueryParams = useMemo(
     () => toFacetQueryParams(makeModelPayload, locationPayload, untilPrice),
     [locationPayload, makeModelPayload, untilPrice],
@@ -172,6 +188,7 @@ export const HeroSearchFiltersProvider = ({
       untilPrice,
       handleToggleMake,
       handleToggleModel,
+      replaceMakeModelSelection,
       setLocationPayload,
       setUntilPrice,
       facetQueryParams,
@@ -185,6 +202,7 @@ export const HeroSearchFiltersProvider = ({
       untilPrice,
       handleToggleMake,
       handleToggleModel,
+      replaceMakeModelSelection,
       facetQueryParams,
       buildListingHref,
     ],

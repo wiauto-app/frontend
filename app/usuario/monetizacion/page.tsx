@@ -1,11 +1,12 @@
 import { Suspense } from "react";
-import { createUserAreaMetadata } from "@/lib/metadata/create-user-area-metadata";
 import { MonetizacionContent } from "./components/MonetizacionContent";
+import { Metadata } from "next";
 
-export const metadata = createUserAreaMetadata(
-  "Monetización",
-  "Consulta planes, complementos y facturación de tu cuenta.",
-);
+
+export const metadata: Metadata = {
+  title: "Monetización",
+  description: "Consulta planes, complementos y facturación de tu cuenta.",
+}
 
 export default function MonetizacionPage() {
   return (

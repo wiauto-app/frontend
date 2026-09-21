@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ConditionSelector } from "@/components/selectors/conditionSelector";
 import { PriceSelector } from "@/components/selectors/priceSelector";
@@ -21,14 +21,18 @@ import type {
   ConditionVehicle,
   TransmissionType,
 } from "@/interfaces/vehicle.interface";
+import type { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { FILTER_SECTION_IDS } from "../utils/getExpandedFilterSectionIds";
+import { useActiveFiltersStore } from "../stores/activeFiltersStore";
 
 import { Separator } from "@/components/ui/separator";
 import { FilterItem } from "./filterItem";
 import { VehicleTypeSelector } from "./vehicleTypeSelector";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
+  MAKE_KEY,
+  MODEL_KEY,
   PROVINCE_KEY,
   PUBLISHER_TYPE_KEY,
   VEHICLE_TYPE_KEY,
@@ -37,7 +41,6 @@ import {
   HiOutlineCalendar,
   HiOutlineHome,
   HiOutlineCurrencyEuro,
-  HiOutlineShoppingCart,
   HiOutlineTag,
   HiOutlineUser,
   HiOutlineMapPin,
@@ -52,15 +55,32 @@ import {
 } from "react-icons/lu";
 import { HeroFiltersMakeSelector } from "@/components/home/HeroFiltersMakeSelector";
 import { HeroFiltersLocationSelector } from "@/components/home/HeroFiltersLocationSelector";
+import { useHeroSearchFilters } from "@/components/home/HeroSearchFiltersContext";
+import type { MakeModelUrlPayload } from "@/components/selectors/FilterMakeSelector/utils/make-model-selection";
 
 interface VehiclesFiltersPanelProps {
   catalog: FiltersResponse;
 }
 
+const mapActiveItemToFacet = (item: {
+  id: string | number;
+  slug: string;
+  name: string;
+  make_id?: number;
+}): HeroCatalogFacetItem => ({
+  id: Number(item.id),
+  slug: item.slug,
+  name: item.name,
+  vehicle_count: 0,
+  make_id: item.make_id,
+});
+
 export const VehiclesFiltersPanel = ({
   catalog,
 }: VehiclesFiltersPanelProps) => {
   const { filters, commitFilters } = useVehiclesListingFilters();
+  const { replaceMakeModelSelection } = useHeroSearchFilters();
+  const { activeFilters } = useActiveFiltersStore();
   const { values, handleMultiChange, handleChange } = useFiltersManager({
     keys: [PUBLISHER_TYPE_KEY, PROVINCE_KEY, VEHICLE_TYPE_KEY],
   });
@@ -102,6 +122,56 @@ export const VehiclesFiltersPanel = ({
     [battery_until, filters.battery_capacity_since],
   );
 
+  const make_slugs_key = (filters.makes_slugs ?? []).join(",");
+  const model_slugs_key = (filters.models_slugs ?? []).join(",");
+
+  // Hidrata el selector hero desde la URL / filtros activos del listado.
+  useEffect(() => {
+    const make_slugs = filters.makes_slugs ?? [];
+    const model_slugs = filters.models_slugs ?? [];
+
+    if (make_slugs.length === 0 && model_slugs.length === 0) {
+      replaceMakeModelSelection([], []);
+      return;
+    }
+
+    const resolved_makes = activeFilters?.resolved.makes ?? [];
+    const resolved_models = activeFilters?.resolved.models ?? [];
+
+    const makes: HeroCatalogFacetItem[] =
+      resolved_makes.length > 0
+        ? resolved_makes.map(mapActiveItemToFacet)
+        : make_slugs.map((slug, index) => ({
+            id: -(index + 1),
+            slug,
+            name: slug,
+            vehicle_count: 0,
+          }));
+
+    const models: HeroCatalogFacetItem[] =
+      resolved_models.length > 0
+        ? resolved_models.map((item) => ({
+            ...mapActiveItemToFacet(item),
+            make_id: item.make_id,
+          }))
+        : model_slugs.map((slug, index) => ({
+            id: -(index + 1000),
+            slug,
+            name: slug,
+            vehicle_count: 0,
+          }));
+
+    replaceMakeModelSelection(makes, models);
+  }, [
+    activeFilters?.resolved.makes,
+    activeFilters?.resolved.models,
+    filters.makes_slugs,
+    filters.models_slugs,
+    make_slugs_key,
+    model_slugs_key,
+    replaceMakeModelSelection,
+  ]);
+
   const handlePriceChange = (next: PriceFilterValue) => {
     commitFilters({
       ...filters,
@@ -122,6 +192,15 @@ export const VehiclesFiltersPanel = ({
     });
   };
 
+  const handleMakeModelApply = (payload: MakeModelUrlPayload) => {
+    commitFilters({
+      ...filters,
+      makes_slugs: payload[MAKE_KEY],
+      models_slugs: payload[MODEL_KEY],
+      page: 1,
+    });
+  };
+
   const iconSize = 24;
 
   return (
@@ -131,11 +210,6 @@ export const VehiclesFiltersPanel = ({
         value={type_slug}
         onChange={(next) => {
           handleChange(VEHICLE_TYPE_KEY, next ?? undefined);
-          // commitFilters({
-          //   ...filters,
-          //   type_slug: next,
-          //   page: 1,
-          // });
         }}
       />
 
@@ -161,9 +235,7 @@ export const VehiclesFiltersPanel = ({
         title="Marca y Modelo"
         Icon={<HiOutlineHome size={iconSize} />}
       >
-        <HeroFiltersMakeSelector />
-
-        {/* <FiltersMakeSelector /> */}
+        <HeroFiltersMakeSelector onApply={handleMakeModelApply} />
       </FilterItem>
       <Separator />
       <FilterItem
@@ -171,10 +243,7 @@ export const VehiclesFiltersPanel = ({
         title="Precio"
         Icon={<HiOutlineCurrencyEuro size={iconSize} />}
       >
-        <PriceSelector
-          value={price_value}
-          onChange={handlePriceChange}
-        />
+        <PriceSelector value={price_value} onChange={handlePriceChange} />
       </FilterItem>
       <Separator />
       <FilterItem
@@ -183,33 +252,16 @@ export const VehiclesFiltersPanel = ({
         Icon={<HiOutlineMapPin size={iconSize} />}
       >
         <HeroFiltersLocationSelector
-          value={ typeof provinces === "string" ? [provinces] : provinces}
+          value={typeof provinces === "string" ? [provinces] : provinces}
           onChange={(next) => {
-            handleMultiChange(PROVINCE_KEY, typeof next === "string" ? [next] : next );
+            handleMultiChange(
+              PROVINCE_KEY,
+              typeof next === "string" ? [next] : next,
+            );
           }}
         />
-
-        {/* <LocationSelector /> */}
       </FilterItem>
       <Separator />
-      {/* <FilterItem
-        sectionId={FILTER_SECTION_IDS.SERVICES}
-        title="Servicios"
-        Icon={<HiOutlineShoppingCart size={iconSize} />}
-      >
-        <ServicesSelector
-          services={catalog.services}
-          value={filters.service_slugs ?? []}
-          onChange={(next) =>
-            commitFilters({
-              ...filters,
-              service_slugs: next.length > 0 ? next : undefined,
-              page: 1,
-            })
-          }
-        />
-      </FilterItem>
-      <Separator /> */}
       <FilterItem
         sectionId={FILTER_SECTION_IDS.SELLERS}
         title="Vendedores"
@@ -335,7 +387,6 @@ export const VehiclesFiltersPanel = ({
       </FilterItem>
       <Separator />
 
-      <Separator />
       <FilterItem
         sectionId={FILTER_SECTION_IDS.FEATURES}
         title="Equipamiento"

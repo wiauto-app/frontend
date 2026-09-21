@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 
@@ -17,10 +17,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { heroCatalogService } from "@/services/search/heroCatalogService";
+import type { MakeModelUrlPayload } from "@/components/selectors/FilterMakeSelector/utils/make-model-selection";
 import { useHeroSearchFilters } from "./HeroSearchFiltersContext";
 import { WiautoImage } from "../ui/wiautoImage";
 
 const EMPTY_MODEL_MAKE_IDS: readonly number[] = [];
+
+interface MakeModelSnapshot {
+  makes: HeroCatalogFacetItem[];
+  models: HeroCatalogFacetItem[];
+}
 
 const buildMakeTriggerLabel = (
   selectedMakes: HeroCatalogFacetItem[],
@@ -61,7 +67,9 @@ const MakeModels = ({ make, search }: MakeModelsProps) => {
   // ningún modelo se llama "toyota", así que hay que listarlos todos.
   const make_name_matches_search =
     search.length > 0 && make.name.toLowerCase().includes(search.toLowerCase());
-  const model_search = make_name_matches_search ? undefined : search || undefined;
+  const model_search = make_name_matches_search
+    ? undefined
+    : search || undefined;
 
   const { data: models = [], isLoading } = useQuery({
     queryKey: ["hero-catalog", "models", make.id, model_search],
@@ -81,9 +89,7 @@ const MakeModels = ({ make, search }: MakeModelsProps) => {
   );
   const is_all_models_selected =
     is_make_selected && selected_models_for_make.length === 0;
-  const selected_model_ids = new Set(
-    selectedModels.map((model) => model.id),
-  );
+  const selected_model_ids = new Set(selectedModels.map((model) => model.id));
 
   const handleAllModelsChange = (checked: boolean) => {
     if (checked) {
@@ -115,9 +121,7 @@ const MakeModels = ({ make, search }: MakeModelsProps) => {
           <CustomCheckbox
             key={model.id}
             checked={selected_model_ids.has(model.id)}
-            onChange={(event) =>
-              handleToggleModel(model, event.target.checked)
-            }
+            onChange={(event) => handleToggleModel(model, event.target.checked)}
             label={<p className="truncate">{model.name}</p>}
           />
         ))}
@@ -133,7 +137,13 @@ interface MakeRowProps {
   onToggle: (make: HeroCatalogFacetItem) => void;
 }
 
-const MakeRow = ({ make, isOpen, isSelected, search, onToggle }: MakeRowProps) => (
+const MakeRow = ({
+  make,
+  isOpen,
+  isSelected,
+  search,
+  onToggle,
+}: MakeRowProps) => (
   <div className="border-b last:border-b-0">
     <button
       type="button"
@@ -176,12 +186,28 @@ const MakeRow = ({ make, isOpen, isSelected, search, onToggle }: MakeRowProps) =
   </div>
 );
 
-export const HeroFiltersMakeSelector = () => {
-  const { selectedMakes, selectedModels } = useHeroSearchFilters();
+export interface HeroFiltersMakeSelectorProps {
+  /**
+   * En listado: aplica `marcas`/`modelos` a la URL.
+   * En home: omitir; el CTA «Buscar» usa el contexto.
+   */
+  onApply?: (payload: MakeModelUrlPayload) => void;
+}
+
+export const HeroFiltersMakeSelector = ({
+  onApply,
+}: HeroFiltersMakeSelectorProps) => {
+  const {
+    selectedMakes,
+    selectedModels,
+    makeModelPayload,
+    replaceMakeModelSelection,
+  } = useHeroSearchFilters();
 
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [openMakeId, setOpenMakeId] = useState<number | null>(null);
+  const snapshotRef = useRef<MakeModelSnapshot | null>(null);
   const debounced_search = useDebouncedValue(search, 300);
   const trimmed_search = debounced_search.trim();
 
@@ -234,8 +260,33 @@ export const HeroFiltersMakeSelector = () => {
     setOpenMakeId((current) => (current === make.id ? null : make.id));
   };
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      snapshotRef.current = {
+        makes: [...selectedMakes],
+        models: [...selectedModels],
+      };
+    }
+    setOpen(nextOpen);
+  };
+
+  const handleCancel = () => {
+    const snapshot = snapshotRef.current;
+    if (snapshot) {
+      replaceMakeModelSelection(snapshot.makes, snapshot.models);
+    }
+    setOpen(false);
+    setSearch("");
+  };
+
+  const handleApply = () => {
+    onApply?.(makeModelPayload);
+    setOpen(false);
+    setSearch("");
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         render={
           <Button
@@ -284,10 +335,10 @@ export const HeroFiltersMakeSelector = () => {
         </div>
 
         <div className="flex items-center justify-end gap-2">
-          <Button onClick={() => setOpen(false)} variant="outline" size="sm">
+          <Button onClick={handleCancel} variant="outline" size="sm">
             Cancelar
           </Button>
-          <Button onClick={() => setOpen(false)} variant="default" size="sm">
+          <Button onClick={handleApply} variant="default" size="sm">
             Aplicar
           </Button>
         </div>

@@ -19,6 +19,7 @@ import {
 } from "../utils";
 import { buildVehicleGridSpecs } from "../utils/build-vehicle-grid-specs";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
+import { Button } from "@/components/ui/button";
 
 interface VehicleFeaturedCardProps {
   vehicle: VehicleListItem;
@@ -186,11 +187,10 @@ export const VehicleFeaturedCard = ({
               </span>
             ) : null}
           </div>
-          <Link
-            href={vehicleUrl}
-            className="shrink-0 rounded-[22px] bg-white px-3.5 py-2.5 text-[13px]  text-[#1769D5]"
-          >
-            Ver anuncio <ChevronRight />
+          <Link href={vehicleUrl}>
+            <Button variant="outline" size="sm" className="text-primary rounded-full">
+              Ver anuncio <ChevronRight />
+            </Button>
           </Link>
         </div>
       </div>

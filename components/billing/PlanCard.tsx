@@ -24,7 +24,11 @@ import { listCatalogEntitlementDisplays } from "@/lib/billing/entitlements";
 import { cn } from "@/lib/utils";
 import { LiaCarSideSolid } from "react-icons/lia";
 import { FaStar } from "react-icons/fa";
+
 const VISIBLE_FEATURES_COUNT = 5;
+/** Frontend-only launch promo: inflate list price, keep Stripe amount unchanged. */
+const LAUNCH_PRICE_INFLATE_FACTOR = 1.25;
+const LAUNCH_DISCOUNT_PERCENT = 25;
 
 interface PlanCardProps {
   plan: BillingCatalogPlan;
@@ -32,6 +36,8 @@ interface PlanCardProps {
   formatPrice: (amountCents: number) => string;
   onSelect?: () => void;
   selectDisabled?: boolean;
+  /** When true, shows an inflated struck-through price and the real price as a launch offer. */
+  showDiscount?: boolean;
 }
 
 interface PlanFeatureRow {
@@ -74,6 +80,7 @@ export const PlanCard = ({
   formatPrice,
   onSelect,
   selectDisabled = false,
+  showDiscount = false,
 }: PlanCardProps) => {
   const monthly = plan.prices.find((price) => price.interval === "month");
   const primaryPrice = monthly ?? plan.prices[0];
@@ -103,12 +110,19 @@ export const PlanCard = ({
   const hiddenFeatures = allFeatures.slice(VISIBLE_FEATURES_COUNT);
   const hasHiddenFeatures = hiddenFeatures.length > 0;
 
+  const offerAmountCents = primaryPrice?.amount_cents ?? 0;
+  const listAmountCents = Math.round(
+    offerAmountCents * LAUNCH_PRICE_INFLATE_FACTOR,
+  );
+  const intervalLabel = monthly ? "mes" : "año";
+
   return (
     <Card
       className={cn(
         "relative flex flex-col  gap-2 pt-0 ",
         isActive && "border border-primary overflow-visible",
-        plan.is_featured && "border border-primary bg-primary-soft/10 overflow-hidden",
+        plan.is_featured &&
+          "border border-primary bg-primary-soft/10 overflow-hidden",
       )}
     >
       <div
@@ -117,12 +131,12 @@ export const PlanCard = ({
           plan.is_featured && !isActive && "bg-primary",
         )}
       >
-        {plan.is_featured && (
+        {plan.is_featured ? (
           <>
             <FaStar className="size-4" />
             MÁS POPULAR
           </>
-        )}
+        ) : null}
       </div>
       {isActive ? (
         <div className="absolute -top-2.5 flex w-full justify-center">
@@ -144,14 +158,37 @@ export const PlanCard = ({
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col items-center justify-center">
+      <CardContent className="flex flex-col items-center justify-center gap-1">
         {primaryPrice ? (
-          <p className="text-3xl font-semibold whitespace-nowrap">
-            {formatPrice(primaryPrice.amount_cents)}{" "}
-            <span className="text-sm text-muted-foreground font-normal">
-              /{monthly ? "mes" : "año"}
-            </span>
-          </p>
+          showDiscount ? (
+            <>
+              <Badge className="rounded-full bg-red-100 px-3 text-xs font-semibold text-red-600 hover:bg-red-100">
+                Oferta de lanzamiento
+              </Badge>
+              <p className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
+                <span className="line-through">
+                  {formatPrice(listAmountCents)}
+                  <span className="font-normal"> /{intervalLabel}</span>
+                </span>
+                <Badge className="rounded-full bg-red-100 px-2 text-xs font-semibold text-red-600 hover:bg-red-100">
+                  −{LAUNCH_DISCOUNT_PERCENT}%
+                </Badge>
+              </p>
+              <p className="text-3xl font-semibold whitespace-nowrap">
+                {formatPrice(offerAmountCents)}{" "}
+                <span className="text-sm text-muted-foreground font-normal">
+                  /{intervalLabel}
+                </span>
+              </p>
+            </>
+          ) : (
+            <p className="text-3xl font-semibold whitespace-nowrap">
+              {formatPrice(offerAmountCents)}{" "}
+              <span className="text-sm text-muted-foreground font-normal">
+                /{intervalLabel}
+              </span>
+            </p>
+          )
         ) : null}
         <span className="text-xs text-muted-foreground">IVA no incluido</span>
       </CardContent>
