@@ -39,15 +39,17 @@ export function buildVehicleListingSitemapIndexEntries(
 
 export function buildVehicleListingSitemapIndexXml(
   entries: VehicleListingSitemapIndexEntry[],
-  lastModified = new Date().toISOString(),
+  lastModified?: string,
 ): string {
+  const lastModifiedTag = lastModified
+    ? `\n    <lastmod>${lastModified}</lastmod>`
+    : "";
   const sitemapEntries = entries
     .map((entry) => {
       const basePath = LISTING_SITEMAP_PATH_BY_VARIANT[entry.variant];
 
       return `  <sitemap>
-    <loc>${absoluteUrl(`${basePath}/sitemap/${entry.segmentId}.xml`)}</loc>
-    <lastmod>${lastModified}</lastmod>
+    <loc>${absoluteUrl(`${basePath}/sitemap/${entry.segmentId}.xml`)}</loc>${lastModifiedTag}
   </sitemap>`;
     })
     .join("\n");

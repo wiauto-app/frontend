@@ -2,13 +2,15 @@ import { absoluteUrl } from "@/lib/seo/absolute-url";
 
 export function buildVehicleSitemapIndexXml(
   segmentIds: string[],
-  lastModified = new Date().toISOString(),
+  lastModified?: string,
 ): string {
+  const lastModifiedTag = lastModified
+    ? `\n    <lastmod>${lastModified}</lastmod>`
+    : "";
   const entries = segmentIds
     .map(
       (id) => `  <sitemap>
-    <loc>${absoluteUrl(`/vehiculo/sitemap/${id}.xml`)}</loc>
-    <lastmod>${lastModified}</lastmod>
+    <loc>${absoluteUrl(`/vehiculo/sitemap/${id}.xml`)}</loc>${lastModifiedTag}
   </sitemap>`,
     )
     .join("\n");

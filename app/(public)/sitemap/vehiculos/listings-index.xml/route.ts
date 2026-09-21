@@ -14,23 +14,15 @@ const SITEMAP_INDEX_HEADERS = {
 } as const;
 
 export async function GET() {
-  try {
-    const [catalogMeta, withProvinceMeta] = await Promise.all([
-      fetchVehicleListingSitemapMeta("catalog"),
-      fetchVehicleListingSitemapMeta("with-province"),
-    ]);
-    const entries = buildVehicleListingSitemapIndexEntries(
-      catalogMeta.totalPages,
-      withProvinceMeta.totalPages,
-    );
-    const xml = buildVehicleListingSitemapIndexXml(entries);
+  const [catalogMeta, withProvinceMeta] = await Promise.all([
+    fetchVehicleListingSitemapMeta("catalog"),
+    fetchVehicleListingSitemapMeta("with-province"),
+  ]);
+  const entries = buildVehicleListingSitemapIndexEntries(
+    catalogMeta.totalPages,
+    withProvinceMeta.totalPages,
+  );
+  const xml = buildVehicleListingSitemapIndexXml(entries);
 
-    return new NextResponse(xml, { headers: SITEMAP_INDEX_HEADERS });
-  } catch {
-    const xml = buildVehicleListingSitemapIndexXml(
-      buildVehicleListingSitemapIndexEntries(0, 0),
-    );
-
-    return new NextResponse(xml, { headers: SITEMAP_INDEX_HEADERS });
-  }
+  return new NextResponse(xml, { headers: SITEMAP_INDEX_HEADERS });
 }

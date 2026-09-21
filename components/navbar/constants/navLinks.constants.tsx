@@ -208,6 +208,3 @@ export const isNavEntryActive = (
 
   return isNavLinkActive(pathname, link.href);
 };
-
-export const isServicesNavActive = (pathname: string): boolean =>
-  pathname.startsWith("/servicios");

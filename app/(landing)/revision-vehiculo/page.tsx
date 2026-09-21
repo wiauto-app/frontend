@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { NOINDEX_ROBOTS } from '@/lib/seo/noindex';
+
 import { BuyBenefits } from './components/BuyBenefits';
 import { HeroInspection } from './components/HeroInspection';
 import { HowItWorks } from './components/HowItWorks';
@@ -10,6 +12,7 @@ export const metadata: Metadata = {
   title: 'Revisión e Inspección de Vehículos | WiAuto',
   description:
     'Solicita una inspección profesional de más de 200 puntos antes de comprar un coche. Recibe un informe detallado con fotos y recomendaciones.',
+  robots: NOINDEX_ROBOTS,
 };
 
 export default function RevisionVehiculoPage() {

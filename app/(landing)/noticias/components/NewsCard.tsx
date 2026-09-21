@@ -61,7 +61,7 @@ export const NewsCard = ({ item }: NewsCardProps) => {
         </div>
         
         <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600">
-          {item.summary || "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s..."}
+          {item.summary}
         </p>
       </div>
     </article>

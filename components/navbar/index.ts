@@ -4,7 +4,6 @@ export { NavbarLinks } from "./components/NavbarLinks";
 export { NavbarMobileMenu } from "./components/NavbarMobileMenu";
 export { NavbarPublishButton } from "./components/NavbarPublishButton";
 export { NavLinkItem } from "./components/NavLinkItem";
-export { ServicesDropdown, ServicesNavSection } from "./components/servicesDropdown";
 export { UserDropdown } from "./components/userDropdown";
 export {
   BRAND_BLUE,
@@ -13,5 +12,4 @@ export {
   isNavEntryActive,
   isNavLinkActive,
   isNavLinkGroupActive,
-  isServicesNavActive,
 } from "./constants/navLinks.constants";

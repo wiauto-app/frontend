@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { NOINDEX_ROBOTS } from "@/lib/seo/noindex";
+
 import { SegurosHeroSection } from "./components/SegurosHeroSection";
 import { SegurosBenefitsSection } from "./components/SegurosBenefitsSection";
 import { SegurosSecuritySection } from "./components/SegurosSecuritySection";
@@ -17,12 +19,14 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         content?.hero?.descripcion ??
         "Protege tu vehículo con Seguros Confianza. Coberturas integrales, atención 24/7 y trámites 100% online en alianza con WiAuto.",
+      robots: NOINDEX_ROBOTS,
     };
   } catch {
     return {
       title: "Seguros | WiAuto",
       description:
         "Protege tu vehículo con Seguros Confianza. Coberturas integrales, atención 24/7 y trámites 100% online en alianza con WiAuto.",
+      robots: NOINDEX_ROBOTS,
     };
   }
 }

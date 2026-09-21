@@ -34,4 +34,15 @@ describe("vehicle listing sitemap index", () => {
     );
     expect(xml).toContain("<lastmod>2026-09-02T12:00:00.000Z</lastmod>");
   });
+
+  it("omite lastmod cuando no se informa (nunca inventa la fecha actual)", () => {
+    const xml = buildVehicleListingSitemapIndexXml(
+      buildVehicleListingSitemapIndexEntries(1, 1),
+    );
+
+    expect(xml).toContain(
+      "https://www.wiauto.test/sitemap/vehiculos/catalog/sitemap/0.xml",
+    );
+    expect(xml).not.toContain("<lastmod>");
+  });
 });

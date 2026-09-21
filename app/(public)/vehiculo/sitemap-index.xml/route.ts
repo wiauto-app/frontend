@@ -12,15 +12,9 @@ const SITEMAP_INDEX_HEADERS = {
 } as const;
 
 export async function GET() {
-  try {
-    const meta = await fetchVehicleSitemapMeta();
-    const segmentIds = getVehicleSitemapSegmentIds(meta.totalPages);
-    const xml = buildVehicleSitemapIndexXml(segmentIds);
+  const meta = await fetchVehicleSitemapMeta();
+  const segmentIds = getVehicleSitemapSegmentIds(meta.totalPages);
+  const xml = buildVehicleSitemapIndexXml(segmentIds);
 
-    return new NextResponse(xml, { headers: SITEMAP_INDEX_HEADERS });
-  } catch {
-    const xml = buildVehicleSitemapIndexXml(["0"]);
-
-    return new NextResponse(xml, { headers: SITEMAP_INDEX_HEADERS });
-  }
+  return new NextResponse(xml, { headers: SITEMAP_INDEX_HEADERS });
 }
