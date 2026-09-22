@@ -1,7 +1,5 @@
-import type {
-  NewsListItem,
-  NewsPaginatedResult,
-} from "../types/news.types";
+import { EmptyContent } from "@/components/ui/emptyContent";
+import type { NewsListItem, NewsPaginatedResult } from "../types/news.types";
 import { NewsCard } from "./NewsCard";
 import { NewsPagination } from "./NewsPagination";
 
@@ -17,13 +15,7 @@ export const NewsContent = ({
   activeCategorySlug,
 }: NewsContentProps) => {
   if (items.length === 0) {
-    return (
-      <p className="py-16 text-center text-slate-500">
-        {activeCategorySlug
-          ? "No hay noticias en esta categoría."
-          : "No hay noticias disponibles."}
-      </p>
-    );
+    return <EmptyContent title="No hay noticias disponibles" description="No hay noticias disponibles" />;
   }
 
   return (
