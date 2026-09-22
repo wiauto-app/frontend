@@ -54,8 +54,6 @@ const CHANNEL_ITEMS = [
   { field: "channel_email" as const, label: "Correo electrónico" },
   { field: "channel_push" as const, label: "Notificaciones push" },
   { field: "channel_in_app" as const, label: "In-app" },
-  { field: "channel_sms" as const, label: "SMS" },
-  { field: "channel_whatsapp" as const, label: "WhatsApp" },
 ] as const;
 
 export const GlobalNotificationPreferences = ({

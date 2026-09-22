@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Bell,
-  Mail,
-  MessageCircleMore,
-  MessageSquareText,
-  Smartphone,
-} from "lucide-react";
+import { Bell, Mail, MessageSquareText } from "lucide-react";
 import type {
   Alert,
   AlertNotificationChannel,
@@ -56,9 +50,7 @@ const CHANNEL_ITEMS: Array<{
 }> = [
   { channel: "email", label: "Correo electrónico", Icon: Mail },
   { channel: "push", label: "Notificación push", Icon: Bell },
-  { channel: "sms", label: "SMS", Icon: Smartphone },
   { channel: "in_app", label: "Centro de notificaciones", Icon: MessageSquareText },
-  { channel: "whatsapp", label: "WhatsApp", Icon: MessageCircleMore },
 ];
 
 export const SavedSearchAlertToggles = ({

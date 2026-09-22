@@ -93,6 +93,9 @@ export const SavedSearchCard = ({
   };
 
   const filterSummary = getFilterSummary(alert);
+  const visibleChannels = alert.notification_channels.filter(
+    (channel) => channel === "email" || channel === "push" || channel === "in_app",
+  );
 
   return (
     <>
@@ -143,8 +146,8 @@ export const SavedSearchCard = ({
               <div>
                 <p className="text-xs font-semibold text-slate-900">Canales de entrega</p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {alert.notification_channels.length > 0 ? (
-                    alert.notification_channels.map((channel) => (
+                  {visibleChannels.length > 0 ? (
+                    visibleChannels.map((channel) => (
                       <span
                         key={channel}
                         className="rounded-md bg-white px-2 py-1 text-xs font-medium text-slate-600 shadow-sm ring-1 ring-slate-100"

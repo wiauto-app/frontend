@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  BellRing,
-  LayoutPanelTop,
-  Mail,
-  MessageCircleMore,
-  MessageSquareText,
-} from "lucide-react";
+import { BellRing, LayoutPanelTop, Mail } from "lucide-react";
 import type {
   Alert,
   AlertNotificationChannel,
@@ -49,20 +43,6 @@ const CHANNELS: Array<{
     description: "Consulta el aviso dentro de WiAuto.",
     Icon: LayoutPanelTop,
     iconClassName: "bg-indigo-50 text-indigo-700",
-  },
-  {
-    channel: "sms",
-    title: "SMS",
-    description: "Un mensaje de texto a tu número registrado.",
-    Icon: MessageSquareText,
-    iconClassName: "bg-amber-50 text-amber-700",
-  },
-  {
-    channel: "whatsapp",
-    title: "WhatsApp",
-    description: "Un mensaje directo en WhatsApp.",
-    Icon: MessageCircleMore,
-    iconClassName: "bg-emerald-50 text-emerald-700",
   },
 ];
 

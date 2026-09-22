@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Mail,
-  MessageSquare,
-  Monitor,
-  Smartphone,
-  type LucideIcon,
-} from "lucide-react";
+import { Mail, Monitor, Smartphone, type LucideIcon } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -19,7 +13,7 @@ import { useNewsletterPreferences } from "@/app/usuario/newsletter/hooks/useNews
 
 type NewsletterChannelField = keyof Pick<
   NewsletterSubscription,
-  "channel_push" | "channel_email" | "channel_in_app" | "channel_whatsapp"
+  "channel_push" | "channel_email" | "channel_in_app"
 >;
 
 interface ChannelItem {
@@ -32,7 +26,6 @@ const CHANNEL_ITEMS: ChannelItem[] = [
   { field: "channel_push", label: "Push móvil", icon: Smartphone },
   { field: "channel_email", label: "Email", icon: Mail },
   { field: "channel_in_app", label: "In-app", icon: Monitor },
-  { field: "channel_whatsapp", label: "WhatsApp", icon: MessageSquare },
 ];
 
 interface PreferenceToggleProps {

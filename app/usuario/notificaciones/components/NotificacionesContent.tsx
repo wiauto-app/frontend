@@ -31,7 +31,7 @@ const CONTAINER_HEIGHT = "calc(100vh - 10rem)";
 interface ChannelItem {
   field: keyof Pick<
     AlertNotificationPreferences,
-    "channel_push" | "channel_email" | "channel_in_app" | "channel_whatsapp"
+    "channel_push" | "channel_email" | "channel_in_app"
   >;
   label: string;
   icon: LucideIcon;
@@ -43,6 +43,7 @@ interface AlertTypeItem {
     | "notify_new_matches"
     | "notify_price_drops"
     | "notify_favorite_changes"
+    
     | "notify_new_messages"
     | "notify_seller_replies"
     | "notify_new_leads"
@@ -54,7 +55,6 @@ const CHANNEL_ITEMS: ChannelItem[] = [
   { field: "channel_push", label: "Push móvil", icon: Smartphone },
   { field: "channel_email", label: "Email", icon: Mail },
   { field: "channel_in_app", label: "In-app", icon: Monitor },
-  { field: "channel_whatsapp", label: "WhatsApp", icon: MessageSquare },
 ];
 
 const ALERT_TYPE_ITEMS: AlertTypeItem[] = [
