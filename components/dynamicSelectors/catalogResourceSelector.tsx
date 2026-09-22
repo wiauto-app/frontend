@@ -1,3 +1,6 @@
+"use client";
+
+import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Select,
@@ -18,6 +21,10 @@ export interface CatalogResourceSelectorProps<T> {
   disabled?: boolean;
   getItemValue: (item: T) => string;
   getItemLabel: (item: T) => string;
+  /** Custom option content. Defaults to `getItemLabel(item)`. */
+  renderItem?: (item: T) => ReactNode;
+  /** Custom selected value in the trigger. Defaults to `getItemLabel(item)`. */
+  renderSelectedValue?: (item: T) => ReactNode;
 }
 
 export const CatalogResourceSelector = <T,>({
@@ -30,6 +37,8 @@ export const CatalogResourceSelector = <T,>({
   disabled = false,
   getItemValue,
   getItemLabel,
+  renderItem,
+  renderSelectedValue,
 }: CatalogResourceSelectorProps<T>) => {
   const { data, isLoading } = useQuery({
     queryKey,
@@ -37,25 +46,46 @@ export const CatalogResourceSelector = <T,>({
   });
 
   const items = data?.data ?? [];
-  const select_items = items.map((item) => ({
+  const resolvedPlaceholder = isLoading ? "Cargando..." : placeholder;
+  const selectItems = items.map((item) => ({
     value: getItemValue(item),
     label: getItemLabel(item),
   }));
 
+  const findItemByValue = (selectedValue: unknown): T | undefined => {
+    if (typeof selectedValue !== "string" || !selectedValue) {
+      return undefined;
+    }
+
+    return items.find((item) => getItemValue(item) === selectedValue);
+  };
 
   return (
     <Select
       value={value ?? ""}
-      onValueChange={(next_value) => {
-        if (next_value != null) {
-          onValueChange(next_value);
+      onValueChange={(nextValue) => {
+        if (nextValue != null) {
+          onValueChange(nextValue);
         }
       }}
       disabled={disabled || isLoading}
-      items={select_items}
+      items={selectItems}
     >
       <SelectTrigger className="w-full" aria-invalid={ariaInvalid}>
-        <SelectValue placeholder={isLoading ? "Cargando..." : placeholder} />
+        <SelectValue placeholder={resolvedPlaceholder}>
+          {(selectedValue) => {
+            const selectedItem = findItemByValue(selectedValue);
+            if (!selectedItem) {
+              return (
+                <span className="text-muted-foreground">{resolvedPlaceholder}</span>
+              );
+            }
+
+            return (
+              renderSelectedValue?.(selectedItem) ?? getItemLabel(selectedItem)
+            );
+          }}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {items.length === 0 ? (
@@ -64,10 +94,10 @@ export const CatalogResourceSelector = <T,>({
           </SelectItem>
         ) : (
           items.map((item) => {
-            const item_value = getItemValue(item);
+            const itemValue = getItemValue(item);
             return (
-              <SelectItem key={item_value} value={item_value}>
-                {getItemLabel(item)}
+              <SelectItem key={itemValue} value={itemValue}>
+                {renderItem?.(item) ?? getItemLabel(item)}
               </SelectItem>
             );
           })

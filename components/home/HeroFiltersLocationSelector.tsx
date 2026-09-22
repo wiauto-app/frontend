@@ -298,8 +298,8 @@ export const HeroFiltersLocationSelector = ({
         />
 
         <PopoverContent
-          align="end"
-          className="flex w-full flex-col gap-3 md:w-96"
+          align="start"
+          className="flex w-full flex-col gap-3 md:w-72"
         >
           <SearchInput
             placeholder="Buscar provincia"

@@ -62,7 +62,7 @@ export function BaseSelector<T>({
   showExtraActions,
   onCreate,
   disabled = false,
-  align = "center",
+  align = "start",
 }: BaseSelectProps<T>) {
   const resolvedPlaceholder = placeholder ?? "Seleccionar";
   const resolvedEmptyLabel = emptyLabel ?? "No hay datos";

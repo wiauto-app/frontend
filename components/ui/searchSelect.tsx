@@ -251,7 +251,8 @@ export const SearchSelect = ({
       />
 
       <PopoverContent
-        className="w-(--anchor-width) min-w-70 p-0"
+        align="start"
+        className="w-(--anchor-width) p-0"
         initialFocus={handleInitialFocus}
       >
         <Command shouldFilter={false}>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { TasadorForm } from "./components/TasadorForm";
+import { LandingHeader } from "@/components/ui/landingHeader";
 
 export const metadata: Metadata = {
   title: "Tasador de vehículos | WiAuto",
@@ -10,16 +11,8 @@ export const metadata: Metadata = {
 
 export default function TasadorPage() {
   return (
-    <div className="container-custom flex flex-col gap-8 py-10">
-      <div className="mx-auto flex max-w-2xl flex-col gap-3 text-center">
-        <h1 className="text-3xl font-bold text-slate-900">
-          Tasador de vehículos
-        </h1>
-        <p className="text-slate-600">
-          Cuéntanos sobre tu vehículo y te enviaremos un rango de precio
-          estimado sin compromiso.
-        </p>
-      </div>
+    <div className="flex flex-col gap-8">
+      <LandingHeader title="Tasador de vehículos" />
 
       <div className="mx-auto w-full max-w-2xl">
         <TasadorForm variant="public" />

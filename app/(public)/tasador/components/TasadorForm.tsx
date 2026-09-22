@@ -2,8 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-import { CheckCircle2 } from "lucide-react";
-import { Controller, FormProvider, useForm, type Resolver } from "react-hook-form";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  type Resolver,
+} from "react-hook-form";
 import { toast } from "sonner";
 
 import { useUser } from "@/app/contexts/auth/useUser";
@@ -21,6 +26,14 @@ import {
   type TasadorSchema,
 } from "../schemas/tasador.schema";
 import { TasadorCatalogFields } from "./TasadorCatalogFields";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { VehicleFormStep } from "../../components/vehicleFormStep";
 
 export type TasadorFormVariant = "public" | "user";
 
@@ -82,7 +95,9 @@ export const TasadorForm = ({ variant = "public" }: TasadorFormProps) => {
         : await appraisalRequestService.create(payload);
 
     if (!response.ok) {
-      toast.error(response.message || "No se pudo enviar la solicitud de tasación");
+      toast.error(
+        response.message || "No se pudo enviar la solicitud de tasación",
+      );
       return;
     }
 
@@ -106,187 +121,184 @@ export const TasadorForm = ({ variant = "public" }: TasadorFormProps) => {
 
   return (
     <FormProvider {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex flex-col gap-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
-        aria-label="Formulario de solicitud de tasación"
-      >
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Datos del vehículo
-          </h2>
-          <p className="text-sm text-slate-600">
+      <Card size="sm">
+        <CardHeader className="sr-only">
+          <CardTitle>Datos del vehículo</CardTitle>
+          <CardDescription>
             Selecciona la marca, modelo, año y versión de tu vehículo.
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="flex flex-col gap-4"
+            aria-label="Formulario de solicitud de tasación"
+          >
+            <VehicleFormStep number={1} label="¿Qué vehículo vendes?">
+              <TasadorCatalogFields />
 
-        <TasadorCatalogFields />
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Controller
-            name="transmission_type"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="tasador-transmission">
-                  Tipo de transmisión
-                </FieldLabel>
-                <VehicleTransmissionTypeSelector
-                  value={field.value}
-                  onValueChange={(value) => field.onChange(value ?? "manual")}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Controller
+                  name="transmission_type"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="tasador-transmission">
+                        Tipo de transmisión
+                      </FieldLabel>
+                      <VehicleTransmissionTypeSelector
+                        value={field.value}
+                        onValueChange={(value) =>
+                          field.onChange(value ?? "manual")
+                        }
+                      />
+                      {fieldState.error ? (
+                        <FieldError errors={[fieldState.error]} />
+                      ) : null}
+                    </Field>
+                  )}
                 />
-                {fieldState.error ? (
-                  <FieldError errors={[fieldState.error]} />
-                ) : null}
-              </Field>
-            )}
-          />
 
-          <Controller
-            name="mileage"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="tasador-mileage">
-                  Kilometraje
-                </FieldLabel>
-                <Input
-                  id="tasador-mileage"
-                  type="number"
-                  min={0}
-                  inputMode="numeric"
-                  placeholder="Ej. 85000"
-                  name={field.name}
-                  onBlur={field.onBlur}
-                  ref={field.ref}
-                  value={field.value ?? 0}
-                  onChange={(event) => field.onChange(Number(event.target.value))}
-                  aria-invalid={fieldState.invalid}
+                <Controller
+                  name="mileage"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="tasador-mileage">
+                        Kilometraje
+                      </FieldLabel>
+                      <Input
+                        id="tasador-mileage"
+                        type="number"
+                        min={0}
+                        inputMode="numeric"
+                        placeholder="Ej. 85000"
+                        name={field.name}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                        value={field.value ?? 0}
+                        onChange={(event) =>
+                          field.onChange(Number(event.target.value))
+                        }
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.error ? (
+                        <FieldError errors={[fieldState.error]} />
+                      ) : null}
+                    </Field>
+                  )}
                 />
-                {fieldState.error ? (
-                  <FieldError errors={[fieldState.error]} />
-                ) : null}
-              </Field>
-            )}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-slate-900">Ubicación</h2>
-          <p className="text-sm text-slate-600">
-            Indica dónde se encuentra el vehículo.
-          </p>
-        </div>
-
-        <Controller
-          name="lat"
-          control={form.control}
-          render={({ field: latField, fieldState }) => {
-            const lng = form.watch("lng");
-            return (
-              <MapInput
-                value={{ lat: latField.value, lng }}
-                onChange={({ lat, lng: nextLng }) => {
-                  latField.onChange(lat);
-                  form.setValue("lng", nextLng, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
+              </div>
+            </VehicleFormStep>
+            <VehicleFormStep number={2} label="Ubicación">
+              <Controller
+                name="lat"
+                control={form.control}
+                render={({ field: latField, fieldState }) => {
+                  const lng = form.watch("lng");
+                  return (
+                    <MapInput
+                      value={{ lat: latField.value, lng }}
+                      onChange={({ lat, lng: nextLng }) => {
+                        latField.onChange(lat);
+                        form.setValue("lng", nextLng, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        });
+                      }}
+                      ariaInvalid={
+                        fieldState.invalid || Boolean(form.formState.errors.lng)
+                      }
+                    />
+                  );
                 }}
-                ariaInvalid={
-                  fieldState.invalid || Boolean(form.formState.errors.lng)
-                }
               />
-            );
-          }}
-        />
+            </VehicleFormStep>
 
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Tus datos de contacto
-          </h2>
-          <p className="text-sm text-slate-600">
-            Te avisaremos por correo con la estimación.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Controller
-            name="name"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="tasador-name">Nombre</FieldLabel>
-                <Input
-                  id="tasador-name"
-                  autoComplete="name"
-                  placeholder="Tu nombre"
-                  aria-invalid={fieldState.invalid}
-                  {...field}
+            <VehicleFormStep number={3} label="Tus datos de contacto">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Controller
+                  name="name"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="tasador-name">Nombre</FieldLabel>
+                      <Input
+                        id="tasador-name"
+                        autoComplete="name"
+                        placeholder="Tu nombre"
+                        aria-invalid={fieldState.invalid}
+                        {...field}
+                      />
+                      {fieldState.error ? (
+                        <FieldError errors={[fieldState.error]} />
+                      ) : null}
+                    </Field>
+                  )}
                 />
-                {fieldState.error ? (
-                  <FieldError errors={[fieldState.error]} />
-                ) : null}
-              </Field>
-            )}
-          />
 
-          <Controller
-            name="email"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="tasador-email">Email</FieldLabel>
-                <Input
-                  id="tasador-email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="tu@email.com"
-                  aria-invalid={fieldState.invalid}
-                  {...field}
+                <Controller
+                  name="email"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="tasador-email">Email</FieldLabel>
+                      <Input
+                        id="tasador-email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="tu@email.com"
+                        aria-invalid={fieldState.invalid}
+                        {...field}
+                      />
+                      {fieldState.error ? (
+                        <FieldError errors={[fieldState.error]} />
+                      ) : null}
+                    </Field>
+                  )}
                 />
-                {fieldState.error ? (
-                  <FieldError errors={[fieldState.error]} />
-                ) : null}
-              </Field>
-            )}
-          />
-        </div>
+              </div>
 
-        <Controller
-          name="phone"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="tasador-phone">Teléfono</FieldLabel>
-              <PhoneInput
-                value={field.value}
-                onChange={field.onChange}
-                ariaInvalid={fieldState.invalid}
+              <Controller
+                name="phone"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="tasador-phone">Teléfono</FieldLabel>
+                    <PhoneInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      ariaInvalid={fieldState.invalid}
+                    />
+                    {form.formState.errors.phone?.phone ||
+                    form.formState.errors.phone?.phone_code ? (
+                      <FieldError
+                        errors={[
+                          form.formState.errors.phone?.phone,
+                          form.formState.errors.phone?.phone_code,
+                        ]}
+                      />
+                    ) : null}
+                  </Field>
+                )}
               />
-              {form.formState.errors.phone?.phone ||
-              form.formState.errors.phone?.phone_code ? (
-                <FieldError
-                  errors={[
-                    form.formState.errors.phone?.phone,
-                    form.formState.errors.phone?.phone_code,
-                  ]}
-                />
+            </VehicleFormStep>
+
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              className="w-full"
+            >
+              {form.formState.isSubmitting ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
               ) : null}
-            </Field>
-          )}
-        />
-
-        <Button
-          type="submit"
-          disabled={form.formState.isSubmitting}
-          className="w-full"
-        >
-          {form.formState.isSubmitting
-            ? "Enviando..."
-            : "Solicitar tasación"}
-        </Button>
-      </form>
+              {form.formState.isSubmitting
+                ? "Enviando..."
+                : "Solicitar tasación"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </FormProvider>
   );
 };

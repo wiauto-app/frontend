@@ -302,9 +302,9 @@ export const HeroFiltersMakeSelector = ({
         }
       />
       <PopoverContent
-        align="end"
+        align="start"
         side="bottom"
-        className="flex w-full flex-col gap-2 md:w-96"
+        className="flex w-full flex-col gap-2 md:w-72"
       >
         <SearchInput
           placeholder="Buscar marca o modelo"

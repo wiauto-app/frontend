@@ -79,7 +79,7 @@ export const TasadorCatalogFields = () => {
   }, [makeId, modelId, yearId]);
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <MakeSelector
         value={ids.makeId}
         ariaInvalid={Boolean(form.formState.errors.catalog_make_id)}

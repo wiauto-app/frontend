@@ -4,6 +4,12 @@ import { NewsCategories } from "./components/newsCategories";
 import { parseNewsSearchParams } from "./utils/parse-news-search-params";
 import type { NewsCategory, NewsPaginatedResult } from "./types/news.types";
 import { LandingHeader } from "@/components/ui/landingHeader";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Noticias de la actualidad | WiAuto",
+  description: "Noticias de actualidad",
+};
 
 export default async function NewsPage({
   searchParams,
