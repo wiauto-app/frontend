@@ -59,7 +59,7 @@ export const MyListingsMakeModelFilter = ({
 
   return (
     <>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 ">
         <Select
           value={makeId != null ? String(makeId) : null}
           onValueChange={handleMakeChange}

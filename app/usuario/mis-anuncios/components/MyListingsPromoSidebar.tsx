@@ -33,21 +33,11 @@ export const MyListingsPromoSidebar = () => {
   return (
     <aside className="space-y-4">
       <div>
-        {availableFeaturedCredits > 0 ? (
-          <p className="mb-3 text-sm text-gray-700">
-            Tienes{" "}
-            <span className="font-semibold text-primary">
-              {availableFeaturedCredits}
-            </span>{" "}
-            {availableFeaturedCredits === 1
-              ? "cupón de destacado disponible"
-              : "cupones de destacado disponibles"}
-            . Canjéalos desde el botón Destacar de cada anuncio.
-          </p>
-        ) : null}
-
         {featureOffers.length > 0 ? (
-          <ul className="space-y-3" aria-label="Ofertas para comprar cupón de destacado">
+          <ul
+            className="space-y-3"
+            aria-label="Ofertas para comprar cupón de destacado"
+          >
             {featureOffers.map((offer) => (
               <OfferCard
                 key={offer.id}

@@ -40,7 +40,7 @@ export const MyListingsFiltersBar = ({
   onReset,
 }: MyListingsFiltersBarProps) => {
   return (
-    <Card>
+    <Card size="sm">
       <CardContent>
         <div className="flex flex-wrap items-center gap-2">
           <MyListingsMakeModelFilter
@@ -130,12 +130,6 @@ export const MyListingsFiltersBar = ({
               Limpiar filtros
             </Button>
           ) : null}
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-500">
-            Antigüedad del anuncio
-          </span>
           <DateRangeSelector
             startDate={filters.sinceCreatedAt}
             endDate={filters.untilCreatedAt}
