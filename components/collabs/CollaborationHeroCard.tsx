@@ -13,6 +13,7 @@ export interface CollaborationHeroCardProps {
   content: StrapiColaboracionLanding;
   className?: string;
   size?: CollaborationHeroCardSize;
+  onNavigate?: () => void;
 }
 
 const SIZE_STYLES: Record<
@@ -64,6 +65,7 @@ export const CollaborationHeroCard = ({
   content,
   className,
   size = "md",
+  onNavigate,
 }: CollaborationHeroCardProps) => {
   const hero = content.hero;
   if (!hero) {
@@ -90,6 +92,7 @@ export const CollaborationHeroCard = ({
       {...(action?.externo
         ? { target: "_blank", rel: "noopener noreferrer" }
         : {})}
+      onClick={onNavigate}
     >
       <div className={cn("flex items-center justify-between", styles.rowGap)}>
         <div className="flex min-w-0 flex-1 flex-col">

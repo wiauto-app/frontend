@@ -70,9 +70,7 @@ export const SegurosLeadForm = ({ onSuccess }: SegurosLeadFormProps) => {
       noValidate
     >
       <fieldset className="space-y-2">
-        <legend className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Tus datos
-        </legend>
+    
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <ControlledInput
             name="firstName"
@@ -115,9 +113,7 @@ export const SegurosLeadForm = ({ onSuccess }: SegurosLeadFormProps) => {
       </fieldset>
 
       <fieldset className="space-y-2">
-        <legend className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Tu vehículo
-        </legend>
+       
         <ControlledInput
           name="licensePlate"
           control={form.control}

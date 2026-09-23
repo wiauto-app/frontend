@@ -34,7 +34,7 @@ export const StrapiActionHost = ({
       return (
         <Dialog open={open} onOpenChange={onOpenChange}>
           <DialogContent className="max-h-[calc(100vh-2rem)] max-w-lg overflow-y-auto">
-            <DialogHeader>
+            <DialogHeader className="sr-only">
               <DialogTitle>Calcular seguro</DialogTitle>
               <DialogDescription>
                 Completa el formulario y te contactaremos con una propuesta.

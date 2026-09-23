@@ -42,6 +42,7 @@ export const NavbarCollaborationsMenu = ({
               <CollaborationHeroCard
                 content={collaboration}
                 size="sm"
+                onNavigate={onNavigate}
               />
             </li>
           ))}
