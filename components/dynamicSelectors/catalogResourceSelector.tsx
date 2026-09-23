@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import type { PaginatedResult } from "@/types/general.types";
 
 export interface CatalogResourceSelectorProps<T> {
@@ -25,6 +26,7 @@ export interface CatalogResourceSelectorProps<T> {
   renderItem?: (item: T) => ReactNode;
   /** Custom selected value in the trigger. Defaults to `getItemLabel(item)`. */
   renderSelectedValue?: (item: T) => ReactNode;
+  triggerClassName?: string;
 }
 
 export const CatalogResourceSelector = <T,>({
@@ -39,6 +41,7 @@ export const CatalogResourceSelector = <T,>({
   getItemLabel,
   renderItem,
   renderSelectedValue,
+  triggerClassName,
 }: CatalogResourceSelectorProps<T>) => {
   const { data, isLoading } = useQuery({
     queryKey,
@@ -71,7 +74,10 @@ export const CatalogResourceSelector = <T,>({
       disabled={disabled || isLoading}
       items={selectItems}
     >
-      <SelectTrigger className="w-full" aria-invalid={ariaInvalid}>
+      <SelectTrigger
+        className={cn("w-full", triggerClassName)}
+        aria-invalid={ariaInvalid}
+      >
         <SelectValue placeholder={resolvedPlaceholder}>
           {(selectedValue) => {
             const selectedItem = findItemByValue(selectedValue);

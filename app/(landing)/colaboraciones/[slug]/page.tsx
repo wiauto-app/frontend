@@ -5,9 +5,11 @@ import { FeaturesSection } from "@/components/landings/FeaturesSection";
 import { ContentSection } from "@/components/landings/ContentSection";
 import { DynamicContentSection } from "@/components/landings/DynamicContentSection";
 import { StrapiActionProvider } from "@/components/strapi-actions/strapi-action-context";
+import { STRAPI_ACTION_KEYS } from "@/components/strapi-actions/strapi-action-keys";
 import { getColaboracionBySlug } from "@/services/colaboracionesService";
 import { LandingContainer } from "@/components/ui/landingContainer";
 import { CollabsHeroSection } from "../components/collabsHeroSection";
+import { COLLABS_SEGUROS_HERO_FORM_ID } from "../components/collabsSegurosHeroForm";
 
 interface ColaboracionDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -49,11 +51,24 @@ export default async function ColaboracionDetailPage({
     notFound();
   }
 
+  const isEmbeddedSegurosForm =
+    colaboracion.key === STRAPI_ACTION_KEYS.SEGUROS_FORM;
+
   return (
-    <StrapiActionProvider actionKey={colaboracion.key}>
+    <StrapiActionProvider
+      actionKey={colaboracion.key}
+      embedTargetId={
+        isEmbeddedSegurosForm ? COLLABS_SEGUROS_HERO_FORM_ID : null
+      }
+    >
       <LandingContainer>
         {/* Hero Section */}
-        {colaboracion.hero && <CollabsHeroSection hero={colaboracion.hero} />}
+        {colaboracion.hero && (
+          <CollabsHeroSection
+            hero={colaboracion.hero}
+            actionKey={colaboracion.key}
+          />
+        )}
 
         {/* Features/Characteristics Section */}
         {colaboracion.caracteristicas && (

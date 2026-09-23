@@ -28,22 +28,53 @@ const StrapiActionContext = createContext<StrapiActionContextValue | null>(
 
 interface StrapiActionProviderProps {
   actionKey?: string | null;
+  /** Si se define, `openAction` hace scroll a este id en lugar de abrir el diálogo. */
+  embedTargetId?: string | null;
   children: ReactNode;
 }
 
+const scrollToEmbedTarget = (targetId: string): boolean => {
+  const target = document.getElementById(targetId);
+  if (!target) {
+    return false;
+  }
+
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  target.scrollIntoView({
+    behavior: prefersReducedMotion ? "auto" : "smooth",
+    block: "start",
+  });
+
+  return true;
+};
+
 export const StrapiActionProvider = ({
   actionKey,
+  embedTargetId,
   children,
 }: StrapiActionProviderProps) => {
   const [open, setOpen] = useState(false);
   const resolvedKey = isStrapiActionKey(actionKey) ? actionKey : null;
+  const isEmbedded = Boolean(resolvedKey && embedTargetId);
 
   const openAction = useCallback(() => {
     if (!resolvedKey) {
       return;
     }
+
+    if (embedTargetId && scrollToEmbedTarget(embedTargetId)) {
+      return;
+    }
+
+    if (isEmbedded) {
+      return;
+    }
+
     setOpen(true);
-  }, [resolvedKey]);
+  }, [resolvedKey, embedTargetId, isEmbedded]);
 
   const closeAction = useCallback(() => {
     setOpen(false);
@@ -62,7 +93,7 @@ export const StrapiActionProvider = ({
   return (
     <StrapiActionContext.Provider value={value}>
       {children}
-      {resolvedKey ? (
+      {resolvedKey && !isEmbedded ? (
         <StrapiActionHost
           actionKey={resolvedKey}
           open={open}

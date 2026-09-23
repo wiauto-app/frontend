@@ -5,6 +5,21 @@ export const LINK_POPULATE = {
   },
 };
 
+/** Populate de `shared.header` (`shared.text-field` anidado). */
+export const HEADER_POPULATE = {
+  populate: {
+    busqueda: true,
+  },
+};
+
+/** Populate de `shared.marcas` (header + enlaces repetibles). */
+export const MARCAS_POPULATE = {
+  populate: {
+    header: HEADER_POPULATE,
+    marcas: LINK_POPULATE,
+  },
+};
+
 /** Populate de `shared.carta-ventaja` (card). */
 export const CARD_POPULATE = {
   populate: {
@@ -29,7 +44,7 @@ export const HERO_POPULATE = {
 
 export const ADVANTAGES_POPULATE = {
   populate: {
-    header: true,
+    header: HEADER_POPULATE,
     caracteristicas: {
       populate: {
         icon: true,

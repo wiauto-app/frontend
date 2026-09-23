@@ -5,7 +5,12 @@ import {
   type ColaboracionLanding,
   type StrapiColaboracionResponse,
 } from "@/interfaces/landings-colaboracion.interface";
-import { HERO_POPULATE, ADVANTAGES_POPULATE } from "@/lib/strapi-populate";
+import {
+  ADVANTAGES_POPULATE,
+  CARD_POPULATE,
+  HERO_POPULATE,
+  MARCAS_POPULATE,
+} from "@/lib/strapi-populate";
 import qs from "qs";
 
 const COLABORACION_POPULATE = {
@@ -13,18 +18,14 @@ const COLABORACION_POPULATE = {
     hero: HERO_POPULATE,
     caracteristicas: ADVANTAGES_POPULATE,
     contenido: HERO_POPULATE,
-    // contenido_dinamico: {
-    //   populate: {
-    //     acciones: true,
-    //     imagen: true,
-    //     caracteristicas: {
-    //       populate: {
-    //         icon: true,
-    //       },
-    //     },
-    //     header: true,
-    //   },
-    // },
+    contenido_dinamico: {
+      on: {
+        "shared.hero": HERO_POPULATE,
+        "shared.carta-ventaja": CARD_POPULATE,
+        "planes.caracteristicas": ADVANTAGES_POPULATE,
+        "shared.marcas": MARCAS_POPULATE,
+      },
+    },
     contenido_extra: HERO_POPULATE,
   },
 };

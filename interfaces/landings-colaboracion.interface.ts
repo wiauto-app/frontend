@@ -3,7 +3,12 @@
  * Componentes: hero, caracteristicas, contenido, contenido_dinamico, contenido_extra
  */
 
-import { StrapiHero } from "./strapi-components.interface";
+import {
+  type StrapiCard as SharedCartaVentaja,
+  type StrapiHero,
+  type StrapiMarcas,
+  type StrapiPlanesCaracteristicas,
+} from "./strapi-components.interface";
 
 // ============================================================================
 // TIPOS COMPARTIDOS REUTILIZABLES
@@ -110,7 +115,7 @@ export interface StrapiColaboracionLanding {
   hero?: StrapiHero;
   caracteristicas?: StrapiCaracteristicas;
   contenido?: StrapiHero;
-  contenido_dinamico?: (StrapiHero | StrapiCartaVentaja | StrapiCaracteristicas)[];
+  contenido_dinamico?: StrapiContenidoDinamicoBlock[];
   contenido_extra?: StrapiHero;
   createdAt: string;
   updatedAt: string;
@@ -190,10 +195,17 @@ export interface CartaVentaja {
   acciones?: Action[];
 }
 
-export interface DynamicZoneBlock {
-  type: 'hero' | 'carta-ventaja' | 'caracteristicas';
-  data: StrapiHero | CartaVentaja | Caracteristicas;
-}
+export type StrapiContenidoDinamicoBlock =
+  | (StrapiHero & { __component: "shared.hero" })
+  | (SharedCartaVentaja & { __component: "shared.carta-ventaja" })
+  | (StrapiPlanesCaracteristicas & { __component: "planes.caracteristicas" })
+  | (StrapiMarcas & { __component: "shared.marcas" });
+
+export type DynamicZoneBlock =
+  | { type: "hero"; data: StrapiHero }
+  | { type: "carta-ventaja"; data: SharedCartaVentaja }
+  | { type: "caracteristicas"; data: StrapiPlanesCaracteristicas }
+  | { type: "marcas"; data: StrapiMarcas };
 
 export interface ColaboracionLanding {
   id: string;
@@ -241,13 +253,35 @@ export const mapStrapiColaboracionToInternal = (
     caracteristicas: strapi.caracteristicas,
 
     contenido: strapi.contenido,
+    contenido_dinamico: mapContenidoDinamico(strapi.contenido_dinamico),
     contenido_extra: strapi.contenido_extra,
-
+  
     publishedAt: strapi.publishedAt || undefined,
     locale: strapi.locale,
   };
 };
 
+
+const mapContenidoDinamico = (
+  blocks: StrapiContenidoDinamicoBlock[] | undefined,
+): DynamicZoneBlock[] | undefined => {
+  if (!blocks?.length) {
+    return undefined;
+  }
+
+  return blocks.map((block) => {
+    switch (block.__component) {
+      case "shared.hero":
+        return { type: "hero", data: block };
+      case "shared.carta-ventaja":
+        return { type: "carta-ventaja", data: block };
+      case "planes.caracteristicas":
+        return { type: "caracteristicas", data: block };
+      case "shared.marcas":
+        return { type: "marcas", data: block };
+    }
+  });
+};
 
 export const mapStrapiCaracteristicasToInternal = (
   strapi: StrapiCaracteristicas

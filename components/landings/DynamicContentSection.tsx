@@ -1,13 +1,11 @@
 'use client';
 
 import Link from "next/link";
-import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
-import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 
 import { HeroSection } from "./HeroSection";
 import { FeaturesSection } from "./FeaturesSection";
+import { MarcasSection } from "./MarcasSection";
 import { Card, CardContent } from "@/components/ui/card";
-import { IconContainer } from "@/components/ui/iconContainer";
 
 import type {
   DynamicZoneBlock,
@@ -21,7 +19,7 @@ interface DynamicContentSectionProps {
 
 /**
  * Renders dynamic zone blocks from Strapi.
- * Supports: hero, carta-ventaja, caracteristicas
+ * Supports: hero, carta-ventaja, caracteristicas, marcas
  */
 export const DynamicContentSection = ({
   blocks,
@@ -47,8 +45,17 @@ export const DynamicContentSection = ({
               />
             );
 
+          case "marcas":
+            return (
+              <MarcasSection
+                key={idx}
+                data={block.data}
+                className="mt-12"
+              />
+            );
+
           case "carta-ventaja": {
-            const cartaData = block.data as CartaVentaja;
+            const cartaData = block.data as unknown as CartaVentaja;
             return (
               <section
                 key={idx}
@@ -105,8 +112,6 @@ export const DynamicContentSection = ({
             );
           }
 
-          default:
-            return null;
         }
       })}
     </div>

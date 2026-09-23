@@ -41,11 +41,26 @@ export interface StrapiCard {
   iconName: string | null;
 }
 
+/** Componente `shared.text-field` */
+export interface StrapiTextField {
+  id: number;
+  placeholder: string | null;
+  label: string | null;
+}
+
 /** Componente `shared.header` */
 export interface StrapiHeader {
   id: number;
   titulo: string | null;
   descripcion: string | null;
+  busqueda: StrapiTextField | null;
+}
+
+/** Componente `shared.marcas` */
+export interface StrapiMarcas {
+  id: number;
+  header: StrapiHeader | null;
+  marcas: StrapiLink[] | null;
 }
 
 /** Componente `shared.hero` */
