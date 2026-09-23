@@ -7,6 +7,7 @@ import { useStrapiAction } from "@/components/strapi-actions/strapi-action-conte
 import { StrapiLink } from "@/interfaces/strapi-components.interface";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
+import { ChevronRight } from "lucide-react";
 
 interface StrapiButtonProps {
   button: StrapiLink;
@@ -100,18 +101,13 @@ export const StrapiButton = ({
   const renderedButton = (
     <Button
       type="button"
-      className={cn(
-        "w-full lg:w-auto",
-        className,
-        button.destacado
-          ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition-all text-xs sm:text-sm"
-          : "bg-white/90 backdrop-blur-xs border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium px-6 py-3 rounded-xl transition-all text-xs sm:text-sm shadow-2xs",
-      )}
+      className={cn("w-full lg:w-auto rounded-xl", className)}
       variant={button.destacado ? "default" : "outline"}
       size="lg"
       onClick={isActionButton ? handleActionClick : undefined}
     >
       {button.label}
+      {button.destacado && <ChevronRight />}
     </Button>
   );
 

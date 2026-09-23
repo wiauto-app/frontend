@@ -67,7 +67,7 @@ export const FavoriteVehicleCard = ({
 
   return (
     <Card size="sm">
-      <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:gap-5 sm:p-5">
+      <CardContent className="flex flex-col gap-4 sm:flex-row ">
         <Link
           href={vehicleHref}
           className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg sm:w-56 lg:w-72"
