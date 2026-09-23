@@ -33,7 +33,7 @@ interface CreateAssistantCreditsCheckoutParams extends OneTimeCheckoutOptions {
 
 interface CreateFeaturedListingCheckoutParams extends OneTimeCheckoutOptions {
   offer_id: string;
-  vehicle_id: string;
+  vehicle_id?: string;
 }
 
 type CreateOneTimeCheckoutParams =
@@ -182,7 +182,9 @@ export const billingService = {
 
     return postOneTimeCheckout({
       offer_id: params.offer_id,
-      metadata: { vehicle_id: params.vehicle_id },
+      ...(params.vehicle_id
+        ? { metadata: { vehicle_id: params.vehicle_id } }
+        : {}),
       ...(params.success_url ? { success_url: params.success_url } : {}),
       ...(params.cancel_url ? { cancel_url: params.cancel_url } : {}),
     });
@@ -200,12 +202,12 @@ export const billingService = {
 
   createFeaturedListingCheckout: async (
     offer_id: string,
-    vehicle_id: string,
+    vehicle_id?: string,
     options?: OneTimeCheckoutOptions,
   ): Promise<string | null> => {
     return billingService.createOneTimeCheckout({
       offer_id,
-      vehicle_id,
+      ...(vehicle_id ? { vehicle_id } : {}),
       ...options,
     });
   },

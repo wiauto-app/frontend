@@ -8,7 +8,10 @@ import { myListingsService } from "@/services/myListings/myListingsService";
 import { billingService } from "@/services/billingService";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { useEntitlements } from "@/hooks/useEntitlements";
-import { resolveLimitUsage } from "@/lib/billing/entitlements";
+import {
+  resolveLimitUsage,
+  withAvailableFeaturedCredits,
+} from "@/lib/billing/entitlements";
 import {
   DEFAULT_MY_LISTINGS_ORDER_VALUE,
   getMyListingsOrderOption,
@@ -195,11 +198,19 @@ export const useMyListingsPage = ({
   const { featureOffers, featureOffer, isLoading: isOffersLoading } =
     useFeaturedListingOffers(enabled);
 
-  const featuredSlots = billingMeQuery.data?.entitlements?.featured_listings
+  const planFeaturedSlots = billingMeQuery.data?.entitlements?.featured_listings
     ? resolveLimitUsage(billingMeQuery.data.entitlements.featured_listings, {
         isPrivileged,
       })
     : getLimitUsage("featured_listings");
+
+  const availableFeaturedCredits =
+    billingMeQuery.data?.available_featured_credits ?? 0;
+
+  const featuredSlots = withAvailableFeaturedCredits(
+    planFeaturedSlots,
+    availableFeaturedCredits,
+  );
 
   const listings: OwnerVehicleListItem[] = listingsQuery.data?.data ?? [];
 
@@ -217,6 +228,9 @@ export const useMyListingsPage = ({
     featureOffer,
     featureDurationDays: featureOffer?.duration_days ?? null,
     featuredSlots,
+    /** Cupo del plan sin sumar cupones (p. ej. copy de ayuda). */
+    planFeaturedSlots,
+    availableFeaturedCredits,
     isLoading: listingsQuery.isLoading,
     isBillingLoading: billingMeQuery.isLoading || isOffersLoading,
     isFetching: listingsQuery.isFetching,

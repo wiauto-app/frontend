@@ -134,8 +134,8 @@ export const MyListingsSummaryCards = ({
       : featuredRemaining == null
         ? null
         : featuredRemaining === 1
-          ? "1 hueco disponible"
-          : `${featuredRemaining} huecos disponibles`;
+          ? "1 cupón disponible"
+          : `${featuredRemaining} cupones disponibles`;
 
   const cards: SummaryCardConfig[] = [
     {

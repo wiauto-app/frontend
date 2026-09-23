@@ -214,6 +214,37 @@ export const resolveLimitUsage = (
   };
 };
 
+/**
+ * Cupo de destacados visible en UI: límite del plan + cupones comprados
+ * aún no canjeados (`available_featured_credits`). El numerador sigue siendo
+ * los anuncios actualmente destacados.
+ */
+export const withAvailableFeaturedCredits = (
+  snapshot: LimitUsageSnapshot,
+  availableCredits: number,
+): LimitUsageSnapshot => {
+  if (snapshot.unlimited) {
+    return snapshot;
+  }
+
+  const credits = Math.max(0, Math.floor(availableCredits));
+  if (credits === 0) {
+    return snapshot;
+  }
+
+  const planLimit = typeof snapshot.limit === "number" ? snapshot.limit : 0;
+  const limit = planLimit + credits;
+  const remaining = Math.max(0, limit - snapshot.used);
+
+  return {
+    used: snapshot.used,
+    limit,
+    remaining,
+    unlimited: false,
+    canUseIncluded: remaining > 0,
+  };
+};
+
 export const formatUsageVsLimit = (
   entry: BillingMeEntitlementEntry | undefined,
   fallbackUsed?: number,

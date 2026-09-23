@@ -36,6 +36,8 @@ export const MyListing = () => {
     billingMe,
     featureDurationDays,
     featuredSlots,
+    planFeaturedSlots,
+    availableFeaturedCredits,
     isLoading,
     isBillingLoading,
     error,
@@ -58,24 +60,44 @@ export const MyListing = () => {
       filters.untilCreatedAt,
   );
 
-  const canFeatureIncluded = featuredSlots.canUseIncluded;
-
   const showFeaturedCard =
     isPrivileged ||
     featuredSlots.unlimited ||
-    (typeof featuredSlots.limit === "number" && featuredSlots.limit > 0);
+    (typeof featuredSlots.limit === "number" && featuredSlots.limit > 0) ||
+    availableFeaturedCredits > 0;
 
   useEffect(() => {
     const checkout = searchParams.get("checkout");
-    if (checkout === "success") {
-      trackPendingPurchase();
-      toast.success("Pago completado. Tu anuncio se destacará en breve.");
-      void refetch();
-      void refetchBillingMe();
+    if (checkout !== "success" && checkout !== "cancel") {
+      return;
     }
+
     if (checkout === "cancel") {
       toast.error("El pago fue cancelado");
+      return;
     }
+
+    trackPendingPurchase();
+    toast.success(
+      "Pago completado. Actualizando tu cupo de destacados…",
+    );
+    void refetch();
+    void refetchBillingMe();
+
+    // El webhook de Stripe puede llegar unos segundos después del redirect.
+    const pollDelaysMs = [1500, 3500, 6000];
+    const timers = pollDelaysMs.map((delayMs) =>
+      window.setTimeout(() => {
+        void refetchBillingMe();
+        void refetch();
+      }, delayMs),
+    );
+
+    return () => {
+      for (const timer of timers) {
+        window.clearTimeout(timer);
+      }
+    };
   }, [searchParams, refetch, refetchBillingMe]);
 
   if (isUserLoading) {
@@ -173,12 +195,13 @@ export const MyListing = () => {
           {entitlements.vehicles.limit === 2 ? <UpgradeListingAdd /> : null}
         </div>
 
-        <MyListingsPromoSidebar listings={listings} />
+        <MyListingsPromoSidebar />
       </div>
 
       <MyListingsHelpSection
         featureDurationDays={featureDurationDays}
-        canFeatureIncluded={canFeatureIncluded}
+        canFeatureIncluded={planFeaturedSlots.canUseIncluded}
+        availableFeaturedCredits={availableFeaturedCredits}
       />
     </div>
   );

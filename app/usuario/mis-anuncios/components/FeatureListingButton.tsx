@@ -15,7 +15,7 @@ export const FeatureListingButton = ({
   listing,
   variant = "outline",
 }: FeatureListingButtonProps) => {
-  const { featureListing, featurePriceLabel, isFeaturing, canFeatureIncluded } =
+  const { featureListing, featurePriceLabel, isFeaturing, canFeatureIncluded, availableFeaturedCredits } =
     useFeatureListingAction();
 
   if (listing.is_featured_active || !listing.can_feature) {
@@ -23,9 +23,12 @@ export const FeatureListingButton = ({
   }
 
   const handleClick = async () => {
+    const willUseIncludedOrCredit =
+      canFeatureIncluded || availableFeaturedCredits > 0;
+
     try {
       await featureListing(listing.id);
-      if (canFeatureIncluded) {
+      if (willUseIncludedOrCredit) {
         toast.success("Anuncio destacado correctamente");
       }
     } catch (error) {

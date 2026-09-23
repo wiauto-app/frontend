@@ -55,6 +55,19 @@ export const myListingsService = {
     return apiPost(`${V1_VEHICLES}/${id}/feature`, {});
   },
 
+  redeemFeaturedCredit(id: string): Promise<
+    ApiResponse<{
+      is_featured: boolean;
+      featured_expires_at: string;
+      featured_boost_weight: number;
+      can_feature: boolean;
+      credit_id: string;
+      duration_days: number;
+    }>
+  > {
+    return apiPost(`${V1_VEHICLES}/${id}/feature/redeem`, {});
+  },
+
   schedule(
     id: string,
     scheduled_publish_at: string,

@@ -9,11 +9,13 @@ interface OfferCardProps {
   offer: FeaturedListingOffer;
   isFeatureLoading: boolean;
   handleFeatureClick: (offerId: string) => void;
+  ctaLabel?: string;
 }
 export const OfferCard = ({
   offer,
   isFeatureLoading,
   handleFeatureClick,
+  ctaLabel = "Destacar",
 }: OfferCardProps) => {
   return (
     <li>
@@ -40,10 +42,10 @@ export const OfferCard = ({
               onClick={() => {
                 void handleFeatureClick(offer.id);
               }}
-              aria-label={`Destacar anuncio con ${offer.title}`}
+              aria-label={`${ctaLabel} con ${offer.title}`}
             >
               <Star className="size-4 fill-current" aria-hidden />
-              {isFeatureLoading ? "..." : "Destacar"}
+              {isFeatureLoading ? "..." : ctaLabel}
             </Button>
           </div>
         </CardContent>
