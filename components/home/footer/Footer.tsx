@@ -1,10 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getFooterData } from "../services/footerService";
-import type { FooterLinkItem, FooterSectionItem } from "../types/footer.types";
+import type {
+  FooterLinkItem,
+  FooterSectionItem,
+} from "../types/footer.types";
 
 import { Separator } from "../../ui/separator";
 import { CookiePreferencesButton } from "@/components/consent/cookiePreferencesButton";
+import { getAllColaboraciones } from "@/services/colaboracionesService";
+import type { StrapiColaboracionLanding } from "@/interfaces/landings-colaboracion.interface";
 import { findSocialNetworkByLabel } from "./footer.constants";
 
 interface FooterSectionColumnProps {
@@ -67,6 +72,29 @@ const FooterSectionColumn = ({ section }: FooterSectionColumnProps) => (
   </div>
 );
 
+const buildServiciosSection = (
+  colaboraciones: StrapiColaboracionLanding[],
+): FooterSectionItem | null => {
+  const links = colaboraciones
+    .filter((item) => Boolean(item.slug) && Boolean(item.nombre))
+    .map((item) => ({
+      id: String(item.id),
+      label: item.nombre,
+      url: `/colaboraciones/${item.slug}`,
+      image_url: null,
+    }));
+
+  if (links.length === 0) {
+    return null;
+  }
+
+  return {
+    id: "servicios",
+    title: "Servicios",
+    links,
+  };
+};
+
 const SocialLinkButton = ({ link }: SocialLinkButtonProps) => {
   const external = isExternalUrl(link.url);
 
@@ -96,7 +124,16 @@ const SocialLinkButton = ({ link }: SocialLinkButtonProps) => {
 };
 
 export async function Footer() {
-  const data = await getFooterData();
+  const [data, colaboraciones] = await Promise.all([
+    getFooterData(),
+    getAllColaboraciones().catch(() => [] as StrapiColaboracionLanding[]),
+  ]);
+
+  const servicios_section = buildServiciosSection(colaboraciones);
+  const sections = servicios_section
+    ? [servicios_section, ...data.sections]
+    : data.sections;
+
   return (
     <footer className="bg-primary-dark py-10 text-white sm:py-12">
       <div className="container-custom flex flex-col gap-8 sm:gap-10">
@@ -128,9 +165,9 @@ export async function Footer() {
             ) : null}
           </div>
 
-          {data.sections.length > 0 ? (
+          {sections.length > 0 ? (
             <div className="grid flex-1 grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:gap-10 xl:grid-cols-6">
-              {data.sections.map((section) => (
+              {sections.map((section) => (
                 <FooterSectionColumn key={section.id} section={section} />
               ))}
             </div>
