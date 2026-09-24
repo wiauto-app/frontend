@@ -7,7 +7,10 @@ import { Search } from "lucide-react";
 import { useStrapiAction } from "@/components/strapi-actions/strapi-action-context";
 import { IconContainer } from "@/components/ui/iconContainer";
 import { Input } from "@/components/ui/input";
-import type { StrapiLink, StrapiMarcas } from "@/interfaces/strapi-components.interface";
+import type {
+  StrapiLink,
+  StrapiMarcas,
+} from "@/interfaces/strapi-components.interface";
 import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
@@ -53,16 +56,7 @@ const BrandTile = ({ brand, onAction, hasAction }: BrandTileProps) => {
     return <div className={class_name}>{content}</div>;
   }
 
-  return (
-    <Link
-      href={brand.url}
-      className={class_name}
-      target={brand.externo ? "_blank" : undefined}
-      rel={brand.externo ? "noopener noreferrer" : undefined}
-    >
-      {content}
-    </Link>
-  );
+  return <div className={class_name}>{content}</div>;
 };
 
 export const MarcasSection = ({ data, className }: MarcasSectionProps) => {

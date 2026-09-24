@@ -52,7 +52,7 @@ const PartnerCardHorizontal = ({ card }: PartnerCardHorizontalProps) => {
           className="h-20 w-auto shrink-0 object-contain"
         />
       ) : null}
-    
+
       <div className="min-w-0">
         {card.titulo ? (
           <p className="font-semibold text-[#0061F2]">{card.titulo}</p>
@@ -71,10 +71,12 @@ const HeroFooter = ({ footer }: HeroFooterProps) => {
   }
 
   return (
-    <StrapiRenderer
-      content={footer}
-      className="mt-4 max-w-md text-sm leading-relaxed text-white/75 [&_a]:text-white [&_a]:underline [&_li]:text-sm [&_li]:text-white/75 [&_ol]:mb-0 [&_p]:mb-1 [&_p]:text-sm [&_p]:text-white/75 [&_ul]:mb-0"
-    />
+    <div className="bg-white/90 p-4 rounded-xl">
+      <StrapiRenderer
+        content={footer}
+        className=" max-w-md text-sm leading-relaxed text-slate-600 [&_a]:text-slate-600 [&_a]:underline [&_li]:text-sm [&_li]:text-slate-600 [&_ol]:mb-0 [&_p]:mb-1 [&_p]:text-sm [&_p]:text-slate-600 [&_ul]:mb-0"
+      />
+    </div>
   );
 };
 
