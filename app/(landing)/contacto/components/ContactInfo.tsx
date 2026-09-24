@@ -1,9 +1,11 @@
 import { MapPin, Mail, Phone, type LucideIcon } from "lucide-react";
 
 import { IconContainer } from "@/components/ui/iconContainer";
+import { FaWhatsapp } from "react-icons/fa";
+import { IconType } from "react-icons";
 
 type InfoItem = {
-  icon: LucideIcon;
+  icon: LucideIcon | IconType;
   title: string;
   description: string;
   href?: string;
@@ -24,14 +26,20 @@ const info: InfoItem[] = [
   {
     icon: Phone,
     title: "Teléfono",
-    description: "+34 666 11 27 58",
-    href: "tel:+34666112758",
+    description: "+34876212406",
+    href: "tel:+34876212406",
+  },
+  {
+    icon: FaWhatsapp,
+    title: "WhatsApp",
+    description: "+34624967611",
+    href: "https://wa.me/34624967611",
   },
 ];
 
 export const ContactInfo = () => {
   return (
-    <div className="mx-auto my-10 grid w-full max-w-4xl grid-cols-1 gap-4 px-4 sm:grid-cols-3">
+    <div className="mx-auto my-10 grid w-full max-w-4xl gap-4 px-4 grid-cols-2 md:grid-cols-4">
       {info.map((item) => {
         const Content = (
           <div className="flex h-full flex-col items-center gap-3 rounded-xl border border-border/60 bg-card/60 p-6 text-center shadow-sm backdrop-blur-md transition-colors hover:border-primary/40 hover:bg-card">
@@ -48,7 +56,7 @@ export const ContactInfo = () => {
         return (
           <div key={item.title}>
             {item.href ? (
-              <a href={item.href} className="block h-full">
+              <a target="_blank" href={item.href} className="block h-full">
                 {Content}
               </a>
             ) : (

@@ -9,6 +9,7 @@ import { HeroTitle } from "@/components/ui/heroTitle";
 import { HeroFeatures } from "@/components/home/heroFeatures";
 import { HeroActions } from "@/components/ui/heroActions";
 import { HeroCard } from "@/components/ui/heroCard";
+import { StrapiRenderer } from "@/components/ui/strapiRenderer";
 import {
   isStrapiActionKey,
   STRAPI_ACTION_KEYS,
@@ -31,25 +32,27 @@ interface PartnerCardHorizontalProps {
   card: NonNullable<StrapiHero["card"]>;
 }
 
+interface HeroFooterProps {
+  footer: NonNullable<StrapiHero["footer"]>;
+}
+
 const PartnerCardHorizontal = ({ card }: PartnerCardHorizontalProps) => {
   if (!card.imagen?.url && !card.titulo && !card.descripcion) {
     return null;
   }
 
   return (
-    <div className="mt-2 flex w-full max-w-lg items-center gap-4 rounded-xl bg-white/90 px-4 py-3 shadow-sm backdrop-blur-sm">
+    <div className="mt-2 flex w-full max-w-lg items-center gap-3 rounded-xl bg-white/90 px-4 py-3 shadow-sm backdrop-blur-sm">
       {card.imagen?.url ? (
         <Image
           src={card.imagen.url}
           alt={card.imagen.alternativeText ?? ""}
-          width={96}
-          height={48}
-          className="h-12 w-auto shrink-0 object-contain"
+          width={150}
+          height={150}
+          className="h-20 w-auto shrink-0 object-contain"
         />
       ) : null}
-      {(card.titulo || card.descripcion) && card.imagen?.url ? (
-        <div className="h-10 w-px shrink-0 bg-slate-200" aria-hidden />
-      ) : null}
+    
       <div className="min-w-0">
         {card.titulo ? (
           <p className="font-semibold text-[#0061F2]">{card.titulo}</p>
@@ -59,6 +62,19 @@ const PartnerCardHorizontal = ({ card }: PartnerCardHorizontalProps) => {
         ) : null}
       </div>
     </div>
+  );
+};
+
+const HeroFooter = ({ footer }: HeroFooterProps) => {
+  if (!footer.length) {
+    return null;
+  }
+
+  return (
+    <StrapiRenderer
+      content={footer}
+      className="mt-4 max-w-md text-sm leading-relaxed text-white/75 [&_a]:text-white [&_a]:underline [&_li]:text-sm [&_li]:text-white/75 [&_ol]:mb-0 [&_p]:mb-1 [&_p]:text-sm [&_p]:text-white/75 [&_ul]:mb-0"
+    />
   );
 };
 
@@ -77,6 +93,9 @@ export const CollabsHeroSection = ({
     actionKey === STRAPI_ACTION_KEYS.SEGUROS_FORM;
 
   const formTitle = hero.acciones?.[0]?.label || "Calcular seguro";
+  const heroFooter = hero.footer?.length ? (
+    <HeroFooter footer={hero.footer} />
+  ) : null;
 
   if (isEmbeddedSegurosForm) {
     return (
@@ -97,6 +116,7 @@ export const CollabsHeroSection = ({
             />
 
             {hero.card ? <PartnerCardHorizontal card={hero.card} /> : null}
+            {heroFooter}
           </>
         }
         floatingContent={<HeroBackdrop />}
@@ -129,6 +149,7 @@ export const CollabsHeroSection = ({
             iconPack={collabsIconPack}
           />
           <HeroActions actions={hero.acciones} />
+          {heroFooter}
         </>
       }
       floatingContent={<HeroBackdrop />}

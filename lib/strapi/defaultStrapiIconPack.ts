@@ -69,7 +69,7 @@ import {
 } from "react-icons/io5";
 import { LuMonitorDot, LuTicketMinus } from "react-icons/lu";
 import { MdCalculate, MdCarRepair, MdOutlineDiscount } from "react-icons/md";
-
+import { FaWhatsapp } from "react-icons/fa";
 import type { StrapiIconPack } from "@/lib/strapi/resolveStrapiIconName";
 
 /** Pack legacy compartido por páginas que aún no tienen pack propio. */
@@ -78,7 +78,8 @@ export const defaultStrapiIconPack = {
   BiSupport,
   BiSolidCar,
   FaCrown,
-  FaQuoteLeft,  
+  FaQuoteLeft,
+  FaWhatsapp,
   HiOutlineDatabase,
   FaRegCheckCircle,
   FaClipboardList,
