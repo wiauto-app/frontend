@@ -10,6 +10,7 @@ import {
   Bot,
   ContactRound,
   Bell,
+  BellRing,
   Newspaper,
   User as UserIcon,
   CreditCard,
@@ -56,6 +57,11 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
 
 export const USER_SIDEBAR_PRO_LINKS = [
   { href: `${basePath}/asistente-leads`, label: "Asistente de leads", icon: Bot },
+  {
+    href: `${basePath}/alertas-proactivas`,
+    label: "Alertas proactivas",
+    icon: BellRing,
+  },
   { href: `${basePath}/contactos`, label: "Contactos / Leads", icon: ContactRound },
   { href: `${basePath}/estadisticas`, label: "Estadísticas", icon: BarChart3 },
   { href: `${basePath}/mi-tasador`, label: "Tasador", icon: Calculator },

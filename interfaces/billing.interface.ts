@@ -31,6 +31,8 @@ export type EntitlementFeatureKey =
   | "listing_insights"
   | "ai_replies_per_conversation"
   | "ai_lead_conversations"
+  | "lead_scoring"
+  | "proactive_alerts"
   | (string & {});
 
 export interface EntitlementBooleanValue {

@@ -26,6 +26,8 @@ const FEATURE_LABELS: Record<string, string> = {
   listing_insights: "Diagnóstico de anuncios",
   ai_replies_per_conversation: "Respuestas IA por conversación",
   ai_lead_conversations: "Conversaciones con asistente de leads",
+  lead_scoring: "Calificación de leads",
+  proactive_alerts: "Alertas proactivas",
 };
 
 const FEATURE_ORDER: EntitlementFeatureKey[] = [
@@ -36,6 +38,8 @@ const FEATURE_ORDER: EntitlementFeatureKey[] = [
   "ai_requests",
   "ai_replies_per_conversation",
   "ai_lead_conversations",
+  "lead_scoring",
+  "proactive_alerts",
   "ai_generation",
   "users",
   "statistics",

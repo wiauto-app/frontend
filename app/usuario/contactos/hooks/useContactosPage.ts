@@ -8,29 +8,54 @@ import {
   toLocalDayEndIso,
   toLocalDayStartIso,
 } from "@/app/usuario/inicio/components/dashboard/dashboard.utils";
-import type { LeadSort } from "@/interfaces/lead.interface";
+import { useEntitlements } from "@/hooks/useEntitlements";
+import type {
+  LeadListSortBy,
+  LeadSort,
+  LeadTierFilter,
+} from "@/interfaces/lead.interface";
+import type { LeadTier } from "@/lib/leads/lead-scoring-ui";
 import { LEADS_QUERY_KEY, leadService } from "@/services/leadService";
 
 const DEFAULT_LIMIT = 20;
 
 export const useContactosPage = () => {
+  const { has } = useEntitlements();
+  const hasLeadScoring = has("lead_scoring");
+
   const defaultRange = getDefaultDashboardDateRange();
   const [startDate, setStartDate] = useState(defaultRange.startDate);
   const [endDate, setEndDate] = useState(defaultRange.endDate);
   const [sort, setSort] = useState<LeadSort>("desc");
+  const [sortBy, setSortBy] = useState<LeadListSortBy>("date");
+  const [tierFilter, setTierFilter] = useState<LeadTierFilter>("all");
   const [page, setPage] = useState(1);
 
   const dateRangeError = getDateRangeError(startDate, endDate);
   const hasValidRange = !dateRangeError;
 
   const leadsQuery = useQuery({
-    queryKey: [...LEADS_QUERY_KEY, startDate, endDate, sort, page],
+    queryKey: [
+      ...LEADS_QUERY_KEY,
+      startDate,
+      endDate,
+      sort,
+      sortBy,
+      tierFilter,
+      page,
+      hasLeadScoring,
+    ],
     enabled: hasValidRange,
     queryFn: async () => {
       const response = await leadService.findAll({
         from: toLocalDayStartIso(startDate),
         to: toLocalDayEndIso(endDate),
         sort,
+        sort_by: hasLeadScoring ? sortBy : "date",
+        tier:
+          hasLeadScoring && tierFilter !== "all"
+            ? (tierFilter as LeadTier)
+            : undefined,
         page,
         limit: DEFAULT_LIMIT,
       });
@@ -40,6 +65,9 @@ export const useContactosPage = () => {
       return response.data;
     },
   });
+
+  const scoringLocked =
+    leadsQuery.data?.scoring_locked ?? !hasLeadScoring;
 
   const handleStartDateChange = (value: string) => {
     setStartDate(value);
@@ -53,6 +81,24 @@ export const useContactosPage = () => {
 
   const handleSortChange = (value: LeadSort) => {
     setSort(value);
+    setSortBy("date");
+    setPage(1);
+  };
+
+  const handleSortByScore = () => {
+    if (scoringLocked) {
+      return;
+    }
+    setSortBy("score");
+    setSort("desc");
+    setPage(1);
+  };
+
+  const handleTierFilterChange = (value: LeadTierFilter) => {
+    if (scoringLocked && value !== "all") {
+      return;
+    }
+    setTierFilter(value);
     setPage(1);
   };
 
@@ -64,9 +110,13 @@ export const useContactosPage = () => {
     startDate,
     endDate,
     sort,
+    sortBy,
+    tierFilter,
     page,
     dateRangeError,
     leads: leadsQuery.data?.data ?? [],
+    tierCounts: leadsQuery.data?.tier_counts ?? null,
+    scoringLocked,
     total,
     totalPages,
     isLoading: leadsQuery.isLoading,
@@ -75,6 +125,8 @@ export const useContactosPage = () => {
     handleStartDateChange,
     handleEndDateChange,
     handleSortChange,
+    handleSortByScore,
+    handleTierFilterChange,
     handlePageChange: setPage,
     refetch: leadsQuery.refetch,
   };

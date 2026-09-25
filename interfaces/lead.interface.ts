@@ -1,6 +1,22 @@
+import type { LeadScoreSignal, LeadTier } from "@/lib/leads/lead-scoring-ui";
+
 export type LeadType = "contact" | "call_me";
 export type LeadSort = "asc" | "desc";
 export type LeadSortDirection = LeadSort;
+export type LeadListSortBy = "date" | "score";
+export type LeadTierFilter = LeadTier | "all";
+
+export interface LeadScoring {
+  score: number;
+  tier: LeadTier;
+  signals: LeadScoreSignal[];
+}
+
+export interface LeadTierCounts {
+  hot: number;
+  warm: number;
+  cold: number;
+}
 
 export interface Lead {
   id: string;
@@ -28,14 +44,26 @@ export interface LeadVehicleSummary {
 export interface LeadListItem extends Lead {
   vehicle: LeadVehicleSummary;
   buyer_profile_id: string | null;
+  scoring?: LeadScoring | null;
 }
 
 export interface FindLeadsParams {
   from?: string;
   to?: string;
   sort?: LeadSort;
+  sort_by?: LeadListSortBy;
+  tier?: LeadTier;
   page?: number;
   limit?: number;
+}
+
+export interface FindLeadsResult {
+  data: LeadListItem[];
+  total: number;
+  page: number;
+  limit: number;
+  tier_counts?: LeadTierCounts | null;
+  scoring_locked?: boolean;
 }
 
 export interface CreateLeadPayload {

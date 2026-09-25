@@ -1,20 +1,28 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { format, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { Loader2, Mail, MessageSquare, Phone } from "lucide-react";
+import { Loader2, Lock, Mail, MessageSquare, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { formatPhone } from "@/app/usuario/inicio/components/dashboard/dashboard.utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import type { LeadListItem, LeadType } from "@/interfaces/lead.interface";
+import {
+  getLeadSignalLabel,
+  LEAD_TIER,
+  LEAD_TIER_UI,
+  type LeadTier,
+} from "@/lib/leads/lead-scoring-ui";
 import { openLeadChat } from "@/lib/chat/openLeadChat";
 import { cn, getImageUrl } from "@/lib/utils";
 
 interface LeadCardProps {
   lead: LeadListItem;
+  scoringLocked?: boolean;
 }
 
 const LEAD_TYPE_LABELS: Record<LeadType, string> = {
@@ -30,7 +38,17 @@ const getVehicleLabel = (lead: LeadListItem): string =>
 const getBuyerProfileId = (lead: LeadListItem): string | null =>
   lead.buyer_profile_id ?? lead.profile_id;
 
-export const LeadCard = ({ lead }: LeadCardProps) => {
+const resolveDisplayTier = (
+  lead: LeadListItem,
+  scoringLocked: boolean,
+): LeadTier => {
+  if (scoringLocked || !lead.scoring?.tier) {
+    return LEAD_TIER.COLD;
+  }
+  return lead.scoring.tier;
+};
+
+export const LeadCard = ({ lead, scoringLocked = false }: LeadCardProps) => {
   const router = useRouter();
   const [isOpeningChat, setIsOpeningChat] = useState(false);
 
@@ -57,6 +75,14 @@ export const LeadCard = ({ lead }: LeadCardProps) => {
     locale: es,
   });
 
+  const tier = resolveDisplayTier(lead, scoringLocked);
+  const tierUi = LEAD_TIER_UI[tier];
+  const score = lead.scoring?.score;
+  const signalChips =
+    scoringLocked || !lead.scoring?.signals?.length
+      ? []
+      : lead.scoring.signals.slice(0, 3);
+
   const handleOpenChat = async () => {
     if (!buyerProfileId) {
       return;
@@ -80,8 +106,13 @@ export const LeadCard = ({ lead }: LeadCardProps) => {
   };
 
   return (
-    <article className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+    <article className="relative overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+      <div
+        className={cn("absolute inset-y-0 left-0 w-1", tierUi.stripeClass)}
+        aria-hidden
+      />
+
+      <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:p-6 sm:pl-7">
         <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-100">
           {imageUrl ? (
             <Image
@@ -104,7 +135,50 @@ export const LeadCard = ({ lead }: LeadCardProps) => {
             <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
               {typeLabel}
             </span>
+            {scoringLocked ? (
+              <Link
+                href="/usuario/monetizacion"
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 backdrop-blur-sm",
+                  tierUi.badgeClass,
+                  "opacity-70",
+                )}
+                title="Amplía tu plan para ver la calificación de leads"
+              >
+                <Lock className="size-3" aria-hidden />
+                Calificación
+              </Link>
+            ) : (
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1",
+                  tierUi.badgeClass,
+                )}
+              >
+                {tierUi.label}
+                {typeof score === "number" ? (
+                  <span className="tabular-nums opacity-80">· {score}</span>
+                ) : null}
+              </span>
+            )}
           </div>
+
+          {signalChips.length > 0 ? (
+            <ul className="flex flex-wrap gap-1.5" aria-label="Señales del contacto">
+              {signalChips.map((signal) => (
+                <li key={signal}>
+                  <span
+                    className={cn(
+                      "inline-block rounded-full px-2 py-0.5 text-[11px] font-medium",
+                      tierUi.chipClass,
+                    )}
+                  >
+                    {getLeadSignalLabel(signal)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
 
           <p className="text-sm text-gray-700">{getVehicleLabel(lead)}</p>
 

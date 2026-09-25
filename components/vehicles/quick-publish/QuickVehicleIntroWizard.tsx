@@ -99,7 +99,7 @@ export const QuickVehicleIntroWizard = ({
     if (fallback != null) {
       navigateToStep(fallback);
     }
-  }, [navigateToStep, requested_step, stepItems]);
+  }, [requested_step, stepItems]);
 
   useEffect(() => {
     if (submitCount === 0 || submitCount <= handledSubmitCountRef.current) {
@@ -118,7 +118,7 @@ export const QuickVehicleIntroWizard = ({
     }
 
     toast.error(`Revisa los campos del paso «${errorStep.name}».`);
-  }, [currentStep, errors, navigateToStep, stepItems, submitCount]);
+  }, [currentStep, errors, stepItems, submitCount]);
 
   const handleStepClick = (step: number) => {
     const target_index = stepItems.findIndex((item) => item.id === step);

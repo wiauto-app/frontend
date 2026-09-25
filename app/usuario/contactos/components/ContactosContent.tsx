@@ -1,6 +1,7 @@
 "use client";
 
-import { ContactRound } from "lucide-react";
+import Link from "next/link";
+import { ContactRound, Lock } from "lucide-react";
 import { DateRangeSelector } from "@/components/date-range-selector/DateRangeSelector";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,24 +11,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SimpleTooltip } from "@/components/ui/simpleTooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { LeadSort } from "@/interfaces/lead.interface";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { LeadSort, LeadTierFilter } from "@/interfaces/lead.interface";
+import {
+  LEAD_TIER_FILTER_TABS,
+  LEAD_TIER_UI,
+  type LeadTier,
+} from "@/lib/leads/lead-scoring-ui";
+import { cn } from "@/lib/utils";
 import { LeadCard } from "./LeadCard";
 import { useContactosPage } from "../hooks/useContactosPage";
 
-const SORT_ITEMS: { label: string; value: LeadSort }[] = [
+type SortOptionValue = LeadSort | "score_desc";
+
+const DATE_SORT_ITEMS: { label: string; value: LeadSort }[] = [
   { label: "Más recientes", value: "desc" },
   { label: "Más antiguos", value: "asc" },
 ];
+
+const tierCountLabel = (
+  tier: LeadTier,
+  counts: { hot: number; warm: number; cold: number } | null,
+): number => {
+  if (!counts) {
+    return 0;
+  }
+  return counts[tier];
+};
 
 export const ContactosContent = () => {
   const {
     startDate,
     endDate,
     sort,
+    sortBy,
+    tierFilter,
     page,
     dateRangeError,
     leads,
+    tierCounts,
+    scoringLocked,
     total,
     totalPages,
     isLoading,
@@ -35,8 +60,23 @@ export const ContactosContent = () => {
     handleStartDateChange,
     handleEndDateChange,
     handleSortChange,
+    handleSortByScore,
+    handleTierFilterChange,
     handlePageChange,
   } = useContactosPage();
+
+  const sortSelectValue: SortOptionValue =
+    sortBy === "score" ? "score_desc" : sort;
+
+  const handleSortSelect = (value: SortOptionValue | null) => {
+    if (value === "score_desc") {
+      handleSortByScore();
+      return;
+    }
+    if (value === "asc" || value === "desc") {
+      handleSortChange(value);
+    }
+  };
 
   return (
     <div className="space-y-6 pb-20">
@@ -51,7 +91,7 @@ export const ContactosContent = () => {
           </p>
         </div>
 
-        <div className="flex  gap-3 sm:items-end">
+        <div className="flex flex-col gap-3 sm:items-end">
           <DateRangeSelector
             startDate={startDate}
             endDate={endDate}
@@ -60,16 +100,23 @@ export const ContactosContent = () => {
             error={dateRangeError}
           />
           <Select
-            value={sort}
-            items={[...SORT_ITEMS]}
+            value={sortSelectValue}
+            items={[
+              ...DATE_SORT_ITEMS,
+              { label: "Más interesados", value: "score_desc" as const },
+            ]}
             onValueChange={(value) => {
-              if (value === "asc" || value === "desc") {
-                handleSortChange(value);
+              if (
+                value === "asc" ||
+                value === "desc" ||
+                value === "score_desc"
+              ) {
+                handleSortSelect(value);
               }
             }}
           >
             <SelectTrigger
-              className="w-50 border-gray-200 bg-white"
+              className="w-full min-w-50 border-gray-200 bg-white sm:w-56"
               aria-label="Ordenar contactos"
             >
               <SelectValue placeholder="Orden" />
@@ -77,9 +124,103 @@ export const ContactosContent = () => {
             <SelectContent>
               <SelectItem value="desc">Más recientes</SelectItem>
               <SelectItem value="asc">Más antiguos</SelectItem>
+              <SelectItem value="score_desc" disabled={scoringLocked}>
+                <span className="inline-flex items-center gap-1.5">
+                  Más interesados
+                  {scoringLocked ? (
+                    <Lock className="size-3 text-muted-foreground" aria-hidden />
+                  ) : null}
+                </span>
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {scoringLocked ? (
+        <div
+          role="status"
+          className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950"
+        >
+          <p className="font-medium">Calificación de leads bloqueada</p>
+          <p className="mt-1">
+            Con un plan que incluya calificación verás nivel de interés, señales y
+            filtros por tipo de contacto.{" "}
+            <Link href="/usuario/monetizacion" className="font-semibold underline">
+              Ver planes
+            </Link>
+          </p>
+        </div>
+      ) : null}
+
+      <div className="space-y-3">
+        <Tabs
+          value={tierFilter}
+          onValueChange={(value) => {
+            handleTierFilterChange(value as LeadTierFilter);
+          }}
+        >
+          <TabsList
+            className="flex h-auto w-full flex-wrap justify-start gap-1 bg-transparent p-0"
+            aria-label="Filtrar por nivel de interés"
+          >
+            {LEAD_TIER_FILTER_TABS.map((tab) => {
+              const tierKey = tab.value === "all" ? null : (tab.value as LeadTier);
+              const count =
+                tab.value === "all"
+                  ? total
+                  : tierCountLabel(tierKey as LeadTier, tierCounts);
+
+              const trigger = (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  disabled={scoringLocked && tab.value !== "all"}
+                  className={cn(
+                    "rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs data-[state=active]:border-gray-900 data-[state=active]:bg-gray-900 data-[state=active]:text-white",
+                    scoringLocked &&
+                      tab.value !== "all" &&
+                      "cursor-not-allowed opacity-50",
+                  )}
+                >
+                  {tab.label}
+                  {typeof count === "number" ? (
+                    <span className="ml-1 tabular-nums opacity-80">({count})</span>
+                  ) : null}
+                </TabsTrigger>
+              );
+
+              if (scoringLocked && tab.value !== "all") {
+                return (
+                  <SimpleTooltip
+                    key={tab.value}
+                    content="Incluido en planes con calificación de leads"
+                  >
+                    <span className="inline-flex">{trigger}</span>
+                  </SimpleTooltip>
+                );
+              }
+
+              return trigger;
+            })}
+          </TabsList>
+        </Tabs>
+
+        {!scoringLocked && tierCounts ? (
+          <div className="flex flex-wrap gap-2 text-xs text-gray-600">
+            {(Object.keys(LEAD_TIER_UI) as LeadTier[]).map((tier) => (
+              <span
+                key={tier}
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 font-medium",
+                  LEAD_TIER_UI[tier].chipClass,
+                )}
+              >
+                {LEAD_TIER_UI[tier].label}: {tierCounts[tier]}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       {dateRangeError ? null : isLoading ? (
@@ -108,7 +249,7 @@ export const ContactosContent = () => {
             {total} contacto{total === 1 ? "" : "s"}
           </p>
           {leads.map((lead) => (
-            <LeadCard key={lead.id} lead={lead} />
+            <LeadCard key={lead.id} lead={lead} scoringLocked={scoringLocked} />
           ))}
 
           {totalPages > 1 ? (

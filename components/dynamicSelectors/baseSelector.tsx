@@ -70,14 +70,37 @@ export function BaseSelector<T>({
   const showLegacyCreate =
     Boolean(showExtraActions?.create && onCreate && !renderFooter);
 
-  /** Radix Select en modo controlado falla si `value` es "" o no existe en `items`. */
+  const selectItems = useMemo(
+    () =>
+      items.map((item) => ({
+        label: String(item[labelKey]),
+        value: String(item[valueKey]),
+      })),
+    [items, labelKey, valueKey],
+  );
+
+  /**
+   * Base UI limpia el valor con `null` si no está entre las opciones.
+   * Hay que mantener el select controlado (`null`, no `undefined`) y no
+   * notificar al padre si el valor no cambió: si no, `setValue` re-renderiza
+   * y el layout effect vuelve a disparar `onValueChange` en bucle.
+   */
   const resolvedSelectValue = useMemo(() => {
     const raw = typeof value === "string" ? value.trim() : "";
-    if (!raw) return undefined;
-    if (items.length === 0) return undefined;
-    const exists = items.some((item) => String(item[valueKey]) === raw);
-    return exists ? raw : undefined;
-  }, [value, items, valueKey]);
+    if (!raw || selectItems.length === 0) return null;
+    const exists = selectItems.some((item) => item.value === raw);
+    return exists ? raw : null;
+  }, [value, selectItems]);
+
+  const handleValueChange = (nextValue: string | null) => {
+    const normalized = nextValue ?? undefined;
+    const current = typeof value === "string" ? value : undefined;
+
+    if (normalized === current) return;
+    if (!normalized && !current) return;
+
+    onChange(normalized);
+  };
 
   const handleCreateClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -87,16 +110,10 @@ export function BaseSelector<T>({
 
   return (
     <Select
-      
       value={resolvedSelectValue}
-      onValueChange={(next_value) => {
-        onChange(next_value ?? undefined);
-      }}
+      onValueChange={handleValueChange}
       disabled={disabled}
-      items={items.map((item) => ({
-        label: String(item[labelKey]),
-        value: String(item[valueKey]),
-      }))}
+      items={selectItems}
     >
       <SelectTrigger className={cn("min-w-0 w-full", triggerClassName)}>
         <SelectValue placeholder={resolvedPlaceholder} />

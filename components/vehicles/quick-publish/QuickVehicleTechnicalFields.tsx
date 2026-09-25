@@ -24,7 +24,7 @@ export const QuickVehicleTechnicalFields = () => {
     if (canCharge) {
       form.setValue("displacement", 0, { shouldDirty: true });
     }
-  }, [canCharge, form]);
+  }, [canCharge]);
 
   /**
    * La ficha técnica la infiere un LLM con búsqueda web, así que solo se pide
@@ -72,7 +72,7 @@ export const QuickVehicleTechnicalFields = () => {
     form.setValue("time_to_charge", vehicleSpecs.time_to_charge ?? undefined, {
       shouldDirty: true,
     });
-  }, [shouldFetchSpecs, vehicleSpecs, form]);
+  }, [shouldFetchSpecs, vehicleSpecs]);
 
   if (isLoadingVehicleSpecs) {
     return (

@@ -59,7 +59,7 @@ export const QuickVehicleForm = ({
     if (vehicleDetail) {
       form.reset(mapVehicleDetailToQuickFormValues(vehicleDetail));
     }
-  }, [vehicleDetail, form]);
+  }, [vehicleDetail]);
 
   useEffect(() => {
     if (!user || isEditMode) return;
@@ -67,7 +67,7 @@ export const QuickVehicleForm = ({
     if (user.email && !form.getValues("email")) {
       form.setValue("email", user.email);
     }
-  }, [user, isEditMode, form]);
+  }, [user, isEditMode]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
     if (hasIncompleteImageUploads) {
@@ -97,7 +97,6 @@ export const QuickVehicleForm = ({
     }
 
     const response = await vehiclesService.create(payload as never);
-    console.log(response);
     if (response.ok && response.data?.id) {
       if (redirectTo) {
         router.push(`${redirectTo}?id=${encodeURIComponent(response.data.id)}`);
