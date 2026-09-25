@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const REPLY_DELAY_OPTIONS = [0, 30, 60, 120, 300] as const;
+
+export type LeadAssistantReplyDelaySeconds =
+  (typeof REPLY_DELAY_OPTIONS)[number];
+
 const replyDelaySchema = z.union([
   z.literal(0),
   z.literal(30),

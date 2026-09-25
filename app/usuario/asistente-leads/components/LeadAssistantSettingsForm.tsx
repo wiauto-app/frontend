@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/tooltip";
 import { leadAssistantService } from "@/services/leadAssistantService";
 import {
-  leadAssistantSettingsSchema,
-  type LeadAssistantSettingsFormValues,
+  leadAssistantSettingsFormSchema,
   REPLY_DELAY_OPTIONS,
+  type LeadAssistantSettingsFormValues,
 } from "../schemas/lead-assistant-settings.schema";
 
 const REPLY_DELAY_LABELS: Record<(typeof REPLY_DELAY_OPTIONS)[number], string> =
@@ -87,14 +87,16 @@ const NotifySwitch = ({
       <FieldLabel className="text-sm font-medium">{label}</FieldLabel>
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              className="text-muted-foreground"
-              aria-label={`Más información: ${label}`}
-            >
-              <Info className="size-4" />
-            </button>
+          <TooltipTrigger
+            render={
+              <button
+                type="button"
+                className="text-muted-foreground"
+                aria-label={`Más información: ${label}`}
+              />
+            }
+          >
+            <Info className="size-4" />
           </TooltipTrigger>
           <TooltipContent className="max-w-xs text-sm">{tooltip}</TooltipContent>
         </Tooltip>
@@ -118,7 +120,7 @@ export const LeadAssistantSettingsForm = () => {
   });
 
   const form = useForm<LeadAssistantSettingsFormValues>({
-    resolver: zodResolver(leadAssistantSettingsSchema),
+    resolver: zodResolver(leadAssistantSettingsFormSchema),
     defaultValues: {
       enabled: false,
       context_note: "",
