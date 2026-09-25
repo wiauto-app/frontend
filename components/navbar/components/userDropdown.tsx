@@ -189,7 +189,8 @@ export function UserDropdown() {
         render={
           <button
             type="button"
-            className="flex items-center gap-1 rounded-lg py-1 pr-1 transition-colors hover:bg-muted-foreground/10"
+            className="flex items-center gap-2 rounded-lg py-1 pr-1 transition-colors hover:bg-muted-foreground/10"
+            aria-label="Abrir menú de usuario"
           >
             <UserAvatar
               imageUrl={user?.avatar_url}

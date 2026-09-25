@@ -96,13 +96,52 @@ export class PublicarPage {
     await this.fileInput.setInputFiles(paths);
   }
 
+  /** Espera a que las fotos dejen de subirse (el CTA de publicar no está en este paso si hay paso 3). */
+  async waitForGalleryReady(count = 3, timeout = 180_000) {
+    const gallery = this.page.getByRole("list", {
+      name: "Galería de imágenes del vehículo",
+    });
+    await expect(gallery.getByRole("listitem")).toHaveCount(count, {
+      timeout,
+    });
+    await expect(this.page.getByText(/Subiendo/)).toHaveCount(0, { timeout });
+  }
+
   /** Espera a que el CTA deje de indicar subidas pendientes. */
   async waitForImagesUploaded(timeout = 180_000) {
+    await this.waitForGalleryReady(3, timeout);
     await expect(this.publishButton).toBeVisible({ timeout: 15_000 });
     await expect(this.publishButton).toHaveText(/Publicar anuncio ahora/, {
       timeout,
     });
     await expect(this.publishButton).toBeEnabled({ timeout: 30_000 });
+  }
+
+  /** Paso 3, solo perfil con suscripción: un plan, precio financiado y garantía. */
+  async fillFinanceAndWarranty(financePrice = 14_000) {
+    await expect(
+      this.page.getByText("Financiación y garantía", { exact: false }),
+    ).toBeVisible({ timeout: 15_000 });
+
+    const firstPlan = this.page.locator("button[aria-pressed]").first();
+    await expect(firstPlan).toBeVisible({ timeout: 30_000 });
+    await firstPlan.click();
+
+    const financeInput = fieldControl(this.page, "Precio de financiación (€)");
+    await financeInput.scrollIntoViewIfNeeded();
+    await financeInput.fill(String(financePrice));
+
+    await selectFirstRadixOption(this.page, "Garantía (opcional)");
+  }
+
+  async logout() {
+    await this.page
+      .getByRole("button", { name: "Abrir menú de usuario" })
+      .click();
+    await this.page.getByRole("menuitem", { name: "Cerrar sesión" }).click();
+    await expect(this.page.getByRole("link", { name: "Ingresar" })).toBeVisible({
+      timeout: 30_000,
+    });
   }
 
   async selectFirstMake() {
@@ -117,7 +156,7 @@ export class PublicarPage {
   }
 
   async selectFirstVersion() {
-    await selectFirstRadixOption(this.page, "Versión");
+    await selectFirstSearchSelect(this.page, "Versión");
   }
 
   /** Espera a que desaparezcan skeletons y la potencia tenga valor. */
@@ -136,6 +175,17 @@ export class PublicarPage {
         { timeout },
       )
       .toBe(true);
+
+    const tractionTrigger = this.page
+      .locator('[data-slot="field"]')
+      .filter({ has: this.page.getByText("Tracción", { exact: true }) })
+      .first()
+      .locator('[data-slot="select-trigger"]');
+    const tractionLabel = (await tractionTrigger.innerText()).trim();
+
+    if (tractionLabel === "Tracción" || tractionLabel === "Cargando...") {
+      await selectFirstRadixOption(this.page, "Tracción");
+    }
   }
 
   async fillMileage(mileage: number) {
@@ -196,6 +246,11 @@ export class PublicarPage {
         },
       )
       .toBe(true);
+
+    const description = await this.descriptionTextarea.inputValue();
+    if (description.length > 1000) {
+      await this.descriptionTextarea.fill(description.slice(0, 1000));
+    }
   }
 
   async publishNow() {
@@ -204,10 +259,67 @@ export class PublicarPage {
     await this.publishButton.click();
   }
 
-  async expectPublishSuccess() {
-    await expect(this.page).toHaveURL(/\/publicar\/exito/, {
-      timeout: 120_000,
-    });
+  async expectPublishSuccess(): Promise<string> {
+    const errorToast = this.page.locator('[data-sonner-toast][data-type="error"]');
+
+    await expect
+      .poll(
+        async () => {
+          if (/\/publicar\/exito/.test(this.page.url())) {
+            return "ok";
+          }
+
+          if ((await errorToast.count()) > 0) {
+            return "error";
+          }
+
+          return "";
+        },
+        { timeout: 120_000 },
+      )
+      .not.toBe("");
+
+    if (!/\/publicar\/exito/.test(this.page.url())) {
+      const message = (await errorToast.first().innerText()).trim();
+      throw new Error(
+        `La publicación se quedó en ${this.page.url()}: ${message}`,
+      );
+    }
+
+    await expect(this.page).toHaveURL(/\/publicar\/exito/);
     await expect(this.successHeading).toBeVisible({ timeout: 30_000 });
+
+    const vehicleId = new URL(this.page.url()).searchParams.get("id");
+    expect(vehicleId, "La URL de éxito debe incluir el id del anuncio").toBeTruthy();
+    return vehicleId!;
+  }
+
+  /** Menú de usuario → Mis anuncios → elimina el anuncio recién creado. */
+  async deleteListingFromMyAds(vehicleId: string) {
+    await this.page
+      .getByRole("button", { name: "Abrir menú de usuario" })
+      .click();
+    await this.page.getByRole("link", { name: "Mis anuncios" }).click();
+
+    await expect(this.page).toHaveURL(/\/usuario\/mis-anuncios/, {
+      timeout: 30_000,
+    });
+
+    const card = this.page.locator('[data-slot="card"]').filter({
+      has: this.page.locator(`a[href="/vehiculo/${vehicleId}"]`),
+    });
+
+    await expect(card).toBeVisible({ timeout: 30_000 });
+    await card.getByRole("button", { name: "Más acciones del anuncio" }).click();
+    await this.page.getByRole("menuitem", { name: "Eliminar", exact: true }).click();
+
+    const dialog = this.page.getByRole("alertdialog");
+    await expect(dialog.getByText("Eliminar anuncio")).toBeVisible();
+    await dialog.getByRole("button", { name: "Eliminar", exact: true }).click();
+
+    await expect(this.page.getByText("Anuncio eliminado correctamente")).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(card).toHaveCount(0, { timeout: 30_000 });
   }
 }

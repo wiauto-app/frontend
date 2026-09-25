@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 import { dismissCookies } from "../helpers/dismissCookies";
 import { getE2eTestImagePaths } from "../helpers/testImages";
@@ -77,37 +77,78 @@ test.describe("Publicación rápida (/publicar)", () => {
     });
   });
 
-  test("flujo completo: publica anuncio real hasta éxito", async ({ page }) => {
-    test.setTimeout(300_000);
+  test("flujo completo: publica con perfil personal y luego profesional", async ({
+    page,
+  }) => {
+    test.setTimeout(600_000);
 
-    const imagePaths = getE2eTestImagePaths(3);
-    const publicar = new PublicarPage(page);
+    const email = process.env.E2E_PRO_USER_EMAIL;
+    const password = process.env.E2E_PRO_USER_PASSWORD;
 
-    await publicar.goto();
+    test.skip(
+      !email || !password,
+      "Requiere E2E_PRO_USER_EMAIL / E2E_PRO_USER_PASSWORD en .env.e2e.",
+    );
+
+    await publishRealListing(page);
+    await new PublicarPage(page).logout();
+
+    await page.goto("/iniciar-sesion?redirect=/publicar");
     await dismissCookies(page);
+    await page.getByLabel("Email *").fill(email!);
+    await page.getByLabel("Contraseña *").fill(password!);
+    await page.getByRole("button", { name: "Iniciar Sesión" }).click();
+    await page.waitForURL((url) => url.pathname === "/publicar", {
+      timeout: 30_000,
+    });
 
-    await expect(publicar.stepTypeHeading).toBeVisible({ timeout: 30_000 });
-    await publicar.selectFirstVehicleType();
-    await publicar.goNext();
-
-    await expect(
-      page.getByText("¿Qué vehículo vendes?", { exact: false }),
-    ).toBeVisible({ timeout: 30_000 });
-
-    await publicar.uploadImages(imagePaths);
-    await publicar.waitForImagesUploaded();
-
-    await publicar.selectFirstMake();
-    await publicar.selectFirstModel();
-    await publicar.selectFirstVersion();
-    await publicar.waitForSpecsFilled();
-
-    await publicar.fillMileage(45_000);
-    await publicar.calculatePriceOrFallback(15_000);
-    await publicar.generateDescription();
-    await publicar.fillPhone("983708845");
-
-    await publicar.publishNow();
-    await publicar.expectPublishSuccess();
+    await publishRealListing(page, { includesFinanceStep: true });
   });
 });
+
+async function publishRealListing(
+  page: Page,
+  options: { includesFinanceStep?: boolean } = {},
+) {
+  const imagePaths = getE2eTestImagePaths(3);
+  const publicar = new PublicarPage(page);
+
+  if (new URL(page.url()).pathname !== "/publicar") {
+    await publicar.goto();
+  }
+  await dismissCookies(page);
+
+  await expect(publicar.stepTypeHeading).toBeVisible({ timeout: 30_000 });
+  await publicar.selectFirstVehicleType();
+  await publicar.goNext();
+
+  await expect(
+    page.getByText("¿Qué vehículo vendes?", { exact: false }),
+  ).toBeVisible({ timeout: 30_000 });
+
+  await publicar.uploadImages(imagePaths);
+  if (options.includesFinanceStep) {
+    await publicar.waitForGalleryReady();
+  } else {
+    await publicar.waitForImagesUploaded();
+  }
+
+  await publicar.selectFirstMake();
+  await publicar.selectFirstModel();
+  await publicar.selectFirstVersion();
+  await publicar.waitForSpecsFilled();
+
+  await publicar.fillMileage(45_000);
+  await publicar.calculatePriceOrFallback(15_000);
+  await publicar.generateDescription();
+  await publicar.fillPhone("983708845");
+
+  if (options.includesFinanceStep) {
+    await publicar.goNext();
+    await publicar.fillFinanceAndWarranty();
+  }
+
+  await publicar.publishNow();
+  const vehicleId = await publicar.expectPublishSuccess();
+  await publicar.deleteListingFromMyAds(vehicleId);
+}
