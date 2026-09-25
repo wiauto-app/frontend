@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useFormContext, useWatch } from "react-hook-form";
-import { getImageUrl } from "@/lib/utils";
+import { cn, getImageUrl } from "@/lib/utils";
 import { VEHICLE_CONDITION_OPTIONS } from "@/components/vehicles/constants/vehicle-enums.constants";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
@@ -16,7 +16,7 @@ const priceFormatter = new Intl.NumberFormat("es-ES", {
   maximumFractionDigits: 0,
 });
 
-export const QuickVehiclePreview = () => {
+export const QuickVehiclePreview = ({ className }: { className?: string }) => {
   const form = useFormContext<QuickVehicleSchema>();
   const watched = useWatch({ control: form.control });
 
@@ -65,7 +65,7 @@ export const QuickVehiclePreview = () => {
     .join(" · ");
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={cn("flex flex-col gap-4", className)}>
       <h3 className="font-semibold text-sm">Vista previa de tu anuncio</h3>
       <div className="overflow-hidden rounded-xl border bg-card">
         <div className="relative aspect-video bg-muted">

@@ -21,9 +21,13 @@ export const QuickVehicleMediaStep = ({
 }: QuickVehicleMediaStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
 
-  const { entitlements,billingSummary } = useEntitlements();
+  const { entitlements } = useEntitlements();
   const limit = entitlements?.photos_per_vehicle?.limit;
-  const canUploadVideos = entitlements?.video_upload?.value;
+  const videosLimit = entitlements?.videos_per_vehicle?.limit;
+  const canUploadVideos =
+    entitlements?.videos_per_vehicle?.type === "unlimited" ||
+    entitlements?.videos_per_vehicle?.unlimited === true ||
+    (typeof videosLimit === "number" && videosLimit > 0);
   return (
     <VehicleFormStep
       number={2}

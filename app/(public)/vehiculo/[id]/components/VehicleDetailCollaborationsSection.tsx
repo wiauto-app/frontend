@@ -1,7 +1,8 @@
 import { CollaborationHeroCard } from "@/components/collabs/CollaborationHeroCard";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 import { getAllColaboraciones } from "@/services/colaboracionesService";
+import React from "react";
 
 export const VehicleDetailCollaborationsSection = async () => {
   const collaborations = await getAllColaboraciones();
@@ -12,17 +13,16 @@ export const VehicleDetailCollaborationsSection = async () => {
 
   return (
     <Card aria-label="Colaboraciones y servicios" size="sm">
-      <CardContent className="flex flex-col gap-6">
+      <CardContent className="flex flex-col gap-2">
         {collaborations.map((collaboration, index) => (
-          <CollaborationHeroCard
-            key={collaboration.id}
-            content={collaboration}
-            size="md"
-            className={cn(
-              "border-b border-slate-200 last:border-b-0",
-              index === collaborations.length - 1 && "border-b-0",
-            )}
-          />
+          <React.Fragment key={collaboration.id}>
+            <CollaborationHeroCard
+              key={collaboration.id}
+              content={collaboration}
+              size="md"
+            />
+            {index !== collaborations.length - 1 && <Separator />}
+          </React.Fragment>
         ))}
       </CardContent>
     </Card>

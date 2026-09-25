@@ -22,9 +22,10 @@ export default async function Layout({
     {
       variants: {
         showProShell: {
-          false: "max-w-[1800px] ",
+          false: "container",
           true: "max-w-full p-0 ",
         },
+       
       },
     },
   );
@@ -52,7 +53,10 @@ export default async function Layout({
                 </aside>
               ) : null}
 
-              <main className="min-w-0 w-full flex-1 container mx-auto px-0">
+              <main className={cn(
+                " min-w-0 w-full flex-1   px-0",
+                showProShell && "container mx-auto"
+              )}>
                 {children}
               </main>
             </div>

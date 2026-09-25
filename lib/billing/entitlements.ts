@@ -20,24 +20,26 @@ const FEATURE_LABELS: Record<string, string> = {
   videos_per_vehicle: "Vídeos por vehículo",
   ai_requests: "Consultas de IA",
   users: "Usuarios del equipo",
-  video_upload: "Subida de vídeos",
   ai_generation: "Generación con IA",
   statistics: "Estadísticas avanzadas",
   featured_listings: "Vehículos destacados",
-  advanced_listing_editor: "Editor avanzado de anuncios",
+  listing_insights: "Diagnóstico de anuncios",
+  ai_replies_per_conversation: "Respuestas IA por conversación",
+  ai_lead_conversations: "Conversaciones con asistente de leads",
 };
 
 const FEATURE_ORDER: EntitlementFeatureKey[] = [
   "vehicles",
   "photos_per_vehicle",
   "videos_per_vehicle",
-  "video_upload",
+  "listing_insights",
   "ai_requests",
+  "ai_replies_per_conversation",
+  "ai_lead_conversations",
   "ai_generation",
   "users",
   "statistics",
   "featured_listings",
-  "advanced_listing_editor",
 ];
 
 export const getEntitlementFeatureLabel = (feature: string): string =>

@@ -7,6 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-need-car-help-banner: var(--need-car-help-banner);
+  --color-pro-sidebar: var(--pro-sidebar);
   --color-foreground: var(--foreground);
   --color-nature: var(--color-nature);
   --color-purple: var(--color-purple);
@@ -61,6 +62,7 @@
   --color-nature: #679775;
   --color-purple: #5e3ce6;
   --color-purple-dark: #0a1238;
+  --pro-sidebar: #141926;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -104,6 +106,7 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
+  --pro-sidebar: #141926;
   --primary-dark: #0e1d44;
   --primary: #010101;
   --primary-soft: #3a80f5;

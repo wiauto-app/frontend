@@ -25,11 +25,12 @@ export type EntitlementFeatureKey =
   | "videos_per_vehicle"
   | "ai_requests"
   | "users"
-  | "video_upload"
   | "ai_generation"
   | "statistics"
   | "featured_listings"
-  | "advanced_listing_editor"
+  | "listing_insights"
+  | "ai_replies_per_conversation"
+  | "ai_lead_conversations"
   | (string & {});
 
 export interface EntitlementBooleanValue {

@@ -26,7 +26,7 @@ const PREVIEW_CONVERSATIONS = [
 
 export const AssistantLayoutPreview = () => {
   return (
-    <div className="flex h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] overflow-hidden bg-background max-md:h-[calc(100dvh-7rem)] max-md:max-h-[calc(100dvh-7rem)]">
+    <div className="flex h-[calc(100dvh-20rem)]">
       <aside
         aria-hidden="true"
         className="hidden w-56 shrink-0 flex-col border-r bg-sidebar md:flex"

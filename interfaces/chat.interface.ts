@@ -26,7 +26,10 @@ export const CHAT_MESSAGE_STATUS = {
 export type ChatMessageStatus =
   (typeof CHAT_MESSAGE_STATUS)[keyof typeof CHAT_MESSAGE_STATUS];
 
+export type ChatMessageAuthor = "ai_assistant";
+
 export interface ChatMessageMetadata {
+  author?: ChatMessageAuthor;
   file_name?: string;
   mime_type?: string;
   file_size_bytes?: number;

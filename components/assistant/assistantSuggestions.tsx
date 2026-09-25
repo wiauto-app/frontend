@@ -143,7 +143,7 @@ export const AssistantSuggestions = () => {
           <CardTitle className="text-sm sm:text-base">
             ¿Quieres aumentar el uso de tu asistente?
           </CardTitle>
-          <CardDescription className="line-clamp-2 text-xs text-muted-foreground sm:text-sm">
+          <CardDescription className="text-xs text-muted-foreground sm:text-sm max-w-sm">
             Conoce nuestras opciones de uso y descubre cómo puedes obtener más
             para tu asistente.
           </CardDescription>

@@ -1,5 +1,6 @@
 import type { VehicleStatus } from "@/components/vehicles/constants/vehicle-status.constants";
 import type { VehicleTransmissionTypeValue } from "@/components/vehicles/constants/vehicle-enums.constants";
+import type { OwnerListingHealthSummary } from "@/interfaces/vehicle-insights.interface";
 
 export interface OwnerVehicleStatTrend {
   current: number;
@@ -36,6 +37,8 @@ export interface OwnerVehicleListItem {
     phone_clicks: OwnerVehicleStatTrend;
     whatsapp_clicks: OwnerVehicleStatTrend;
   };
+  /** Resumen de salud del anuncio; ausente si el backend no lo calcula. */
+  health?: OwnerListingHealthSummary;
   created_at: string;
   updated_at: string;
 }

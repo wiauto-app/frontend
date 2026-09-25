@@ -1,18 +1,20 @@
 "use client";
 
-import { Flag } from "lucide-react";
+import { Flag, Sparkles } from "lucide-react";
 
 import { MessageStatusIcon } from "@/components/chat/components/MessageStatusIcon";
 import { formatMessageTime } from "@/components/chat/utils/formatMessageTime";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Message,
   MessageAvatar,
   MessageContent,
   MessageFooter,
 } from "@/components/ui/message";
+import { isAiAssistantChatMessage } from "@/components/chat/utils/isAiAssistantChatMessage";
 import {
   CHAT_MESSAGE_TYPE,
   type ChatMessageListItem,
@@ -43,6 +45,7 @@ export const MessageBubble = ({
   onReport,
 }: MessageBubbleProps) => {
   const align = isOwn ? "end" : "start";
+  const isAiAssistant = isAiAssistantChatMessage(message.metadata);
   const bubbleVariant = isOwn ? "default" : "muted";
 
   const avatarUrl = isOwn
@@ -107,10 +110,25 @@ export const MessageBubble = ({
         </Avatar>
       </MessageAvatar>
       <MessageContent>
+        {isAiAssistant ? (
+          <div
+            className={cn(
+              "mb-1 flex max-w-[80%] items-center gap-1.5 text-xs text-muted-foreground",
+              isOwn ? "ml-auto justify-end" : "justify-start",
+            )}
+          >
+            <Sparkles className="size-3.5 shrink-0 text-primary" aria-hidden />
+            <span>
+              {isOwn
+                ? "Enviado por tu asistente de IA"
+                : "Respuesta asistida por IA del vendedor"}
+            </span>
+          </div>
+        ) : null}
         <Bubble variant={bubbleVariant} align={align}>
           <BubbleContent>{renderBody()}</BubbleContent>
         </Bubble>
-        <MessageFooter className="gap-2 bg-black">
+        <MessageFooter className="gap-2 ">
           {!isOwn && onReport ? (
             <Button
               type="button"

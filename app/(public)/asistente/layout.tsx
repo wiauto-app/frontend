@@ -3,8 +3,8 @@ import { AssistantLayoutHeader } from "@/components/assistant/assistantLayoutHea
 import { AssistantLayoutPreview } from "@/components/assistant/AssistantLayoutPreview";
 import { AssistantMainArea } from "@/components/assistant/assistantMainArea";
 import { AssistantSidebar } from "@/components/assistant/assistantSidebar";
+import { AssistantSidebarUiProvider } from "@/components/assistant/assistantSidebarUi";
 import { AuthRequiredScreen } from "@/components/auth/AuthRequiredScreen";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { getServerSession } from "@/lib/ensure-session.server";
 
@@ -19,13 +19,15 @@ const AssistantLayoutContent = ({
 }: AssistantLayoutContentProps) => {
   return (
     <>
-      <SidebarProvider defaultOpen>
-        <AssistantSidebar />
-        <SidebarInset className="flex h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] flex-col overflow-hidden max-md:h-[calc(100dvh-7rem)] max-md:max-h-[calc(100dvh-7rem)]">
-          <AssistantLayoutHeader />
-          <AssistantMainArea>{children}</AssistantMainArea>
-        </SidebarInset>
-      </SidebarProvider>
+      <AssistantSidebarUiProvider>
+        <div className="flex h-[calc(100dvh-6rem)]">
+          <AssistantSidebar />
+          <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            <AssistantLayoutHeader />
+            <AssistantMainArea>{children}</AssistantMainArea>
+          </div>
+        </div>
+      </AssistantSidebarUiProvider>
       {modal}
     </>
   );

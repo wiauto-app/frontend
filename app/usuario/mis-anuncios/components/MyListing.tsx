@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Car, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 import { MyListingsHeader } from "./MyListingsHeader";
 import { MyListingsSummaryCards } from "./MyListingsSummaryCards";
 import { MyListingsTable } from "./MyListingsTable";
@@ -18,11 +19,32 @@ import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { trackPendingPurchase } from "@/lib/analytics/events";
 import { UpgradeListingAdd } from "./upgradeListingAdd";
+import { ListingDiagnosticSheet } from "@/components/vehicles/listing-insights/components/ListingDiagnosticSheet";
+import { useListingDiagnosticStore } from "@/components/vehicles/listing-insights/stores/listingDiagnosticStore";
+import { MY_LISTINGS_QUERY_KEY } from "../hooks/my-listings-query-keys";
 
 export const MyListing = () => {
   const { user, isLoading: isUserLoading } = useUser();
-  const { isPrivileged, isSubscribed, entitlements } = useEntitlements();
+  const { isPrivileged, isSubscribed, entitlements, has } = useEntitlements();
+  const showListingInsights = has("listing_insights");
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+  const diagnosticVehicleId = useListingDiagnosticStore(
+    (state) => state.vehicleId,
+  );
+  const closeDiagnostic = useListingDiagnosticStore(
+    (state) => state.closeDiagnostic,
+  );
+
+  const handleDiagnosticOpenChange = (open: boolean) => {
+    if (open) {
+      return;
+    }
+
+    closeDiagnostic();
+    // Precio/destacado pueden haber cambiado dentro del sheet.
+    void queryClient.invalidateQueries({ queryKey: MY_LISTINGS_QUERY_KEY });
+  };
 
   const isAuthenticated = Boolean(user);
   const {
@@ -203,6 +225,14 @@ export const MyListing = () => {
         canFeatureIncluded={planFeaturedSlots.canUseIncluded}
         availableFeaturedCredits={availableFeaturedCredits}
       />
+
+      {showListingInsights ? (
+        <ListingDiagnosticSheet
+          vehicleId={diagnosticVehicleId}
+          open={Boolean(diagnosticVehicleId)}
+          onOpenChange={handleDiagnosticOpenChange}
+        />
+      ) : null}
     </div>
   );
 };

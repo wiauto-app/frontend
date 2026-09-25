@@ -92,7 +92,7 @@ export const MyListingActionsMenu = ({
             <Button
               type="button"
               variant="ghost"
-              size="icon"
+              size="icon-sm"
               aria-label="Más acciones del anuncio"
               className="text-blue-500 hover:bg-blue-50"
             >

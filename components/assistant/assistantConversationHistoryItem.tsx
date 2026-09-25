@@ -1,11 +1,8 @@
 "use client";
 
-import { SidebarInput } from "@/components/ui/sidebar";
-import {
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import type { AssistantConversationListItem } from "@/services/assistant/assistantConversationService";
 import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -61,10 +58,11 @@ export const AssistantConversationHistoryItem = ({
 
   if (isEditing) {
     return (
-      <SidebarMenuItem>
-        <SidebarInput
+      <li className="px-1">
+        <Input
           aria-label="Editar nombre de conversación"
           autoFocus
+          className="h-8 text-sm"
           maxLength={120}
           onBlur={() => {
             void handleSaveEdit();
@@ -83,29 +81,37 @@ export const AssistantConversationHistoryItem = ({
           }}
           value={draftTitle}
         />
-      </SidebarMenuItem>
+      </li>
     );
   }
 
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton
-        isActive={isActive}
+    <li className="group relative">
+      <button
+        aria-current={isActive ? "true" : undefined}
+        className={cn(
+          "flex w-full items-center rounded-md px-2 py-1.5 pr-8 text-left text-sm transition-colors",
+          isActive
+            ? "bg-primary/10 font-medium text-primary"
+            : "text-slate-700 hover:bg-muted",
+        )}
         onClick={() => onSelect(conversation.id)}
         onDoubleClick={() => setIsEditing(true)}
-        tooltip={conversation.title}
+        title={conversation.title}
         type="button"
       >
         <span className="truncate">{conversation.title}</span>
-      </SidebarMenuButton>
-      <SidebarMenuAction
+      </button>
+      <Button
         aria-label={`Eliminar conversación ${conversation.title}`}
+        className="absolute top-1/2 right-1 size-7 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
         onClick={(event) => void handleDeleteClick(event)}
-        showOnHover
+        size="icon-sm"
         type="button"
+        variant="ghost"
       >
-        <Trash2 />
-      </SidebarMenuAction>
-    </SidebarMenuItem>
+        <Trash2 className="size-3.5" />
+      </Button>
+    </li>
   );
 };

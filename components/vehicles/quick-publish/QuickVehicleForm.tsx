@@ -97,6 +97,7 @@ export const QuickVehicleForm = ({
     }
 
     const response = await vehiclesService.create(payload as never);
+    console.log(response);
     if (response.ok && response.data?.id) {
       if (redirectTo) {
         router.push(`${redirectTo}?id=${encodeURIComponent(response.data.id)}`);
@@ -187,8 +188,8 @@ export const QuickVehicleForm = ({
           </Suspense>
         </div>
 
-        <aside className="hidden lg:flex flex-col gap-6 lg:col-span-1">
-          <QuickVehiclePreview />
+        <aside className="hidden lg:flex flex-col gap-6 lg:col-span-1 relative">
+          <QuickVehiclePreview className="sticky top-0 left-0 w-full h-full" />
           <button
             type="button"
             className="text-left text-sm text-primary hover:underline"

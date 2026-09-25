@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { FaCrown } from "react-icons/fa";
 import Image from "next/image";
+import Link from "next/link";
 
 const FEATURE_ICON_CLASS = "size-5 sm:size-6";
 
@@ -42,32 +43,29 @@ export const UpgradeListingAdd = () => {
         lg: dos columnas; el bloque de media ocupa las dos filas de la derecha
         y el CTA queda bajo el texto, a la izquierda.
       */}
-      <CardContent className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-8">
+      <CardContent className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-8 ">
         <div className="flex min-w-0 flex-col gap-2 sm:gap-3">
           <BrandLogo
             variant="pro-sm-black"
-            className="h-16 w-40 sm:h-24 sm:w-56 lg:h-32 lg:w-64"
+            className="w-26"
             sizes="(min-width: 1024px) 256px, (min-width: 640px) 224px, 160px"
           />
-          <h2 className="text-2xl font-bold text-balance sm:text-3xl lg:text-4xl">
-            ¿Quieres publicar <span className="text-primary">más de 2</span>{" "}
-            anuncios?
-          </h2>
-          <p className="text-sm font-semibold text-pretty sm:text-base">
-            Cámbiate al plan <span className="text-primary">WiAuto Pro</span> y
-            disfruta de todas las ventajas.
-          </p>
-        </div>
-
-        <div className="flex min-w-0 flex-col gap-4 lg:row-span-2 justify-center">
-          <Image
-            src={imageUrl}
-            alt="Ventajas del plan WiAuto Pro"
-            width={500}
-            height={500}
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="h-auto w-full rounded-xl object-contain"
-          />
+          <div>
+            <h2 className="text-2xl font-bold  ">
+              ¿Quieres publicar <span className="text-primary">más de 2</span>{" "}anuncios?
+            </h2>
+            <p className="text-sm font-semibold ">
+              Cámbiate al plan <span className="text-primary">WiAuto Pro</span>{" "}
+              y disfruta de todas las ventajas.
+            </p>
+          </div>
+          <Link href="/usuario/monetizacion">
+            <Button>
+              <FaCrown />
+              <span className="truncate">Cambiarme a Pro</span>
+              <ChevronRight />
+            </Button>
+          </Link>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             {features.map((feature) => (
               <div
@@ -85,12 +83,15 @@ export const UpgradeListingAdd = () => {
           </div>
         </div>
 
-        <div className="flex items-end lg:pb-1">
-          <Button className="flex h-12 w-full items-center justify-between gap-2 rounded-xl px-4 text-base font-medium sm:h-14 sm:px-6 sm:text-xl lg:h-16 lg:rounded-2xl lg:text-2xl">
-            <FaCrown className="size-5 shrink-0 sm:size-6 lg:size-8" />
-            <span className="truncate">Cambiarme a Pro</span>
-            <ChevronRight className="size-5 shrink-0 sm:size-6 lg:size-8" />
-          </Button>
+        <div className="flex min-w-0 flex-col gap-4 justify-center ">
+          <Image
+            src={imageUrl}
+            alt="Ventajas del plan WiAuto Pro"
+            width={500}
+            height={500}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="h-auto w-full rounded-xl object-contain"
+          />
         </div>
       </CardContent>
     </Card>

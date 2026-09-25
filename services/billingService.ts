@@ -205,11 +205,23 @@ export const billingService = {
     vehicle_id?: string,
     options?: OneTimeCheckoutOptions,
   ): Promise<string | null> => {
-    return billingService.createOneTimeCheckout({
-      offer_id,
-      ...(vehicle_id ? { vehicle_id } : {}),
-      ...options,
-    });
+    // A diferencia del resto de checkouts, aquí propagamos el mensaje del
+    // backend (403 anuncio ajeno / 409 anuncio no destacable) para mostrarlo.
+    const response = await apiPost<CheckoutResponse>(
+      V1_BILLING_CHECKOUT_ONE_TIME,
+      {
+        offer_id,
+        ...(vehicle_id ? { metadata: { vehicle_id } } : {}),
+        ...(options?.success_url ? { success_url: options.success_url } : {}),
+        ...(options?.cancel_url ? { cancel_url: options.cancel_url } : {}),
+      },
+    );
+    if (!response.ok) {
+      throw new Error(
+        response.message || "No se pudo iniciar el checkout de destacado",
+      );
+    }
+    return response.data?.checkout_url ?? null;
   },
 
   createPortalSession: async (): Promise<string | null> => {

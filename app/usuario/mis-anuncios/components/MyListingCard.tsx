@@ -12,6 +12,8 @@ import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface"
 import { MyListingStatsRow } from "./MyListingStatsRow";
 import { RenewListingButton } from "./RenewListingButton";
 import { MyListingActionsMenu } from "./MyListingActionsMenu";
+import { ListingHealthBadge } from "@/components/vehicles/listing-insights/components/ListingHealthBadge";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 interface MyListingCardProps {
   listing: OwnerVehicleListItem;
@@ -48,6 +50,8 @@ const getExpiryBadge = (listing: OwnerVehicleListItem): string | null => {
 };
 
 export const MyListingCard = ({ listing }: MyListingCardProps) => {
+  const { has } = useEntitlements();
+  const showListingInsights = has("listing_insights");
   const imageUrl = listing.image?.url ? getImageUrl(listing.image.url) : null;
   const expiryBadge = getExpiryBadge(listing);
 
@@ -113,6 +117,14 @@ export const MyListingCard = ({ listing }: MyListingCardProps) => {
               <span className="text-[10px] font-medium text-amber-700">
                 {expiryBadge}
               </span>
+            ) : null}
+            {showListingInsights && listing.health ? (
+              <ListingHealthBadge
+                health={listing.health}
+                listingName={listing.display_name}
+                vehicleId={listing.id}
+                className="max-w-56"
+              />
             ) : null}
           </div>
 

@@ -28,7 +28,7 @@ const ProfessionalSidebarSkeleton = ({
 }: React.ComponentProps<typeof Sidebar>) => (
   <Sidebar
     className={cn(
-      "bg-linear-to-b from-purple-dark via-purple-dark to-primary text-primary-foreground",
+      "bg-pro-sidebar text-white",
       className,
     )}
     {...props}
@@ -84,7 +84,7 @@ export function ProfessionalSidebar({
   return (
     <Sidebar
       className={cn(
-        "bg-linear-to-b from-purple-dark via-purple-dark to-primary text-primary-foreground",
+        "bg-pro-sidebar text-white",
         className,
       )}
       {...props}
@@ -109,7 +109,10 @@ export function ProfessionalSidebar({
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenuItem>
-          <SidebarMenuButton onClick={logout}>
+          <SidebarMenuButton
+            className="text-white hover:bg-white/10 hover:text-white"
+            onClick={logout}
+          >
             <LogOut className="size-4" />
             Cerrar sesión
           </SidebarMenuButton>

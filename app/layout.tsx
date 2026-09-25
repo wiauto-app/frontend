@@ -12,7 +12,10 @@ import { MetaPixel } from "@/components/metaPixel";
 import { ConsentModeScript } from "@/components/consent/consentModeScript";
 import { CookieConsentBanner } from "@/components/consent/cookieConsentBanner";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
-import { GOOGLE_ANALYTICS_ID, GOOGLE_TAG_MANAGER_ID } from "@/constants/external.constant";
+import {
+  GOOGLE_ANALYTICS_ID,
+  GOOGLE_TAG_MANAGER_ID,
+} from "@/constants/external.constant";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -51,13 +54,14 @@ export default async function RootLayout({
         <Providers>
           <AssistantChatProvider>
             <Navbar />
-            <main className="flex flex-1 flex-col pb-14 md:pb-0 mb-10">
+            <main className="flex flex-1 flex-col ">
               <MetaPixel />
               {children}
             </main>
             <ConditionalWrapper
               hideOnPaths={[
                 "/usuario",
+                "/asistente",
                 "/publicar",
                 "/editar-vehiculo",
                 "/billing-plan",
