@@ -21,7 +21,7 @@ export const AuthSplitLayout = ({
       <Card className="flex flex-col lg:flex-row w-full max-w-4xl  border p-0">
         <div className="relative flex-col items-center justify-center overflow-hidden bg-primary-dark flex lg:w-[37.4%]">
           <div className="relative z-10 px-8 text-center space-y-4">
-            <BrandLogo variant="normal-base"  />
+            <BrandLogo variant="normal-base" className="w-52 h-20" />
             <h1 className="hidden md:block mb-4 text-center text-3xl leading-tight font-bold text-white">
               Encuentra o vende
               <br />

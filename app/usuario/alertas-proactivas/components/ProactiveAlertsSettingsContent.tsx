@@ -56,7 +56,9 @@ export const ProactiveAlertsSettingsContent = () => {
         enabled_types,
       });
       if (!response.ok || !response.data) {
-        throw new Error(response.message || "No se pudieron guardar los ajustes.");
+        throw new Error(
+          response.message || "No se pudieron guardar los ajustes.",
+        );
       }
       return response.data;
     },
@@ -115,7 +117,9 @@ export const ProactiveAlertsSettingsContent = () => {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <BellRing className="size-6 text-gray-800" aria-hidden />
-          <h1 className="text-2xl font-bold text-gray-900">Alertas proactivas</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Alertas proactivas
+          </h1>
         </div>
         <p className="text-sm text-gray-600">
           Elige qué avisos automáticos quieres recibir sobre precio, visitas,
@@ -132,7 +136,10 @@ export const ProactiveAlertsSettingsContent = () => {
           <p className="mt-1">
             Actívalas en un plan superior para recibir recomendaciones sobre tus
             anuncios.{" "}
-            <Link href="/usuario/monetizacion" className="font-semibold underline">
+            <Link
+              href="/usuario/monetizacion"
+              className="font-semibold underline"
+            >
               Ver planes
             </Link>
           </p>
@@ -174,12 +181,6 @@ export const ProactiveAlertsSettingsContent = () => {
                         <p className="text-xs leading-relaxed text-gray-600">
                           {item.description}
                         </p>
-                        {item.cooldown_days != null ? (
-                          <p className="text-[11px] text-gray-400">
-                            Enfriamiento: {item.cooldown_days} día
-                            {item.cooldown_days === 1 ? "" : "s"}
-                          </p>
-                        ) : null}
                       </div>
                       <Switch
                         checked={checked}
