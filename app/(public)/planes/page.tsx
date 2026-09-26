@@ -8,6 +8,8 @@ import { PlansStepsSection } from "./components/PlansStepsSection";
 import { getPlansData } from "./services/getPlansData";
 import { getPublicPlansCatalog } from "./services/getPublicPlansCatalog.server";
 import { LandingContainer } from "@/components/ui/landingContainer";
+import Image from "next/image";
+import { getStrapiImageUrl } from "@/lib/strapi-media";
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -34,10 +36,10 @@ export default async function Page() {
     getPublicPlansCatalog(),
   ]);
 
-
   const cms = cms_result ?? null;
   const plans = plans_result ?? [];
-
+  const wiauto_match_image =
+    getStrapiImageUrl(cms?.wiauto_match, "large") ?? "";
   return (
     <LandingContainer>
       {cms?.hero ? <PlansHeroSection hero={cms.hero} /> : null}
@@ -47,12 +49,18 @@ export default async function Page() {
           plans={plans}
         />
       ) : null}
-
+      {wiauto_match_image ? (
+        <Image
+          src={wiauto_match_image}
+          alt="Wiauto Match"
+          className="mx-auto"
+          width={1000}
+          height={1000}
+        />
+      ) : null}
       {cms?.ventajas ? <PlansFeaturesSection data={cms.ventajas} /> : null}
 
-      {cms?.facil_vender ? (
-        <PlansStepsSection data={cms.facil_vender} />
-      ) : null}
+      {cms?.facil_vender ? <PlansStepsSection data={cms.facil_vender} /> : null}
 
       {cms?.contact ? <PlansContactSection data={cms.contact} /> : null}
     </LandingContainer>

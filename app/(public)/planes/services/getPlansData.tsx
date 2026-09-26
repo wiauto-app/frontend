@@ -18,6 +18,7 @@ const PLANS_POPULATE_QUERY = {
     ventajas: ADVANTAGES_POPULATE,
     facil_vender: ADVANTAGES_POPULATE,
     contact: CARD_POPULATE,
+    wiauto_match: true
   },
 };
 

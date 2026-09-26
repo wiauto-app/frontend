@@ -2,11 +2,13 @@ import type {
   StrapiCard,
   StrapiEstadistica,
   StrapiHero,
+  StrapiImage,
   StrapiLink,
   StrapiMobileAdvertisment,
   StrapiPlanesCaracteristicas,
   StrapiPlanesTechAdd,
 } from "@/interfaces/strapi-components.interface";
+import { StrapiMedia } from "@/lib/strapi.types";
 
 /** Alias histórico acoplado a la UI de planes. */
 export type PlanesLinkAction = StrapiLink;
@@ -33,6 +35,7 @@ export interface PlanesPageResponse {
   ventajas: PlanesCaracteristicasBlock | null;
   facil_vender: PlanesCaracteristicasBlock | null;
   contact: StrapiCard | null;
+  wiauto_match: StrapiMedia | null;
 }
 
 export interface StrapiPlanesResponse {

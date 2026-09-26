@@ -67,7 +67,7 @@ const BillTable = ({ bills, loading = false, formatPrice }: BillTableProps) => {
                 <TableHead>Acciones</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody >
               {bills.map((bill) => {
                 const invoiceUrl = getInvoiceUrl(bill);
 
