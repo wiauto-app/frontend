@@ -26,7 +26,7 @@ export const OfferCard = ({
 }: OfferCardProps) => {
   return (
     <li>
-      <Card size="sm" variant="soft">
+      <Card size="sm">
         <CardContent>
           <div className="space-y-4">
             <div className="flex w-full items-start justify-between gap-5">

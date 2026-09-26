@@ -112,6 +112,7 @@ export interface VehicleListItemPublisher {
  */
 export interface VehicleListItem {
   id: string;
+  is_premium: boolean;
   ref: number;
   price: number;
   mileage: number;

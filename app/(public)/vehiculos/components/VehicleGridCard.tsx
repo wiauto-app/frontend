@@ -21,9 +21,7 @@ import {
   getPrimaryCuotaValue,
   getVehicleUrl,
 } from "../utils";
-import { VehicleEngagementMenu } from "./VehicleEngagementMenu";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
-import { VehicleShareButton } from "./VehicleShareButton";
 
 interface VehicleGridCardProps {
   vehicle: VehicleListItem;
@@ -58,12 +56,22 @@ const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
         <span className="rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-slate-700 uppercase shadow-sm backdrop-blur-sm">
           {conditionLabel}
         </span>
+        {vehicle.is_premium ? (
+          <span className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm">
+            Profesional
+          </span>
+        ) : null}
         {vehicle.dgt_label?.code && (
           <span
             className="rounded-md bg-emerald-600/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm"
             title={`Distintivo DGT ${vehicle.dgt_label.name || vehicle.dgt_label.code}`}
           >
             DGT {vehicle.dgt_label.code}
+          </span>
+        )}
+        {vehicle.is_premium && (
+          <span className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm backdrop-blur-sm">
+            Profesional
           </span>
         )}
       </div>

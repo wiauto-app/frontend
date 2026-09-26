@@ -148,7 +148,7 @@ export const MyListingTableRow = ({ listing }: MyListingTableRowProps) => {
                 {get_vehicle_status_label(listing.status)}
               </Badge>
               {listing.is_featured_active ? (
-                <Badge variant="secondary">
+                <Badge >
                   <FaStar
                     data-icon="inline-start"
                     className="text-amber-500"

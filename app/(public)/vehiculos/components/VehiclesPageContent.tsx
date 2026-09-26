@@ -16,6 +16,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 
 import { SHOW_MAP_KEY } from "../[[...slug]]/constants/filterKeys.constants";
+import { useAuthenticatedVehiclesListing } from "../hooks/useAuthenticatedVehiclesListing";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
 import { MapButton } from "./mapButton";
@@ -110,6 +111,14 @@ export const VehiclesPageContent = ({
   showMapButton = true,
 }: VehiclesPageContentProps) => {
   const { resetFilters, goToPage, filters } = useVehiclesListingFilters();
+  const {
+    vehicles: listingVehicles,
+    total: listingTotal,
+    handleDismissed,
+  } = useAuthenticatedVehiclesListing({
+    initialVehicles: vehicles,
+    initialTotal: total,
+  });
 
   const { handleChange } = useFiltersManager({
     keys: [SHOW_MAP_KEY],
@@ -139,8 +148,9 @@ export const VehiclesPageContent = ({
         </div>
         {activeFiltersNode}
         <VehiclesListingView
-          vehicles={vehicles}
-          total={total}
+          vehicles={listingVehicles}
+          total={listingTotal}
+          onDismissed={handleDismissed}
           goToPage={goToPage}
           resetFilters={resetFilters}
           pageLimit={filters.limit || 12}
@@ -151,8 +161,8 @@ export const VehiclesPageContent = ({
       {isMapVisible && showMapButton ? (
         <div className="hidden min-w-0 shrink-0 basis-[min(100%,600px)] lg:block xl:basis-180">
           <VehiclesMap
-            vehicles={vehicles}
-            total={total}
+            vehicles={listingVehicles}
+            total={listingTotal}
             isMapVisible={isMapVisible}
             mapId="vehicles-listing-map-desktop"
           />
@@ -173,8 +183,8 @@ export const VehiclesPageContent = ({
           </DialogHeader>
           <div className="relative min-h-0 flex-1">
             <VehiclesMap
-              vehicles={vehicles}
-              total={total}
+              vehicles={listingVehicles}
+              total={listingTotal}
               isMapVisible={is_mobile_map_open}
               mapId="vehicles-listing-map-mobile"
               className="static h-full"

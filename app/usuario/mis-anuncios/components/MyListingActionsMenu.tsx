@@ -146,7 +146,7 @@ export const MyListingActionsMenu = ({
               Archivar
             </DropdownMenuItem>
           ) : null}
-          {!isActive ? (
+          {!isActive && !canToggleStatus ? (
             <DropdownMenuItem onClick={() => void handleToggleStatus("active")}>
               <Power className="size-4" aria-hidden />
               Activar

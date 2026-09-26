@@ -25,7 +25,9 @@ interface UseAuthenticatedVehiclesListingResult {
 
 /**
  * SSR anónimo con cache compartida; con sesión, refetch autenticado
- * (cookies) sin depender de esa cache para respetar descartes.
+ * (`vehicleService.vehicles.findAll` → cookies/JWT) sin depender de esa cache
+ * para descartes y para que el backend reciba `profile_id` (p. ej. listados con
+ * `models_slugs` y alertas proactivas a owners premium).
  */
 export const useAuthenticatedVehiclesListing = ({
   initialVehicles,
