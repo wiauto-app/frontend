@@ -185,7 +185,7 @@ export const MyListingsSummaryCards = ({
       className={cn(
         // Móvil: panel único dividido por líneas de 1px.
         // md: se disuelve el panel y cada métrica es una card.
-        "grid gap-px overflow-hidden rounded-xl bg-border ring-1 ring-foreground/10 md:gap-4 md:overflow-visible md:bg-transparent md:ring-0",
+        "grid gap-px overflow-hidden rounded-xl bg-border ring-1 ring-foreground/10 md:gap-2 md:overflow-visible md:bg-transparent md:ring-0",
         showFeaturedCard ? "grid-cols-5" : "grid-cols-4",
       )}
     >

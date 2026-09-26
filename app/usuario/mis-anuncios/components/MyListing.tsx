@@ -131,7 +131,7 @@ export const MyListing = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       <MyListingsHeader />
 
       <MyListingsSummaryCards
@@ -153,7 +153,7 @@ export const MyListing = () => {
         featuredUnlimited={featuredSlots.unlimited}
       />
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 items-start gap-2 lg:grid-cols-[1fr_425px]">
         <div className="min-w-0 space-y-4">
           {isSubscribed && (
             <MyListingsFiltersBar
