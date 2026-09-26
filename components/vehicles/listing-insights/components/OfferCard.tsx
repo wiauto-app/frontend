@@ -35,7 +35,16 @@ export const OfferCard = ({
             <p className="text-base font-bold">
               {formatEurosCents(offer.amount_cents)}
             </p>
-            <p className="text-sm">{offer.description}</p>
+            {offer.description ? (
+              <p className="text-sm">{offer.description}</p>
+            ) : null}
+            {(offer.features ?? []).length > 0 ? (
+              <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
+                {offer.features.map((feature, index) => (
+                  <li key={`${feature}-${index}`}>{feature}</li>
+                ))}
+              </ul>
+            ) : null}
 
             <Button
               type="button"

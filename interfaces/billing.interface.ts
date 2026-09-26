@@ -99,6 +99,7 @@ export interface FeaturedListingOffer {
   id: string;
   title: string;
   description: string | null;
+  features: string[];
   duration_days: number;
   boost_weight: number;
   amount_cents: number;
