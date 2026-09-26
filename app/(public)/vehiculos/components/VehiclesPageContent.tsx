@@ -50,9 +50,9 @@ const VehiclesListingView = ({
     return (
       <div className="rounded-2xl border border-slate-100 bg-white p-12 text-center">
         <Car className="mx-auto size-16 text-slate-300" />
-        <h3 className="mt-4 text-lg font-semibold text-slate-900">
+        <h2 className="mt-4 text-lg font-semibold text-slate-900">
           No se encontraron vehículos
-        </h3>
+        </h2>
         <p className="mt-2 text-slate-500">
           Intenta ajustar los filtros o realizar una nueva búsqueda
         </p>
@@ -72,12 +72,13 @@ const VehiclesListingView = ({
       <div className="grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
         {vehicles.map((vehicle) =>
           vehicle.is_featured ? (
-            <VehicleFeaturedCard key={vehicle.id} vehicle={vehicle} />
+            <VehicleFeaturedCard key={vehicle.id} vehicle={vehicle} titleAs="h2" />
           ) : (
             <VehicleGridCard
               className="bg-white shadow-md hover:shadow-xl"
               key={vehicle.id}
               vehicle={vehicle}
+              titleAs="h2"
               onDismissed={onDismissed}
             />
           ),

@@ -29,6 +29,8 @@ interface VehicleGridCardProps {
   footer?: React.ReactNode;
   onDismissed?: (vehicleId: string) => void;
   className?: string;
+  /** En el catálogo el título de la tarjeta cuelga del H1 de la página. */
+  titleAs?: "h2" | "h3";
 }
 
 interface VehicleGridCardBadgesProps {
@@ -39,6 +41,7 @@ interface VehicleGridCardBodyProps {
   vehicle: VehicleListItem;
   displayName: string;
   interactive: boolean;
+  titleAs: "h2" | "h3";
 }
 
 const VEHICLE_GRID_IMAGE_SIZES = `
@@ -93,7 +96,9 @@ const VehicleGridCardBody = ({
   vehicle,
   displayName,
   interactive,
+  titleAs,
 }: VehicleGridCardBodyProps) => {
+  const TitleTag = titleAs;
   const cuotaValue = getPrimaryCuotaValue(vehicle);
   const financedLabel = cuotaValue ? formatMonthlyPrice(cuotaValue) : null;
 
@@ -104,12 +109,12 @@ const VehicleGridCardBody = ({
         interactive && "pointer-events-none",
       )}
     >
-      <h3
+      <TitleTag
         title={displayName}
         className="truncate text-base leading-snug font-bold text-slate-900"
       >
         {displayName}
-      </h3>
+      </TitleTag>
 
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <div className="flex items-start ">
@@ -171,6 +176,7 @@ export const VehicleGridCard = ({
   footer,
   onDismissed,
   className,
+  titleAs = "h3",
 }: VehicleGridCardProps) => {
   const imageUrl = getImageUrl(vehicle.images[0]?.url ?? "");
   const displayName = getVehicleDisplayName(vehicle);
@@ -225,6 +231,7 @@ export const VehicleGridCard = ({
           vehicle={vehicle}
           displayName={displayName}
           interactive={interactive}
+          titleAs={titleAs}
         />
         {footer ? (
           <>

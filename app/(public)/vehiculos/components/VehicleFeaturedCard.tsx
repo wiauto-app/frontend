@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 interface VehicleFeaturedCardProps {
   vehicle: VehicleListItem;
   className?: string;
+  /** En el catálogo el título de la tarjeta cuelga del H1 de la página. */
+  titleAs?: "h2" | "h3";
 }
 
 const FEATURED_IMAGE_SIZES = `
@@ -36,7 +38,9 @@ const FEATURED_IMAGE_SIZES = `
 export const VehicleFeaturedCard = ({
   vehicle,
   className,
+  titleAs = "h3",
 }: VehicleFeaturedCardProps) => {
+  const TitleTag = titleAs;
   const displayName = getVehicleDisplayName(vehicle);
   const vehicleUrl = getVehicleUrl(vehicle.id);
   const imageUrl = getImageUrl(vehicle.images?.[0]?.url ?? "");
@@ -103,12 +107,12 @@ export const VehicleFeaturedCard = ({
 
       <div className="relative z-10 flex h-full flex-col gap-2.5 px-4 pt-2 pb-4">
         <div className="flex items-center justify-between gap-2">
-          <h3
+          <TitleTag
             title={displayName}
             className="max-w-[min(100%,15.5rem)] truncate text-lg font-extrabold text-white"
           >
             {displayName}
-          </h3>
+          </TitleTag>
           <div className="pointer-events-auto relative z-20 shrink-0">
             <VehicleFavoriteButton
               vehicleId={vehicle.id}

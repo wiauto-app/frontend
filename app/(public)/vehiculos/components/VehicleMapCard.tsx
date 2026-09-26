@@ -91,12 +91,12 @@ export const VehicleMapCard = () => {
           </p>
         ) : null}
 
-        <h3
+        <h2
           title={displayName}
           className="truncate text-base leading-snug font-bold text-slate-900"
         >
           {modelLine}
-        </h3>
+        </h2>
 
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <p className="text-lg font-bold tracking-tight text-slate-900">

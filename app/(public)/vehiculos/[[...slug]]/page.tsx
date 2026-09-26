@@ -13,7 +13,12 @@ import {
 } from "@/lib/vehicles/listing-url";
 import { activeFiltersService } from "../services/activeFiltersService";
 import { FRONTEND_URL } from "@/constants";
-import { NOINDEX_ROBOTS } from "@/lib/seo/noindex";
+import { JsonLdScript } from "@/lib/seo/json-ld-script";
+import {
+  buildVehicleListingCopy,
+  buildVehicleListingJsonLd,
+  buildVehicleListingMetadata,
+} from "@/lib/seo/build-vehicle-listing-seo";
 import { FiltersTitle } from "../components/filtersTitle";
 import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
 
@@ -47,25 +52,10 @@ export async function generateMetadata(props: {
       : null;
   const canonical_path = indexable_path ?? buildCanonicalListingHref(filters);
 
-  return {
-    title: `${listing.total} resultados de ${activeFilters.title}`,
-    description: `Encuentra ${listing.total} vehículos en ${activeFilters.title} en Wiauto.com`,
-    ...(listing.total < THIN_LISTING_RESULT_THRESHOLD
-      ? { robots: NOINDEX_ROBOTS }
-      : {}),
-    openGraph: {
-      title: `${listing.total} resultados de ${activeFilters.title}`,
-      description: `Encuentra ${listing.total} vehículos en ${activeFilters.title} en Wiauto.com`,
-      images: [
-        {
-          url: `${FRONTEND_URL}/images/og-image.png`,
-        },
-      ],
-    },
-    alternates: {
-      canonical: `${FRONTEND_URL}${canonical_path}`,
-    },
-  };
+  return buildVehicleListingMetadata(activeFilters.title, {
+    canonical: `${FRONTEND_URL}${canonical_path}`,
+    noindex: listing.total < THIN_LISTING_RESULT_THRESHOLD,
+  });
 }
 
 export default async function VehiclesListingPage(props: {
@@ -85,14 +75,28 @@ export default async function VehiclesListingPage(props: {
     activeFiltersService.getActiveFilters(filters),
   ]);
   const isMapVisible = search_params[SHOW_MAP_KEY] === "true";
+  const listingCopy = buildVehicleListingCopy(activeFilters.title);
+  const canonicalPath = buildCanonicalListingHref(filters);
 
   return (
-    <VehiclesPageContent
-      vehicles={listing.data}
-      total={listing.total}
-      isMapVisible={isMapVisible}
-      titleNode={<FiltersTitle title={activeFilters.title} />}
-      activeFiltersNode={<ActiveFilters activeFilters={activeFilters} />}
-    />
+    <>
+      <JsonLdScript
+        data={buildVehicleListingJsonLd({
+          title: listingCopy.title,
+          description: listingCopy.description,
+          canonicalUrl: `${FRONTEND_URL}${canonicalPath}`,
+          vehicles: listing.data,
+          page: listing.page,
+          limit: listing.limit,
+        })}
+      />
+      <VehiclesPageContent
+        vehicles={listing.data}
+        total={listing.total}
+        isMapVisible={isMapVisible}
+        titleNode={<FiltersTitle title={activeFilters.title} />}
+        activeFiltersNode={<ActiveFilters activeFilters={activeFilters} />}
+      />
+    </>
   );
 }
