@@ -13,7 +13,7 @@ import {
   ZonesSkeleton,
 } from "@/components/home";
 import { PromotionPlans } from "@/components/home/promotionPlans";
-import { SearchForm } from "@/components/home/searchForm";
+import { WiautoMatchForm } from "@/components/home/wiautoMatchForm";
 import { getHomeData } from "@/components/home/services/homeService";
 import { StoreButtons } from "@/components/home/StoreButtons";
 import { TopDealerships } from "@/components/home/topDealerships";
@@ -52,7 +52,7 @@ export default async function Home() {
         <HeroSection data={home_data.homeHero} />
         {/* <div className="block sm:hidden h-50" /> */}
         <StoreButtons soon={true} className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden" />
-        <SearchForm />
+        <WiautoMatchForm />
 
         <VehicleExtraServices />
         <AppDownloadBanner data={home_data.homeAppAdvertisment} />
