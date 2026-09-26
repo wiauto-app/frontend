@@ -13,7 +13,7 @@ type VehicleDetailTitleSectionProps = {
 export const VehicleDetailTitleSection = ({
   vehicle,
 }: VehicleDetailTitleSectionProps) => (
-  <VehicleDetailCard title={getVehicleDisplayName(vehicle)}>
+  <VehicleDetailCard title={getVehicleDisplayName(vehicle)} as="h1">
     <VehicleDetailPricingSection vehicle={vehicle} />
     <Separator />
     <VehicleDetailsTechnicalFeatures vehicle={vehicle} />
