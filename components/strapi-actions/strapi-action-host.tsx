@@ -1,7 +1,5 @@
 "use client";
 
-import { CollabsVehicleReportDialog } from "@/app/(landing)/colaboraciones/components/collabsVehicleReportDialog";
-import { resolveVehicleReportMode } from "@/app/(landing)/colaboraciones/utils/resolveVehicleReportMode";
 import { SegurosLeadForm } from "@/app/(landing)/seguros/components/SegurosLeadForm";
 import {
   Dialog,
@@ -10,8 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { StrapiLink } from "@/interfaces/strapi-components.interface";
-import type { StrapiMedia } from "@/lib/strapi.types";
 
 import {
   STRAPI_ACTION_KEYS,
@@ -22,16 +18,12 @@ interface StrapiActionHostProps {
   actionKey: StrapiActionKey;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  activeButton?: StrapiLink | null;
-  partnerLogo?: StrapiMedia | null;
 }
 
 export const StrapiActionHost = ({
   actionKey,
   open,
   onOpenChange,
-  activeButton = null,
-  partnerLogo = null,
 }: StrapiActionHostProps) => {
   const handleClose = () => {
     onOpenChange(false);
@@ -51,15 +43,6 @@ export const StrapiActionHost = ({
             <SegurosLeadForm onSuccess={handleClose} />
           </DialogContent>
         </Dialog>
-      );
-    case STRAPI_ACTION_KEYS.INFORME_FORM:
-      return (
-        <CollabsVehicleReportDialog
-          open={open}
-          onOpenChange={onOpenChange}
-          initialMode={resolveVehicleReportMode(activeButton)}
-          logo={partnerLogo}
-        />
       );
     default:
       return null;

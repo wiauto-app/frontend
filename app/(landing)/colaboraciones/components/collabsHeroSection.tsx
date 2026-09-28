@@ -21,6 +21,7 @@ import {
   COLLABS_SEGUROS_HERO_FORM_ID,
   CollabsSegurosHeroForm,
 } from "./collabsSegurosHeroForm";
+import { CollabsVehicleReportForm } from "./collabsVehicleReportForm";
 
 interface HeroSectionProps {
   hero?: StrapiHero;
@@ -74,7 +75,7 @@ const HeroFooter = ({ footer }: HeroFooterProps) => {
     <div className="bg-white/90 p-4 rounded-xl">
       <StrapiRenderer
         content={footer}
-        className=" max-w-md text-sm leading-relaxed text-slate-600 [&_a]:text-slate-600 [&_a]:underline [&_li]:text-sm [&_li]:text-slate-600 [&_ol]:mb-0 [&_p]:mb-1 [&_p]:text-sm [&_p]:text-slate-600 [&_ul]:mb-0"
+        className="max-w-md text-sm leading-relaxed text-slate-600 [&_a]:text-slate-600 [&_a]:underline [&_li]:text-sm [&_li]:text-slate-600 [&_ol]:mb-0 [&_p]:mb-1 [&_p]:text-sm [&_p]:text-slate-600 [&_strong]:text-base [&_strong]:!font-bold [&_strong]:!text-primary [&_ul]:mb-0"
       />
     </div>
   );
@@ -93,6 +94,9 @@ export const CollabsHeroSection = ({
   const isEmbeddedSegurosForm =
     isStrapiActionKey(actionKey) &&
     actionKey === STRAPI_ACTION_KEYS.SEGUROS_FORM;
+  const isEmbeddedInformeForm =
+    isStrapiActionKey(actionKey) &&
+    actionKey === STRAPI_ACTION_KEYS.INFORME_FORM;
 
   const formTitle = hero.acciones?.[0]?.label || "Calcular seguro";
   const heroFooter = hero.footer?.length ? (
@@ -128,6 +132,40 @@ export const CollabsHeroSection = ({
               formId={COLLABS_SEGUROS_HERO_FORM_ID}
               title={formTitle}
               logo={hero.card?.imagen}
+            />
+          </div>
+        }
+      />
+    );
+  }
+
+  if (isEmbeddedInformeForm) {
+    return (
+      <Hero
+        className={`lg:h-auto ${className ?? ""}`}
+        image={backgroundUrl ?? undefined}
+        leftContent={
+          <>
+            {hero.titulo ? <HeroTitle>{hero.titulo}</HeroTitle> : null}
+
+            {hero.descripcion ? (
+              <HeroDescription>{hero.descripcion}</HeroDescription>
+            ) : null}
+
+            <HeroFeatures
+              features={hero.caracteristicas}
+              iconPack={collabsIconPack}
+            />
+
+            {heroFooter}
+          </>
+        }
+        floatingContent={<HeroBackdrop />}
+        rightContent={
+          <div className="flex w-full justify-center lg:justify-end">
+            <CollabsVehicleReportForm
+              logo={hero.card?.imagen}
+              card={hero.card}
             />
           </div>
         }

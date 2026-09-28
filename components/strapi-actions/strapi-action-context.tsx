@@ -10,7 +10,6 @@ import {
 } from "react";
 
 import type { StrapiLink } from "@/interfaces/strapi-components.interface";
-import type { StrapiMedia } from "@/lib/strapi.types";
 
 import { StrapiActionHost } from "./strapi-action-host";
 import {
@@ -33,7 +32,6 @@ interface StrapiActionProviderProps {
   actionKey?: string | null;
   /** Si se define, `openAction` hace scroll a este id en lugar de abrir el diálogo. */
   embedTargetId?: string | null;
-  partnerLogo?: StrapiMedia | null;
   children: ReactNode;
 }
 
@@ -58,21 +56,17 @@ const scrollToEmbedTarget = (targetId: string): boolean => {
 export const StrapiActionProvider = ({
   actionKey,
   embedTargetId,
-  partnerLogo = null,
   children,
 }: StrapiActionProviderProps) => {
   const [open, setOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState<StrapiLink | null>(null);
   const resolvedKey = isStrapiActionKey(actionKey) ? actionKey : null;
   const isEmbedded = Boolean(resolvedKey && embedTargetId);
 
   const openAction = useCallback(
-    (button?: StrapiLink) => {
+    (_button?: StrapiLink) => {
       if (!resolvedKey) {
         return;
       }
-
-      setActiveButton(button ?? null);
 
       if (embedTargetId && scrollToEmbedTarget(embedTargetId)) {
         return;
@@ -89,14 +83,10 @@ export const StrapiActionProvider = ({
 
   const closeAction = useCallback(() => {
     setOpen(false);
-    setActiveButton(null);
   }, []);
 
   const handleOpenChange = useCallback((nextOpen: boolean) => {
     setOpen(nextOpen);
-    if (!nextOpen) {
-      setActiveButton(null);
-    }
   }, []);
 
   const value = useMemo<StrapiActionContextValue>(
@@ -117,8 +107,6 @@ export const StrapiActionProvider = ({
           actionKey={resolvedKey}
           open={open}
           onOpenChange={handleOpenChange}
-          activeButton={activeButton}
-          partnerLogo={partnerLogo}
         />
       ) : null}
     </StrapiActionContext.Provider>

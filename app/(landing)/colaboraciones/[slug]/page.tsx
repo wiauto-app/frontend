@@ -10,6 +10,7 @@ import { getColaboracionBySlug } from "@/services/colaboracionesService";
 import { LandingContainer } from "@/components/ui/landingContainer";
 import { CollabsHeroSection } from "../components/collabsHeroSection";
 import { COLLABS_SEGUROS_HERO_FORM_ID } from "../components/collabsSegurosHeroForm";
+import { COLLABS_VEHICLE_REPORT_FORM_ID } from "../components/collabsVehicleReportForm";
 
 interface ColaboracionDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -53,14 +54,19 @@ export default async function ColaboracionDetailPage({
 
   const isEmbeddedSegurosForm =
     colaboracion.key === STRAPI_ACTION_KEYS.SEGUROS_FORM;
+  const isEmbeddedInformeForm =
+    colaboracion.key === STRAPI_ACTION_KEYS.INFORME_FORM;
+
+  const embedTargetId = isEmbeddedSegurosForm
+    ? COLLABS_SEGUROS_HERO_FORM_ID
+    : isEmbeddedInformeForm
+      ? COLLABS_VEHICLE_REPORT_FORM_ID
+      : null;
 
   return (
     <StrapiActionProvider
       actionKey={colaboracion.key}
-      embedTargetId={
-        isEmbeddedSegurosForm ? COLLABS_SEGUROS_HERO_FORM_ID : null
-      }
-      partnerLogo={colaboracion.hero?.card?.imagen ?? null}
+      embedTargetId={embedTargetId}
     >
       <LandingContainer>
         {/* Hero Section */}
