@@ -60,6 +60,7 @@ export default async function ColaboracionDetailPage({
       embedTargetId={
         isEmbeddedSegurosForm ? COLLABS_SEGUROS_HERO_FORM_ID : null
       }
+      partnerLogo={colaboracion.hero?.card?.imagen ?? null}
     >
       <LandingContainer>
         {/* Hero Section */}

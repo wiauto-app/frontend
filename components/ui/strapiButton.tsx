@@ -64,13 +64,15 @@ export const StrapiButton = ({
   onFunctionClick,
 }: StrapiButtonProps) => {
   const strapiAction = useStrapiAction();
-  const hasActionKey = Boolean(strapiAction?.actionKey);
-  const isFunctionButton = Boolean(button.funcion && onFunctionClick);
-  const isActionButton = hasActionKey || isFunctionButton;
+  const isPageFunctionAction = Boolean(
+    strapiAction?.actionKey && button.funcion,
+  );
+  const isLocalFunctionButton = Boolean(button.funcion && onFunctionClick);
+  const isActionButton = isPageFunctionAction || isLocalFunctionButton;
 
   const handleActionClick = () => {
-    if (hasActionKey) {
-      strapiAction?.openAction();
+    if (isPageFunctionAction) {
+      strapiAction?.openAction(button);
       return;
     }
     onFunctionClick?.();

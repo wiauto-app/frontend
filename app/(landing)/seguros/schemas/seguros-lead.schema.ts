@@ -1,22 +1,11 @@
 import { z } from "zod";
 
+import { isValidSpanishLicensePlate } from "@/lib/validations/licensePlate";
+
 import { spanishDniSchema } from "./spanish-dni.schema";
 
 const requiredText = (message: string) =>
   z.string().trim().min(1, message);
-
-/** Matrícula española actual (1234ABC) o antigua (A1234BC), con espacios opcionales. */
-const isValidSpanishLicensePlate = (raw: string): boolean => {
-  const value = raw.trim().toUpperCase().replace(/\s+/g, "");
-  if (!value) {
-    return true;
-  }
-
-  return (
-    /^\d{4}[BCDFGHJKLMNPRSTVWXYZ]{3}$/.test(value) ||
-    /^[A-Z]{1,2}\d{4}[A-Z]{1,2}$/.test(value)
-  );
-};
 
 const digitsOnly = (value: string): string => value.replace(/\D/g, "");
 

@@ -1,5 +1,6 @@
 export const STRAPI_ACTION_KEYS = {
   SEGUROS_FORM: "seguros_form",
+  INFORME_FORM: "informe_form",
 } as const;
 
 export type StrapiActionKey =
