@@ -8,7 +8,10 @@ import { NavbarContainer } from "./components/navbarContainer";
 export const Navbar = async() => {
   const colaboraciones = await getAllColaboraciones();
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white">
+    <header
+      className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white"
+      style={{ viewTransitionName: "site-header" }}
+    >
       <NavbarContainer>
         <BrandLogo
           className="w-32 lg:w-44 "

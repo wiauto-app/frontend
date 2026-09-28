@@ -21,8 +21,9 @@ import {
   getPrimaryCuotaValue,
   getVehicleUrl,
 } from "../utils";
+import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
-
+import { ViewTransition } from "react";
 interface VehicleGridCardProps {
   vehicle: VehicleListItem;
   interactive?: boolean;
@@ -119,7 +120,6 @@ const VehicleGridCardBody = ({
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <div className="flex items-start ">
           <div className="flex flex-col ">
-  
             <p className="text-2xl font-bold tracking-tight text-primary">
               {formatPrice(vehicle.price)}
             </p>
@@ -146,7 +146,7 @@ const VehicleGridCardBody = ({
           </p>
         </div>
       )}
-    
+
       {/* {dealership && (
         <div className="flex items-center gap-1">
           <Badge>
@@ -183,22 +183,25 @@ export const VehicleGridCard = ({
   const vehicleUrl = getVehicleUrl(vehicle.id);
   const impressionRef = useVehicleImpressionTracker<HTMLDivElement>(vehicle.id);
   return (
-    <Card
-      ref={impressionRef}
-      className={cn(
-        "group relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md pb-3 rounded-2xl h-full",
-        className,
-      )}
-    >
-      <Link
-        href={vehicleUrl}
-        className="absolute inset-0 z-0 rounded-xl"
-        aria-hidden
-        tabIndex={-1}
-      />
+    <ViewTransition update="auto" default="none">
+      <Card
+        ref={impressionRef}
+        className={cn(
+          "group relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md pb-3 rounded-2xl h-full",
+          className,
+        )}
+      >
+        <Link
+          href={vehicleUrl}
+          prefetch
+          transitionTypes={["nav-forward"]}
+          className="absolute inset-0 z-0 rounded-xl"
+          aria-hidden
+          tabIndex={-1}
+        />
 
-      <CardHeader className="pointer-events-none relative aspect-video overflow-hidden p-0 pt-0">
-        <div className="pointer-events-auto absolute top-2 right-2 z-10 flex items-center gap-1">
+        <CardHeader className="pointer-events-none relative aspect-video overflow-hidden p-0 pt-0">
+          <div className="pointer-events-auto absolute top-2 right-2 z-10 flex items-center gap-1">
           <VehicleFavoriteButton
             vehicleId={vehicle.id}
             className="rounded-full bg-white shadow-sm"
@@ -211,36 +214,43 @@ export const VehicleGridCard = ({
             vehicleId={vehicle.id}
             className="rounded-full bg-white shadow-sm"
             onDismissed={onDismissed}
-          /> */}
-        </div>
+            /> */}
+          </div>
 
-        <VehicleGridCardBadges vehicle={vehicle} />
+          <VehicleGridCardBadges vehicle={vehicle} />
 
-        <Image
-          src={imageUrl}
-          alt={`Imagen del vehículo ${displayName}`}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-          quality={70}
-          sizes={VEHICLE_GRID_IMAGE_SIZES}
-          aria-hidden
-        />
-      </CardHeader>
-      <Link href={vehicleUrl}>
-        <VehicleGridCardBody
-          vehicle={vehicle}
-          displayName={displayName}
-          interactive={interactive}
-          titleAs={titleAs}
-        />
-        {footer ? (
-          <>
+          <ViewTransition
+            name={getVehicleImageTransitionName(vehicle.id)}
+            share="morph"
+            default="none"
+          >
+            <span className="absolute inset-0 block">
+              <Image
+                src={imageUrl}
+                alt={`Imagen del vehículo ${displayName}`}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                quality={70}
+                sizes={VEHICLE_GRID_IMAGE_SIZES}
+                aria-hidden
+              />
+            </span>
+          </ViewTransition>
+        </CardHeader>
+        <Link href={vehicleUrl} prefetch transitionTypes={["nav-forward"]}>
+          <VehicleGridCardBody
+            vehicle={vehicle}
+            displayName={displayName}
+            interactive={interactive}
+            titleAs={titleAs}
+          />
+          {footer ? (
             <CardFooter className="relative z-10 pointer-events-auto px-2.5 pb-0">
               {footer}
             </CardFooter>
-          </>
-        ) : null}
-      </Link>
-    </Card>
+          ) : null}
+        </Link>
+      </Card>
+    </ViewTransition>
   );
 };

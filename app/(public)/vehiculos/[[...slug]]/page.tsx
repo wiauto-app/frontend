@@ -21,6 +21,7 @@ import {
 } from "@/lib/seo/build-vehicle-listing-seo";
 import { FiltersTitle } from "../components/filtersTitle";
 import { SHOW_MAP_KEY } from "./constants/filterKeys.constants";
+import { DirectionalTransition } from "@/components/view-transitions/directional-transition";
 
 /** Listados con menos de 2 resultados se tratan como thin content. */
 const THIN_LISTING_RESULT_THRESHOLD = 2;
@@ -90,13 +91,17 @@ export default async function VehiclesListingPage(props: {
           limit: listing.limit,
         })}
       />
-      <VehiclesPageContent
-        vehicles={listing.data}
-        total={listing.total}
-        isMapVisible={isMapVisible}
-        titleNode={<FiltersTitle title={activeFilters.title} />}
-        activeFiltersNode={<ActiveFilters activeFilters={activeFilters} />}
-      />
+      <DirectionalTransition>
+        <div>
+          <VehiclesPageContent
+            vehicles={listing.data}
+            total={listing.total}
+            isMapVisible={isMapVisible}
+            titleNode={<FiltersTitle title={activeFilters.title} />}
+            activeFiltersNode={<ActiveFilters activeFilters={activeFilters} />}
+          />
+        </div>
+      </DirectionalTransition>
     </>
   );
 }

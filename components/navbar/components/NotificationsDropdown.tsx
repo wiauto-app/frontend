@@ -195,7 +195,7 @@ export const NotificationsDropdown = () => {
         <DropdownMenuItem
           render={
             <Link
-              href="/notificaciones"
+              href="/usuario/notificaciones"
               className="flex justify-center px-2 py-2 text-sm font-medium text-primary"
             >
               Ver todas

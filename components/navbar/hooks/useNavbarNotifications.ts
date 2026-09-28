@@ -9,6 +9,7 @@ import {
   alertService,
 } from "@/services/alertService";
 import type { PaginatedResult } from "@/types/general.types";
+import { getNotificationHref } from "@/lib/notifications/getNotificationHref";
 
 const NAVBAR_INBOX_PAGE = 1;
 const NAVBAR_INBOX_LIMIT = 10;
@@ -18,23 +19,6 @@ export const NAVBAR_NOTIFICATIONS_QUERY_KEY = [
   NAVBAR_INBOX_PAGE,
   NAVBAR_INBOX_LIMIT,
 ] as const;
-
-const getNotificationHref = (notification: InAppNotification): string => {
-  const data = notification.data;
-  if (!data) {
-    return "/notificaciones";
-  }
-
-  if (typeof data.lead_id === "string" && data.lead_id.length > 0) {
-    return "/contactos";
-  }
-
-  if (typeof data.vehicle_id === "string" && data.vehicle_id.length > 0) {
-    return `/vehiculo/${data.vehicle_id}`;
-  }
-
-  return "/notificaciones";
-};
 
 export const useNavbarNotifications = () => {
   const { isAuthenticated } = useUser();

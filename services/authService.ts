@@ -5,6 +5,7 @@ import type { DealershipMembership } from "@/services/dealerships/types/team.typ
 import { ApiResponse, apiGet, apiPost, fetchWithAuth } from "@/lib/api";
 import {
   AuthResponseDto,
+  GoogleOneTapDto,
   Validate2faDto,
   ValidateBackupCodeDto,
   ResendEmailVerificationResponseDto,
@@ -31,6 +32,11 @@ export const authService = {
 
   googleLogin: (opts?: { popup?: boolean }): string =>
     `${API_URL}/auth/google${opts?.popup ? "?popup=1" : ""}`,
+
+  googleOneTap: (
+    data: GoogleOneTapDto,
+  ): Promise<ApiResponse<AuthResponseDto>> =>
+    apiPost<AuthResponseDto>(`/auth/google/one-tap`, data),
 
   logout: (): Promise<ApiResponse<void>> =>
     apiGet<void>(`/auth/logout`),

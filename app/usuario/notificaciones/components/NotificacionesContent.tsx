@@ -1,5 +1,6 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -23,6 +24,7 @@ import type {
   UpdateAlertNotificationPreferencesPayload,
 } from "@/interfaces/alert-notification-preferences.interface";
 import type { InAppNotification } from "@/interfaces/notification.interface";
+import { getNotificationHref } from "@/lib/notifications/getNotificationHref";
 import { useNotificacionesPage } from "../hooks/useNotificacionesPage";
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 
@@ -162,9 +164,28 @@ const NotificationInboxItem = ({
   onMarkRead,
 }: NotificationInboxItemProps) => {
   const isUnread = !notification.read_at;
+  const href = getNotificationHref(notification);
+
+  const handleNavigate = () => {
+    if (!isUnread) {
+      return;
+    }
+    void onMarkRead(notification.id);
+  };
+
+  const handleMarkReadClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onMarkRead(notification.id);
+  };
 
   return (
-    <div className="flex items-start gap-4 p-3 transition-colors hover:bg-gray-50/50">
+    <Link
+      href={href}
+      className="flex items-start gap-4 p-3 transition-colors hover:bg-gray-50/50"
+      onClick={handleNavigate}
+      aria-label={`${notification.title}. ${isUnread ? "No leída" : "Leída"}`}
+    >
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
         <CategoryIcon category={notification.category} className="h-5 w-5" />
       </div>
@@ -184,7 +205,7 @@ const NotificationInboxItem = ({
           className={`mt-1 h-2 w-2 rounded-full ${
             isUnread ? "bg-blue-600" : "bg-gray-300"
           }`}
-          aria-label={isUnread ? "No leída" : "Leída"}
+          aria-hidden
         />
         {isUnread ? (
           <Button
@@ -193,14 +214,14 @@ const NotificationInboxItem = ({
             size="sm"
             className="h-8 px-2 text-xs text-gray-500"
             disabled={isMarking}
-            onClick={() => onMarkRead(notification.id)}
+            onClick={handleMarkReadClick}
             aria-label={`Marcar como leída: ${notification.title}`}
           >
             Marcar leída
           </Button>
         ) : null}
       </div>
-    </div>
+    </Link>
   );
 };
 

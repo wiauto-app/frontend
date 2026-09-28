@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { buildVehicleDetailSeo } from "@/lib/seo/build-vehicle-detail-seo";
 import { JsonLdScript } from "@/lib/seo/json-ld-script";
+import { DirectionalTransition } from "@/components/view-transitions/directional-transition";
 import { VehicleDetailBody } from "./components/VehicleDetailBody";
 import { getVehicleData } from "./services/getVehicleData";
 
@@ -35,12 +36,14 @@ export default async function VehicleDetailPage({
   const { breadcrumbItems, jsonLdGraph } = buildVehicleDetailSeo(vehicle);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <JsonLdScript data={jsonLdGraph} />
-      <VehicleDetailBody
-        vehicle={vehicle}
-        breadcrumbItems={breadcrumbItems}
-      />
-    </div>
+    <DirectionalTransition key={vehicle.id}>
+      <div className="min-h-screen bg-gray-50">
+        <JsonLdScript data={jsonLdGraph} />
+        <VehicleDetailBody
+          vehicle={vehicle}
+          breadcrumbItems={breadcrumbItems}
+        />
+      </div>
+    </DirectionalTransition>
   );
 }

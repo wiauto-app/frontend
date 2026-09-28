@@ -10,11 +10,16 @@ import {
   type ImageVisualizerItem,
 } from "@/components/ui/image-visualizer";
 import type { VehicleImage } from "@/interfaces/vehicle.interface";
+import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
 import { cn } from "@/lib/utils";
+import { ViewTransition } from "react";
 
 interface VehicleDetailGalleryProps {
   images: VehicleImage[];
   title: string;
+  vehicleId: string;
+  /** Desactivar si esta galería convive montada con la tarjeta de origen. */
+  shareImageTransition?: boolean;
 }
 
 const PLACEHOLDER_IMAGE: VehicleImage = {
@@ -25,9 +30,18 @@ const PLACEHOLDER_IMAGE: VehicleImage = {
 
 const ASIDE_LIMIT = 3;
 
+const MAIN_IMAGE_SIZES = `
+  (max-width: 1023px) calc(100vw - 2rem),
+  (max-width: 1279px) 520px,
+  (max-width: 1535px) 680px,
+  760px
+`;
+
 export const VehicleDetailGallery = ({
   images,
   title,
+  vehicleId,
+  shareImageTransition = true,
 }: VehicleDetailGalleryProps) => {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
@@ -66,20 +80,36 @@ export const VehicleDetailGallery = ({
           onClick={() => handleOpenViewer(0)}
           aria-label={`Ver imagen principal de ${title}`}
         >
-          <Image
-            fill
-            src={getImageUrl(mainImage.url)}
-            alt={`${title} - imagen 1`}
-            className="object-cover"
-            sizes="
-    (max-width: 1023px) calc(100vw - 2rem),
-    (max-width: 1279px) 520px,
-    (max-width: 1535px) 680px,
-    760px
-  "
-            quality={70}
-            priority
-          />
+          {shareImageTransition ? (
+            <ViewTransition
+              name={getVehicleImageTransitionName(vehicleId)}
+              share="morph"
+              default="none"
+            >
+              <span className="absolute inset-0 block">
+                <Image
+                  fill
+                  src={getImageUrl(mainImage.url)}
+                  alt={`${title} - imagen 1`}
+                  className="object-cover"
+                  sizes={MAIN_IMAGE_SIZES}
+                  quality={70}
+                  priority
+                />
+              </span>
+            </ViewTransition>
+          ) : (
+            <Image
+              fill
+              src={getImageUrl(mainImage.url)}
+              alt={`${title} - imagen 1`}
+              className="object-cover"
+              sizes={MAIN_IMAGE_SIZES}
+              quality={70}
+              priority
+            />
+          )}
+
           <span className="pointer-events-none absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-black/40 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
             <Camera className="size-3.5" aria-hidden />
             {totalImages}

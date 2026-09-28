@@ -20,6 +20,8 @@ import {
 import { buildVehicleGridSpecs } from "../utils/build-vehicle-grid-specs";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
 import { Button } from "@/components/ui/button";
+import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
+import { ViewTransition } from "react";
 
 interface VehicleFeaturedCardProps {
   vehicle: VehicleListItem;
@@ -73,14 +75,22 @@ export const VehicleFeaturedCard = ({
       /> */}
 
       <div className="absolute inset-0 z-0 overflow-hidden bg-slate-200">
-        <Image
-          src={imageUrl}
-          alt={`Imagen del vehículo ${displayName}`}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-          quality={80}
-          sizes={FEATURED_IMAGE_SIZES}
-        />
+        <ViewTransition
+          name={getVehicleImageTransitionName(vehicle.id)}
+          share="morph"
+          default="none"
+        >
+          <span className="absolute inset-0 block">
+            <Image
+              src={imageUrl}
+              alt={`Imagen del vehículo ${displayName}`}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              quality={80}
+              sizes={FEATURED_IMAGE_SIZES}
+            />
+          </span>
+        </ViewTransition>
         <div
           aria-hidden
           className="absolute inset-0 bg-linear-to-r from-[#061936] via-[#061936]/80 to-transparent"
@@ -191,7 +201,7 @@ export const VehicleFeaturedCard = ({
               </span>
             ) : null}
           </div>
-          <Link href={vehicleUrl}>
+          <Link href={vehicleUrl} prefetch transitionTypes={["nav-forward"]}>
             <Button variant="outline" size="sm" className="text-primary rounded-full">
               Ver anuncio <ChevronRight />
             </Button>

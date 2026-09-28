@@ -27,6 +27,7 @@ export default async function VehicleDetailModalPage({
       <VehicleDetailBody
         vehicle={vehicle}
         breadcrumbItems={breadcrumbItems}
+        shareImageTransition={false}
       />
     </VehicleDetailModalShell>
   );

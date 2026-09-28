@@ -6,6 +6,11 @@ export interface AuthResponseDto {
   refresh_token?: string;
 }
 
+export interface GoogleOneTapDto {
+  id_token: string;
+  nonce: string;
+}
+
 
 export interface RegisterResponseDto {
   message: string;

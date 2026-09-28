@@ -16,6 +16,7 @@ import {
   GOOGLE_ANALYTICS_ID,
   GOOGLE_TAG_MANAGER_ID,
 } from "@/constants/external.constant";
+import { ViewTransitionStyles } from "@/components/view-transitions/view-transition-styles";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -50,6 +51,7 @@ export default async function RootLayout({
       )}
     >
       <body className="flex flex-col relative">
+        <ViewTransitionStyles />
         <ConsentModeScript />
         <Providers>
           <AssistantChatProvider>

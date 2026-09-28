@@ -99,7 +99,13 @@ const BreadcrumbTrail = ({
             <BreadcrumbItem className="max-w-44">
               {segment.href && !isLast ? (
                 <BreadcrumbLink
-                  render={<Link href={segment.href} />}
+                  render={
+                    <Link
+                      href={segment.href}
+                      prefetch
+                      transitionTypes={["nav-back"]}
+                    />
+                  }
                   className={cn(styles.link, "truncate")}
                 >
                   {segment.label}

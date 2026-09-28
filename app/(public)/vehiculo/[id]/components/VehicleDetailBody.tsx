@@ -25,11 +25,13 @@ const ContactSectionsContainer = dynamic(() =>
 interface VehicleDetailBodyProps {
   vehicle: Vehicle;
   breadcrumbItems: BreadcrumbItem[];
+  shareImageTransition?: boolean;
 }
 
 export const VehicleDetailBody = async ({
   vehicle,
   breadcrumbItems,
+  shareImageTransition = true,
 }: VehicleDetailBodyProps) => {
   const displayName = getVehicleDisplayName(vehicle);
   const ownerProfileId = vehicle.profile_id ?? vehicle.publisher?.id ?? null;
@@ -54,7 +56,12 @@ export const VehicleDetailBody = async ({
       <div className="mx-auto container-custom space-y-6 py-6">
         <div className="relative grid grid-cols-1 gap-6 lg:grid-cols-4">
           <div className="space-y-6 lg:col-span-3">
-            <VehicleDetailGallery images={vehicle.images} title={displayName} />
+            <VehicleDetailGallery
+              images={vehicle.images}
+              title={displayName}
+              vehicleId={vehicle.id}
+              shareImageTransition={shareImageTransition}
+            />
             <VehicleDetailTitleSection vehicle={vehicle} />
             <VehicleDetailMobileContactBar
               vehicleId={vehicle.id}

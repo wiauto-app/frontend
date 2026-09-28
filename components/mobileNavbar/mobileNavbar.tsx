@@ -83,6 +83,7 @@ export const MobileNavbar = () => {
     <div className="fixed  bottom-2 w-full px-4">
       <nav
         aria-label="Navegación móvil"
+        style={{ viewTransitionName: "mobile-nav" }}
         className={cn(
           " z-50 rounded-3xl bg-white/70 p-0 shadow-md backdrop-blur-sm md:hidden max-w-full",
           user ? "w-full" : "w-80 mx-auto",
