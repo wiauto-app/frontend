@@ -1,4 +1,9 @@
-import type { FindAllVehiclesParams, PublisherType, TransmissionType } from "@/interfaces/vehicle.interface";
+import {
+  PUBLISHER_TYPE,
+  type FindAllVehiclesParams,
+  type PublisherType,
+  type TransmissionType,
+} from "@/interfaces/vehicle.interface";
 
 import { normalizeFilterQueryValue, parseFiltersQueryString } from "./filters-query";
 import { mergeCatalogSlugLists } from "./merge-catalog-slugs";
@@ -118,9 +123,16 @@ const applyQueryValue = (
 
   if (dto_key === "publisher_types") {
     const normalized = normalizeFilterQueryValue(raw_value);
-    const items = (
-      Array.isArray(normalized) ? normalized : normalized ? [normalized] : []
-    ) as PublisherType[];
+    const rawItems = Array.isArray(normalized)
+      ? normalized
+      : normalized
+        ? [normalized]
+        : [];
+    const items = rawItems.filter(
+      (item): item is PublisherType =>
+        item === PUBLISHER_TYPE.DEALERSHIP ||
+        item === PUBLISHER_TYPE.PARTICULAR,
+    );
     if (items.length > 0) {
       target.publisher_types = items;
     }

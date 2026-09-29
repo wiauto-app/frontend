@@ -4,6 +4,7 @@ import {
   PUBLISHER_TYPE,
   type PublisherType,
 } from "@/interfaces/vehicle.interface";
+import { toFilterStringArray } from "@/hooks/useFiltersManager";
 import { MultiButtonFilter } from "./multiButtonFilter";
 import type { PublisherTypesValue } from "./types";
 
@@ -13,11 +14,13 @@ const PUBLISHER_OPTIONS: { key: PublisherType; label: string }[] = [
 ];
 
 interface SellersSelectorProps {
-  value: PublisherTypesValue;
+  value: PublisherTypesValue | PublisherType | undefined;
   onChange: (value: PublisherTypesValue) => void;
 }
 
 export const SellersSelector = ({ value, onChange }: SellersSelectorProps) => {
+  const selected = toFilterStringArray(value) as PublisherTypesValue;
+
   return (
     <MultiButtonFilter
       aria-label="Vendedores"
@@ -25,8 +28,10 @@ export const SellersSelector = ({ value, onChange }: SellersSelectorProps) => {
         key: option.key,
         label: option.label,
       }))}
-      value={value ?? []}
-      onChange={(next) => onChange(next as PublisherTypesValue)}
+      value={selected}
+      onChange={(next) => {
+        onChange(next as PublisherTypesValue);
+      }}
     />
   );
 };

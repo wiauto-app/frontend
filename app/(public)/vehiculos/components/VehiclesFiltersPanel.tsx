@@ -83,9 +83,11 @@ export const VehiclesFiltersPanel = ({
   const { activeFilters } = useActiveFiltersStore();
   const { values, handleMultiChange, handleChange } = useFiltersManager({
     keys: [PUBLISHER_TYPE_KEY, PROVINCE_KEY, VEHICLE_TYPE_KEY],
+    multiValueKeys: [PUBLISHER_TYPE_KEY, PROVINCE_KEY],
   });
-  const provinces = values[PROVINCE_KEY] as string[];
-  const publisher_types = values[PUBLISHER_TYPE_KEY] as PublisherTypesValue;
+  const provinces = values[PROVINCE_KEY] as string[] | undefined;
+  const publisher_types = (values[PUBLISHER_TYPE_KEY] ??
+    []) as PublisherTypesValue;
   const type_slug = values[VEHICLE_TYPE_KEY] as string;
 
   const [battery_until, setBatteryUntil] = useState<number | undefined>(

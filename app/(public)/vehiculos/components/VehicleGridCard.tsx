@@ -73,11 +73,6 @@ const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
             DGT {vehicle.dgt_label.code}
           </span>
         )}
-        {vehicle.is_premium && (
-          <span className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm backdrop-blur-sm">
-            Profesional
-          </span>
-        )}
       </div>
 
       {photoCount > 1 && (
@@ -202,11 +197,11 @@ export const VehicleGridCard = ({
 
         <CardHeader className="pointer-events-none relative aspect-video overflow-hidden p-0 pt-0">
           <div className="pointer-events-auto absolute top-2 right-2 z-10 flex items-center gap-1">
-          <VehicleFavoriteButton
-            vehicleId={vehicle.id}
-            className="rounded-full bg-white shadow-sm"
-          />
-          {/* <VehicleShareButton
+            <VehicleFavoriteButton
+              vehicleId={vehicle.id}
+              className="rounded-full bg-white shadow-sm"
+            />
+            {/* <VehicleShareButton
             vehicleId={vehicle.id}
             vehicleTitle={displayName}
           />

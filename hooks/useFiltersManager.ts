@@ -19,7 +19,23 @@ type FilterValue = string | string[] | undefined;
 
 interface UseFiltersManagerProps {
   keys: string[];
+  /** Claves con `searchParams.getAll`: siempre string[] aunque haya un solo valor. */
+  multiValueKeys?: string[];
 }
+
+export const toFilterStringArray = (
+  value: FilterValue,
+): string[] => {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  return [value];
+};
 
 interface UseFiltersManagerReturn {
   values: Record<string, FilterValue>;
@@ -72,6 +88,7 @@ interface UseFiltersManagerReturn {
 
 export const useFiltersManager = ({
   keys = [],
+  multiValueKeys = [],
 }: UseFiltersManagerProps): UseFiltersManagerReturn => {
   const router = useRouter();
   const pathname = usePathname();
@@ -109,7 +126,9 @@ export const useFiltersManager = ({
       }
 
       if (allValues.length === 1) {
-        result[key] = allValues[0];
+        result[key] = multiValueKeys.includes(key)
+          ? [allValues[0]]
+          : allValues[0];
         return;
       }
 
@@ -117,7 +136,7 @@ export const useFiltersManager = ({
     });
 
     return result;
-  }, [keys, searchParams]);
+  }, [keys, multiValueKeys, searchParams]);
 
   const handleChange = (
     key: string,
