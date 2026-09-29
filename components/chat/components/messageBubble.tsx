@@ -2,6 +2,7 @@
 
 import { Flag, Sparkles } from "lucide-react";
 
+import { ChatMessageImageAttachment } from "@/components/chat/components/ChatMessageImageAttachment";
 import { MessageStatusIcon } from "@/components/chat/components/MessageStatusIcon";
 import { formatMessageTime } from "@/components/chat/utils/formatMessageTime";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -65,13 +66,11 @@ export const MessageBubble = ({
 
     if (message.type === CHAT_MESSAGE_TYPE.IMAGE && message.media_url) {
       return (
-        <a href={message.media_url} target="_blank" rel="noreferrer">
-          <img
-            src={message.media_url}
-            alt={message.metadata?.caption ?? "Imagen del mensaje"}
-            className="max-h-64 max-w-full rounded-md object-cover"
-          />
-        </a>
+        <ChatMessageImageAttachment
+          src={message.media_url}
+          alt={message.metadata?.caption ?? "Imagen del mensaje"}
+          caption={message.metadata?.caption}
+        />
       );
     }
 
