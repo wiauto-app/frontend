@@ -17,6 +17,7 @@ import {
   GOOGLE_TAG_MANAGER_ID,
 } from "@/constants/external.constant";
 import { ViewTransitionStyles } from "@/components/view-transitions/view-transition-styles";
+import { Metadata } from "next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,6 +34,13 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export function generateMetadata(): Metadata {
+  return {
+    title: "Wiauto",
+    description: "Wiauto",
+  };
+}
 
 export default async function RootLayout({
   children,
