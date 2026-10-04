@@ -8,6 +8,8 @@ interface GoogleLoginProps {
   className?: string;
   iconClassName?: string;
   returnTo?: string;
+  /** Texto del botón (`auth.compartido.boton_google`). */
+  label?: string | null;
 }
 
 export const GoogleLogin = ({
@@ -15,6 +17,7 @@ export const GoogleLogin = ({
   className,
   iconClassName,
   returnTo,
+  label,
 }: GoogleLoginProps) => {
   return (
     <OAuthButton
@@ -24,7 +27,7 @@ export const GoogleLogin = ({
       returnTo={returnTo}
     >
       <GoogleIcon className={iconClassName} />
-      Continuar con Google
+      {label || "Continuar con Google"}
     </OAuthButton>
   );
 };

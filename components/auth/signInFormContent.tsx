@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -9,14 +9,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { loginAction } from "@/app/(auth)/authActions/authActions";
 import { TwoFactorLoginStep } from "@/app/(auth)/components/TwoFactorLoginStep";
-import { AppleLogin } from "@/app/(auth)/components/appleLogin";
-import { GoogleLogin } from "@/app/(auth)/components/googleLogin";
+import { AuthSocialLogins } from "@/app/(auth)/components/AuthSocialLogins";
+import { AUTENTICACION_DEFAULT } from "@/app/(auth)/content/autenticacion.fallback";
+import { StrapiEncabezado } from "@/components/strapi/StrapiEncabezado";
+import { StrapiInlineBlocks } from "@/components/strapi/StrapiInlineBlocks";
+import { StrapiTextoEnlace } from "@/components/strapi/StrapiTextoEnlace";
+import type {
+  StrapiAuthCompartido,
+  StrapiAuthLogin,
+  StrapiAuthVerificacion2fa,
+} from "@/interfaces/strapi-components.interface";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { authService } from "@/services/authService";
-import { LoginDto, LoginSchema } from "@/validations/Schemas";
+import { createLoginSchema, LoginDto } from "@/validations/Schemas";
 import { PasswordInput } from "../ui/passwordInput";
 
 interface SignInFormContentProps {
@@ -25,6 +33,11 @@ interface SignInFormContentProps {
   showSocialLogins?: boolean;
   className?: string;
   returnTo?: string;
+  /** Textos de `auth.login`; sin ellos (p. ej. en el modal) se usan los de respaldo. */
+  content?: StrapiAuthLogin;
+  compartido?: StrapiAuthCompartido;
+  /** Textos del paso 2FA que aparece tras las credenciales. */
+  contentVerificacion?: StrapiAuthVerificacion2fa;
 }
 
 type SignInStep = "credentials" | "two_factor";
@@ -35,6 +48,9 @@ export const SignInFormContent = ({
   showSocialLogins = true,
   className,
   returnTo,
+  content = AUTENTICACION_DEFAULT.login as StrapiAuthLogin,
+  compartido = AUTENTICACION_DEFAULT.compartido as StrapiAuthCompartido,
+  contentVerificacion,
 }: SignInFormContentProps) => {
   const router = useRouter();
   const formId = useId();
@@ -43,8 +59,9 @@ export const SignInFormContent = ({
   const [isLoading, setIsLoading] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
 
+  const schema = useMemo(() => createLoginSchema(content), [content]);
   const form = useForm<LoginDto>({
-    resolver: zodResolver(LoginSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
       password: "",
@@ -73,7 +90,7 @@ export const SignInFormContent = ({
     try {
       const response = await authService.login(data);
       if (!response.ok) {
-        toast.error(response.message || "Error al iniciar sesión");
+        toast.error(response.message || content.mensajes?.error_generico);
         return;
       }
       if (response.data.type === "2fa_challenge") {
@@ -88,14 +105,9 @@ export const SignInFormContent = ({
     } catch (error: Error | unknown) {
       console.error("Login error:", error);
 
-      if (
-        (error as Error).message?.includes("No se encontró") ||
-        (error as Error).message?.includes("incorrectos")
-      ) {
-        toast.error((error as Error).message || "Error al iniciar sesión");
-      } else {
-        toast.error((error as Error).message || "Error al iniciar sesión");
-      }
+      toast.error(
+        (error as Error).message || content.mensajes?.error_generico,
+      );
     } finally { 
       setIsLoading(false);
     }
@@ -110,6 +122,7 @@ export const SignInFormContent = ({
     return (
       <div className={cn("w-full space-y-8", className)}>
         <TwoFactorLoginStep
+          content={contentVerificacion}
           email={pendingEmail}
           onSuccess={async () => {
             await onSuccess();
@@ -123,34 +136,14 @@ export const SignInFormContent = ({
 
   return (
     <div className={cn("w-full space-y-4", className)}>
-      {showTitle ? (
-        <h2 className="text-center text-3xl font-bold text-gray-900">
-          Inicia Sesión
-        </h2>
-      ) : null}
+      {showTitle ? <StrapiEncabezado content={content.encabezado} /> : null}
 
       {showSocialLogins ? (
-        <>
-          <div className="flex gap-3 flex-wrap">
-            <GoogleLogin
-              disabled={isLoading}
-              returnTo={returnTo}
-            />
-            <AppleLogin
-              disabled={isLoading}
-              returnTo={returnTo}
-            />
-          </div>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-4 text-gray-400">o</span>
-            </div>
-          </div>
-        </>
+        <AuthSocialLogins
+          content={compartido}
+          disabled={isLoading}
+          returnTo={returnTo}
+        />
       ) : null}
 
       <form
@@ -163,12 +156,12 @@ export const SignInFormContent = ({
             htmlFor={`${formId}-email`}
             className="mb-1 block text-sm font-medium text-gray-700"
           >
-            Email *
+            {content.email?.label} *
           </label>
           <Input
             id={`${formId}-email`}
             type="email"
-            placeholder="ejemplo@correo.com"
+            placeholder={content.email?.placeholder ?? undefined}
             autoComplete="email"
             {...form.register("email")}
             disabled={isLoading}
@@ -185,10 +178,11 @@ export const SignInFormContent = ({
             htmlFor={`${formId}-password`}
             className="mb-1 block text-sm font-medium text-gray-700"
           >
-            Contraseña *
+            {content.contrasena?.label} *
           </label>
           <PasswordInput
             id={`${formId}-password`}
+            placeholder={content.contrasena?.placeholder ?? undefined}
             autoComplete="current-password"
             {...form.register("password")}
             disabled={isLoading}
@@ -211,7 +205,7 @@ export const SignInFormContent = ({
             htmlFor={`${formId}-keep-logged-in`}
             className="ml-2 block text-sm text-gray-700"
           >
-            No cerrar sesión
+            <StrapiInlineBlocks content={content.recordar_sesion?.texto ?? null} />
           </label>
         </div>
       </form>
@@ -222,27 +216,24 @@ export const SignInFormContent = ({
         className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
         disabled={isLoading}
       >
-        {isLoading ? "Cargando..." : "Iniciar Sesión"}
+        {isLoading
+          ? content.boton?.label_cargando || content.boton?.label
+          : content.boton?.label}
       </Button>
 
       <div className="space-y-2 text-center">
-        <p className="text-sm text-gray-600">
-          ¿Aún no tienes una cuenta?{" "}
-          <Link
-            href="/registro"
-            className="font-medium text-blue-600 hover:text-blue-700"
+        <StrapiTextoEnlace content={content.pie} />
+        {content.enlace_olvide_contrasena ? (
+          <Button
+            type="button"
+            variant="link"
+            className="text-blue-600 hover:text-blue-700"
+            nativeButton={false}
+            render={<Link href={content.enlace_olvide_contrasena.url} />}
           >
-            Regístrate
-          </Link>
-        </p>
-        <Button
-          type="button"
-          variant="link"
-          className="text-blue-600 hover:text-blue-700"
-          onClick={() => router.push("/olvide-contrasena")}
-        >
-          ¿Olvidaste la contraseña?
-        </Button>
+            {content.enlace_olvide_contrasena.label}
+          </Button>
+        ) : null}
       </div>
     </div>
   );

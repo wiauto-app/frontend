@@ -1,32 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { ForgotPasswordSchema } from "@/validations/Schemas";
+import type { AuthPantallaProps } from "@/app/(auth)/types/strapi-autenticacion.types";
+import { StrapiEncabezado } from "@/components/strapi/StrapiEncabezado";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FRONTEND_URL } from "@/constants";
 import { authService } from "@/services/authService";
+import {
+  createForgotPasswordSchema,
+  type ForgotPasswordDto,
+} from "@/validations/Schemas";
 
-export default function ForgotPasswordForm() {
-  const router = useRouter();
+export default function ForgotPasswordForm({
+  content,
+}: AuthPantallaProps<"olvide_contrasena">) {
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const form = useForm<z.infer<typeof ForgotPasswordSchema>>({
-    resolver: zodResolver(ForgotPasswordSchema),
+  const schema = useMemo(() => createForgotPasswordSchema(content), [content]);
+  const form = useForm<ForgotPasswordDto>({
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof ForgotPasswordSchema>) {
+  async function onSubmit(data: ForgotPasswordDto) {
     setIsLoading(true);
     try {
       const redirect_url = `${(FRONTEND_URL ?? "").replace(/\/$/, "")}/cambiar-contrasena`;
@@ -41,8 +47,7 @@ export default function ForgotPasswordForm() {
       form.reset();
     } catch (error: unknown) {
       console.error("Olvide contraseña error:", error);
-      const genericMessage =
-        "Error al enviar el correo electrónico. Por favor, intenta de nuevo.";
+      const genericMessage = content.mensajes?.error_generico;
       const message = error instanceof Error ? error.message : undefined;
       if (
         message?.includes("No se encontró") ||
@@ -57,18 +62,15 @@ export default function ForgotPasswordForm() {
     }
   }
 
+  const backLink = content.enlace_volver ? (
+    <Link href={content.enlace_volver.url} />
+  ) : undefined;
+
   return (
     <>
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900">
-          {sent ? "Revisa tu email" : "Restablece tu contraseña"}
-        </h2>
-        <p className="mt-2 text-sm text-gray-500">
-          {sent
-            ? "Si existe una cuenta con ese email, recibirás un enlace para restablecer tu contraseña."
-            : "Introduce tu cuenta de email y te enviaremos un enlace con el que restablecer tu contraseña."}
-        </p>
-      </div>
+      <StrapiEncabezado
+        content={sent ? content.encabezado_enviado : content.encabezado}
+      />
 
       {!sent && (
         <form
@@ -78,12 +80,12 @@ export default function ForgotPasswordForm() {
         >
           <div>
             <Label htmlFor="email" className="mb-1 block text-gray-700">
-              Email *
+              {content.email?.label} *
             </Label>
             <Input
               id="email"
               type="email"
-              placeholder="Email *"
+              placeholder={content.email?.placeholder ?? undefined}
               {...form.register("email")}
               disabled={isLoading}
             />
@@ -103,29 +105,35 @@ export default function ForgotPasswordForm() {
           className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
           disabled={isLoading}
         >
-          {isLoading ? "Enviando..." : "Enviar enlace"}
+          {isLoading
+            ? content.boton?.label_cargando || content.boton?.label
+            : content.boton?.label}
         </Button>
       )}
 
-      {sent && (
+      {sent && backLink && (
         <Button
           type="button"
           className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
-          onClick={() => router.push("/iniciar-sesion")}
+          nativeButton={false}
+          render={backLink}
         >
-          Volver a iniciar sesión
+          {content.enlace_volver?.label}
         </Button>
       )}
 
-      <div className="text-center">
-        <Button
-          type="button"
-          className="text-sm font-medium"
-          onClick={() => router.push("/iniciar-sesion")}
-        >
-          Volver a inicio de sesión
-        </Button>
-      </div>
+      {!sent && backLink && (
+        <div className="text-center">
+          <Button
+            type="button"
+            className="text-sm font-medium"
+            nativeButton={false}
+            render={backLink}
+          >
+            {content.enlace_volver?.label}
+          </Button>
+        </div>
+      )}
     </>
   );
 }

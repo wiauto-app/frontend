@@ -1,65 +1,28 @@
-"use client";
+import type { Metadata } from "next";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { TwoFactorVerificationView } from "@/app/(auth)/components/TwoFactorVerificationView";
+import { getAutenticacionContenido } from "@/app/(auth)/services/autenticacionService";
+import { StrapiStructuredData } from "@/components/strapi/StrapiStructuredData";
+import { buildStrapiMetadata } from "@/lib/seo/build-strapi-metadata";
 
-import { TwoFactorLoginStep } from "@/app/(auth)/components/TwoFactorLoginStep";
-import { useUser } from "@/app/contexts/auth/useUser";
-import { AUTH_ROUTES } from "@/constants/auth.constants";
-import { authService } from "@/services/authService";
+export async function generateMetadata(): Promise<Metadata> {
+  const { content } = await getAutenticacionContenido("verificacion_2fa");
+  return buildStrapiMetadata({ seo: content.seo, path: "/verificacion-2fa" });
+}
 
-export default function Verificacion2faPage() {
-  const router = useRouter();
-  const { refreshUser } = useUser();
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadChallenge = async () => {
-      try {
-        const response = await authService.getTwoFactorChallenge();
-
-        if (!response.ok || response.data?.type !== "2fa_required") {
-          router.replace(AUTH_ROUTES.LOGIN);
-          return;
-        }
-
-        setEmail(response.data.email);
-      } catch {
-        router.replace(AUTH_ROUTES.LOGIN);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadChallenge();
-  }, [router]);
-
-  const handleSuccess = async () => {
-    await refreshUser();
-    toast.success("Sesión iniciada correctamente");
-    router.replace("/");
-    router.refresh();
-  };
-
-  const handleBack = async () => {
-    router.replace(AUTH_ROUTES.LOGIN);
-  };
-
-  if (isLoading) {
-    return (
-      <p className="text-center text-sm text-gray-600">
-        Cargando verificación...
-      </p>
-    );
-  }
+export default async function Page() {
+  const [verificacion, login] = await Promise.all([
+    getAutenticacionContenido("verificacion_2fa"),
+    getAutenticacionContenido("login"),
+  ]);
 
   return (
-    <TwoFactorLoginStep
-      email={email}
-      onSuccess={handleSuccess}
-      onBack={handleBack}
-    />
+    <>
+      <StrapiStructuredData seo={verificacion.content.seo} />
+      <TwoFactorVerificationView
+        {...verificacion}
+        mensajesLogin={login.content.mensajes}
+      />
+    </>
   );
 }

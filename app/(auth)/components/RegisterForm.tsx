@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
-import { AppleLogin } from "./appleLogin";
-import { GoogleLogin } from "./googleLogin";
-import { RegisterFormValues, RegisterSchema } from "@/validations/Schemas";
+import { AuthSocialLogins } from "./AuthSocialLogins";
+import type { AuthPantallaProps } from "@/app/(auth)/types/strapi-autenticacion.types";
+import { StrapiAviso } from "@/components/strapi/StrapiAviso";
+import { StrapiEncabezado } from "@/components/strapi/StrapiEncabezado";
+import { StrapiInlineBlocks } from "@/components/strapi/StrapiInlineBlocks";
+import { StrapiTextoEnlace } from "@/components/strapi/StrapiTextoEnlace";
+import {
+  createRegisterSchema,
+  RegisterFormValues,
+} from "@/validations/Schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -17,13 +24,15 @@ import { trackCompleteRegistration } from "@/lib/analytics/events";
 import { PasswordInput } from "@/components/ui/passwordInput";
 import { DEFAULT_PHONE_CODE, PhoneInput } from "@/components/forms/phoneInput";
 
-interface RegisterFormProps {
+interface RegisterFormProps extends AuthPantallaProps<"registro"> {
   invitedEmail?: string;
 }
 
 export default function RegisterForm({
+  content,
+  compartido,
   invitedEmail: invitedEmailProp,
-}: RegisterFormProps = {}) {
+}: RegisterFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const invitationEmailFromQuery = searchParams.get("email")?.trim() ?? "";
@@ -32,8 +41,9 @@ export default function RegisterForm({
   const [isLoading, setIsLoading] = useState(false);
 
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const schema = useMemo(() => createRegisterSchema(content), [content]);
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(RegisterSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       email: invitedEmail ?? "",
       password: "",
@@ -48,7 +58,10 @@ export default function RegisterForm({
 
   async function onSubmit(data: RegisterFormValues) {
     if (!acceptTerms) {
-      toast.error("Debes aceptar las condiciones de uso");
+      toast.error(
+        content.terminos?.mensaje_requerido ||
+          "Debes aceptar las condiciones de uso",
+      );
       return;
     }
 
@@ -64,7 +77,8 @@ export default function RegisterForm({
       if (response.ok) {
         trackCompleteRegistration("email");
         toast.success(
-          "Revisa tu correo para verificar la cuenta e iniciar sesión.",
+          content.mensajes?.exito ||
+            "Revisa tu correo para verificar la cuenta e iniciar sesión.",
         );
         router.push("/confirmar-correo");
       } else {
@@ -74,6 +88,7 @@ export default function RegisterForm({
       console.error("Register error:", error);
       toast.error(
         (error as Error).message ||
+          content.mensajes?.error_generico ||
           "Hubo un error al crear tu cuenta. Por favor, inténtalo de nuevo.",
       );
     } finally {
@@ -84,27 +99,13 @@ export default function RegisterForm({
   return (
     <>
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900">Regístrate</h2>
+        <StrapiEncabezado content={content.encabezado} />
         {isInvitationFlow ? (
-          <p className="mt-3 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800">
-            Te invitaron a unirte al equipo. Crea tu cuenta para continuar.
-          </p>
+          <StrapiAviso content={content.aviso_invitacion} className="mt-3" />
         ) : null}
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <GoogleLogin disabled={isLoading} />
-        <AppleLogin disabled={isLoading} />
-      </div>
-
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-gray-200" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="bg-white px-4 text-gray-400">o</span>
-        </div>
-      </div>
+      <AuthSocialLogins content={compartido} disabled={isLoading} />
 
       <form
         id="register-form"
@@ -114,12 +115,12 @@ export default function RegisterForm({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="register-name" className="mb-1 block text-gray-700">
-              Nombre *
+              {content.nombre?.label} *
             </Label>
             <Input
               id="register-name"
               type="text"
-              placeholder="Nombre"
+              placeholder={content.nombre?.placeholder ?? undefined}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
               {...form.register("name")}
               disabled={isLoading}
@@ -136,12 +137,12 @@ export default function RegisterForm({
               htmlFor="register-last_name"
               className="mb-1 block text-gray-700"
             >
-              Apellidos *
+              {content.apellidos?.label} *
             </Label>
             <Input
               id="register-last_name"
               type="text"
-              placeholder="Apellidos"
+              placeholder={content.apellidos?.placeholder ?? undefined}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
               {...form.register("last_name")}
               disabled={isLoading}
@@ -156,12 +157,12 @@ export default function RegisterForm({
 
         <div>
           <Label htmlFor="register-email" className="mb-1 block text-gray-700">
-            Email *
+            {content.email?.label} *
           </Label>
           <Input
             id="register-email"
             type="email"
-            placeholder="Email *"
+            placeholder={content.email?.placeholder ?? undefined}
             readOnly={isInvitationFlow}
             aria-readonly={isInvitationFlow}
             className={isInvitationFlow ? "bg-gray-50" : undefined}
@@ -176,7 +177,9 @@ export default function RegisterForm({
         </div>
 
         <div>
-          <Label className="mb-1 block text-gray-700">Teléfono *</Label>
+          <Label className="mb-1 block text-gray-700">
+            {content.telefono?.label} *
+          </Label>
           <Controller
             name="phone"
             control={form.control}
@@ -187,8 +190,10 @@ export default function RegisterForm({
                   onChange={field.onChange}
                   disabled={isLoading}
                   ariaInvalid={fieldState.invalid}
-                  nationalNumberLabel="Número de teléfono"
-                  nationalNumberPlaceholder="Número de móvil"
+                  nationalNumberLabel={content.telefono?.label_numero ?? undefined}
+                  nationalNumberPlaceholder={
+                    content.telefono?.placeholder_numero ?? undefined
+                  }
                 />
                 {form.formState.errors.phone?.phone_code ? (
                   <p className="mt-1 text-sm text-red-600">
@@ -210,11 +215,11 @@ export default function RegisterForm({
             htmlFor="register-password"
             className="mb-1 block text-gray-700"
           >
-            Contraseña *
+            {content.contrasena?.label} *
           </Label>
           <PasswordInput
             id="register-password"
-            placeholder="Contraseña *"
+            placeholder={content.contrasena?.placeholder ?? undefined}
             {...form.register("password")}
             disabled={isLoading}
           />
@@ -233,31 +238,7 @@ export default function RegisterForm({
             disabled={isLoading}
           />
           <Label className="inline font-normal leading-normal text-gray-600">
-            Acepto las{" "}
-            <a
-              href="/terminos"
-              className="hover:underline text-primary"
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              condiciones de uso
-            </a>{" "}
-            y la{" "}
-            <a
-              href="/privacidad"
-              className="hover:underline text-primary"
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              información básica de protección de datos
-            </a>
-            .
+            <StrapiInlineBlocks content={content.terminos?.texto ?? null} />
           </Label>
         </div>
       </form>
@@ -268,20 +249,12 @@ export default function RegisterForm({
         className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
         disabled={isLoading}
       >
-        {isLoading ? "Creando cuenta..." : "Crear cuenta"}
+        {isLoading
+          ? content.boton?.label_cargando || content.boton?.label
+          : content.boton?.label}
       </Button>
 
-      <div className="text-center">
-        <p className="text-sm text-gray-600">
-          ¿Ya tienes una cuenta?{" "}
-          <a
-            href="/iniciar-sesion"
-            className="font-medium text-blue-600 hover:text-blue-700"
-          >
-            Iniciar sesión
-          </a>
-        </p>
-      </div>
+      <StrapiTextoEnlace content={content.pie} />
     </>
   );
 }

@@ -8,6 +8,8 @@ interface AppleLoginProps {
   className?: string;
   iconClassName?: string;
   returnTo?: string;
+  /** Texto del botón (`auth.compartido.boton_apple`). */
+  label?: string | null;
 }
 
 export const AppleLogin = ({
@@ -15,6 +17,7 @@ export const AppleLogin = ({
   className,
   iconClassName,
   returnTo,
+  label,
 }: AppleLoginProps) => {
   return (
     <OAuthButton
@@ -24,7 +27,7 @@ export const AppleLogin = ({
       returnTo={returnTo}
     >
       <AppleIcon className={iconClassName} />
-      Continuar con Apple ID
+      {label || "Continuar con Apple ID"}
     </OAuthButton>
   );
 };

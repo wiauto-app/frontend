@@ -91,6 +91,13 @@ export interface StrapiSeo {
   canonicalURL: string | null;
   shareImage: StrapiMedia | null;
   noIndex: boolean | null;
+  noFollow: boolean | null;
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogType: "website" | "article" | null;
+  twitterCard: "summary" | "summary_large_image" | null;
+  /** JSON-LD propio de la página. */
+  structuredData: Record<string, unknown> | null;
 }
 
 /** Componente `shared.image` */
@@ -434,4 +441,175 @@ export interface StrapiVenderFaqs {
   id: number;
   titulo: string | null;
   pregunta: StrapiDesplegable[] | null;
+}
+
+// ---------------------------------------------------------------------------
+// ui/
+// ---------------------------------------------------------------------------
+
+/** Componente `ui.encabezado` */
+export interface StrapiUiEncabezado {
+  id: number;
+  titulo: string;
+  descripcion: string | null;
+}
+
+/** Componente `ui.boton` */
+export interface StrapiUiBoton {
+  id: number;
+  label: string;
+  label_cargando: string | null;
+}
+
+/** Componente `ui.texto-enlace` */
+export interface StrapiUiTextoEnlace {
+  id: number;
+  texto: string | null;
+  enlace: StrapiLink | null;
+}
+
+/** Componente `ui.aviso` */
+export interface StrapiUiAviso {
+  id: number;
+  texto: string;
+  tipo: "info" | "exito" | "alerta" | "error" | null;
+}
+
+/** Componente `ui.mensajes-accion` */
+export interface StrapiUiMensajesAccion {
+  id: number;
+  exito: string | null;
+  error_generico: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// formulario/
+// ---------------------------------------------------------------------------
+
+/** Componente `formulario.campo` */
+export interface StrapiFormularioCampo {
+  id: number;
+  label: string;
+  placeholder: string | null;
+  ayuda: string | null;
+  mensaje_requerido: string | null;
+  mensaje_invalido: string | null;
+}
+
+/** Componente `formulario.campo-telefono` */
+export interface StrapiFormularioCampoTelefono {
+  id: number;
+  label: string | null;
+  label_numero: string | null;
+  placeholder_numero: string | null;
+  mensaje_requerido: string | null;
+  mensaje_invalido: string | null;
+  mensaje_longitud: string | null;
+  mensaje_prefijo_requerido: string | null;
+}
+
+/** Componente `formulario.casilla` */
+export interface StrapiFormularioCasilla {
+  id: number;
+  texto: BlocksContent | null;
+  mensaje_requerido: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// auth/
+// ---------------------------------------------------------------------------
+
+/** Componente `auth.compartido` */
+export interface StrapiAuthCompartido {
+  id: number;
+  panel_titulo: string | null;
+  separador: string | null;
+  boton_google: string | null;
+  boton_apple: string | null;
+}
+
+/** Componente `auth.registro` */
+export interface StrapiAuthRegistro {
+  id: number;
+  seo: StrapiSeo | null;
+  encabezado: StrapiUiEncabezado | null;
+  aviso_invitacion: StrapiUiAviso | null;
+  nombre: StrapiFormularioCampo | null;
+  apellidos: StrapiFormularioCampo | null;
+  email: StrapiFormularioCampo | null;
+  telefono: StrapiFormularioCampoTelefono | null;
+  contrasena: StrapiFormularioCampo | null;
+  terminos: StrapiFormularioCasilla | null;
+  boton: StrapiUiBoton | null;
+  pie: StrapiUiTextoEnlace | null;
+  mensajes: StrapiUiMensajesAccion | null;
+}
+
+/** Componente `auth.login` */
+export interface StrapiAuthLogin {
+  id: number;
+  seo: StrapiSeo | null;
+  encabezado: StrapiUiEncabezado | null;
+  email: StrapiFormularioCampo | null;
+  contrasena: StrapiFormularioCampo | null;
+  recordar_sesion: StrapiFormularioCasilla | null;
+  boton: StrapiUiBoton | null;
+  pie: StrapiUiTextoEnlace | null;
+  enlace_olvide_contrasena: StrapiLink | null;
+  mensajes: StrapiUiMensajesAccion | null;
+}
+
+/** Componente `auth.olvide-contrasena` */
+export interface StrapiAuthOlvideContrasena {
+  id: number;
+  seo: StrapiSeo | null;
+  encabezado: StrapiUiEncabezado | null;
+  encabezado_enviado: StrapiUiEncabezado | null;
+  email: StrapiFormularioCampo | null;
+  boton: StrapiUiBoton | null;
+  enlace_volver: StrapiLink | null;
+  mensajes: StrapiUiMensajesAccion | null;
+}
+
+/** Componente `auth.cambiar-contrasena` */
+export interface StrapiAuthCambiarContrasena {
+  id: number;
+  seo: StrapiSeo | null;
+  encabezado: StrapiUiEncabezado | null;
+  contrasena: StrapiFormularioCampo | null;
+  confirmar_contrasena: StrapiFormularioCampo | null;
+  boton: StrapiUiBoton | null;
+  boton_limpiar: string | null;
+  pie: StrapiUiTextoEnlace | null;
+  mensajes: StrapiUiMensajesAccion | null;
+  encabezado_enlace_invalido: StrapiUiEncabezado | null;
+  boton_solicitar_enlace: StrapiLink | null;
+  enlace_volver: StrapiLink | null;
+}
+
+/** Componente `auth.confirmar-correo` */
+export interface StrapiAuthConfirmarCorreo {
+  id: number;
+  seo: StrapiSeo | null;
+  encabezado: StrapiUiEncabezado | null;
+  ayuda: string | null;
+  boton: StrapiLink | null;
+  pie: StrapiUiTextoEnlace | null;
+}
+
+/** Componente `auth.verificacion-2fa` */
+export interface StrapiAuthVerificacion2fa {
+  id: number;
+  seo: StrapiSeo | null;
+  encabezado: StrapiUiEncabezado | null;
+  codigo: StrapiFormularioCampo | null;
+  boton_verificar: StrapiUiBoton | null;
+  codigo_respaldo: StrapiFormularioCampo | null;
+  boton_verificar_respaldo: StrapiUiBoton | null;
+  boton_usar_respaldo: string | null;
+  boton_usar_autenticador: string | null;
+  boton_volver: string | null;
+  mensajes: StrapiUiMensajesAccion | null;
+  mensajes_respaldo: StrapiUiMensajesAccion | null;
+  texto_cargando: string | null;
 }

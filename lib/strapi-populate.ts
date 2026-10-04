@@ -63,3 +63,17 @@ export const STEPS_POPULATE = {
     },
   },
 };
+
+/** Populate de `shared.seo` (media anidada). */
+export const SEO_POPULATE = {
+  populate: {
+    shareImage: true,
+  },
+};
+
+/** Populate de `ui.texto-enlace` (`shared.link` anidado). */
+export const TEXTO_ENLACE_POPULATE = {
+  populate: {
+    enlace: LINK_POPULATE,
+  },
+};

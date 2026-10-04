@@ -1,20 +1,29 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
+
 import RegisterForm from "@/app/(auth)/components/RegisterForm";
-import { Metadata } from "next";
+import { getAutenticacionContenido } from "@/app/(auth)/services/autenticacionService";
+import { StrapiStructuredData } from "@/components/strapi/StrapiStructuredData";
+import { buildStrapiMetadata } from "@/lib/seo/build-strapi-metadata";
 
-export const metadata: Metadata = {
-  title: "Registro",
-  description: "Regístrate en Wiauto",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { content } = await getAutenticacionContenido("registro");
+  return buildStrapiMetadata({ seo: content.seo, path: "/registro" });
+}
 
-export default function Page() {
+export default async function Page() {
+  const props = await getAutenticacionContenido("registro");
+
   return (
-    <Suspense
-      fallback={
-        <div className="h-96 w-full animate-pulse rounded-lg bg-gray-100" />
-      }
-    >
-      <RegisterForm />
-    </Suspense>
+    <>
+      <StrapiStructuredData seo={props.content.seo} />
+      <Suspense
+        fallback={
+          <div className="h-96 w-full animate-pulse rounded-lg bg-gray-100" />
+        }
+      >
+        <RegisterForm {...props} />
+      </Suspense>
+    </>
   );
 }

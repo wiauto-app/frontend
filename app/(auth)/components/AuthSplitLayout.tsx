@@ -5,11 +5,14 @@ import { cn } from "@/lib/utils";
 interface AuthSplitLayoutProps {
   children: React.ReactNode;
   className?: string;
+  /** `auth.compartido.panel_titulo`; los saltos de línea se respetan. */
+  panelTitulo?: string | null;
 }
 
 export const AuthSplitLayout = ({
   children,
   className,
+  panelTitulo,
 }: AuthSplitLayoutProps) => {
   return (
     <div
@@ -22,12 +25,8 @@ export const AuthSplitLayout = ({
         <div className="relative flex-col items-center justify-center overflow-hidden bg-primary-dark flex lg:w-[37.4%]">
           <div className="relative z-10 px-8 text-center space-y-4">
             <BrandLogo variant="normal-base" className="w-52 h-20" />
-            <h1 className="hidden md:block mb-4 text-center text-3xl leading-tight font-bold text-white">
-              Encuentra o vende
-              <br />
-              tu próximo coche
-              <br />
-              hoy!
+            <h1 className="hidden md:block mb-4 text-center text-3xl leading-tight font-bold text-white whitespace-pre-line">
+              {panelTitulo || "Encuentra o vende\ntu próximo coche\nhoy!"}
             </h1>
           </div>
         </div>

@@ -4,11 +4,22 @@ import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
+import type { AuthPantallaProps } from "@/app/(auth)/types/strapi-autenticacion.types";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { SignInFormContent } from "@/components/auth/signInFormContent";
+import { StrapiEncabezado } from "@/components/strapi/StrapiEncabezado";
+import type { StrapiAuthVerificacion2fa } from "@/interfaces/strapi-components.interface";
 import { isValidReturnPath } from "@/lib/auth/authReturnTo";
 
-const LoginFormInner = () => {
+interface LoginFormProps extends AuthPantallaProps<"login"> {
+  contentVerificacion: StrapiAuthVerificacion2fa;
+}
+
+const LoginFormInner = ({
+  content,
+  compartido,
+  contentVerificacion,
+}: LoginFormProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refreshUser } = useUser();
@@ -19,34 +30,29 @@ const LoginFormInner = () => {
 
   const handleSuccess = async () => {
     await refreshUser();
-    toast.success("Sesión iniciada correctamente");
+    toast.success(content.mensajes?.exito);
     router.refresh();
   };
 
   return (
     <>
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900">Inicia Sesión</h2>
-      </div>
+      <StrapiEncabezado content={content.encabezado} />
       <SignInFormContent
         onSuccess={handleSuccess}
         showTitle={false}
         returnTo={returnTo}
+        content={content}
+        compartido={compartido}
+        contentVerificacion={contentVerificacion}
       />
     </>
   );
 };
 
-export default function LoginForm() {
+export default function LoginForm(props: LoginFormProps) {
   return (
-    <Suspense
-      fallback={
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Inicia Sesión</h2>
-        </div>
-      }
-    >
-      <LoginFormInner />
+    <Suspense fallback={<StrapiEncabezado content={props.content.encabezado} />}>
+      <LoginFormInner {...props} />
     </Suspense>
   );
 }

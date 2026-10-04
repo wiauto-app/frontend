@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import type { AuthPantallaProps } from "@/app/(auth)/types/strapi-autenticacion.types";
+import { StrapiEncabezado } from "@/components/strapi/StrapiEncabezado";
+import { StrapiTextoEnlace } from "@/components/strapi/StrapiTextoEnlace";
 import { Button } from "@/components/ui/button";
-import { ResetPasswordSchema, ResetPasswordDto } from "@/validations/Schemas";
+import {
+  createResetPasswordSchema,
+  ResetPasswordDto,
+} from "@/validations/Schemas";
 import { authService } from "@/services/authService";
 import {
   Field,
@@ -16,15 +22,20 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-interface ChangePasswordFormProps {
+interface ChangePasswordFormProps
+  extends AuthPantallaProps<"cambiar_contrasena"> {
   token: string;
 }
 
-export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
+export default function ChangePasswordForm({
+  token,
+  content,
+}: ChangePasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
+  const schema = useMemo(() => createResetPasswordSchema(content), [content]);
   const form = useForm<ResetPasswordDto>({
-    resolver: zodResolver(ResetPasswordSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       password: "",
       token: token,
@@ -45,8 +56,7 @@ export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
       form.reset();
     } catch (error: unknown) {
       console.error("Olvide contraseña error:", error);
-      const genericMessage =
-        "Error al cambiar la contraseña. Por favor, intenta de nuevo.";
+      const genericMessage = content.mensajes?.error_generico;
       if (
         error instanceof Error &&
         (error.message?.includes("No se encontró") ||
@@ -63,14 +73,7 @@ export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
 
   return (
     <>
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900">
-          Cambia tu contraseña
-        </h2>
-        <p className="mt-2 text-sm text-gray-500">
-          Introduce tu nueva contraseña para continuar.
-        </p>
-      </div>
+      <StrapiEncabezado content={content.encabezado} />
 
       <form
         id="change-password-form"
@@ -83,13 +86,15 @@ export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="new-password">Nueva contraseña</FieldLabel>
+                <FieldLabel htmlFor="new-password">
+                  {content.contrasena?.label}
+                </FieldLabel>
                 <Input
                   {...field}
                   id="new-password"
                   type="password"
                   aria-invalid={fieldState.invalid}
-                  placeholder="********"
+                  placeholder={content.contrasena?.placeholder ?? undefined}
                   autoComplete="new-password"
                   disabled={isLoading}
                 />
@@ -110,7 +115,7 @@ export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
           onClick={() => form.reset()}
           disabled={isLoading}
         >
-          Limpiar
+          {content.boton_limpiar}
         </Button>
         <Button
           type="submit"
@@ -121,23 +126,19 @@ export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
           {isLoading ? (
             <span className="flex items-center gap-2">
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-              Cargando...
+              {content.boton?.label_cargando || content.boton?.label}
             </span>
           ) : (
-            "Guardar"
+            content.boton?.label
           )}
         </Button>
       </div>
 
-      <p className="text-center text-xs text-muted-foreground">
-        ¿No tienes una cuenta?{" "}
-        <a
-          href="/registro"
-          className="font-medium text-primary hover:underline"
-        >
-          Regístrate
-        </a>
-      </p>
+      <StrapiTextoEnlace
+        content={content.pie}
+        className="text-xs text-muted-foreground"
+        linkClassName="text-primary hover:text-primary hover:underline"
+      />
     </>
   );
 }

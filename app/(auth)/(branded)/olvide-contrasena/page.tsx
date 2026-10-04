@@ -1,11 +1,22 @@
+import type { Metadata } from "next";
+
 import ForgotPasswordForm from "@/app/(auth)/components/ForgotPasswordForm";
-import { Metadata } from "next";
+import { getAutenticacionContenido } from "@/app/(auth)/services/autenticacionService";
+import { StrapiStructuredData } from "@/components/strapi/StrapiStructuredData";
+import { buildStrapiMetadata } from "@/lib/seo/build-strapi-metadata";
 
-export const metadata: Metadata = {
-  title: "Olvide contraseña",
-  description: "Recupera tu contraseña en Wiauto",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { content } = await getAutenticacionContenido("olvide_contrasena");
+  return buildStrapiMetadata({ seo: content.seo, path: "/olvide-contrasena" });
+}
 
-export default function Page() {
-  return <ForgotPasswordForm />;
+export default async function Page() {
+  const props = await getAutenticacionContenido("olvide_contrasena");
+
+  return (
+    <>
+      <StrapiStructuredData seo={props.content.seo} />
+      <ForgotPasswordForm {...props} />
+    </>
+  );
 }
