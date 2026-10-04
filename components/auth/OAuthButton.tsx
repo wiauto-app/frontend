@@ -10,6 +10,7 @@ import {
 } from "@/lib/auth/oauthProviders";
 import { cn } from "@/lib/utils";
 import { saveRedirectUrlAction } from "./saveRedirectUrlAction";
+import { useRouter } from "next/navigation";
 
 interface OAuthButtonProps {
   provider: OAuthProvider;
@@ -28,18 +29,20 @@ export const OAuthButton = ({
 }: OAuthButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const providerConfig = OAUTH_PROVIDERS[provider];
-
+  const router = useRouter();
   const handleClick = async () => {
     if (disabled || isLoading) {
       return;
-    }
+    } 
 
     setIsLoading(true);
 
     try {
       const redirectPath = returnTo ?? window.location.pathname;
       await saveRedirectUrlAction(redirectPath);
-      window.location.assign(providerConfig.getUrl(false));
+      const url = providerConfig.getUrl(false);
+      console.log("url", url);
+      router.push(url);
     } catch {
       setIsLoading(false);
       toast.error("No se pudo iniciar sesión");

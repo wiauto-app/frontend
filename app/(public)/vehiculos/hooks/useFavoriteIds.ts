@@ -1,18 +1,8 @@
-import { useMemo } from "react";
-import { useUser } from "@/app/contexts/auth/useUser";
+"use client";
+
+import { useFavorites } from "@/app/contexts/favorites/useFavorites";
 
 export const useFavoriteIds = () => {
-  const { user } = useUser();
-
-  return useMemo(() => {
-    const ids = new Set<string>();
-
-    user?.vehicle_lists.forEach((list) => {
-      list.items?.forEach((item) => {
-        ids.add(item.vehicle_id);
-      });
-    });
-
-    return ids;
-  }, [user?.vehicle_lists]);
+  const { favoriteIds } = useFavorites();
+  return favoriteIds;
 };

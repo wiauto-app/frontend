@@ -7,6 +7,7 @@ import type {
   VehicleListItemRecord,
 } from "@/interfaces/vehicle-list.interface";
 import { vehicleListService } from "@/services/vehicleListService";
+import { VEHICLE_LIST_FAVORITES_QUERY_KEY } from "@/app/contexts/favorites/favoritesContext";
 import { resolveDefaultVehicleList } from "@/app/(public)/vehiculos/hooks/useVehicleListMembership";
 
 export const FAVORITES_PAGE_SIZE = 10;
@@ -89,6 +90,9 @@ export const useFavoritesPage = () => {
 
   const invalidateLists = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: VEHICLE_LISTS_QUERY_KEY });
+    await queryClient.invalidateQueries({
+      queryKey: VEHICLE_LIST_FAVORITES_QUERY_KEY,
+    });
   }, [queryClient]);
 
   const invalidateItems = useCallback(
