@@ -16,12 +16,31 @@ import {
   HeroSearchFiltersProvider,
   useHeroSearchFilters,
 } from "./HeroSearchFiltersContext";
-import { HeroFiltersMakeSelector } from "./HeroFiltersMakeSelector";
 // import { HeroFiltersModelSelector } from "./HeroFiltersModelSelector";
-import { HeroFiltersLocationSelector } from "./HeroFiltersLocationSelector";
 import { HeroReferenceSearch } from "./HeroReferenceSearch";
-import { Suspense } from "react";
+import { Skeleton } from "../ui/skeleton";
+import dynamic from "next/dynamic";
 
+const HeroFiltersMakeSelector = dynamic(
+  () =>
+    import("./HeroFiltersMakeSelector").then(
+      (mod) => mod.HeroFiltersMakeSelector,
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="w-full h-9" />,
+  },
+);
+const HeroFiltersLocationSelector = dynamic(
+  () =>
+    import("./HeroFiltersLocationSelector").then(
+      (mod) => mod.HeroFiltersLocationSelector,
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="w-full h-9" />,
+  },
+);
 type HeroSearchMode = "filters" | "reference";
 
 interface HeroModeToggleProps {
@@ -124,12 +143,10 @@ const HeroFiltersSearchForm = () => {
     >
       <HeroFiltersMakeSelector />
       {/* <HeroFiltersModelSelector /> */}
-      <Suspense>
-        <HeroFiltersLocationSelector
-          value={selectedItems}
-          onChange={setSelectedItems}
-        />
-      </Suspense>
+      <HeroFiltersLocationSelector
+        value={selectedItems}
+        onChange={setSelectedItems}
+      />
       <PriceUntilSelector />
       <Button type="submit" aria-label={SEARCH_BUTTON_LABEL}>
         <Search className="size-4" />
