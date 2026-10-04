@@ -21,9 +21,7 @@ export function StoreButtons({ className, soon = false }: StoreButtonsProps) {
         aria-label={soon ? "App Store — Próximamente" : "App Store"}
         className={cn(
           "relative inline-flex h-[52px] min-w-[155px] items-center gap-2.5 rounded-xl bg-black px-4 text-white transition-opacity",
-          soon
-            ? "cursor-not-allowed opacity-55 grayscale"
-            : "hover:opacity-90",
+          soon ? "cursor-not-allowed opacity-55 grayscale" : "hover:opacity-90",
         )}
         // onClick={soon ? (event) => event.preventDefault() : undefined}
       >
@@ -43,15 +41,11 @@ export function StoreButtons({ className, soon = false }: StoreButtonsProps) {
         </span>
       </a>
       <a
-        href={soon ? undefined : "#"}
-        aria-disabled={soon || undefined}
-        tabIndex={soon ? -1 : 0}
-        aria-label={soon ? "Google Play — Próximamente" : "Google Play"}
+        href={"https://play.google.com/store/apps/details?id=com.faux.wiauto"}
+        tabIndex={0}
+        aria-label="Google Play"
         className={cn(
           "relative inline-flex h-[52px] min-w-[155px] items-center gap-2.5 rounded-xl border-2 bg-white px-4 text-black transition-opacity",
-          soon
-            ? "cursor-not-allowed opacity-55 grayscale"
-            : "hover:opacity-95",
         )}
         // onClick={soon ? (event) => event.preventDefault() : undefined}
       >
@@ -66,10 +60,9 @@ export function StoreButtons({ className, soon = false }: StoreButtonsProps) {
           <span
             className={cn(
               "text-[9px] font-medium tracking-wide uppercase leading-none",
-              soon ? "block" : "hidden lg:block",
             )}
           >
-            {eyebrow}
+            Descarga la app
           </span>
           <span className="text-[15px] leading-tight font-semibold">
             En Google Play
