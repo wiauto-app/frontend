@@ -304,7 +304,8 @@ export const FavoritesProvider = ({ children }: FavoritesProviderProps) => {
   );
 
   const getListIdsForVehicle = useCallback(
-    (vehicleId: string) => membershipByVehicle.get(vehicleId) ?? EMPTY_MEMBERSHIP,
+    (vehicleId: string) =>
+      membershipByVehicle.get(vehicleId) ?? EMPTY_MEMBERSHIP,
     [membershipByVehicle],
   );
 
@@ -358,6 +359,8 @@ export const FavoritesProvider = ({ children }: FavoritesProviderProps) => {
   );
 
   return (
-    <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>
+    <FavoritesContext.Provider value={value}>
+      {children}
+    </FavoritesContext.Provider>
   );
 };
