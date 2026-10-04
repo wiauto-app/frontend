@@ -24,7 +24,7 @@ export const ProvincesZonesSlider = ({
       className="w-full"
       opts={{ align: "start", loop: false, dragFree: true }}
     >
-      <div className="relative px-10 sm:px-12">
+      <div className="relative  sm:px-12">
         <CarouselContent className="-ml-3 sm:-ml-4">
           {provinces.map((province) => (
             <CarouselItem
@@ -38,11 +38,11 @@ export const ProvincesZonesSlider = ({
 
         <CarouselPrevious
           aria-label="Ver provincias anteriores"
-          className="left-0 size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+          className="hidden sm:block left-0 size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
         />
         <CarouselNext
           aria-label="Ver provincias siguientes"
-          className="right-0 size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+          className="hidden sm:block right-0 size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
         />
       </div>
     </Carousel>

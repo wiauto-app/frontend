@@ -152,7 +152,7 @@ export const VehiclesCarouselLayout = ({
       opts={{ loop: false, align: "start" }}
       setApi={setApi}
     >
-      <div className="relative px-10 sm:px-12 ">
+      <div className="relative  sm:px-12 ">
         <CarouselContent className="-ml-3 sm:-ml-4  pb-2">
           {vehicles.map((vehicle) => (
             <CarouselItem
@@ -166,7 +166,7 @@ export const VehiclesCarouselLayout = ({
 
         <CarouselPrevious
           aria-label="Ver vehículos anteriores"
-          className="left-0 size-9 border-slate-200 bg-white shadow-sm"
+          className="hidden sm:block left-0 size-9 border-slate-200 bg-white shadow-sm"
         />
 
         <Button
@@ -176,7 +176,7 @@ export const VehiclesCarouselLayout = ({
           aria-label="Ver vehículos siguientes"
           disabled={isNextDisabled}
           onClick={handleNextClick}
-          className="absolute top-1/2 -right-0 size-9 -translate-y-1/2 touch-manipulation rounded-full border-slate-200 bg-white shadow-sm"
+          className="absolute hidden sm:block top-1/2 -right-0 size-9 -translate-y-1/2 touch-manipulation rounded-full border-slate-200 bg-white shadow-sm"
         >
           {isLoadingMore ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
