@@ -13,6 +13,10 @@ import { PriceUntilSelector } from "../selectors/priceUntilSelector";
 // import { heroFacetService } from "@/services/search/heroFacetService";
 import { cn } from "@/lib/utils";
 import {
+  CONDITION_VEHICLE,
+  type ConditionVehicle,
+} from "@/interfaces/vehicle.interface";
+import {
   HeroSearchFiltersProvider,
   useHeroSearchFilters,
 } from "./HeroSearchFiltersContext";
@@ -65,6 +69,49 @@ interface HeroModeToggleProps {
 // };
 
 const SEARCH_BUTTON_LABEL = "Buscar coches";
+
+interface HeroConditionOption {
+  value: ConditionVehicle;
+  label: string;
+}
+
+const HERO_CONDITION_OPTIONS: HeroConditionOption[] = [
+  { value: CONDITION_VEHICLE.USED, label: "Segunda mano" },
+  { value: CONDITION_VEHICLE.NEW, label: "Nuevos" },
+];
+
+const HeroConditionTabs = () => {
+  const { condition, setCondition } = useHeroSearchFilters();
+
+  return (
+    <div
+      className="grid w-full grid-cols-3 gap-1 lg:w-[28rem]"
+      role="group"
+      aria-label="Tipo de vehículo"
+    >
+      {HERO_CONDITION_OPTIONS.map((option) => {
+        const isActive = condition === option.value;
+
+        return (
+          <Button
+            key={option.value}
+            type="button"
+            variant={isActive ? "default" : "outline"}
+            aria-pressed={isActive}
+            className={cn("rounded-lg", !isActive && "text-foreground")}
+            onClick={() => setCondition(option.value)}
+          >
+            {option.label}
+          </Button>
+        );
+      })}
+      <NavbarPublishButton
+        variant="outline"
+        className="rounded-lg w-full h-full text-foreground"
+      />
+    </div>
+  );
+};
 
 const HeroModeToggle = ({ mode, onModeChange }: HeroModeToggleProps) => {
   return (
@@ -165,13 +212,7 @@ const HeroSearchFormContent = () => {
 
   return (
     <div className=" w-full  space-y-2">
-      <div className="grid w-full grid-cols-2 gap-1  lg:w-80 ">
-        <Button className="rounded-lg">Comprar</Button>
-        <NavbarPublishButton
-          variant="outline"
-          className="rounded-lg w-full h-full text-foreground"
-        />
-      </div>
+      <HeroConditionTabs />
       <Card className="w-full pt-1 pb-4">
         <CardContent className="space-y-2 px-4">
           <HeroModeToggle mode={mode} onModeChange={handleModeChange} />

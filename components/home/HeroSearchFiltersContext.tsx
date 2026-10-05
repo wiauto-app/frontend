@@ -17,6 +17,10 @@ import type {
   HeroFacetCascadeFilters,
 } from "@/interfaces/hero-facet.interface";
 import {
+  CONDITION_VEHICLE,
+  type ConditionVehicle,
+} from "@/interfaces/vehicle.interface";
+import {
   buildHeroListingHref,
   type HeroListingSearchState,
 } from "@/lib/vehicles/listing-url";
@@ -27,6 +31,8 @@ interface HeroSearchFiltersContextValue {
   selectedModels: HeroCatalogFacetItem[];
   locationPayload: LocationUrlPayload;
   untilPrice?: number;
+  condition: ConditionVehicle;
+  setCondition: (condition: ConditionVehicle) => void;
   handleToggleMake: (make: HeroCatalogFacetItem, checked: boolean) => void;
   handleToggleModel: (model: HeroCatalogFacetItem, checked: boolean) => void;
   /** Sustituye la selección (hidratación desde URL / filtros activos). */
@@ -85,6 +91,9 @@ export const HeroSearchFiltersProvider = ({
     {},
   );
   const [untilPrice, setUntilPrice] = useState<number | undefined>();
+  const [condition, setCondition] = useState<ConditionVehicle>(
+    CONDITION_VEHICLE.USED,
+  );
 
   const makeModelPayload = useMemo(
     () => toMakeModelPayload(selectedMakes, selectedModels),
@@ -175,9 +184,10 @@ export const HeroSearchFiltersProvider = ({
       ...makeModelPayload,
       ...locationPayload,
       ...(untilPrice !== undefined ? { precio_hasta: untilPrice } : {}),
+      condicion: condition,
     };
     return buildHeroListingHref(state);
-  }, [locationPayload, makeModelPayload, untilPrice]);
+  }, [condition, locationPayload, makeModelPayload, untilPrice]);
 
   const value = useMemo(
     (): HeroSearchFiltersContextValue => ({
@@ -186,6 +196,8 @@ export const HeroSearchFiltersProvider = ({
       selectedModels,
       locationPayload,
       untilPrice,
+      condition,
+      setCondition,
       handleToggleMake,
       handleToggleModel,
       replaceMakeModelSelection,
@@ -200,6 +212,7 @@ export const HeroSearchFiltersProvider = ({
       selectedModels,
       locationPayload,
       untilPrice,
+      condition,
       handleToggleMake,
       handleToggleModel,
       replaceMakeModelSelection,

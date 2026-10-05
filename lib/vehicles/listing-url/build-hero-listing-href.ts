@@ -1,4 +1,5 @@
 import {
+  CONDITION_KEY,
   MAKE_KEY,
   MODEL_KEY,
   MUNICIPALITY_KEY,
@@ -7,6 +8,7 @@ import {
 } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
 import type { MakeModelUrlPayload } from "@/components/selectors/FilterMakeSelector/utils/make-model-selection";
 import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
+import type { ConditionVehicle } from "@/interfaces/vehicle.interface";
 import {
   FILTERS_QS_STRINGIFY_REPEAT_OPTIONS,
   stringifyFiltersQuery,
@@ -17,6 +19,7 @@ import { VEHICLES_LISTING_BASE_PATH } from "./constants";
 export type HeroListingSearchState = MakeModelUrlPayload &
   LocationUrlPayload & {
     precio_hasta?: number;
+    condicion?: ConditionVehicle;
   };
 
 export const buildHeroListingHref = (state: HeroListingSearchState): string => {
@@ -36,6 +39,9 @@ export const buildHeroListingHref = (state: HeroListingSearchState): string => {
   }
   if (state.precio_hasta !== undefined) {
     record[PRICE_KEYS.UNTIL] = String(state.precio_hasta);
+  }
+  if (state.condicion) {
+    record[CONDITION_KEY] = state.condicion;
   }
 
   const search = stringifyFiltersQuery(

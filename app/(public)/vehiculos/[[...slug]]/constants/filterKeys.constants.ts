@@ -20,6 +20,8 @@ export const GEO_RADIUS_STEP_METERS = 5_000;
 
 export const PUBLISHER_TYPE_KEY = "publisher_types"
 
+export const CONDITION_KEY = "condicion"
+
 export const SHOW_MAP_KEY = "show_map"
 
 export const YEAR_KEYS = {
