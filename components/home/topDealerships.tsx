@@ -13,7 +13,7 @@ export const TopDealerships = async () => {
 
   return (
       <SectionContainer>
-        <SectionHeading lead="Concesionarios" highlight="destacados" />
+        <SectionHeading lead="Concesionarios" highlight="destacados" animated />
         <TopDealershipsSlider dealerships={result.data} />
       </SectionContainer>
   );

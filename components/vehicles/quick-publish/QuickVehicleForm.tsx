@@ -20,6 +20,8 @@ import {
 } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { vehiclesService } from "@/components/vehicles/services/vehiclesService";
 import { mapVehicleDetailToQuickFormValues } from "@/components/vehicles/utils/mapVehicleDetailToQuickFormValues";
+import { mapAppraisalToQuickFormValues } from "@/components/vehicles/utils/mapAppraisalToQuickFormValues";
+import { appraisalService } from "@/services/appraisal/appraisalService";
 import { QuickVehiclePreview } from "./QuickVehiclePreview";
 import { QuickVehicleIntroWizard } from "./QuickVehicleIntroWizard";
 import { useUser } from "@/app/contexts/auth/useUser";
@@ -29,11 +31,14 @@ import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
 interface QuickVehicleFormProps {
   vehicleId?: string;
   redirectTo?: string;
+  /** Tasación desde la que se publica (`/publicar?tasacion=<id>`): prellena coche y precio. */
+  appraisalId?: string;
 }
 
 export const QuickVehicleForm = ({
   vehicleId,
   redirectTo,
+  appraisalId,
 }: QuickVehicleFormProps) => {
   const router = useRouter();
   const { user } = useUser();
@@ -45,6 +50,16 @@ export const QuickVehicleForm = ({
     queryKey: ["vehicle", vehicleId],
     queryFn: () => vehiclesService.findOne(vehicleId ?? ""),
     enabled: isEditMode,
+  });
+
+  const { data: appraisal } = useQuery({
+    queryKey: ["appraisals", appraisalId],
+    queryFn: async () => {
+      const response = await appraisalService.findOne(appraisalId ?? "");
+      return response.ok ? response.data : null;
+    },
+    enabled: Boolean(appraisalId) && !isEditMode,
+    staleTime: Infinity,
   });
 
   const form = useForm<QuickVehicleSchema>({
@@ -60,6 +75,11 @@ export const QuickVehicleForm = ({
       form.reset(mapVehicleDetailToQuickFormValues(vehicleDetail));
     }
   }, [vehicleDetail]);
+
+  useEffect(() => {
+    if (!appraisal || isEditMode) return;
+    form.reset(mapAppraisalToQuickFormValues(appraisal, form.getValues()));
+  }, [appraisal, isEditMode, form]);
 
   useEffect(() => {
     if (!user || isEditMode) return;

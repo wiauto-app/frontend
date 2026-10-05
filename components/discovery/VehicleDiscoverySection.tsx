@@ -1,38 +1,17 @@
 import { cn } from "@/lib/utils";
 import { provincesCatalogService } from "@/services/locations/provincesCatalogService";
 import { heroFacetService } from "@/services/search/heroFacetService";
+
 import { buildVehicleDiscoverySections } from "./buildVehicleDiscoverySections";
 import {
   DISCOVERY_DEFAULT_TITLE,
   DISCOVERY_PROVINCES_LIMIT,
 } from "./vehicleDiscovery.constants";
-import { VehicleDiscoveryAccordion } from "./VehicleDiscoveryAccordion";
-import { VehicleDiscoveryQuickCards } from "./VehicleDiscoveryQuickCards";
+import { VehicleDiscoveryMotionContent } from "./VehicleDiscoveryMotionContent";
 import type { VehicleDiscoverySectionProps } from "./types";
-import { FaLeaf } from "react-icons/fa";
-import Image from "next/image";
 
 const DEFAULT_DESCRIPTION =
   "Explora las opciones más eficientes para moverte mejor y cuidar del planeta";
-
-const renderHighlightedTitle = (title: string) => {
-  const highlight = "bajas emisiones";
-  const index = title.toLowerCase().indexOf(highlight);
-
-  if (index === -1) {
-    return title;
-  }
-
-  return (
-    <>
-      {title.slice(0, index)}
-      <span className="text-nature">
-        {title.slice(index, index + highlight.length)}
-      </span>
-      {title.slice(index + highlight.length)}
-    </>
-  );
-};
 
 export const VehicleDiscoverySectionSkeleton = () => (
   <section
@@ -78,46 +57,13 @@ export const VehicleDiscoverySection = async ({
   }
 
   return (
-    <section
-      className={cn(className, "flex flex-col space-y-4")}
-      aria-labelledby="vehicle-discovery-title"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div className="gap-5 flex flex-col justify-center items-center lg:items-start">
-          <h2
-            id="vehicle-discovery-title"
-            className="text-2xl text-center lg:text-left lg:text-4xl font-bold text-foreground "
-          >
-            <span className="flex flex-wrap items-center gap-2">
-              {renderHighlightedTitle(title)}
-              <FaLeaf className="w-4 h-4 text-nature" aria-hidden />
-            </span>
-          </h2>
-          <p className="text-sm text-center lg:text-left text-muted-foreground">
-            {description}
-          </p>
-        </div>
-        {imageUrl ? (
-          <div className="overflow-hidden rounded-xl">
-            <Image
-              src={imageUrl}
-              alt={title}
-              width={1280}
-              height={720}
-              className="aspect-video h-auto w-full object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          </div>
-        ) : (
-          <div />
-        )}
-      </div>
-
-      {quickLinks && quickLinks.length > 0 ? (
-        <VehicleDiscoveryQuickCards quickLinks={quickLinks} className="" />
-      ) : null}
-
-      <VehicleDiscoveryAccordion sections={resolvedSections} />
-    </section>
+    <VehicleDiscoveryMotionContent
+      className={cn(className)}
+      title={title}
+      description={description}
+      imageUrl={imageUrl}
+      quickLinks={quickLinks}
+      sections={resolvedSections}
+    />
   );
 };

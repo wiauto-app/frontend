@@ -19,6 +19,7 @@ export const VehiclesSuggestions = async () => {
         vehicles={vehicles.data}
         total={vehicles.total}
         pageSize={4}
+        animated
       />
   );
 };

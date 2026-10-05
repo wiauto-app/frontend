@@ -13,8 +13,6 @@ import type {
   DiscoveryCatalogItem,
   QuickLink,
 } from "./types";
-import { MapPinIcon, Settings2, Tag } from "lucide-react";
-
 const sortByVehicleCount = (
   items: HeroCatalogFacetItem[],
 ): HeroCatalogFacetItem[] =>
@@ -55,7 +53,6 @@ export const buildVehicleDiscoverySections = (
     {
       id: "provinces",
       title: "Por provincia",
-      Icon: MapPinIcon,
       pills: provinces.map((province) => ({
         label: province.name,
         href: buildVehicleListingHref({
@@ -66,7 +63,6 @@ export const buildVehicleDiscoverySections = (
     {
       id: "makes",
       title: "Por marca",
-      Icon:Tag,
       pills: sortByVehicleCount(makes)
         .slice(0, DISCOVERY_MAKES_LIMIT)
         .map((make) => ({
@@ -77,7 +73,6 @@ export const buildVehicleDiscoverySections = (
     {
       id: "more-filters",
       title: "Más filtros",
-      Icon:Settings2,
       pills: [
         ...pricePills,
         ...fuelPills,

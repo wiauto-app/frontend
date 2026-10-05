@@ -1,5 +1,3 @@
-import { LucideIcon } from "lucide-react";
-
 export interface DiscoveryCatalogItem {
   slug: string;
   name: string;
@@ -14,7 +12,6 @@ export interface QuickLink {
   label: string;
   description?: string;
   href: string;
-  Icon?: LucideIcon;
   imageUrl?: string | null;
   borderColor?: string;
   titleColor?: string;
@@ -23,7 +20,6 @@ export interface QuickLink {
 export interface DiscoveryAccordionSection {
   id: string;
   title: string;
-  Icon?: LucideIcon;
   pills: DiscoveryPillLink[];
 }
 

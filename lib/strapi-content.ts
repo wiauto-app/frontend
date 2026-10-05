@@ -1,9 +1,15 @@
 /**
  * Contenido de respaldo con la misma forma que un componente de Strapi,
- * sin `id` y con todo opcional. Los bloques (arrays) se toman enteros.
+ * sin `id` y con todo opcional. Los componentes repetibles (arrays) también
+ * son parciales; los bloques de texto enriquecido (nodos con `type`) van enteros.
+ * Un array con contenido se toma entero.
  */
-export type StrapiFallback<T> = T extends readonly unknown[]
-  ? T
+export type StrapiFallback<T> = T extends readonly (infer U)[]
+  ? [U] extends [{ type: string }]
+    ? T
+    : [U] extends [object]
+      ? StrapiFallback<U>[]
+      : T
   : T extends object
     ? {
         [K in keyof T as K extends "id" ? never : K]?: StrapiFallback<

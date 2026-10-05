@@ -3,6 +3,7 @@ import {
   LayoutGrid,
   BarChart3,
   Calculator,
+  HandCoins,
   Car,
   Heart,
   Search,
@@ -31,6 +32,7 @@ export interface UserSidebarLink {
 export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
   { href: `${basePath}/inicio`, label: "Inicio", icon: LayoutGrid },
   { href: `${basePath}/mis-anuncios`, label: "Mis anuncios", icon: Car },
+  { href: `${basePath}/mi-tasador`, label: "Mis tasaciones", icon: Calculator },
   { href: `${basePath}/favoritos`, label: "Favoritos", icon: Heart },
   {
     href: `${basePath}/busquedas-guardadas`,
@@ -64,7 +66,6 @@ export const USER_SIDEBAR_PRO_LINKS = [
     icon: BellRing,
   },
   { href: `${basePath}/estadisticas`, label: "Estadísticas", icon: BarChart3 },
-  { href: `${basePath}/mi-tasador`, label: "Tasador", icon: Calculator },
   {
     href: `${basePath}/concesionario`,
     label: "Concesionario",
@@ -76,6 +77,15 @@ export const USER_SIDEBAR_PRO_LINKS = [
     icon: Users,
   },
 ] as UserSidebarLink[]
+
+/** Solo para owner/admin de un concesionario: tasaciones abiertas a ofertas. */
+export const USER_SIDEBAR_DEALERSHIP_MANAGER_LINKS: UserSidebarLink[] = [
+  {
+    href: `${basePath}/oportunidades-tasacion`,
+    label: "Oportunidades de tasación",
+    icon: HandCoins,
+  },
+];
 
 
 export interface GetUserSidebarLinksParams {
@@ -99,6 +109,11 @@ export const getUserSidebarLinks = ({
         return true;
       }),
     );
+  }
+
+  const role = dealershipMembership?.role;
+  if (role === "owner" || role === "admin") {
+    links.push(...USER_SIDEBAR_DEALERSHIP_MANAGER_LINKS);
   }
 
   return links;

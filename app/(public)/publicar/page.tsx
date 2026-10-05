@@ -9,7 +9,13 @@ export const metadata: Metadata = {
   description: "Publica tu vehículo en menos de 1 minuto con IA",
 };
 
-export default function CrearVehiculoPage() {
+interface CrearVehiculoPageProps {
+  searchParams: Promise<{ tasacion?: string }>;
+}
+
+export default async function CrearVehiculoPage({ searchParams }: CrearVehiculoPageProps) {
+  const { tasacion } = await searchParams;
+
   return (
     <div className="container-custom mx-auto lg:py-8 py-4 space-y-4">
       <div>
@@ -30,7 +36,7 @@ export default function CrearVehiculoPage() {
 
       <Card className="p-0 shadow-none border-none ring-0 lg:shadow-sm lg:p-4 lg:ring-1">
         <CardContent className="p-0">
-          <QuickVehicleForm />
+          <QuickVehicleForm appraisalId={tasacion?.trim() || undefined} />
         </CardContent>
       </Card>
     </div>

@@ -41,9 +41,12 @@ export const QuickVehicleTechnicalFields = () => {
     queryFn: () => catalogVersionsService.getVehicleSpecs(versionId),
     enabled: shouldFetchSpecs,
     // Las specs de una versión del catálogo no cambian: evita repetir la
-    // llamada al volver a este paso del asistente.
+    // llamada al volver a este paso del asistente (el backend también cachea en Redis).
     staleTime: Infinity,
+    gcTime: Infinity,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   useEffect(() => {

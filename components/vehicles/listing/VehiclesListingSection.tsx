@@ -1,13 +1,14 @@
 import Link from "next/link";
 
 import { SectionContainer } from "@/components/home/SectionContainer";
+import { MotionSection, riseUp } from "@/components/home/motion";
+import { SectionHeading } from "@/components/home/SectionHeading";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 import { VehiclesCarouselLayout } from "./VehiclesCarouselLayout";
 import { VehiclesGridLayout } from "./VehiclesGridLayout";
-import { SectionHeading } from "@/components/home/SectionHeading";
-import { Button } from "@/components/ui/button";
 
 interface VehiclesListingSectionProps {
   title: {
@@ -23,6 +24,7 @@ interface VehiclesListingSectionProps {
   seeMoreHref?: string;
   seeMoreLabel?: string;
   className?: string;
+  animated?: boolean;
 }
 
 export const VehiclesListingSection = ({
@@ -36,6 +38,7 @@ export const VehiclesListingSection = ({
   seeMoreHref,
   seeMoreLabel = "Ver más",
   className,
+  animated = false,
 }: VehiclesListingSectionProps) => {
   if (vehicles?.length === 0) {
     return null;
@@ -43,18 +46,29 @@ export const VehiclesListingSection = ({
 
   const resolvedTotal = total ?? vehicles.length;
 
+  const listingLayout =
+    variant === "grid" ? (
+      <VehiclesGridLayout vehicles={vehicles} cardVariant={cardVariant} />
+    ) : (
+      <VehiclesCarouselLayout
+        initialVehicles={vehicles}
+        vehicleId={vehicleId}
+        total={resolvedTotal}
+        pageSize={pageSize}
+      />
+    );
+
   return (
     <SectionContainer className={cn("", className)}>
-      <SectionHeading lead={title.lead} highlight={title.highlight ?? ""} />
-      {variant === "grid" ? (
-        <VehiclesGridLayout vehicles={vehicles} cardVariant={cardVariant} />
+      <SectionHeading
+        lead={title.lead}
+        highlight={title.highlight ?? ""}
+        animated={animated}
+      />
+      {animated && variant === "carousel" ? (
+        <MotionSection variants={riseUp}>{listingLayout}</MotionSection>
       ) : (
-        <VehiclesCarouselLayout
-          initialVehicles={vehicles}
-          vehicleId={vehicleId}
-          total={resolvedTotal}
-          pageSize={pageSize}
-        />
+        listingLayout
       )}
 
       {seeMoreHref ? (

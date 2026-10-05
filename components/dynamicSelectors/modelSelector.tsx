@@ -16,6 +16,8 @@ interface ModelSelectorProps {
   ariaInvalid?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  /** Texto del label (p. ej. desde Strapi). */
+  label?: string;
   makeId?: number;
 }
 
@@ -25,6 +27,7 @@ export const ModelSelector = ({
   ariaInvalid,
   disabled,
   placeholder = "Modelo",
+  label = "Modelo",
   makeId,
 }: ModelSelectorProps) => {
   const fieldId = useId();
@@ -61,7 +64,7 @@ export const ModelSelector = ({
 
   return (
     <Field data-invalid={ariaInvalid}>
-      <FieldLabel htmlFor={fieldId}>Modelo</FieldLabel>
+      <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
       <SearchSelect
         id={fieldId}
         value={value}

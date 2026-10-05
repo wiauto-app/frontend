@@ -613,3 +613,77 @@ export interface StrapiAuthVerificacion2fa {
   mensajes_respaldo: StrapiUiMensajesAccion | null;
   texto_cargando: string | null;
 }
+
+// ---------------------------------------------------------------------------
+// tasador/
+// ---------------------------------------------------------------------------
+
+/** Componente `tasador.formulario` */
+export interface StrapiTasadorFormulario {
+  id: number;
+  encabezado_vehiculo: StrapiUiEncabezado | null;
+  marca: StrapiFormularioCampo | null;
+  modelo: StrapiFormularioCampo | null;
+  anio: StrapiFormularioCampo | null;
+  version: StrapiFormularioCampo | null;
+  transmision: StrapiFormularioCampo | null;
+  kilometraje: StrapiFormularioCampo | null;
+  combustible: StrapiFormularioCampo | null;
+  potencia: StrapiFormularioCampo | null;
+  matricula: StrapiFormularioCampo | null;
+  encabezado_contacto: StrapiUiEncabezado | null;
+  nombre: StrapiFormularioCampo | null;
+  apellidos: StrapiFormularioCampo | null;
+  email: StrapiFormularioCampo | null;
+  telefono: StrapiFormularioCampoTelefono | null;
+  boton: StrapiUiBoton | null;
+  mensajes: StrapiUiMensajesAccion | null;
+}
+
+/** Componente `tasador.resultado` */
+export interface StrapiTasadorResultado {
+  id: number;
+  encabezado: StrapiUiEncabezado | null;
+  label_precio_bajo: string | null;
+  label_precio_mercado: string | null;
+  label_precio_alto: string | null;
+  titulo_explicacion: string | null;
+  label_confianza: string | null;
+  confianza_alta: string | null;
+  confianza_media: string | null;
+  confianza_baja: string | null;
+  aviso_ia: StrapiUiAviso | null;
+  boton_modificar: string | null;
+}
+
+/** Componente `tasador.opcion` */
+export interface StrapiTasadorOpcion {
+  id: number;
+  badge: string | null;
+  titulo: string;
+  descripcion: string | null;
+  iconName: string | null;
+  puntos: StrapiIconFeature[] | null;
+  boton: StrapiLink | null;
+}
+
+/** Componente `tasador.opciones` */
+export interface StrapiTasadorOpciones {
+  id: number;
+  encabezado: StrapiUiEncabezado | null;
+  publicar: StrapiTasadorOpcion | null;
+  recibir_ofertas: StrapiTasadorOpcion | null;
+}
+
+/** Componente `tasador.ofertas` */
+export interface StrapiTasadorOfertas {
+  id: number;
+  encabezado_enviado: StrapiUiEncabezado | null;
+  enlace_ver_ofertas: StrapiLink | null;
+  encabezado_ofertas: StrapiUiEncabezado | null;
+  sin_ofertas: string | null;
+  boton_aceptar: string | null;
+  boton_rechazar: string | null;
+  confirmar_aceptar: string | null;
+  mensajes: StrapiUiMensajesAccion | null;
+}

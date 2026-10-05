@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type HTMLMotionProps } from "motion/react";
+import { motion, type HTMLMotionProps, type Variants } from "motion/react";
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
@@ -75,15 +75,20 @@ export const MotionStagger = ({
 interface MotionStaggerItemProps {
   children: ReactNode;
   className?: string;
+  variants?: Variants;
 }
 
 /** Use inside a MotionSection / motion container that already has staggerContainer variants */
 export const MotionStaggerItem = ({
   children,
   className,
+  variants: itemVariantsProp,
 }: MotionStaggerItemProps) => {
   const prefersReducedMotion = usePrefersReducedMotion();
-  const itemVariants = getVariant(staggerItem, prefersReducedMotion);
+  const itemVariants = getVariant(
+    itemVariantsProp ?? staggerItem,
+    prefersReducedMotion,
+  );
 
   return (
     <motion.div className={cn(className)} variants={itemVariants}>

@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { fadeUp, getVariant } from "./motion-variants";
+import { fadeUp, withDelay } from "./motion-variants";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
 interface MotionSectionProps extends Omit<HTMLMotionProps<"div">, "children"> {
@@ -16,6 +16,8 @@ interface MotionSectionProps extends Omit<HTMLMotionProps<"div">, "children"> {
   amount?: number;
   /** When false, animates on mount instead of whileInView */
   inView?: boolean;
+  /** Seconds to wait before the enter animation (also delays variant children) */
+  delay?: number;
 }
 
 export const MotionSection = ({
@@ -25,18 +27,27 @@ export const MotionSection = ({
   as = "div",
   amount = 0.2,
   inView = true,
+  delay,
+  id,
   ...rest
 }: MotionSectionProps) => {
   const prefersReducedMotion = usePrefersReducedMotion();
-  const resolvedVariants = getVariant(variants, prefersReducedMotion);
-  const Component = as === "section" ? motion.section : motion.div;
 
-  if(prefersReducedMotion) {
-    return children
+  if (prefersReducedMotion) {
+    const StaticComponent = as;
+    return (
+      <StaticComponent id={id} className={cn(className)}>
+        {children}
+      </StaticComponent>
+    );
   }
+
+  const resolvedVariants = delay ? withDelay(variants, delay) : variants;
+  const Component = as === "section" ? motion.section : motion.div;
 
   return (
     <Component
+      id={id}
       className={cn(className)}
       initial="hidden"
       {...(inView

@@ -13,6 +13,8 @@ interface MakeSelectorProps {
   ariaInvalid?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  /** Texto del label (p. ej. desde Strapi). */
+  label?: string;
 }
 
 export const MakeSelector = ({
@@ -21,6 +23,7 @@ export const MakeSelector = ({
   ariaInvalid,
   disabled,
   placeholder = "Marca",
+  label = "Marca",
 }: MakeSelectorProps) => {
   const fieldId = useId();
 
@@ -51,7 +54,7 @@ export const MakeSelector = ({
 
   return (
     <Field data-invalid={ariaInvalid}>
-      <FieldLabel htmlFor={fieldId}>Marca</FieldLabel>
+      <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
       <SearchSelect
         id={fieldId}
         value={value}

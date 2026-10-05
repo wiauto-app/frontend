@@ -1,130 +1,141 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import { useFormContext, useWatch } from "react-hook-form";
 
 import { MakeSelector } from "@/components/dynamicSelectors/makeSelector";
 import { ModelSelector } from "@/components/dynamicSelectors/modelSelector";
 import { QuickYearSelector } from "@/components/dynamicSelectors/quickYearSelector";
 import { VersionSelector } from "@/components/dynamicSelectors/versionSelector";
-import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
+import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { StrapiTasadorFormulario } from "@/interfaces/strapi-components.interface";
 
-import type { TasadorSchema } from "../schemas/tasador.schema";
+import type { TasadorFormInput } from "../schemas/tasador.schema";
+import { FieldError } from "./TasadorFieldError";
 
-interface CatalogIds {
-  makeId?: string;
-  modelId?: string;
-  yearId?: string;
+interface TasadorCatalogFieldsProps {
+  content: StrapiTasadorFormulario;
 }
 
-export const TasadorCatalogFields = () => {
-  const form = useFormContext<TasadorSchema>();
-  const versionId = form.watch("version_id");
-  const makeId = form.watch("catalog_make_id");
-  const modelId = form.watch("catalog_model_id");
-  const yearId = form.watch("catalog_year_id");
+const toSelectValue = (value: unknown): string | undefined =>
+  Number(value) > 0 ? String(value) : undefined;
 
-  const [ids, setIds] = useState<CatalogIds>(() => ({
-    makeId: makeId ? String(makeId) : undefined,
-    modelId: modelId ? String(modelId) : undefined,
-    yearId: yearId ? String(yearId) : undefined,
-  }));
+/** Marca → modelo → año → versión, más el combustible que define la versión. */
+export const TasadorCatalogFields = ({ content }: TasadorCatalogFieldsProps) => {
+  const form = useFormContext<TasadorFormInput>();
+  const [makeId, modelId, yearId, versionId, fuelTypeId] = useWatch({
+    control: form.control,
+    name: [
+      "catalog_make_id",
+      "catalog_model_id",
+      "catalog_year_id",
+      "version_id",
+      "fuel_type_id",
+    ],
+  });
+  const errors = form.formState.errors;
 
-  const updateIds = (
-    field: keyof CatalogIds,
+  const { data: fuelType } = useQuery({
+    queryKey: ["catalogFuelType", fuelTypeId],
+    queryFn: () => fuelTypesService.findOne(Number(fuelTypeId)),
+    enabled: Number(fuelTypeId) > 0,
+    staleTime: Infinity,
+  });
+
+  const setId = (
+    name: "catalog_make_id" | "catalog_model_id" | "catalog_year_id" | "version_id",
     value: string | undefined,
-    resetKeys: (keyof CatalogIds)[] = [],
   ) => {
-    setIds((prev) => {
-      const next = { ...prev, [field]: value };
-      for (const key of resetKeys) {
-        next[key] = undefined;
-      }
-      return next;
-    });
-    form.setValue("version_id", 0, { shouldDirty: true });
-    form.setValue("fuel_type_id", undefined, { shouldDirty: true });
-    form.setValue("body_type_id", undefined, { shouldDirty: true });
-  };
-
-  const handleVersionChange = async (value: string | undefined) => {
-    const numericVersionId = value ? Number(value) : 0;
-    form.setValue("version_id", numericVersionId, {
+    form.setValue(name, value ? Number(value) : 0, {
       shouldDirty: true,
       shouldValidate: true,
     });
-
-    if (!numericVersionId) {
-      form.setValue("fuel_type_id", undefined, { shouldDirty: true });
-      form.setValue("body_type_id", undefined, { shouldDirty: true });
-      return;
-    }
-
-    try {
-      const version = await catalogVersionsService.findOne(numericVersionId);
-      form.setValue("fuel_type_id", version.fuel_type_id, { shouldDirty: true });
-      form.setValue("body_type_id", version.body_type_id, { shouldDirty: true });
-    } catch {
-      form.setValue("fuel_type_id", undefined, { shouldDirty: true });
-      form.setValue("body_type_id", undefined, { shouldDirty: true });
-    }
   };
 
-  useEffect(() => {
-    setIds({
-      makeId: makeId ? String(makeId) : undefined,
-      modelId: modelId ? String(modelId) : undefined,
-      yearId: yearId ? String(yearId) : undefined,
-    });
-  }, [makeId, modelId, yearId]);
+  const resetFrom = (
+    names: ("catalog_model_id" | "catalog_year_id" | "version_id")[],
+  ) => {
+    for (const name of names) {
+      form.setValue(name, 0, { shouldDirty: true });
+    }
+    form.setValue("fuel_type_id", undefined, { shouldDirty: true });
+  };
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      <MakeSelector
-        value={ids.makeId}
-        ariaInvalid={Boolean(form.formState.errors.catalog_make_id)}
-        onChange={(value) => {
-          updateIds("makeId", value, ["modelId", "yearId"]);
-          form.setValue("catalog_make_id", value ? Number(value) : 0, {
-            shouldDirty: true,
-            shouldValidate: true,
-          });
-        }}
-      />
-      <ModelSelector
-        makeId={ids.makeId ? Number(ids.makeId) : undefined}
-        value={ids.modelId}
-        ariaInvalid={Boolean(form.formState.errors.catalog_model_id)}
-        onChange={(value) => {
-          updateIds("modelId", value, ["yearId"]);
-          form.setValue("catalog_model_id", value ? Number(value) : 0, {
-            shouldDirty: true,
-            shouldValidate: true,
-          });
-        }}
-      />
-      <QuickYearSelector
-        modelId={ids.modelId ? Number(ids.modelId) : undefined}
-        value={ids.yearId}
-        ariaInvalid={Boolean(form.formState.errors.catalog_year_id)}
-        onChange={(value) => {
-          updateIds("yearId", value);
-          form.setValue("catalog_year_id", value ? Number(value) : 0, {
-            shouldDirty: true,
-            shouldValidate: true,
-          });
-        }}
-      />
-      <VersionSelector
-        modelId={ids.modelId ? Number(ids.modelId) : undefined}
-        yearId={ids.yearId ? Number(ids.yearId) : undefined}
-        value={versionId ? String(versionId) : undefined}
-        ariaInvalid={Boolean(form.formState.errors.version_id)}
-        onChange={(value) => {
-          void handleVersionChange(value);
-        }}
-        hideLabel={false}
-      />
-    </div>
+    <>
+      <div>
+        <MakeSelector
+          label={`${content.marca?.label ?? "Marca"} *`}
+          placeholder={content.marca?.placeholder ?? undefined}
+          value={toSelectValue(makeId)}
+          ariaInvalid={Boolean(errors.catalog_make_id)}
+          onChange={(value) => {
+            setId("catalog_make_id", value);
+            resetFrom(["catalog_model_id", "catalog_year_id", "version_id"]);
+          }}
+        />
+        <FieldError message={errors.catalog_make_id?.message} />
+      </div>
+
+      <div>
+        <ModelSelector
+          label={`${content.modelo?.label ?? "Modelo"} *`}
+          placeholder={content.modelo?.placeholder ?? undefined}
+          makeId={Number(makeId) > 0 ? Number(makeId) : undefined}
+          value={toSelectValue(modelId)}
+          ariaInvalid={Boolean(errors.catalog_model_id)}
+          onChange={(value) => {
+            setId("catalog_model_id", value);
+            resetFrom(["catalog_year_id", "version_id"]);
+          }}
+        />
+        <FieldError message={errors.catalog_model_id?.message} />
+      </div>
+
+      <div>
+        <QuickYearSelector
+          label={`${content.anio?.label ?? "Año"} *`}
+          placeholder={content.anio?.placeholder ?? undefined}
+          modelId={Number(modelId) > 0 ? Number(modelId) : undefined}
+          value={toSelectValue(yearId)}
+          ariaInvalid={Boolean(errors.catalog_year_id)}
+          onChange={(value) => {
+            setId("catalog_year_id", value);
+            resetFrom(["version_id"]);
+          }}
+        />
+        <FieldError message={errors.catalog_year_id?.message} />
+      </div>
+
+      <div>
+        <VersionSelector
+          label={`${content.version?.label ?? "Versión"} *`}
+          placeholder={content.version?.placeholder ?? undefined}
+          modelId={Number(modelId) > 0 ? Number(modelId) : undefined}
+          yearId={Number(yearId) > 0 ? Number(yearId) : undefined}
+          value={toSelectValue(versionId)}
+          ariaInvalid={Boolean(errors.version_id)}
+          onChange={(value, version) => {
+            setId("version_id", value);
+            form.setValue("fuel_type_id", version?.fuel_type_id, { shouldDirty: true });
+          }}
+        />
+        <FieldError message={errors.version_id?.message} />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="tasador-fuel">{content.combustible?.label}</Label>
+        <Input
+          id="tasador-fuel"
+          readOnly
+          tabIndex={-1}
+          className="bg-slate-50"
+          value={fuelType?.name ?? ""}
+          placeholder={content.combustible?.placeholder ?? undefined}
+        />
+      </div>
+    </>
   );
 };

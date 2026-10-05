@@ -24,6 +24,8 @@ interface VersionSelectorProps {
   ariaInvalid?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  /** Texto del label (p. ej. desde Strapi). */
+  label?: string;
   /** Si true, no se muestra `FieldLabel` (útil cuando el padre ya tiene label, p. ej. react-hook-form). */
   hideLabel?: boolean;
 }
@@ -46,6 +48,7 @@ export const VersionSelector = ({
   ariaInvalid,
   disabled,
   placeholder = "Versión",
+  label = "Versión",
   hideLabel = false,
 }: VersionSelectorProps) => {
   const fieldId = useId();
@@ -134,7 +137,7 @@ export const VersionSelector = ({
 
   return (
     <Field data-invalid={ariaInvalid}>
-      <FieldLabel htmlFor={fieldId}>Versión</FieldLabel>
+      <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
       {content}
     </Field>
   );

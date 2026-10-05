@@ -77,3 +77,10 @@ export const TEXTO_ENLACE_POPULATE = {
     enlace: LINK_POPULATE,
   },
 };
+
+/** Populate de un `shared.icon-feature[]` (media anidada). */
+export const ICON_FEATURES_POPULATE = {
+  populate: {
+    icon: true,
+  },
+};

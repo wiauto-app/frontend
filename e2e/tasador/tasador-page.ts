@@ -37,7 +37,7 @@ const selectFirstOpenBaseUiOption = async (
   await option.click();
 };
 
-/** Page Object de `TasadorForm` (`/tasador` público y `/usuario/mi-tasador`). */
+/** Page Object de la tasación con IA (`/tasador`) y del historial (`/usuario/mi-tasador`). */
 export class TasadorPage {
   readonly page: Page;
   readonly submitButton: Locator;
@@ -46,13 +46,12 @@ export class TasadorPage {
   readonly emailInput: Locator;
   readonly mileageInput: Locator;
   readonly phoneNationalInput: Locator;
-  readonly useMyLocationButton: Locator;
+  readonly resultHeading: Locator;
+  readonly signInDialog: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.submitButton = page.getByRole("button", {
-      name: "Solicitar tasación",
-    });
+    this.submitButton = page.getByRole("button", { name: /Tasar coche/ });
     this.successHeading = page.getByRole("heading", {
       name: "¡Solicitud enviada!",
     });
@@ -60,9 +59,10 @@ export class TasadorPage {
     this.emailInput = page.getByLabel("Email");
     this.mileageInput = page.getByLabel("Kilometraje");
     this.phoneNationalInput = page.getByLabel("Número de teléfono");
-    this.useMyLocationButton = page.getByRole("button", {
-      name: /Mi ubicación/,
+    this.resultHeading = page.getByRole("heading", {
+      name: "Valor estimado de tu vehículo",
     });
+    this.signInDialog = page.getByRole("dialog");
   }
 
   async gotoPublic() {
@@ -74,23 +74,19 @@ export class TasadorPage {
   }
 
   async selectFirstMake() {
-    await selectFirstSearchSelect(this.page, "Marca");
+    await selectFirstSearchSelect(this.page, "Marca *");
   }
 
   async selectFirstModel() {
-    await selectFirstSearchSelect(this.page, "Modelo");
+    await selectFirstSearchSelect(this.page, "Modelo *");
   }
 
   async selectFirstYear() {
-    await selectFirstOpenBaseUiOption(this.page, "Año");
+    await selectFirstOpenBaseUiOption(this.page, "Año *");
   }
 
   async selectFirstVersion() {
-    await selectFirstSearchSelect(this.page, "Versión");
-  }
-
-  async selectTransmission() {
-    await selectFirstOpenBaseUiOption(this.page, "Tipo de transmisión");
+    await selectFirstSearchSelect(this.page, "Versión *");
   }
 
   async fillMileage(mileage: number) {
@@ -107,20 +103,6 @@ export class TasadorPage {
 
   async fillPhone(nationalNumber: string) {
     await this.phoneNationalInput.fill(nationalNumber);
-  }
-
-  /**
-   * Usa el botón «Mi ubicación» de `MapInput`, que llama a
-   * `navigator.geolocation.getCurrentPosition`. El contexto de test debe
-   * tener permiso `geolocation` concedido (ver `test.use({ geolocation, permissions })`)
-   * para no depender de clicar sobre el canvas real de Google Maps.
-   */
-  async useMyLocation() {
-    await expect(this.useMyLocationButton).toBeEnabled({ timeout: 15_000 });
-    await this.useMyLocationButton.click();
-    await expect(this.useMyLocationButton).toHaveText(/Mi ubicación/, {
-      timeout: 15_000,
-    });
   }
 
   /** Rellena el vehículo del catálogo con las primeras opciones reales del backend. */
@@ -141,6 +123,10 @@ export class TasadorPage {
 
   async expectNoSuccess() {
     await expect(this.successHeading).toHaveCount(0);
+  }
+
+  async expectResult() {
+    await expect(this.resultHeading).toBeVisible({ timeout: 15_000 });
   }
 
   async expectFieldInvalid(label: string) {

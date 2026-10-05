@@ -1,13 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Calculator,
   Car,
-  CheckCircle,
+  CirclePlus,
   CreditCard,
   HelpCircle,
-  Newspaper,
   Rss,
-  Scale,
-  Shield,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -99,21 +97,8 @@ export const NAV_LINKS: NavLink[] = [
       },
     ],
   },
-  // {
-  //   label: "Vender",
-  //   items: [
-  //     {
-  //       href: "/publicar",
-  //       label: "Publicar vehículo",
-  //       Icon: CirclePlus,
-  //       description: "Crea tu anuncio y llega a compradores en minutos",
-  //     },
-  //     {
-  //       href: "/tasador",
-  //       label: "Tasador",
-  //       Icon: Calculator,
-  //       description: "Obtén una valoración orientativa de tu vehículo",
-  //     },
+
+
   //     // {
   //     //   href: "/simulador",
   //     //   label: "Simulador de financiación",
@@ -126,17 +111,29 @@ export const NAV_LINKS: NavLink[] = [
     label: "Herramientas",
     items: [
       {
+        href: "/vender-vehiculo",
+        label: "Vender mi coche",
+        Icon: CirclePlus,
+        description: "Crea tu anuncio y llega a compradores en minutos",
+      },
+      {
         href: "/tasador",
         label: "Valorar mi coche",
         Icon: Car,
         description: "Conoce el precio del mercado",
       },
       {
-        href: "/comparador",
-        label: "Comparador de coches",
-        Icon: Scale,
-        description: "Compara y elige mejor",
+        href: "/tasador",
+        label: "Tasador",
+        Icon: Calculator,
+        description: "Obtén una valoración orientativa de tu vehículo",
       },
+      // {
+      //   href: "/comparador",
+      //   label: "Comparador de coches",
+      //   Icon: Scale,
+      //   description: "Compara y elige mejor",
+      // },
       {
         href: "/simulador-financiacion",
         label: "Simulador de financiación",

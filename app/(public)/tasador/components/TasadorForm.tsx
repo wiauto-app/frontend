@@ -1,304 +1,237 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-import { CheckCircle2, Loader2 } from "lucide-react";
-import {
-  Controller,
-  FormProvider,
-  useForm,
-  type Resolver,
-} from "react-hook-form";
-import { toast } from "sonner";
+import { useEffect, useMemo } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 
 import { useUser } from "@/app/contexts/auth/useUser";
-import { MapInput } from "@/components/forms/mapInput";
-import { PhoneInput } from "@/components/forms/phoneInput";
 import { VehicleTransmissionTypeSelector } from "@/components/dynamicSelectors/vehicleTransmissionTypeSelector";
+import { PhoneInput } from "@/components/forms/phoneInput";
+import { StrapiEncabezado } from "@/components/strapi/StrapiEncabezado";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { appraisalRequestService } from "@/services/appraisalRequest/appraisalRequestService";
+import { Label } from "@/components/ui/label";
+import type { StrapiTasadorFormulario } from "@/interfaces/strapi-components.interface";
+import { cn } from "@/lib/utils";
 
 import {
-  tasadorDefaultValues,
-  tasadorSchema,
-  type TasadorSchema,
+  createTasadorSchema,
+  TASADOR_DEFAULT_VALUES,
+  type TasadorFormInput,
+  type TasadorFormValues,
 } from "../schemas/tasador.schema";
 import { TasadorCatalogFields } from "./TasadorCatalogFields";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { VehicleFormStep } from "../../components/vehicleFormStep";
-
-export type TasadorFormVariant = "public" | "user";
+import { FieldError } from "./TasadorFieldError";
 
 interface TasadorFormProps {
-  variant?: TasadorFormVariant;
+  content: StrapiTasadorFormulario;
+  /** Valores con los que arranca (p. ej. al volver con "Modificar datos"). */
+  defaultValues?: TasadorFormValues;
+  isSubmitting: boolean;
+  onSubmit: (values: TasadorFormValues) => void;
 }
 
-export const TasadorForm = ({ variant = "public" }: TasadorFormProps) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+const SectionCard = ({
+  step,
+  children,
+  className,
+}: {
+  step: number;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <section
+    className={cn(
+      "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6",
+      className,
+    )}
+  >
+    <div className="flex items-start gap-3">
+      <span
+        aria-hidden
+        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground"
+      >
+        {step}
+      </span>
+      <div className="flex w-full flex-col gap-5">{children}</div>
+    </div>
+  </section>
+);
+
+/** "¿Qué vehículo vendes?" + "Tus datos de contacto". */
+export const TasadorForm = ({
+  content,
+  defaultValues,
+  isSubmitting,
+  onSubmit,
+}: TasadorFormProps) => {
   const { user } = useUser();
-
-  const form = useForm<TasadorSchema>({
-    resolver: standardSchemaResolver(tasadorSchema) as Resolver<TasadorSchema>,
-    defaultValues: tasadorDefaultValues,
+  const schema = useMemo(() => createTasadorSchema(content), [content]);
+  const form = useForm<TasadorFormInput, unknown, TasadorFormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { ...TASADOR_DEFAULT_VALUES, ...defaultValues },
   });
+  const errors = form.formState.errors;
 
+  // Completa el contacto desde el perfil sin pisar lo que el usuario ya escribió.
   useEffect(() => {
-    if (variant !== "user" || !user) {
+    if (!user) {
       return;
     }
-
-    const fullName = [user.name, user.last_name]
-      .filter((part) => Boolean(part?.trim()))
-      .join(" ")
-      .trim();
-
-    form.reset({
-      ...tasadorDefaultValues,
-      name: fullName || user.name || "",
-      email: user.email ?? "",
-      phone: {
-        phone_code: user.phone_code || "+34",
-        phone: user.phone ?? "",
-      },
-    });
-  }, [variant, user, form]);
-
-  const handleSubmit = async (data: TasadorSchema) => {
-    const payload = {
-      make_id: data.catalog_make_id,
-      model_id: data.catalog_model_id,
-      year_id: data.catalog_year_id,
-      version_id: data.version_id,
-      fuel_type_id: data.fuel_type_id,
-      body_type_id: data.body_type_id,
-      transmission_type: data.transmission_type,
-      mileage: data.mileage,
-      lat: data.lat,
-      lng: data.lng,
-      name: data.name.trim(),
-      email: data.email.trim(),
-      phone_code: data.phone.phone_code,
-      phone: data.phone.phone,
+    const fill = (name: "name" | "last_name" | "email", value?: string) => {
+      if (value && !form.getValues(name)) {
+        form.setValue(name, value);
+      }
     };
-
-    const response =
-      variant === "user"
-        ? await appraisalRequestService.createAuthenticated(payload)
-        : await appraisalRequestService.create(payload);
-
-    if (!response.ok) {
-      toast.error(
-        response.message || "No se pudo enviar la solicitud de tasación",
-      );
-      return;
+    fill("name", user.name);
+    fill("last_name", user.last_name);
+    fill("email", user.email);
+    if (user.phone && !form.getValues("phone.phone")) {
+      form.setValue("phone", {
+        phone_code: user.phone_code || TASADOR_DEFAULT_VALUES.phone.phone_code,
+        phone: user.phone,
+      });
     }
+  }, [user, form]);
 
-    setIsSubmitted(true);
-  };
-
-  if (isSubmitted) {
-    return (
-      <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-        <CheckCircle2 className="size-12 text-primary" aria-hidden />
-        <h2 className="text-xl font-semibold text-slate-900">
-          ¡Solicitud enviada!
-        </h2>
-        <p className="max-w-md text-sm text-slate-600">
-          Te contactaremos con una estimación de precio para tu vehículo en
-          breve.
-        </p>
+  const textField = (
+    name: "mileage" | "power" | "plate" | "name" | "last_name" | "email",
+    field: StrapiTasadorFormulario["kilometraje"],
+    options: { required?: boolean; type?: string; suffix?: string; inputMode?: "numeric" } = {},
+  ) => (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor={`tasador-${name}`}>
+        {field?.label}
+        {options.required ? " *" : null}
+      </Label>
+      <div className="relative">
+        <Input
+          id={`tasador-${name}`}
+          type={options.type ?? "text"}
+          inputMode={options.inputMode}
+          placeholder={field?.placeholder ?? undefined}
+          aria-invalid={Boolean(errors[name])}
+          disabled={isSubmitting}
+          className={cn(options.suffix && "pr-12")}
+          {...form.register(name)}
+        />
+        {options.suffix ? (
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-slate-400">
+            {options.suffix}
+          </span>
+        ) : null}
       </div>
-    );
-  }
+      {field?.ayuda ? <p className="text-xs text-slate-500">{field.ayuda}</p> : null}
+      <FieldError message={errors[name]?.message} />
+    </div>
+  );
 
   return (
     <FormProvider {...form}>
-      <Card size="sm">
-        <CardHeader className="sr-only">
-          <CardTitle>Datos del vehículo</CardTitle>
-          <CardDescription>
-            Selecciona la marca, modelo, año y versión de tu vehículo.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="flex flex-col gap-4"
-            aria-label="Formulario de solicitud de tasación"
-          >
-            <VehicleFormStep number={1} label="¿Qué vehículo vendes?">
-              <TasadorCatalogFields />
+      <form
+        id="tasador-form"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-5"
+        noValidate
+      >
+        <SectionCard step={1}>
+          <StrapiEncabezado
+            content={content.encabezado_vehiculo}
+            className="text-left"
+            titleClassName="text-xl sm:text-2xl"
+            descriptionClassName="mt-1"
+          />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <TasadorCatalogFields content={content} />
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <Controller
-                  name="transmission_type"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="tasador-transmission">
-                        Tipo de transmisión
-                      </FieldLabel>
-                      <VehicleTransmissionTypeSelector
-                        value={field.value}
-                        onValueChange={(value) =>
-                          field.onChange(value ?? "manual")
-                        }
-                      />
-                      {fieldState.error ? (
-                        <FieldError errors={[fieldState.error]} />
-                      ) : null}
-                    </Field>
-                  )}
-                />
-
-                <Controller
-                  name="mileage"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="tasador-mileage">
-                        Kilometraje
-                      </FieldLabel>
-                      <Input
-                        id="tasador-mileage"
-                        type="number"
-                        min={0}
-                        inputMode="numeric"
-                        placeholder="Ej. 85000"
-                        name={field.name}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                        value={field.value ?? 0}
-                        onChange={(event) =>
-                          field.onChange(Number(event.target.value))
-                        }
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.error ? (
-                        <FieldError errors={[fieldState.error]} />
-                      ) : null}
-                    </Field>
-                  )}
-                />
-              </div>
-            </VehicleFormStep>
-            <VehicleFormStep number={2} label="Ubicación">
+            <div className="flex flex-col gap-2">
+              <Label>{content.transmision?.label} *</Label>
               <Controller
-                name="lat"
+                name="transmission_type"
                 control={form.control}
-                render={({ field: latField, fieldState }) => {
-                  const lng = form.watch("lng");
-                  return (
-                    <MapInput
-                      value={{ lat: latField.value, lng }}
-                      onChange={({ lat, lng: nextLng }) => {
-                        latField.onChange(lat);
-                        form.setValue("lng", nextLng, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        });
-                      }}
-                      ariaInvalid={
-                        fieldState.invalid || Boolean(form.formState.errors.lng)
-                      }
-                    />
-                  );
-                }}
+                render={({ field }) => (
+                  <VehicleTransmissionTypeSelector
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                    placeholder={content.transmision?.placeholder ?? undefined}
+                    disabled={isSubmitting}
+                  />
+                )}
               />
-            </VehicleFormStep>
+              <FieldError message={errors.transmission_type?.message} />
+            </div>
 
-            <VehicleFormStep number={3} label="Tus datos de contacto">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Controller
-                  name="name"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="tasador-name">Nombre</FieldLabel>
-                      <Input
-                        id="tasador-name"
-                        autoComplete="name"
-                        placeholder="Tu nombre"
-                        aria-invalid={fieldState.invalid}
-                        {...field}
-                      />
-                      {fieldState.error ? (
-                        <FieldError errors={[fieldState.error]} />
-                      ) : null}
-                    </Field>
-                  )}
-                />
+            {textField("mileage", content.kilometraje, {
+              required: true,
+              type: "number",
+              inputMode: "numeric",
+              suffix: "km",
+            })}
+            {textField("power", content.potencia, {
+              type: "number",
+              inputMode: "numeric",
+              suffix: "CV",
+            })}
+            {textField("plate", content.matricula)}
+          </div>
+        </SectionCard>
 
-                <Controller
-                  name="email"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="tasador-email">Email</FieldLabel>
-                      <Input
-                        id="tasador-email"
-                        type="email"
-                        autoComplete="email"
-                        placeholder="tu@email.com"
-                        aria-invalid={fieldState.invalid}
-                        {...field}
-                      />
-                      {fieldState.error ? (
-                        <FieldError errors={[fieldState.error]} />
-                      ) : null}
-                    </Field>
-                  )}
-                />
-              </div>
+        <SectionCard step={2}>
+          <StrapiEncabezado
+            content={content.encabezado_contacto}
+            className="text-left"
+            titleClassName="text-xl sm:text-2xl"
+            descriptionClassName="mt-1"
+          />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {textField("name", content.nombre, { required: true })}
+            {textField("last_name", content.apellidos)}
+            {textField("email", content.email, { required: true, type: "email" })}
 
+            <div className="flex flex-col gap-2">
+              <Label>{content.telefono?.label} *</Label>
               <Controller
                 name="phone"
                 control={form.control}
                 render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="tasador-phone">Teléfono</FieldLabel>
-                    <PhoneInput
-                      value={field.value}
-                      onChange={field.onChange}
-                      ariaInvalid={fieldState.invalid}
-                    />
-                    {form.formState.errors.phone?.phone ||
-                    form.formState.errors.phone?.phone_code ? (
-                      <FieldError
-                        errors={[
-                          form.formState.errors.phone?.phone,
-                          form.formState.errors.phone?.phone_code,
-                        ]}
-                      />
-                    ) : null}
-                  </Field>
+                  <PhoneInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={isSubmitting}
+                    ariaInvalid={fieldState.invalid}
+                    nationalNumberLabel={content.telefono?.label_numero ?? undefined}
+                    nationalNumberPlaceholder={content.telefono?.placeholder_numero ?? undefined}
+                  />
                 )}
               />
-            </VehicleFormStep>
+              <FieldError message={errors.phone?.phone_code?.message} />
+              <FieldError message={errors.phone?.phone?.message} />
+            </div>
+          </div>
+        </SectionCard>
 
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting}
-              className="w-full"
-            >
-              {form.formState.isSubmitting ? (
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full gap-2 sm:w-auto sm:min-w-48"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
                 <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : null}
-              {form.formState.isSubmitting
-                ? "Enviando..."
-                : "Solicitar tasación"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+                {content.boton?.label_cargando || content.boton?.label}
+              </>
+            ) : (
+              <>
+                {content.boton?.label}
+                <ArrowRight className="size-4" aria-hidden />
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </FormProvider>
   );
 };

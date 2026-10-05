@@ -3,8 +3,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { dismissCookies } from "../helpers/dismissCookies";
 import { TasadorPage } from "./tasador-page";
 
-/** Ubicación fija para el permiso `geolocation` (evita depender del canvas real de Google Maps). */
-const E2E_GEOLOCATION = { latitude: 41.3874, longitude: 2.1686 };
+const APPRAISAL_ID = "11111111-1111-1111-1111-111111111111";
 
 const TEST_CONTACT = {
   name: "Tasador E2E",
@@ -12,165 +11,166 @@ const TEST_CONTACT = {
   phone: "612345678",
 };
 
-const ERROR_MESSAGE = "No se pudo procesar la tasación (mock E2E)";
+const APPRAISAL_DETAIL = {
+  id: APPRAISAL_ID,
+  status: "estimated",
+  created_at: "2026-10-05T12:00:00.000Z",
+  offers_requested_at: null,
+  offers_expire_at: null,
+  accepted_offer_id: null,
+  vehicle: {
+    make_id: 1,
+    model_id: 1,
+    year_id: 1,
+    version_id: 1,
+    fuel_type_id: 1,
+    make_name: "SEAT",
+    model_name: "Ateca",
+    year: 2020,
+    version_name: "2.0 TDI 150 CV Style",
+    fuel_type_name: "Diésel",
+    transmission_type: "manual",
+    mileage: 92_000,
+    power: 150,
+    vehicle_label: "SEAT Ateca (2020)",
+  },
+  estimate: {
+    recommended_price: 19_000,
+    range_min: 18_200,
+    range_max: 19_800,
+    explanation: "Precio en línea con el mercado español para este kilometraje.",
+    confidence: "medium",
+    source: "ai",
+  },
+  contact: { name: TEST_CONTACT.name, email: TEST_CONTACT.email, phone_code: "+34", phone: TEST_CONTACT.phone },
+  offers: [],
+};
 
-/** Mockea `POST /v1/appraisal-requests` (público) y `/v1/appraisal-requests/authenticated`. */
-async function mockAppraisalRequest(
-  page: Page,
-  outcome: { ok: true } | { ok: false; message: string },
-) {
-  await page.route("**/v1/appraisal-requests**", async (route) => {
-    if (route.request().method() !== "POST") {
-      await route.continue();
-      return;
-    }
+const json = (data: unknown) => ({
+  status: 200,
+  contentType: "application/json",
+  body: JSON.stringify({ ok: true, message: "OK", data }),
+});
 
-    if (outcome.ok) {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          ok: true,
-          message: "OK",
-          data: { id: "11111111-1111-1111-1111-111111111111" },
-        }),
-      });
-      return;
-    }
-
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        ok: false,
-        message: outcome.message,
-        data: null,
-      }),
-    });
-  });
+/** Mockea la tasación IA y la solicitud de ofertas (no consume cuota de IA en E2E). */
+async function mockAppraisalApi(page: Page) {
+  await page.route("**/v1/appraisals/estimate", (route) =>
+    route.fulfill({ ...json(APPRAISAL_DETAIL), status: 201 }),
+  );
+  await page.route(`**/v1/appraisals/${APPRAISAL_ID}/request-offers`, (route) =>
+    route.fulfill(json({ ...APPRAISAL_DETAIL, status: "open_for_offers" })),
+  );
 }
 
-test.describe("TasadorForm (/tasador)", () => {
-  test.describe("variante pública", () => {
-    // Contexto anónimo explícito: `/tasador` no exige sesión y no debe depender
-    // del `storageState` autenticado que usa por defecto el proyecto `chromium`.
-    test.use({
-      storageState: { cookies: [], origins: [] },
-      geolocation: E2E_GEOLOCATION,
-      permissions: ["geolocation"],
-    });
+async function fillValuationForm(tasador: TasadorPage) {
+  await tasador.fillFirstCatalogVehicle();
+  await tasador.fillMileage(92_000);
+  await tasador.fillName(TEST_CONTACT.name);
+  await tasador.fillEmail(TEST_CONTACT.email);
+  await tasador.fillPhone(TEST_CONTACT.phone);
+}
 
-    test("envía la solicitud y muestra «¡Solicitud enviada!»", async ({
-      page,
-    }) => {
-      test.setTimeout(90_000);
+test.describe("Tasador con IA (/tasador)", () => {
+  test.describe("sin sesión", () => {
+    // `/tasador` es pública: la landing se ve sin sesión y el login se pide al tasar.
+    test.use({ storageState: { cookies: [], origins: [] } });
 
-      await mockAppraisalRequest(page, { ok: true });
-
-      const tasador = new TasadorPage(page);
-      await tasador.gotoPublic();
-      await dismissCookies(page);
-
-      await tasador.fillFirstCatalogVehicle();
-      await tasador.selectTransmission();
-      await tasador.fillMileage(85_000);
-      await tasador.useMyLocation();
-
-      await tasador.fillName(TEST_CONTACT.name);
-      await tasador.fillEmail(TEST_CONTACT.email);
-      await tasador.fillPhone(TEST_CONTACT.phone);
-
-      await tasador.submit();
-      await tasador.expectSubmitSuccess();
-    });
-
-    test("no envía y muestra errores si faltan campos obligatorios", async ({
-      page,
-    }) => {
-      let requestCreated = false;
-      await page.route("**/v1/appraisal-requests**", async (route) => {
-        requestCreated = true;
+    test("no envía y marca los campos obligatorios vacíos", async ({ page }) => {
+      let estimateCalled = false;
+      await page.route("**/v1/appraisals/estimate", async (route) => {
+        estimateCalled = true;
         await route.continue();
       });
 
       const tasador = new TasadorPage(page);
       await tasador.gotoPublic();
       await dismissCookies(page);
-
       await tasador.submit();
 
-      await expect(page.getByText("El nombre es obligatorio.")).toBeVisible();
-      await expect(
-        page.getByText("Introduce un correo electrónico válido."),
-      ).toBeVisible();
-      await expect(
-        page.getByText("El teléfono es obligatorio."),
-      ).toBeVisible();
-
-      await tasador.expectFieldInvalid("Marca");
-      await tasador.expectFieldInvalid("Modelo");
-      await tasador.expectFieldInvalid("Año");
-      await tasador.expectFieldInvalid("Versión");
-
-      await tasador.expectNoSuccess();
-      expect(requestCreated).toBe(false);
+      await expect(page.getByText("Selecciona la marca")).toBeVisible();
+      await expect(page.getByText("El nombre debe tener al menos 2 caracteres")).toBeVisible();
+      await expect(page.getByText("Email inválido")).toBeVisible();
+      expect(estimateCalled).toBe(false);
     });
 
-    test("muestra un toast de error cuando el backend rechaza la solicitud", async ({
-      page,
-    }) => {
+    test("al tasar sin sesión abre el inicio de sesión y no llama a la IA", async ({ page }) => {
       test.setTimeout(90_000);
 
-      await mockAppraisalRequest(page, { ok: false, message: ERROR_MESSAGE });
+      let estimateCalled = false;
+      await page.route("**/v1/appraisals/estimate", async (route) => {
+        estimateCalled = true;
+        await route.continue();
+      });
 
       const tasador = new TasadorPage(page);
       await tasador.gotoPublic();
       await dismissCookies(page);
-
-      await tasador.fillFirstCatalogVehicle();
-      await tasador.selectTransmission();
-      await tasador.fillMileage(85_000);
-      await tasador.useMyLocation();
-
-      await tasador.fillName(TEST_CONTACT.name);
-      await tasador.fillEmail(TEST_CONTACT.email);
-      await tasador.fillPhone(TEST_CONTACT.phone);
-
+      await fillValuationForm(tasador);
       await tasador.submit();
 
-      await expect(page.getByText(ERROR_MESSAGE)).toBeVisible({
-        timeout: 15_000,
-      });
-      await tasador.expectNoSuccess();
+      await expect(tasador.signInDialog).toBeVisible({ timeout: 15_000 });
+      expect(estimateCalled).toBe(false);
     });
   });
 
-  test.describe("variante autenticada (/usuario/mi-tasador)", () => {
-    // Usa el `storageState` autenticado por defecto del proyecto `chromium`
-    // (ver `e2e/auth.setup.ts`); sin credenciales de `.env.e2e` este describe
-    // no puede validar el precargado real del usuario.
-    test("precarga nombre, email y teléfono del usuario autenticado", async ({
-      page,
-    }) => {
+  test.describe("con sesión", () => {
+    test("tasa el coche, muestra el resultado y pide ofertas", async ({ page }) => {
       test.skip(
         !process.env.E2E_USER_EMAIL,
-        "Requiere E2E_USER_EMAIL/E2E_USER_PASSWORD en .env.e2e para iniciar sesión (ver auth.setup.ts).",
+        "Requiere E2E_USER_EMAIL/E2E_USER_PASSWORD en .env.e2e (ver auth.setup.ts).",
+      );
+      test.setTimeout(90_000);
+
+      await mockAppraisalApi(page);
+
+      const tasador = new TasadorPage(page);
+      await tasador.gotoPublic();
+      await dismissCookies(page);
+      await fillValuationForm(tasador);
+      await tasador.submit();
+
+      await tasador.expectResult();
+      await expect(page.getByText("18.200 € – 19.800 €").first()).toBeVisible();
+      await expect(page.getByRole("link", { name: /Publicar ahora/ })).toHaveAttribute(
+        "href",
+        `/publicar?tasacion=${APPRAISAL_ID}`,
+      );
+
+      await page.getByRole("button", { name: /Quiero recibir ofertas/ }).click();
+      await expect(page.getByRole("heading", { name: "¡Solicitud enviada!" })).toBeVisible();
+    });
+
+    test("lista las tasaciones del usuario en /usuario/mi-tasador", async ({ page }) => {
+      test.skip(
+        !process.env.E2E_USER_EMAIL,
+        "Requiere E2E_USER_EMAIL/E2E_USER_PASSWORD en .env.e2e (ver auth.setup.ts).",
+      );
+
+      await page.route("**/v1/appraisals/me", (route) =>
+        route.fulfill(
+          json([
+            {
+              id: APPRAISAL_ID,
+              status: "open_for_offers",
+              created_at: APPRAISAL_DETAIL.created_at,
+              offers_expire_at: "2026-10-12T12:00:00.000Z",
+              vehicle: APPRAISAL_DETAIL.vehicle,
+              estimate: APPRAISAL_DETAIL.estimate,
+              offers_count: 2,
+              best_offer_amount: 18_900,
+            },
+          ]),
+        ),
       );
 
       const tasador = new TasadorPage(page);
       await tasador.gotoUserArea();
       await dismissCookies(page);
 
-      await expect(tasador.emailInput).toHaveValue(process.env.E2E_USER_EMAIL!, {
-        timeout: 15_000,
-      });
-
-      await expect
-        .poll(async () => (await tasador.nameInput.inputValue()).trim(), {
-          timeout: 15_000,
-          message: "El campo Nombre debería precargarse desde el usuario autenticado.",
-        })
-        .not.toBe("");
+      const item = page.getByRole("link", { name: /SEAT Ateca \(2020\)/ });
+      await expect(item).toBeVisible({ timeout: 15_000 });
+      await expect(item).toHaveAttribute("href", `/usuario/mi-tasador/${APPRAISAL_ID}`);
+      await expect(item.getByText(/2 ofertas/)).toBeVisible();
     });
   });
 });

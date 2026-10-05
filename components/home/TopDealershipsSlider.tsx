@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "motion/react";
+
 import {
   Carousel,
   CarouselContent,
@@ -7,12 +9,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { motion } from "motion/react";
 import type { DealershipListItem } from "@/services/dealerships/types/dealership.types";
 
-import { TopDealershipCard } from "./TopDealershipCard";
-import { getVariant, staggerContainer } from "./motion";
+import { MotionHoverCard } from "./motion";
+import {
+  getVariant,
+  staggerContainerExpressive,
+  staggerItemPop,
+} from "./motion/motion-variants";
 import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
+import { TopDealershipCard } from "./TopDealershipCard";
 
 interface TopDealershipsSliderProps {
   dealerships: DealershipListItem[];
@@ -22,7 +28,11 @@ export const TopDealershipsSlider = ({
   dealerships,
 }: TopDealershipsSliderProps) => {
   const prefersReducedMotion = usePrefersReducedMotion();
-  const containerVariants = getVariant(staggerContainer, prefersReducedMotion);
+  const containerVariants = getVariant(
+    staggerContainerExpressive,
+    prefersReducedMotion,
+  );
+  const itemVariants = getVariant(staggerItemPop, prefersReducedMotion);
 
   return (
     <Carousel
@@ -42,7 +52,9 @@ export const TopDealershipsSlider = ({
                 key={dealership.id}
                 className="basis-[78%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
               >
+                <MotionHoverCard variants={itemVariants} className="h-full">
                   <TopDealershipCard dealership={dealership} />
+                </MotionHoverCard>
               </CarouselItem>
             ))}
           </CarouselContent>

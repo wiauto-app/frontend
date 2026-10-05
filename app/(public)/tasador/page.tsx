@@ -1,22 +1,37 @@
 import type { Metadata } from "next";
 
-import { TasadorForm } from "./components/TasadorForm";
-import { LandingHeader } from "@/components/ui/landingHeader";
+import { IconFeatureList } from "@/components/landings/IconFeatureList";
+import { LandingHeroSection } from "@/components/landings/LandingHeroSection";
+import { StrapiStructuredData } from "@/components/strapi/StrapiStructuredData";
+import { LandingContainer } from "@/components/ui/landingContainer";
+import { buildStrapiMetadata } from "@/lib/seo/build-strapi-metadata";
 
-export const metadata: Metadata = {
-  title: "Tasador de vehículos | WiAuto",
-  description:
-    "Solicita una tasación gratuita de tu vehículo y recibe un rango de precio estimado de nuestro equipo.",
-};
+import { TasadorValuationFlow } from "./components/TasadorValuationFlow";
+import { getTasadorContent } from "./services/getTasadorContent";
+import { tasadorIconPack } from "./utils/tasadorIconPack";
 
-export default function TasadorPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const content = await getTasadorContent();
+  return buildStrapiMetadata({ seo: content.seo, path: "/tasador" });
+}
+
+export default async function TasadorPage() {
+  const content = await getTasadorContent();
+
   return (
-    <div className="flex flex-col gap-8">
-      <LandingHeader title="Tasador de vehículos" />
+    <LandingContainer>
+      <StrapiStructuredData seo={content.seo} />
+      {content.hero ? (
+        <LandingHeroSection hero={content.hero} iconPack={tasadorIconPack} />
+      ) : null}
 
-      <div className="mx-auto w-full max-w-2xl">
-        <TasadorForm variant="public" />
-      </div>
-    </div>
+      <TasadorValuationFlow content={content} />
+
+      {content.confianza?.length ? (
+        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+          <IconFeatureList items={content.confianza} iconPack={tasadorIconPack} variant="strip" />
+        </section>
+      ) : null}
+    </LandingContainer>
   );
 }

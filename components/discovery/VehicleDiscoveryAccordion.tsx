@@ -5,9 +5,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { VehicleDiscoveryPillLink } from "./VehicleDiscoveryPillLink";
-import type { DiscoveryAccordionSection } from "./types";
 import { IconContainer } from "../ui/iconContainer";
+import type { DiscoveryAccordionSection } from "./types";
+import { resolveDiscoverySectionIcon } from "./utils/resolve-discovery-section-icon";
+import { VehicleDiscoveryPillLink } from "./VehicleDiscoveryPillLink";
 
 interface VehicleDiscoveryAccordionProps {
   sections: DiscoveryAccordionSection[];
@@ -27,12 +28,15 @@ export const VehicleDiscoveryAccordion = ({
           multiple
           defaultValue={sections.map((section) => section.id) }
         >
-          {sections.map((section) => (
+          {sections.map((section) => {
+            const SectionIcon = resolveDiscoverySectionIcon(section.id);
+
+            return (
             <AccordionItem key={section.id} value={section.id}>
               <AccordionTrigger className="text-sm font-semibold text-foreground hover:no-underline items-center gap-2">
-                {section.Icon && (
-                  <IconContainer Icon={section.Icon} size="xs" />
-                )}
+                {SectionIcon ? (
+                  <IconContainer Icon={SectionIcon} size="xs" />
+                ) : null}
                 {section.title}
               </AccordionTrigger>
               <AccordionContent>
@@ -46,7 +50,8 @@ export const VehicleDiscoveryAccordion = ({
                 </div>
               </AccordionContent>
             </AccordionItem>
-          ))}
+            );
+          })}
         </Accordion>
       </CardContent>
     </Card>

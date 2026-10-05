@@ -14,6 +14,7 @@ export const QuickYearSelector = ({
   ariaInvalid,
   disabled,
   placeholder = "Año",
+  label = "Año",
   versionId,
 }: {
   value?: string;
@@ -22,6 +23,8 @@ export const QuickYearSelector = ({
   ariaInvalid?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  /** Texto del label (p. ej. desde Strapi). */
+  label?: string;
   versionId?: number;
 }) => {
   
@@ -52,7 +55,7 @@ export const QuickYearSelector = ({
 
   return (
     <Field data-invalid={ariaInvalid}>
-      <FieldLabel htmlFor="quick-year-selector">Año</FieldLabel>
+      <FieldLabel htmlFor="quick-year-selector">{label}</FieldLabel>
       {isLoading ? (
         <div className="flex h-9 w-full items-center rounded-md border border-input bg-transparent px-3 text-sm text-muted-foreground">
           Cargando años...
