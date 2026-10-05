@@ -1,2 +1,5 @@
-echo "Comprobando que el frontend compile (next build) antes de subir..."
-pnpm build
+set -e
+
+echo "Comprobando tipos y lint del frontend antes de subir..."
+pnpm typecheck
+pnpm lint

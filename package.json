@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:quick-publish": "vitest run tests/unit/components/vehicles/schemas/quick-vehicle.schema.test.ts tests/unit/components/vehicles/utils/serializeVehiclePayload.test.ts tests/unit/components/vehicles/quick-publish/quick-vehicle-wizard.constants.test.ts tests/unit/components/vehicles/quick-publish/VehiclePriceRecommendation.test.tsx",
