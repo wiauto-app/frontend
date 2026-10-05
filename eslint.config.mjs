@@ -14,6 +14,7 @@ export default defineConfig([
   },
 
   globalIgnores([
+    ".agents/**",
     ".next/**",
     "out/**",
     "build/**",

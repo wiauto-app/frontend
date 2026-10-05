@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { createElement, useState } from "react";
 import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import {
@@ -22,10 +22,21 @@ interface FaqCategorySectionProps {
   group: FaqCategoryGroup;
 }
 
+interface FaqCategoryIconProps {
+  iconName?: string | null;
+}
+
+const FaqCategoryIcon = ({ iconName }: FaqCategoryIconProps) => {
+  const iconComponent =
+    resolveStrapiIconName(iconName, defaultStrapiIconPack) ?? HiOutlineCollection;
+
+  return createElement(iconComponent, {
+    className: "size-5 text-primary",
+    "aria-hidden": true,
+  });
+};
+
 export const FaqCategorySection = ({ group }: FaqCategorySectionProps) => {
-  const Icon =
-    resolveStrapiIconName(group.iconName, defaultStrapiIconPack) ??
-    HiOutlineCollection;
   const [openValues, setOpenValues] = useState<string[]>([]);
 
   return (
@@ -37,7 +48,7 @@ export const FaqCategorySection = ({ group }: FaqCategorySectionProps) => {
         id={`faq-${group.categoria}`}
         className="flex items-center gap-2 text-base font-bold text-slate-900"
       >
-        <Icon className="size-5 text-primary" aria-hidden />
+        <FaqCategoryIcon iconName={group.iconName} />
         {group.categoria}
       </h2>
 

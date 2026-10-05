@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useUser } from "@/app/contexts/auth/useUser";
 import type {
   FindAllVehiclesParams,
@@ -39,8 +39,6 @@ export const useAuthenticatedVehiclesListing = ({
     () => buildVehiclesQueryString(filters),
     [filters],
   );
-  const filtersRef = useRef(filters);
-  filtersRef.current = filters;
   const [vehicles, setVehicles] = useState(initialVehicles);
   const [total, setTotal] = useState(initialTotal);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -63,9 +61,7 @@ export const useAuthenticatedVehiclesListing = ({
     const refresh = async () => {
       setIsRefreshing(true);
       try {
-        const response = await vehicleService.vehicles.findAll(
-          filtersRef.current,
-        );
+        const response = await vehicleService.vehicles.findAll(filters);
         if (cancelled || !response.ok || !response.data) {
           return;
         }
@@ -84,7 +80,7 @@ export const useAuthenticatedVehiclesListing = ({
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, isAuthLoading, filtersQueryKey]);
+  }, [filters, isAuthenticated, isAuthLoading, filtersQueryKey]);
 
   const handleDismissed = useCallback((vehicleId: string) => {
     setVehicles((current) => {

@@ -31,11 +31,10 @@ export const isIndexableCatalogSlugPath = (segments: string[]): boolean => {
   return !isLegacyDuplicateSlugPath(segments);
 };
 
-interface IndexableCatalogListingPathParams
-  extends Pick<
-    FindAllVehiclesParams,
-    "makes_slugs" | "models_slugs" | "provinces_slugs"
-  > {}
+type IndexableCatalogListingPathParams = Pick<
+  FindAllVehiclesParams,
+  "makes_slugs" | "models_slugs" | "provinces_slugs"
+>;
 
 export const buildIndexableCatalogListingPath = (
   params: IndexableCatalogListingPathParams,

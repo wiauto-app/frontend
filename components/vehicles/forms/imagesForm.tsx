@@ -283,7 +283,10 @@ export const ImagesForm = ({
   );
 
   const pending_items_ref = useRef(pending_items);
-  pending_items_ref.current = pending_items;
+
+  useEffect(() => {
+    pending_items_ref.current = pending_items;
+  }, [pending_items]);
 
   /**
    * Limpieza de blob URLs solo al desmontar (no al cambiar pending_items).
