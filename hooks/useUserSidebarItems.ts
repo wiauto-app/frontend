@@ -16,7 +16,8 @@ export const useUserSidebarItems = () => {
       getUserSidebarLinks({
         dealershipMembership: user?.dealership_membership ?? null,
         isSubscribed: hasProAccess,
+        isAdmin: user?.isAdmin,
       }),
-    [hasProAccess, user?.dealership_membership],
+    [hasProAccess, user?.dealership_membership, user?.isAdmin],
   );
 };

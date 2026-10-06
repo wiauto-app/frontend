@@ -52,7 +52,7 @@ export const IconFeatureList = ({
               key={`${index}-${item.label}`}
               className="flex flex-col items-center gap-2 text-center"
             >
-              <IconContainer Icon={Icon} rounded size="lg" />
+              <IconContainer Icon={Icon} rounded  />
               <span className="text-sm font-medium text-slate-800">{label}</span>
             </li>
           );
@@ -61,7 +61,7 @@ export const IconFeatureList = ({
         return (
           <li
             key={`${index}-${item.label}`}
-            className={cn("flex items-start gap-3", variant === "strip" && "lg:px-6 lg:first:pl-0")}
+            className={cn("flex items-center gap-3", variant === "strip" && "lg:px-6 lg:first:pl-0")}
           >
             <IconContainer Icon={Icon} rounded size="sm" />
             <div className="flex flex-col gap-0.5">

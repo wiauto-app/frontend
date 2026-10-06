@@ -78,7 +78,7 @@ export const USER_SIDEBAR_PRO_LINKS = [
   },
 ] as UserSidebarLink[]
 
-/** Solo para owner/admin de un concesionario: tasaciones abiertas a ofertas. */
+/** Owner/admin de un concesionario, o admin de plataforma. */
 export const USER_SIDEBAR_DEALERSHIP_MANAGER_LINKS: UserSidebarLink[] = [
   {
     href: `${basePath}/oportunidades-tasacion`,
@@ -91,12 +91,14 @@ export const USER_SIDEBAR_DEALERSHIP_MANAGER_LINKS: UserSidebarLink[] = [
 export interface GetUserSidebarLinksParams {
   dealershipMembership?: DealershipMembership | null;
   isSubscribed?: boolean;
+  isAdmin?: boolean;
 }
 
 /** Construye los links del sidebar según suscripción y membership. */
 export const getUserSidebarLinks = ({
   dealershipMembership = null,
   isSubscribed = false,
+  isAdmin = false,
 }: GetUserSidebarLinksParams = {}): UserSidebarLink[] => {
   const links = [...USER_SIDEBAR_LINKS];
 
@@ -112,7 +114,7 @@ export const getUserSidebarLinks = ({
   }
 
   const role = dealershipMembership?.role;
-  if (role === "owner" || role === "admin") {
+  if (role === "owner" || role === "admin" || isAdmin) {
     links.push(...USER_SIDEBAR_DEALERSHIP_MANAGER_LINKS);
   }
 
