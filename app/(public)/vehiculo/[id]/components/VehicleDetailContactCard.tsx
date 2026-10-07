@@ -31,8 +31,8 @@ export const VehicleDetailContactCard = ({
 }: VehicleDetailContactCardProps) => {
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const vehicleTitle = getVehicleDisplayName(vehicle);
-  const showPhone = vehicle.show_phone !== false;
-  const showWhatsApp = showPhone && vehicle.has_whatsapp === true;
+  const showPhone = vehicle.show_phone === true;
+  const showWhatsapp = vehicle.show_whatsapp === true;
   const advertiser = vehicle.dealership ?? vehicle.publisher;
   const advertiserDescription = vehicle.dealership
     ? "Concesionario"
@@ -72,13 +72,13 @@ export const VehicleDetailContactCard = ({
             Contactar
           </Button>
 
-          {showPhone || showWhatsApp ? (
+          {showPhone || showWhatsapp ? (
             <div className="grid grid-cols-2 gap-2">
               {showPhone ? (
                 <Button
                   type="button"
                   variant="outline"
-                  className={showWhatsApp ? "gap-2" : "col-span-2 gap-2"}
+                  className={showWhatsapp ? "gap-2" : "col-span-2 gap-2"}
                   onClick={handlePhoneClick}
                   disabled={isLoadingPhone}
                 >
@@ -91,7 +91,7 @@ export const VehicleDetailContactCard = ({
                 </Button>
               ) : null}
 
-              {showWhatsApp ? (
+              {showWhatsapp ? (
                 <Button
                   type="button"
                   variant="outline"

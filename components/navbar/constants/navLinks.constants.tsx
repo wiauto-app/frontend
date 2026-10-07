@@ -122,12 +122,7 @@ export const NAV_LINKS: NavLink[] = [
         Icon: Car,
         description: "Conoce el precio del mercado",
       },
-      {
-        href: "/tasador",
-        label: "Tasador",
-        Icon: Calculator,
-        description: "Obtén una valoración orientativa de tu vehículo",
-      },
+     
       // {
       //   href: "/comparador",
       //   label: "Comparador de coches",

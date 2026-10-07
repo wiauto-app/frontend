@@ -3,7 +3,6 @@
 import { toast } from "sonner";
 import { Loader2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SimpleTooltip } from "@/components/ui/simpleTooltip";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import { useFeatureListingAction } from "../hooks/useMyListingMutations";
 
@@ -12,15 +11,8 @@ interface FeatureListingButtonProps {
   variant?: "outline" | "default";
 }
 
-const getDisabledReason = (listing: OwnerVehicleListItem): string | undefined => {
-  if (listing.is_featured_active) {
-    return "Ya está destacado";
-  }
-  if (!listing.can_feature) {
-    return "Solo se pueden destacar anuncios activos";
-  }
-  return undefined;
-};
+const canShowFeatureButton = (listing: OwnerVehicleListItem): boolean =>
+  listing.can_feature && !listing.is_featured_active;
 
 export const FeatureListingButton = ({
   listing,
@@ -34,12 +26,12 @@ export const FeatureListingButton = ({
     availableFeaturedCredits,
   } = useFeatureListingAction();
 
-  const disabledReason = getDisabledReason(listing);
-  const isUnavailable = Boolean(disabledReason);
-  const isDisabled = isUnavailable || isFeaturing;
+  if (!canShowFeatureButton(listing)) {
+    return null;
+  }
 
   const handleClick = async () => {
-    if (isDisabled) {
+    if (isFeaturing) {
       return;
     }
 
@@ -60,25 +52,17 @@ export const FeatureListingButton = ({
     }
   };
 
-  const label =
-    !isUnavailable && featurePriceLabel
-      ? `Destacar · ${featurePriceLabel}`
-      : "Destacar";
+  const label = featurePriceLabel ? `Destacar · ${featurePriceLabel}` : "Destacar";
 
-  const button =
-    variant === "default" ? (
+  if (variant === "default") {
+    return (
       <Button
         type="button"
         size="sm"
         className="bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 disabled:text-white disabled:opacity-100"
-        disabled={isDisabled}
+        disabled={isFeaturing}
         onClick={() => void handleClick()}
-        aria-label={
-          disabledReason
-            ? `Destacar anuncio ${listing.display_name}. ${disabledReason}`
-            : `Destacar anuncio ${listing.display_name}`
-        }
-        aria-disabled={isDisabled}
+        aria-label={`Destacar anuncio ${listing.display_name}`}
       >
         {isFeaturing ? (
           <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden />
@@ -87,37 +71,24 @@ export const FeatureListingButton = ({
         )}
         {label}
       </Button>
-    ) : (
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        disabled={isDisabled}
-        className="disabled:opacity-60"
-        onClick={() => void handleClick()}
-        aria-label={
-          disabledReason
-            ? `Destacar anuncio ${listing.display_name}. ${disabledReason}`
-            : `Destacar anuncio ${listing.display_name}`
-        }
-        aria-disabled={isDisabled}
-      >
-        {isFeaturing ? (
-          <Loader2 className="animate-spin" aria-hidden />
-        ) : (
-          <Star aria-hidden className="fill-current" />
-        )}
-        {label}
-      </Button>
-    );
-
-  if (disabledReason) {
-    return (
-      <SimpleTooltip content={disabledReason} side="top">
-        {button}
-      </SimpleTooltip>
     );
   }
 
-  return button;
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="outline"
+      disabled={isFeaturing}
+      onClick={() => void handleClick()}
+      aria-label={`Destacar anuncio ${listing.display_name}`}
+    >
+      {isFeaturing ? (
+        <Loader2 className="animate-spin" aria-hidden />
+      ) : (
+        <Star aria-hidden className="fill-current" />
+      )}
+      {label}
+    </Button>
+  );
 };

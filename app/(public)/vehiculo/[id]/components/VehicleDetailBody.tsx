@@ -36,8 +36,8 @@ export const VehicleDetailBody = async ({
   const displayName = getVehicleDisplayName(vehicle);
   const ownerProfileId = vehicle.profile_id ?? vehicle.publisher?.id ?? null;
   const publisherProfileId = vehicle.profile_id ?? vehicle.publisher.id;
-  const showPhone = vehicle.show_phone !== false;
-  const hasWhatsApp = vehicle.has_whatsapp === true;
+  const showPhone = vehicle.show_phone === true;
+  const showWhatsapp = vehicle.show_whatsapp === true;
 
   return (
     <>
@@ -66,7 +66,7 @@ export const VehicleDetailBody = async ({
             <VehicleDetailMobileContactBar
               vehicleId={vehicle.id}
               showPhone={showPhone}
-              hasWhatsApp={hasWhatsApp}
+              showWhatsapp={showWhatsapp}
               vehicleTitle={displayName}
               publisherProfileId={publisherProfileId}
             />
@@ -85,7 +85,7 @@ export const VehicleDetailBody = async ({
           <ContactSectionsContainer
             vehicleId={vehicle.id}
             showPhone={showPhone}
-            hasWhatsApp={hasWhatsApp}
+            showWhatsapp={showWhatsapp}
             vehicleTitle={displayName}
             publisherProfileId={publisherProfileId}
           />

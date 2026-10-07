@@ -40,7 +40,6 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
     icon: Search,
   },
   { href: `${basePath}/mensajes`, label: "Mensajes (chat)", icon: MessageSquare },
-  { href: `${basePath}/contactos`, label: "Contactos / Leads", icon: ContactRound },
   {
     href: `${basePath}/monetizacion`,
     label: "Planes",
@@ -59,6 +58,11 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
 
 
 export const USER_SIDEBAR_PRO_LINKS = [
+  {
+    href: `${basePath}/contactos`,
+    label: "Contactos / Leads",
+    icon: ContactRound,
+  },
   { href: `${basePath}/asistente-leads`, label: "Asistente de leads", icon: Bot },
   {
     href: `${basePath}/alertas-proactivas`,

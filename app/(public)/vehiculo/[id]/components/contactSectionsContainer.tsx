@@ -23,7 +23,7 @@ const VehicleDetailContactTabs = dynamic(
 interface ContactSectionsContainerProps {
   vehicleId: string;
   showPhone: boolean;
-  hasWhatsApp: boolean;
+  showWhatsapp: boolean;
   vehicleTitle: string;
   publisherProfileId: string;
 }
@@ -31,7 +31,7 @@ interface ContactSectionsContainerProps {
 export const ContactSectionsContainer = ({
   vehicleId,
   showPhone,
-  hasWhatsApp,
+  showWhatsapp,
   vehicleTitle,
   publisherProfileId,
 }: ContactSectionsContainerProps) => {
@@ -45,7 +45,7 @@ export const ContactSectionsContainer = ({
         <VehicleDetailContactChannels
           vehicleId={vehicleId}
           showPhone={showPhone}
-          hasWhatsApp={hasWhatsApp}
+          showWhatsapp={showWhatsapp}
           vehicleTitle={vehicleTitle}
         />
         <VehicleDetailContactTabs

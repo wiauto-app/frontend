@@ -19,7 +19,7 @@ import { VehicleDetailContactTabs } from "./VehicleDetailContactTabs";
 interface VehicleDetailMobileContactBarProps {
   vehicleId: string;
   showPhone: boolean;
-  hasWhatsApp: boolean;
+  showWhatsapp: boolean;
   vehicleTitle: string;
   publisherProfileId: string;
 }
@@ -71,7 +71,7 @@ const ContactBarButton = ({
 export const VehicleDetailMobileContactBar = ({
   vehicleId,
   showPhone,
-  hasWhatsApp,
+  showWhatsapp,
   vehicleTitle,
   publisherProfileId,
 }: VehicleDetailMobileContactBarProps) => {
@@ -84,7 +84,6 @@ export const VehicleDetailMobileContactBar = ({
     dialogs,
   } = useVehicleContactDialogs({ vehicleId, vehicleTitle });
 
-  const showWhatsApp = showPhone && hasWhatsApp;
 
   const handleOpenMessageSheet = () => {
     setIsMessageSheetOpen(true);
@@ -110,7 +109,7 @@ export const VehicleDetailMobileContactBar = ({
             />
           ) : null}
 
-          {showWhatsApp ? (
+          {showWhatsapp ? (
             <ContactBarButton
               onClick={handleWhatsAppClick}
               ariaLabel="Contactar por WhatsApp"

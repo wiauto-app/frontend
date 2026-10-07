@@ -195,6 +195,7 @@ export interface Vehicle {
   phone: string;
   has_whatsapp?: boolean;
   show_phone?: boolean;
+  show_whatsapp?: boolean;
   email: string;
   created_at: string;
   updated_at: string;

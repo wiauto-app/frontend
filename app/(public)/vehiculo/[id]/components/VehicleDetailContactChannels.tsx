@@ -10,14 +10,14 @@ import { FaWhatsapp } from "react-icons/fa";
 interface VehicleDetailContactChannelsProps {
   vehicleId: string;
   showPhone: boolean;
-  hasWhatsApp: boolean;
+  showWhatsapp: boolean;
   vehicleTitle: string;
 }
 
 export const VehicleDetailContactChannels = ({
   vehicleId,
   showPhone,
-  hasWhatsApp,
+  showWhatsapp,
   vehicleTitle,
 }: VehicleDetailContactChannelsProps) => {
   const {
@@ -47,7 +47,7 @@ export const VehicleDetailContactChannels = ({
           {isLoadingPhone ? "Cargando..." : "Ver teléfono"}
         </Button>
 
-        {hasWhatsApp ? (
+        {showWhatsapp ? (
           <Button
             type="button"
             className="w-full gap-2 bg-green-600 hover:bg-green-700"
