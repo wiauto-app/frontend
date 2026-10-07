@@ -5,8 +5,10 @@ import type {
 import { HERO_PRICE_UNTIL_OPTIONS } from "@/interfaces/hero-facet.interface";
 import type { Make } from "@/interfaces/vehicle.interface";
 import type { SearchModelItem } from "@/interfaces/catalog-search.interface";
+import { communitiesCatalogService } from "@/services/locations/communitiesCatalogService";
 import { municipalitiesCatalogService } from "@/services/locations/municipalitiesCatalogService";
 import { provincesCatalogService } from "@/services/locations/provincesCatalogService";
+import type { CommunityCatalogItem } from "@/services/locations/types/community.types";
 import type { MunicipalityCatalogItem } from "@/services/locations/types/municipality.types";
 import type { ProvinceCatalogItem } from "@/services/locations/types/province.types";
 import { makeService } from "@/services/vehicles/makeService";
@@ -73,14 +75,36 @@ const mapModelToFacetItem = (
   make_name: make?.name,
 });
 
+const communityDisplayName = (community: CommunityCatalogItem): string =>
+  community.name?.trim() || community.noml_ccaa?.trim() || community.slug;
+
+const mapCommunityToFacetItem = (
+  community: CommunityCatalogItem,
+): HeroCatalogFacetItem => ({
+  id: community.id,
+  slug: community.slug,
+  name: communityDisplayName(community),
+  vehicle_count: 0,
+  image_url: community.image_url ?? null,
+  community_cod_ccaa: community.cod_ccaa,
+});
+
 const mapProvinceToFacetItem = (
   province: ProvinceCatalogItem,
+  community?: Pick<
+    HeroCatalogFacetItem,
+    "id" | "community_cod_ccaa" | "community_slug" | "community_name"
+  >,
 ): HeroCatalogFacetItem => ({
   id: province.id,
   slug: province.slug,
   name: province.name,
   vehicle_count: 0,
   image_url: province.image_url ?? null,
+  community_id: community?.id,
+  community_cod_ccaa: community?.community_cod_ccaa ?? province.cod_ccaa,
+  community_slug: community?.community_slug,
+  community_name: community?.community_name,
 });
 
 const mapMunicipalityToFacetItem = (
@@ -130,7 +154,51 @@ export const heroCatalogService = {
     return models.map((model) => mapModelToFacetItem(model, make));
   },
 
-  getProvinces: async (search?: string): Promise<HeroCatalogFacetItem[]> => {
+  getCommunities: async (search?: string): Promise<HeroCatalogFacetItem[]> => {
+    const communities = await fetchAllPages(async (page, limit) => {
+      const result = await communitiesCatalogService.findAll({
+        page,
+        limit,
+        search,
+        order_by: "name",
+        order_direction: "ASC",
+      });
+      return result ?? { data: [], total: 0 };
+    });
+    return communities.map(mapCommunityToFacetItem);
+  },
+
+  getProvinces: async (
+    search?: string,
+    cod_ccaa?: string,
+    community?: Pick<
+      HeroCatalogFacetItem,
+      "id" | "slug" | "name" | "community_cod_ccaa"
+    >,
+  ): Promise<HeroCatalogFacetItem[]> => {
+    const provinces = await fetchAllPages(async (page, limit) => {
+      const result = await provincesCatalogService.findAll({
+        page,
+        limit,
+        search,
+        cod_ccaa,
+        order_by: "name",
+        order_direction: "ASC",
+      });
+      return result ?? { data: [], total: 0 };
+    });
+    return provinces.map((province) =>
+      mapProvinceToFacetItem(province, {
+        community_id: community?.id,
+        community_cod_ccaa:
+          community?.community_cod_ccaa ?? province.cod_ccaa,
+        community_slug: community?.slug,
+        community_name: community?.name,
+      }),
+    );
+  },
+
+  searchProvinceCommunityCodes: async (search: string): Promise<string[]> => {
     const provinces = await fetchAllPages(async (page, limit) => {
       const result = await provincesCatalogService.findAll({
         page,
@@ -141,7 +209,9 @@ export const heroCatalogService = {
       });
       return result ?? { data: [], total: 0 };
     });
-    return provinces.map(mapProvinceToFacetItem);
+    return [
+      ...new Set(provinces.map((province) => province.cod_ccaa).filter(Boolean)),
+    ];
   },
 
   getMunicipalities: async (

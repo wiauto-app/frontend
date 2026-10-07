@@ -62,10 +62,7 @@ export const ExtraFiltersClient = ({
             <HeroFiltersLocationSelector
               navigateOnSelect
               onNavigate={handleNavigate}
-              placeholder="Selecciona provincia o municipio"
-              showQuickBadges={showProvinceBadges}
-              quickBadgeLimit={provinceBadgeLimit}
-              quickBadgeProvinces={provinceBadges}
+              placeholder="Selecciona ubicación"
             />
           </CardContent>
         </Card>

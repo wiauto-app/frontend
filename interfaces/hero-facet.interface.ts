@@ -20,6 +20,14 @@ export interface HeroCatalogFacetItem {
   make_name?: string;
   /** Asignado en el cliente cuando facet=municipalities (por provincia expandida) */
   province_id?: number;
+  /** Presente en facet=provinces (id CCAA en catálogo) */
+  community_id?: number;
+  /** Presente en facet=provinces (código INE CCAA) */
+  community_cod_ccaa?: string;
+  /** Presente en facet=provinces (slug CCAA para URL) */
+  community_slug?: string;
+  /** Presente en facet=provinces (nombre CCAA) */
+  community_name?: string;
 }
 
 export interface HeroCountResponse {

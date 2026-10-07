@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import type { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
 import { Button } from "@/components/ui/button";
@@ -15,380 +15,489 @@ import {
 } from "@/components/ui/popover";
 import { SearchInput } from "@/components/ui/searchInput";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { heroCatalogService } from "@/services/search/heroCatalogService";
-import type { LocationSelectedItem } from "@/components/selectors/FilterLocationSelector/interfaces/locationSelector.interface";
 import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
-import {
-  buildLocationUrlPayload,
-} from "@/components/selectors/FilterLocationSelector/utils/location-selection";
-import { ProvinceQuickBadges } from "@/components/selectors/ProvinceQuickBadges";
-import type { ProvinceQuickBadgeItem } from "@/components/selectors/utils/build-province-badges";
 import { buildHeroListingHref } from "@/lib/vehicles/listing-url";
+import {
+  buildHeroLocationTriggerLabel,
+  toHeroLocationPayload,
+} from "@/components/home/hero-location-selection";
 import { useOptionalHeroSearchFilters } from "./HeroSearchFiltersContext";
-import { VirtualizedCheckboxList } from "./VirtualizedCheckboxList";
-import { useFiltersManager } from "@/hooks/useFiltersManager";
-import { RADIUS_KEY } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
+import { WiautoImage } from "../ui/wiautoImage";
 
-const buildLocationTriggerLabel = (
-  selectedSlugs: string[],
-  provinces: HeroCatalogFacetItem[],
-  placeholder: string,
-): string => {
-  if (!selectedSlugs.length) {
-    return placeholder;
-  }
+const EMPTY_PROVINCE_COMMUNITY_CODES: readonly string[] = [];
 
-  const provinceBySlug = new Map(
-    provinces.map((province) => [province.slug, province.name]),
+interface LocationSnapshot {
+  communities: HeroCatalogFacetItem[];
+  provinces: HeroCatalogFacetItem[];
+}
+
+const RowSkeletons = ({ count }: { count: number }) => (
+  <div className="flex flex-col gap-2 p-1">
+    {Array.from({ length: count }).map((_, index) => (
+      <Skeleton
+        key={index}
+        className="h-8 w-full rounded-sm bg-muted-foreground/20"
+      />
+    ))}
+  </div>
+);
+
+interface CommunityProvincesProps {
+  community: HeroCatalogFacetItem;
+  search: string;
+  selectedCommunities: HeroCatalogFacetItem[];
+  selectedProvinces: HeroCatalogFacetItem[];
+  onToggleCommunity: (community: HeroCatalogFacetItem, checked: boolean) => void;
+  onToggleProvince: (province: HeroCatalogFacetItem, checked: boolean) => void;
+}
+
+const CommunityProvinces = ({
+  community,
+  search,
+  selectedCommunities,
+  selectedProvinces,
+  onToggleCommunity,
+  onToggleProvince,
+}: CommunityProvincesProps) => {
+  const cod = community.community_cod_ccaa ?? "";
+  const community_name_matches_search =
+    search.length > 0 &&
+    community.name.toLowerCase().includes(search.toLowerCase());
+  const province_search = community_name_matches_search
+    ? undefined
+    : search || undefined;
+
+  const { data: provinces = [], isLoading } = useQuery({
+    queryKey: [
+      "hero-catalog",
+      "provinces",
+      cod,
+      province_search,
+    ],
+    queryFn: () =>
+      heroCatalogService.getProvinces(
+        province_search,
+        cod || undefined,
+        community,
+      ),
+    enabled: Boolean(cod),
+  });
+
+  const is_community_selected = selectedCommunities.some(
+    (item) => item.id === community.id,
+  );
+  const selected_provinces_for_community = selectedProvinces.filter(
+    (province) => province.community_cod_ccaa === cod,
+  );
+  const is_all_provinces_selected =
+    is_community_selected && selected_provinces_for_community.length === 0;
+  const selected_province_ids = new Set(
+    selectedProvinces.map((province) => province.id),
   );
 
-  const names = selectedSlugs
-    .map((slug) => provinceBySlug.get(slug) ?? slug)
-    .filter(Boolean);
+  const handleAllProvincesChange = (checked: boolean) => {
+    if (checked) {
+      selected_provinces_for_community.forEach((province) =>
+        onToggleProvince(province, false),
+      );
+      onToggleCommunity(community, true);
+      return;
+    }
 
-  return names.length > 0 ? names.join(", ") : placeholder;
+    onToggleCommunity(community, false);
+  };
+
+  return (
+    <div className="flex flex-col gap-2 py-2 pl-8 pr-2">
+      <CustomCheckbox
+        checked={is_all_provinces_selected}
+        onChange={(event) => handleAllProvincesChange(event.target.checked)}
+        label={<p className="truncate font-medium">Todas las provincias</p>}
+      />
+      {isLoading && <RowSkeletons count={3} />}
+      {!isLoading && provinces.length === 0 && (
+        <p className="px-1 py-1 text-sm text-muted-foreground">
+          No hay provincias disponibles
+        </p>
+      )}
+      {!isLoading &&
+        provinces.map((province) => (
+          <CustomCheckbox
+            key={province.id}
+            checked={selected_province_ids.has(province.id)}
+            onChange={(event) =>
+              onToggleProvince(province, event.target.checked)
+            }
+            label={<p className="truncate">{province.name}</p>}
+          />
+        ))}
+    </div>
+  );
 };
 
+interface CommunityRowProps {
+  community: HeroCatalogFacetItem;
+  isOpen: boolean;
+  isSelected: boolean;
+  search: string;
+  selectedCommunities: HeroCatalogFacetItem[];
+  selectedProvinces: HeroCatalogFacetItem[];
+  onToggle: (community: HeroCatalogFacetItem) => void;
+  onToggleCommunity: (community: HeroCatalogFacetItem, checked: boolean) => void;
+  onToggleProvince: (province: HeroCatalogFacetItem, checked: boolean) => void;
+}
+
+const CommunityRow = ({
+  community,
+  isOpen,
+  isSelected,
+  search,
+  selectedCommunities,
+  selectedProvinces,
+  onToggle,
+  onToggleCommunity,
+  onToggleProvince,
+}: CommunityRowProps) => (
+  <div className="border-b last:border-b-0">
+    <button
+      type="button"
+      aria-expanded={isOpen}
+      onClick={() => onToggle(community)}
+      className={cn(
+        "flex w-full items-center justify-between gap-2 px-2 py-2 text-left text-sm transition-colors",
+        isOpen ? "bg-primary/5 text-primary" : "hover:bg-muted",
+      )}
+    >
+      <span className="flex min-w-0 items-center gap-2">
+        {community.image_url ? (
+          <WiautoImage
+            src={community.image_url}
+            alt=""
+            width={24}
+            height={24}
+            sizes="12px"
+            className="shrink-0 rounded-sm object-contain"
+            aria-hidden
+          />
+        ) : null}
+        <span className="truncate">{community.name}</span>
+        {isSelected ? (
+          <span
+            className="size-1.5 shrink-0 rounded-full bg-primary"
+            aria-hidden
+          />
+        ) : null}
+      </span>
+      <ChevronDown
+        className={cn(
+          "size-4 shrink-0 transition-transform",
+          isOpen ? "rotate-180 opacity-70" : "opacity-40",
+        )}
+        aria-hidden
+      />
+    </button>
+    {isOpen ? (
+      <CommunityProvinces
+        community={community}
+        search={search}
+        selectedCommunities={selectedCommunities}
+        selectedProvinces={selectedProvinces}
+        onToggleCommunity={onToggleCommunity}
+        onToggleProvince={onToggleProvince}
+      />
+    ) : null}
+  </div>
+);
+
 export interface HeroFiltersLocationSelectorProps {
-  /**
-   * Slugs de las provincias seleccionadas.
-   *
-   * Ejemplo:
-   * ["madrid", "barcelona"]
-   */
-  value?: string[];
-
-  /**
-   * Devuelve únicamente los slugs seleccionados.
-   */
-  onChange?: (slugs: string[]) => void;
-
   navigateOnSelect?: boolean;
-
   onNavigate?: (href: string) => void;
-
-  showQuickBadges?: boolean;
-  quickBadgeLimit?: number;
-  quickBadgeProvinces?: ProvinceQuickBadgeItem[];
   placeholder?: string;
+  onApplyLocationPayload?: (payload: LocationUrlPayload) => void;
 }
 
 export const HeroFiltersLocationSelector = ({
-  value = [],
-  onChange,
   navigateOnSelect = false,
   onNavigate,
-  showQuickBadges = false,
-  quickBadgeLimit = 7,
-  quickBadgeProvinces = [],
   placeholder = "Ubicación",
+  onApplyLocationPayload,
 }: HeroFiltersLocationSelectorProps) => {
   const router = useRouter();
-
   const hero_context = useOptionalHeroSearchFilters();
 
-  const { handleChange, values } = useFiltersManager({
-    keys: [RADIUS_KEY],
-  });
-
-  const radius = Number(values[RADIUS_KEY] ?? 0);
-
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [radiusValue, setRadiusValue] = useState(radius);
-
+  const [openCommunityId, setOpenCommunityId] = useState<number | null>(null);
+  const snapshotRef = useRef<LocationSnapshot | null>(null);
   const debounced_search = useDebouncedValue(search, 300);
-  const debounced_radius = useDebouncedValue(radiusValue, 500);
+  const trimmed_search = debounced_search.trim();
 
-  /**
-   * Mantener el slider sincronizado si el radius
-   * cambia desde otro lugar.
-   */
+  const context_communities = hero_context?.selectedCommunities ?? [];
+  const context_provinces = hero_context?.selectedProvinces ?? [];
+
+  const [draftCommunities, setDraftCommunities] = useState(context_communities);
+  const [draftProvinces, setDraftProvinces] = useState(context_provinces);
+
   useEffect(() => {
-    setRadiusValue(radius);
-  }, [radius]);
+    if (!open) {
+      setDraftCommunities(context_communities);
+      setDraftProvinces(context_provinces);
+    }
+  }, [context_communities, context_provinces, open]);
 
-  /**
-   * Actualizar el filtro únicamente después
-   * de que el usuario deje de mover el slider.
-   */
-  useEffect(() => {
-    handleChange(
-      RADIUS_KEY,
-      debounced_radius > 0
-        ? debounced_radius.toString()
-        : "",
-    );
-  }, [debounced_radius, handleChange]);
+  const { data: communities = [], isLoading: is_loading_communities } =
+    useQuery({
+      queryKey: ["hero-catalog", "communities", trimmed_search],
+      queryFn: () => heroCatalogService.getCommunities(trimmed_search || undefined),
+    });
 
-  /**
-   * Catálogo completo.
-   *
-   * Se utiliza para resolver los slugs seleccionados
-   * aunque la búsqueda actual esté filtrando provincias.
-   */
-  const {
-    data: allProvinces = [],
-    isLoading: isLoadingAllProvinces,
-  } = useQuery({
-    queryKey: ["hero-catalog", "provinces"],
-    queryFn: () => heroCatalogService.getProvinces(),
-    staleTime: 1000 * 60 * 10,
-  });
-
-  /**
-   * Provincias que se muestran en el selector.
-   */
-  const {
-    data: provinces = [],
-    isLoading: isLoadingProvinces,
-  } = useQuery({
-    queryKey: ["hero-catalog", "provinces", debounced_search],
+  const { data: province_match_community_codes } = useQuery({
+    queryKey: ["hero-catalog", "province-community-codes", trimmed_search],
     queryFn: () =>
-      heroCatalogService.getProvinces(
-        debounced_search.trim() || undefined,
-      ),
-    staleTime: 1000 * 60 * 5,
+      heroCatalogService.searchProvinceCommunityCodes(trimmed_search),
+    enabled: trimmed_search.length > 0,
   });
 
-  const isLoading =
-    isLoadingProvinces || isLoadingAllProvinces;
-
-  /**
-   * Los seleccionados son ÚNICAMENTE slugs.
-   *
-   * No guardamos objetos de provincia en el estado.
-   */
-  const selectedSlugs = useMemo(
-    () => new Set(value),
-    [value],
-  );
-
-  const handleApplyLocationPayload = useCallback(
-    (payload: LocationUrlPayload) => {
-      if (navigateOnSelect) {
-        const href = buildHeroListingHref(payload);
-
-        if (onNavigate) {
-          onNavigate(href);
-          return;
-        }
-
-        router.push(href);
-        return;
-      }
-
-      if (!hero_context) {
-        return;
-      }
-
-      hero_context.setLocationPayload(payload);
-    },
-    [
-      hero_context,
-      navigateOnSelect,
-      onNavigate,
-      router,
-    ],
-  );
-
-  const handleApplySelection = useCallback(
-    (nextSlugs: string[]) => {
-      /**
-       * El componente exterior SIEMPRE recibe slugs.
-       */
-      onChange?.(nextSlugs);
-
-      /**
-       * Para construir el payload necesitamos
-       * resolver los slugs a objetos.
-       */
-      const provinceBySlug = new Map(
-        allProvinces.map((province) => [
-          province.slug,
-          province,
-        ]),
-      );
-
-      const nextItems: LocationSelectedItem[] = nextSlugs
-        .map((slug) => provinceBySlug.get(slug))
-        .filter(
-          (
-            province,
-          ): province is HeroCatalogFacetItem =>
-            Boolean(province),
-        )
-        .map((province) => ({
-          value: true,
-          type: "province" as const,
-          slug: province.slug,
-          province_id: province.id,
-        }));
-
-      handleApplyLocationPayload(
-        buildLocationUrlPayload(nextItems),
-      );
-    },
-    [
-      allProvinces,
-      handleApplyLocationPayload,
-      onChange,
-    ],
-  );
-
-  const handleSelectProvince = useCallback(
-    (
-      checked: boolean,
-      province: HeroCatalogFacetItem,
-    ) => {
-      const nextSlugs = new Set(selectedSlugs);
-
-      if (checked) {
-        nextSlugs.add(province.slug);
-      } else {
-        nextSlugs.delete(province.slug);
-      }
-
-      handleApplySelection(
-        Array.from(nextSlugs).filter(Boolean),
-      );
-    },
-    [
-      handleApplySelection,
-      selectedSlugs,
-    ],
-  );
-
-  const trigger_label = useMemo(() => {
-    if (navigateOnSelect) {
-      return placeholder;
+  useEffect(() => {
+    if (!trimmed_search) {
+      return;
     }
 
-    return buildLocationTriggerLabel(
-      value,
-      allProvinces,
-      placeholder,
+    if (communities.length === 0) {
+      setOpenCommunityId(null);
+      return;
+    }
+
+    const matched_codes = new Set(
+      province_match_community_codes ?? EMPTY_PROVINCE_COMMUNITY_CODES,
     );
-  }, [
-    allProvinces,
-    navigateOnSelect,
-    placeholder,
-    value,
-  ]);
+    const first_match =
+      communities.find((community) =>
+        matched_codes.has(community.community_cod_ccaa ?? ""),
+      ) ?? communities[0];
+    setOpenCommunityId(first_match.id);
+  }, [communities, province_match_community_codes, trimmed_search]);
+
+  useEffect(() => {
+    if (!trimmed_search) {
+      setOpenCommunityId(null);
+    }
+  }, [trimmed_search]);
+
+  const selected_community_ids = useMemo(
+    () => new Set(draftCommunities.map((community) => community.id)),
+    [draftCommunities],
+  );
+
+  const trigger_label = useMemo(
+    () =>
+      buildHeroLocationTriggerLabel(
+        draftCommunities,
+        draftProvinces,
+        placeholder,
+      ),
+    [draftCommunities, draftProvinces, placeholder],
+  );
+
+  const handleToggleCommunity = (
+    community: HeroCatalogFacetItem,
+    checked: boolean,
+  ) => {
+    const cod = community.community_cod_ccaa;
+    if (checked) {
+      setDraftCommunities((prev) => {
+        if (prev.some((item) => item.id === community.id)) {
+          return prev;
+        }
+        return [...prev, community];
+      });
+      return;
+    }
+
+    setDraftCommunities((prev) =>
+      prev.filter((item) => item.id !== community.id),
+    );
+    if (cod) {
+      setDraftProvinces((prev) =>
+        prev.filter((province) => province.community_cod_ccaa !== cod),
+      );
+    }
+  };
+
+  const handleToggleProvince = (
+    province: HeroCatalogFacetItem,
+    checked: boolean,
+  ) => {
+    if (!checked) {
+      setDraftProvinces((prev) =>
+        prev.filter((item) => item.id !== province.id),
+      );
+      return;
+    }
+
+    setDraftProvinces((prev) => {
+      if (prev.some((item) => item.id === province.id)) {
+        return prev;
+      }
+      return [...prev, province];
+    });
+
+    const community_id = province.community_id;
+    const cod = province.community_cod_ccaa;
+    const slug = province.community_slug;
+    const name = province.community_name;
+    if (!community_id || !cod || !slug || !name) {
+      return;
+    }
+
+    setDraftCommunities((prev) => {
+      if (prev.some((item) => item.id === community_id)) {
+        return prev;
+      }
+      return [
+        ...prev,
+        {
+          id: community_id,
+          slug,
+          name,
+          vehicle_count: 0,
+          community_cod_ccaa: cod,
+        },
+      ];
+    });
+  };
+
+  const handleToggleRow = (community: HeroCatalogFacetItem) => {
+    setOpenCommunityId((current) =>
+      current === community.id ? null : community.id,
+    );
+  };
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      snapshotRef.current = {
+        communities: [...draftCommunities],
+        provinces: [...draftProvinces],
+      };
+    }
+    setOpen(nextOpen);
+  };
+
+  const handleCancel = () => {
+    const snapshot = snapshotRef.current;
+    if (snapshot) {
+      setDraftCommunities(snapshot.communities);
+      setDraftProvinces(snapshot.provinces);
+    }
+    setOpen(false);
+    setSearch("");
+  };
+
+  const commitSelection = (
+    communities: HeroCatalogFacetItem[],
+    provinces: HeroCatalogFacetItem[],
+  ) => {
+    const payload = toHeroLocationPayload(communities, provinces);
+
+    if (navigateOnSelect) {
+      const href = buildHeroListingHref(payload);
+      if (onNavigate) {
+        onNavigate(href);
+      } else {
+        router.push(href);
+      }
+      return;
+    }
+
+    if (onApplyLocationPayload) {
+      onApplyLocationPayload(payload);
+      hero_context?.replaceLocationSelection(communities, provinces);
+      return;
+    }
+
+    hero_context?.replaceLocationSelection(communities, provinces);
+  };
+
+  const handleApply = () => {
+    commitSelection(draftCommunities, draftProvinces);
+    setOpen(false);
+    setSearch("");
+  };
+
+  const is_community_marked = (community: HeroCatalogFacetItem): boolean => {
+    const cod = community.community_cod_ccaa;
+    const has_community = selected_community_ids.has(community.id);
+    const has_provinces =
+      cod &&
+      draftProvinces.some((province) => province.community_cod_ccaa === cod);
+    return has_community || Boolean(has_provinces);
+  };
 
   return (
-    <div className="flex flex-col">
-      <Popover>
-        <PopoverTrigger
-          render={
-            <Button
-              variant="outline"
-              className="w-full justify-start text-base"
-              aria-label="Seleccionar ubicación"
-            >
-              <div className="flex w-full items-center justify-between text-sm">
-                <span className="truncate">
-                  {trigger_label}
-                </span>
-
-                <ChevronDown className="size-4 shrink-0 opacity-50" />
-              </div>
-            </Button>
-          }
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            className="w-full justify-start text-base"
+            aria-label="Seleccionar ubicación"
+          >
+            <div className="flex w-full items-center justify-between text-sm">
+              <span className="truncate">{trigger_label}</span>
+              <ChevronDown className="size-4 shrink-0 opacity-50" />
+            </div>
+          </Button>
+        }
+      />
+      <PopoverContent
+        align="start"
+        side="bottom"
+        className="flex w-full flex-col gap-2 md:w-72"
+      >
+        <SearchInput
+          placeholder="Buscar comunidad o provincia"
+          value={search}
+          onChange={setSearch}
+          onClear={() => setSearch("")}
+          aria-label="Buscar comunidad o provincia"
         />
 
-        <PopoverContent
-          align="start"
-          className="flex w-full flex-col gap-3 md:w-72"
-        >
-          <SearchInput
-            placeholder="Buscar provincia"
-            value={search}
-            onChange={setSearch}
-            onClear={() => setSearch("")}
-            aria-label="Buscar provincia"
-          />
-
-          {isLoading ? (
-            <div className="flex max-h-96 flex-col gap-2 overflow-y-auto">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Skeleton
-                  key={index}
-                  className="h-8 w-full rounded-sm bg-muted-foreground/20"
-                />
-              ))}
-            </div>
-          ) : null}
-
-          {!isLoading && provinces.length === 0 ? (
-            <p className="px-1 py-2 text-sm text-muted-foreground">
-              No hay provincias disponibles
+        <div className="max-h-44 overflow-y-auto" role="list">
+          {is_loading_communities && <RowSkeletons count={5} />}
+          {!is_loading_communities && communities.length === 0 && (
+            <p className="px-2 py-2 text-sm text-muted-foreground">
+              No hay comunidades disponibles
             </p>
-          ) : null}
+          )}
+          {!is_loading_communities &&
+            communities.map((community) => (
+              <CommunityRow
+                key={community.id}
+                community={community}
+                isOpen={openCommunityId === community.id}
+                isSelected={is_community_marked(community)}
+                search={trimmed_search}
+                selectedCommunities={draftCommunities}
+                selectedProvinces={draftProvinces}
+                onToggle={handleToggleRow}
+                onToggleCommunity={handleToggleCommunity}
+                onToggleProvince={handleToggleProvince}
+              />
+            ))}
+        </div>
 
-          {!isLoading && provinces.length > 0 ? (
-            <VirtualizedCheckboxList
-              items={provinces}
-              getItemKey={(province) => province.slug}
-              className="max-h-40 overflow-y-auto"
-              renderItem={(province) => (
-                <CustomCheckbox
-                  checked={selectedSlugs.has(
-                    province.slug,
-                  )}
-                  onChange={(event) => {
-                    handleSelectProvince(
-                      event.target.checked,
-                      province,
-                    );
-                  }}
-                  label={
-                    <p className="truncate font-medium">
-                      {province.name}
-                    </p>
-                  }
-                />
-              )}
-            />
-          ) : null}
-
-          <div className="flex flex-col gap-2 border-t pt-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">
-                Radio de búsqueda
-              </span>
-
-              <span className="font-medium">
-                {radiusValue > 0
-                  ? `${radiusValue} km`
-                  : "Sin límite"}
-              </span>
-            </div>
-
-            {/* <Slider
-              min={0}
-              max={100}
-              step={1}
-              value={[radiusValue]}
-              onValueChange={(value) => {
-                setRadiusValue(value[0] ?? 0);
-              }}
-            />
-
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Sin límite</span>
-              <span>100 km</span>
-            </div> */}
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      {showQuickBadges ? (
-        <ProvinceQuickBadges
-          provinces={quickBadgeProvinces}
-          limit={quickBadgeLimit}
-        />
-      ) : null}
-    </div>
+        <div className="flex items-center justify-end gap-2">
+          <Button onClick={handleCancel} variant="outline" size="sm">
+            Cancelar
+          </Button>
+          <Button onClick={handleApply} variant="default" size="sm">
+            Aplicar
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };

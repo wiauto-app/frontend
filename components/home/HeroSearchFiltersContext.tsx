@@ -20,6 +20,7 @@ import {
   CONDITION_VEHICLE,
   type ConditionVehicle,
 } from "@/interfaces/vehicle.interface";
+import { toHeroLocationPayload } from "@/components/home/hero-location-selection";
 import {
   buildHeroListingHref,
   type HeroListingSearchState,
@@ -29,6 +30,8 @@ interface HeroSearchFiltersContextValue {
   makeModelPayload: MakeModelUrlPayload;
   selectedMakes: HeroCatalogFacetItem[];
   selectedModels: HeroCatalogFacetItem[];
+  selectedCommunities: HeroCatalogFacetItem[];
+  selectedProvinces: HeroCatalogFacetItem[];
   locationPayload: LocationUrlPayload;
   untilPrice?: number;
   condition: ConditionVehicle;
@@ -40,7 +43,18 @@ interface HeroSearchFiltersContextValue {
     makes: HeroCatalogFacetItem[],
     models: HeroCatalogFacetItem[],
   ) => void;
-  setLocationPayload: (payload: LocationUrlPayload) => void;
+  handleToggleCommunity: (
+    community: HeroCatalogFacetItem,
+    checked: boolean,
+  ) => void;
+  handleToggleProvince: (
+    province: HeroCatalogFacetItem,
+    checked: boolean,
+  ) => void;
+  replaceLocationSelection: (
+    communities: HeroCatalogFacetItem[],
+    provinces: HeroCatalogFacetItem[],
+  ) => void;
   setUntilPrice: (until_price?: number) => void;
   /** Cascada facet desactivada en UI (hero usa catálogo Postgres). Se mantiene por compatibilidad. */
   facetQueryParams: HeroFacetCascadeFilters;
@@ -87,9 +101,12 @@ export const HeroSearchFiltersProvider = ({
   const [selectedModels, setSelectedModels] = useState<HeroCatalogFacetItem[]>(
     [],
   );
-  const [locationPayload, setLocationPayload] = useState<LocationUrlPayload>(
-    {},
-  );
+  const [selectedCommunities, setSelectedCommunities] = useState<
+    HeroCatalogFacetItem[]
+  >([]);
+  const [selectedProvinces, setSelectedProvinces] = useState<
+    HeroCatalogFacetItem[]
+  >([]);
   const [untilPrice, setUntilPrice] = useState<number | undefined>();
   const [condition, setCondition] = useState<ConditionVehicle>(
     CONDITION_VEHICLE.USED,
@@ -174,6 +191,90 @@ export const HeroSearchFiltersProvider = ({
     [],
   );
 
+  const handleToggleCommunity = useCallback(
+    (community: HeroCatalogFacetItem, checked: boolean) => {
+      const cod = community.community_cod_ccaa;
+      if (checked) {
+        setSelectedCommunities((prev) => {
+          if (prev.some((item) => item.id === community.id)) {
+            return prev;
+          }
+          return [...prev, community];
+        });
+        return;
+      }
+
+      setSelectedCommunities((prev) =>
+        prev.filter((item) => item.id !== community.id),
+      );
+      if (cod) {
+        setSelectedProvinces((prev) =>
+          prev.filter((province) => province.community_cod_ccaa !== cod),
+        );
+      }
+    },
+    [],
+  );
+
+  const handleToggleProvince = useCallback(
+    (province: HeroCatalogFacetItem, checked: boolean) => {
+      if (!checked) {
+        setSelectedProvinces((prev) =>
+          prev.filter((item) => item.id !== province.id),
+        );
+        return;
+      }
+
+      setSelectedProvinces((prev) => {
+        if (prev.some((item) => item.id === province.id)) {
+          return prev;
+        }
+        return [...prev, province];
+      });
+
+      const community_id = province.community_id;
+      const cod = province.community_cod_ccaa;
+      const slug = province.community_slug;
+      const name = province.community_name;
+      if (!community_id || !cod || !slug || !name) {
+        return;
+      }
+
+      setSelectedCommunities((prev) => {
+        if (prev.some((item) => item.id === community_id)) {
+          return prev;
+        }
+        return [
+          ...prev,
+          {
+            id: community_id,
+            slug,
+            name,
+            vehicle_count: 0,
+            community_cod_ccaa: cod,
+          },
+        ];
+      });
+    },
+    [],
+  );
+
+  const replaceLocationSelection = useCallback(
+    (
+      communities: HeroCatalogFacetItem[],
+      provinces: HeroCatalogFacetItem[],
+    ) => {
+      setSelectedCommunities(communities);
+      setSelectedProvinces(provinces);
+    },
+    [],
+  );
+
+  const locationPayload = useMemo(
+    () => toHeroLocationPayload(selectedCommunities, selectedProvinces),
+    [selectedCommunities, selectedProvinces],
+  );
+
   const facetQueryParams = useMemo(
     () => toFacetQueryParams(makeModelPayload, locationPayload, untilPrice),
     [locationPayload, makeModelPayload, untilPrice],
@@ -194,6 +295,8 @@ export const HeroSearchFiltersProvider = ({
       makeModelPayload,
       selectedMakes,
       selectedModels,
+      selectedCommunities,
+      selectedProvinces,
       locationPayload,
       untilPrice,
       condition,
@@ -201,7 +304,9 @@ export const HeroSearchFiltersProvider = ({
       handleToggleMake,
       handleToggleModel,
       replaceMakeModelSelection,
-      setLocationPayload,
+      handleToggleCommunity,
+      handleToggleProvince,
+      replaceLocationSelection,
       setUntilPrice,
       facetQueryParams,
       buildListingHref,
@@ -210,12 +315,17 @@ export const HeroSearchFiltersProvider = ({
       makeModelPayload,
       selectedMakes,
       selectedModels,
+      selectedCommunities,
+      selectedProvinces,
       locationPayload,
       untilPrice,
       condition,
       handleToggleMake,
       handleToggleModel,
       replaceMakeModelSelection,
+      handleToggleCommunity,
+      handleToggleProvince,
+      replaceLocationSelection,
       facetQueryParams,
       buildListingHref,
     ],

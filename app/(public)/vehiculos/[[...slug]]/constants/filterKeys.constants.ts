@@ -2,6 +2,7 @@ export const MAKE_KEY = "marcas"
 export const MODEL_KEY = "modelos"
 
 export const PROVINCE_KEY = "provincias"
+export const COMMUNITY_KEY = "comunidades"
 export const RADIUS_KEY = "radio"
 export const VEHICLE_TYPE_KEY = "tipo"
 export const MUNICIPALITY_KEY = "municipios"

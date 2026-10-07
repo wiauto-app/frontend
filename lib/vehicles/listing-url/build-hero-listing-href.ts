@@ -1,4 +1,5 @@
 import {
+  COMMUNITY_KEY,
   CONDITION_KEY,
   MAKE_KEY,
   MODEL_KEY,
@@ -30,6 +31,9 @@ export const buildHeroListingHref = (state: HeroListingSearchState): string => {
   }
   if (state[MODEL_KEY]?.length) {
     record[MODEL_KEY] = state[MODEL_KEY];
+  }
+  if (state[COMMUNITY_KEY]?.length) {
+    record[COMMUNITY_KEY] = state[COMMUNITY_KEY];
   }
   if (state[PROVINCE_KEY]?.length) {
     record[PROVINCE_KEY] = state[PROVINCE_KEY];

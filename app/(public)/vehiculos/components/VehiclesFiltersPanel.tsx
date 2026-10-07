@@ -33,6 +33,7 @@ import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
   MAKE_KEY,
   MODEL_KEY,
+  COMMUNITY_KEY,
   PROVINCE_KEY,
   PUBLISHER_TYPE_KEY,
   VEHICLE_TYPE_KEY,
@@ -57,6 +58,7 @@ import { HeroFiltersMakeSelector } from "@/components/home/HeroFiltersMakeSelect
 import { HeroFiltersLocationSelector } from "@/components/home/HeroFiltersLocationSelector";
 import { useHeroSearchFilters } from "@/components/home/HeroSearchFiltersContext";
 import type { MakeModelUrlPayload } from "@/components/selectors/FilterMakeSelector/utils/make-model-selection";
+import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
 
 interface VehiclesFiltersPanelProps {
   catalog: FiltersResponse;
@@ -67,23 +69,41 @@ const mapActiveItemToFacet = (item: {
   slug: string;
   name: string;
   make_id?: number;
+  code?: string;
 }): HeroCatalogFacetItem => ({
   id: Number(item.id),
   slug: item.slug,
   name: item.name,
   vehicle_count: 0,
   make_id: item.make_id,
+  community_cod_ccaa: item.code,
+});
+
+const mapActiveProvinceToFacet = (province: {
+  id: number;
+  slug: string;
+  name: string;
+  cod_ccaa: string;
+  image_url?: string | null;
+}): HeroCatalogFacetItem => ({
+  id: province.id,
+  slug: province.slug,
+  name: province.name,
+  vehicle_count: 0,
+  community_cod_ccaa: province.cod_ccaa,
+  image_url: province.image_url ?? null,
 });
 
 export const VehiclesFiltersPanel = ({
   catalog,
 }: VehiclesFiltersPanelProps) => {
   const { filters, commitFilters } = useVehiclesListingFilters();
-  const { replaceMakeModelSelection } = useHeroSearchFilters();
+  const { replaceMakeModelSelection, replaceLocationSelection } =
+    useHeroSearchFilters();
   const { activeFilters } = useActiveFiltersStore();
   const { values, handleMultiChange, handleChange } = useFiltersManager({
-    keys: [PUBLISHER_TYPE_KEY, PROVINCE_KEY, VEHICLE_TYPE_KEY],
-    multiValueKeys: [PUBLISHER_TYPE_KEY, PROVINCE_KEY],
+    keys: [PUBLISHER_TYPE_KEY, COMMUNITY_KEY, PROVINCE_KEY, VEHICLE_TYPE_KEY],
+    multiValueKeys: [PUBLISHER_TYPE_KEY, COMMUNITY_KEY, PROVINCE_KEY],
   });
   const provinces = values[PROVINCE_KEY] as string[] | undefined;
   const publisher_types = (values[PUBLISHER_TYPE_KEY] ??
@@ -126,6 +146,8 @@ export const VehiclesFiltersPanel = ({
 
   const make_slugs_key = (filters.makes_slugs ?? []).join(",");
   const model_slugs_key = (filters.models_slugs ?? []).join(",");
+  const community_slugs_key = (filters.comunities_slugs ?? []).join(",");
+  const province_slugs_key = (filters.provinces_slugs ?? []).join(",");
 
   // Hidrata el selector hero desde la URL / filtros activos del listado.
   useEffect(() => {
@@ -172,6 +194,49 @@ export const VehiclesFiltersPanel = ({
     make_slugs_key,
     model_slugs_key,
     replaceMakeModelSelection,
+  ]);
+
+  useEffect(() => {
+    const community_slugs = filters.comunities_slugs ?? [];
+    const province_slugs = filters.provinces_slugs ?? [];
+
+    if (community_slugs.length === 0 && province_slugs.length === 0) {
+      replaceLocationSelection([], []);
+      return;
+    }
+
+    const resolved_communities = activeFilters?.resolved.communities ?? [];
+    const resolved_provinces = activeFilters?.resolved.provinces ?? [];
+
+    const communities: HeroCatalogFacetItem[] =
+      resolved_communities.length > 0
+        ? resolved_communities.map(mapActiveItemToFacet)
+        : community_slugs.map((slug, index) => ({
+            id: -(index + 1),
+            slug,
+            name: slug,
+            vehicle_count: 0,
+          }));
+
+    const provinces: HeroCatalogFacetItem[] =
+      resolved_provinces.length > 0
+        ? resolved_provinces.map(mapActiveProvinceToFacet)
+        : province_slugs.map((slug, index) => ({
+            id: -(index + 2000),
+            slug,
+            name: slug,
+            vehicle_count: 0,
+          }));
+
+    replaceLocationSelection(communities, provinces);
+  }, [
+    activeFilters?.resolved.communities,
+    activeFilters?.resolved.provinces,
+    community_slugs_key,
+    filters.comunities_slugs,
+    filters.provinces_slugs,
+    province_slugs_key,
+    replaceLocationSelection,
   ]);
 
   const handlePriceChange = (next: PriceFilterValue) => {
@@ -254,12 +319,9 @@ export const VehiclesFiltersPanel = ({
         Icon={<HiOutlineMapPin size={iconSize} />}
       >
         <HeroFiltersLocationSelector
-          value={typeof provinces === "string" ? [provinces] : provinces}
-          onChange={(next) => {
-            handleMultiChange(
-              PROVINCE_KEY,
-              typeof next === "string" ? [next] : next,
-            );
+          onApplyLocationPayload={(payload: LocationUrlPayload) => {
+            handleMultiChange(COMMUNITY_KEY, payload.comunidades ?? []);
+            handleMultiChange(PROVINCE_KEY, payload.provincias ?? []);
           }}
         />
       </FilterItem>

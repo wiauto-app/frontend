@@ -174,8 +174,6 @@ const HeroFiltersSearchForm = () => {
   // const is_count_loading = isPending || isFetching;
   // const search_label = buildSearchButtonLabel(count, is_count_loading);
 
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-
   const handleSearch = () => {
     router.push(buildListingHref());
   };
@@ -190,10 +188,7 @@ const HeroFiltersSearchForm = () => {
     >
       <HeroFiltersMakeSelector />
       {/* <HeroFiltersModelSelector /> */}
-      <HeroFiltersLocationSelector
-        value={selectedItems}
-        onChange={setSelectedItems}
-      />
+      <HeroFiltersLocationSelector />
       <PriceUntilSelector />
       <Button type="submit" aria-label={SEARCH_BUTTON_LABEL}>
         <Search className="size-4" />

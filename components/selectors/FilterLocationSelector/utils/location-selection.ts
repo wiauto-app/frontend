@@ -1,4 +1,5 @@
 import {
+  COMMUNITY_KEY,
   MUNICIPALITY_KEY,
   PROVINCE_KEY,
 } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
@@ -93,6 +94,7 @@ export const normalizeSelectedItemsForProvince = (
 };
 
 export type LocationUrlPayload = {
+  [COMMUNITY_KEY]?: string[];
   [PROVINCE_KEY]?: string[];
   [MUNICIPALITY_KEY]?: string[];
 };

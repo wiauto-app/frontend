@@ -4,9 +4,14 @@ import type { PaginatedResult, PaginationParams } from "@/types/general.types";
 import { V1_PROVINCES } from "./route.constants";
 import type { ProvinceCatalogItem } from "./types/province.types";
 
+export interface FindProvincesParams extends PaginationParams {
+  search?: string;
+  cod_ccaa?: string;
+}
+
 export const provincesCatalogService = {
   findAll: async (
-    params?: PaginationParams,
+    params?: FindProvincesParams,
   ): Promise<PaginatedResult<ProvinceCatalogItem>> => {
     const merged = {
       page: params?.page ?? 1,
@@ -14,6 +19,7 @@ export const provincesCatalogService = {
       order_by: params?.order_by,
       order_direction: params?.order_direction,
       search: params?.search,
+      cod_ccaa: params?.cod_ccaa,
     };
     const query_string = objectToQueryString(merged);
     const response = await apiGet<PaginatedResult<ProvinceCatalogItem>>(
