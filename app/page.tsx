@@ -18,6 +18,7 @@ import { getHomeData } from "@/components/home/services/homeService";
 import { MobileStoreButtonsMotion } from "@/components/home/MobileStoreButtonsMotion";
 import { TopDealerships } from "@/components/home/topDealerships";
 import { VehicleExtraServices } from "@/components/home/vehicleExtraServices";
+import { ExtraServicesCards } from "@/components/home/extraServicesCards";
 import { VehiclesSuggestions } from "@/components/home/vehiclesSuggestions";
 import { Zones } from "@/components/home/zones";
 import {
@@ -66,10 +67,7 @@ export default async function Home() {
         <Suspense fallback={<VehiclesSuggestionsSkeleton />}>
           <VehiclesSuggestions />
         </Suspense>
-        <VehicleExtraServices
-          variant="secondary"
-          className=" rounded-xl lg:grid-cols-4"
-        />
+        <ExtraServicesCards data={home_data.servicios_extra} />
         <Suspense fallback={<ZonesSkeleton />}>
           <Zones />
         </Suspense>

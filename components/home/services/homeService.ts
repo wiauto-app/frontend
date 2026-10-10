@@ -59,6 +59,12 @@ const HOME_POPULATE_QUERY = {
         boton: true,
       },
     },
+    servicios_extra: {
+      populate: {
+        imagen: true,
+        boton: true,
+      },
+    },
     bajas_emisiones: {
       populate: {
         header: true,

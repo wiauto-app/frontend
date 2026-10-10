@@ -2,10 +2,7 @@
 
 import { cn } from "@/lib/utils";
 
-import {
-  EXTRA_SERVICES_DATA,
-  EXTRA_SERVICES_DATA_2,
-} from "./constants/extraServices.constants";
+import { EXTRA_SERVICES_DATA } from "./constants/extraServices.constants";
 import { MotionSection, MotionHoverCard } from "./motion";
 import {
   staggerContainerExpressive,
@@ -14,16 +11,13 @@ import {
 import { ServiceHomeItem } from "./serviceHomeItem";
 
 interface VehicleExtraServicesProps {
-  variant?: "primary" | "secondary";
   className?: string;
 }
 
 export const VehicleExtraServices = ({
-  variant = "primary",
   className,
 }: VehicleExtraServicesProps) => {
-  const data =
-    variant === "secondary" ? EXTRA_SERVICES_DATA_2 : EXTRA_SERVICES_DATA;
+  const data = EXTRA_SERVICES_DATA;
 
   return (
     <MotionSection

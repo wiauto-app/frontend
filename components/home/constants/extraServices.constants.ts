@@ -1,5 +1,5 @@
 
-import { Brain, Car, Check, CreditCard, Landmark, Shield, Star, User } from "lucide-react";
+import { Brain, Car, Landmark, Shield, Star } from "lucide-react";
 import type { VehicleExtraServiceItem } from "../types/vehicle-extra-service.types";
 
 export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
@@ -40,30 +40,3 @@ export const EXTRA_SERVICES_DATA: VehicleExtraServiceItem[] = [
   },
 ];
 
-
-export const EXTRA_SERVICES_DATA_2: VehicleExtraServiceItem[] = [
-  {
-    name: "Anuncios verificados",
-    icon: Check,
-    href: "/vehiculos",
-    description: "Compra con confianza.",
-  },
-  {
-    name: "Vender tu coche",
-    icon: Car,
-    href: "/vender-vehiculo",
-    description: "Publica tu anuncio gratis.",
-  },
-  {
-    name: "Financiación",
-    icon: CreditCard,
-    href: "/financiacion",
-    description: "Encuentra la mejor opción de financiación.",
-  },
-  {
-    name: "Atención personalizada",
-    icon: User,
-    href: "/soporte",
-    description: "Te ayudaremos a encontrar el coche ideal.",
-  },
-];

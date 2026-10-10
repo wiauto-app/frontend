@@ -24,4 +24,6 @@ export interface StrapiHomepageResponse {
   processSection: StrapiProcessSection ;
   bajas_emisiones: StrapiLowEmisions ;
   promocion_planes: StrapiHero ;
+  /** Tarjetas de servicios extra del home (`shared.carta-ventaja`, repetible). */
+  servicios_extra: StrapiCard[] | null;
 }
