@@ -99,6 +99,7 @@ export default async function VehiclesListingPage(props: {
             isMapVisible={isMapVisible}
             titleNode={<FiltersTitle title={activeFilters.title} />}
             activeFiltersNode={<ActiveFilters activeFilters={activeFilters} />}
+            recordSearch
           />
         </div>
       </DirectionalTransition>

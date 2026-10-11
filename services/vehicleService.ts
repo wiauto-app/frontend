@@ -63,13 +63,35 @@ export type SimilarVehiclesPaginatedResponse = PaginatedResponse<VehicleListItem
   };
 };
 
+/** Header que activa el registro en el historial de búsquedas (solo con sesión). */
+export const RECORD_SEARCH_HEADER = "x-record-search";
+
+export interface FindAllVehiclesOptions {
+  /** Envía `x-record-search: 1`. Usar solo desde el listado principal `/vehiculos`. */
+  recordSearch?: boolean;
+}
+
 export const vehicleService = {
 
   vehicles: {
-    findAll: (params?: FindAllVehiclesParams): Promise<ApiResponse<PaginatedResponse<VehicleListItem>>> => {
+    findAll: (
+      params?: FindAllVehiclesParams,
+      options?: FindAllVehiclesOptions,
+    ): Promise<ApiResponse<PaginatedResponse<VehicleListItem>>> => {
       const query = buildVehiclesQueryString(params);
       // Sin revalidate: con sesión el backend excluye descartes del usuario;
       // no debe reutilizar cache compartida anónima.
+      if (options?.recordSearch) {
+        // Opt-in: solo el listado principal registra la búsqueda en el historial.
+        return fetchWithAuth<PaginatedResponse<VehicleListItem>>(
+          `/v1/vehicles${query}`,
+          {
+            method: "GET",
+            cache: "no-store",
+            headers: { [RECORD_SEARCH_HEADER]: "1" },
+          },
+        );
+      }
       return apiGet<PaginatedResponse<VehicleListItem>>(`/v1/vehicles${query}`);
     },
     findSimilar: (

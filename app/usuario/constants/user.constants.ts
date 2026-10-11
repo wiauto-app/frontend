@@ -18,6 +18,7 @@ import {
   Users,
   Building2,
   EyeOff,
+  History,
 } from "lucide-react";
 import type { DealershipMembership } from "@/services/dealerships/types/team.types";
 
@@ -38,6 +39,11 @@ export const USER_SIDEBAR_LINKS: UserSidebarLink[] = [
     href: `${basePath}/busquedas-guardadas`,
     label: "Búsquedas guardadas",
     icon: Search,
+  },
+  {
+    href: `${basePath}/busquedas-recientes`,
+    label: "Búsquedas recientes",
+    icon: History,
   },
   { href: `${basePath}/mensajes`, label: "Mensajes (chat)", icon: MessageSquare },
   {

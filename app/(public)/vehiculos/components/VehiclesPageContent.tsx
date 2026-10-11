@@ -101,6 +101,8 @@ export interface VehiclesPageContentProps {
   titleNode?: ReactNode;
   activeFiltersNode?: ReactNode;
   showMapButton?: boolean;
+  /** Registra la búsqueda en el historial (solo listado principal `/vehiculos`). */
+  recordSearch?: boolean;
 }
 
 export const VehiclesPageContent = ({
@@ -110,6 +112,7 @@ export const VehiclesPageContent = ({
   titleNode,
   activeFiltersNode,
   showMapButton = true,
+  recordSearch = false,
 }: VehiclesPageContentProps) => {
   const { resetFilters, goToPage, filters } = useVehiclesListingFilters();
   const {
@@ -119,6 +122,7 @@ export const VehiclesPageContent = ({
   } = useAuthenticatedVehiclesListing({
     initialVehicles: vehicles,
     initialTotal: total,
+    recordSearch,
   });
 
   const { handleChange } = useFiltersManager({

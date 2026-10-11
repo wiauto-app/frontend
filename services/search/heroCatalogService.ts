@@ -93,8 +93,8 @@ const mapProvinceToFacetItem = (
   province: ProvinceCatalogItem,
   community?: Pick<
     HeroCatalogFacetItem,
-    "id" | "community_cod_ccaa" | "community_slug" | "community_name"
-  >,
+    "community_cod_ccaa" | "community_slug" | "community_name"
+  > & { id?: number },
 ): HeroCatalogFacetItem => ({
   id: province.id,
   slug: province.slug,
@@ -189,7 +189,7 @@ export const heroCatalogService = {
     });
     return provinces.map((province) =>
       mapProvinceToFacetItem(province, {
-        id: province.id,
+        id: community?.id,
         community_cod_ccaa:
           community?.community_cod_ccaa ?? province.cod_ccaa,
         community_slug: community?.slug,

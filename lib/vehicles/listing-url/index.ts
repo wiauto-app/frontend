@@ -38,6 +38,7 @@ export { normalizeVehicleListingHref } from "./normalize-listing-url";
 export { isIndexableListingPathname } from "./indexable-listing-url";
 
 export { parseVehicleListingUrl } from "./parse-listing-url";
+export { buildListingHrefFromApiQuery } from "./build-listing-href-from-api-query";
 export { heroFiltersToListingParams } from "./hero-to-listing-params";
 export type { HeroListingFilters } from "./hero-to-listing-params";
 export {

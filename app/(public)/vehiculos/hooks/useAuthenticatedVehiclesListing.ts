@@ -13,6 +13,11 @@ import { useVehiclesListingFilters } from "./useVehiclesListingFilters";
 interface UseAuthenticatedVehiclesListingParams {
   initialVehicles: VehicleListItem[];
   initialTotal: number;
+  /**
+   * Registra la búsqueda en el historial del usuario (`x-record-search: 1`).
+   * Solo el listado principal `/vehiculos`; nunca escaparates de concesionario.
+   */
+  recordSearch?: boolean;
 }
 
 interface UseAuthenticatedVehiclesListingResult {
@@ -32,6 +37,7 @@ interface UseAuthenticatedVehiclesListingResult {
 export const useAuthenticatedVehiclesListing = ({
   initialVehicles,
   initialTotal,
+  recordSearch = false,
 }: UseAuthenticatedVehiclesListingParams): UseAuthenticatedVehiclesListingResult => {
   const { isAuthenticated, isLoading: isAuthLoading } = useUser();
   const { filters } = useVehiclesListingFilters();
@@ -61,7 +67,9 @@ export const useAuthenticatedVehiclesListing = ({
     const refresh = async () => {
       setIsRefreshing(true);
       try {
-        const response = await vehicleService.vehicles.findAll(filters);
+        const response = await vehicleService.vehicles.findAll(filters, {
+          recordSearch,
+        });
         if (cancelled || !response.ok || !response.data) {
           return;
         }
@@ -80,7 +88,7 @@ export const useAuthenticatedVehiclesListing = ({
     return () => {
       cancelled = true;
     };
-  }, [filters, isAuthenticated, isAuthLoading, filtersQueryKey]);
+  }, [filters, isAuthenticated, isAuthLoading, filtersQueryKey, recordSearch]);
 
   const handleDismissed = useCallback((vehicleId: string) => {
     setVehicles((current) => {
