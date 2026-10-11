@@ -14,6 +14,7 @@ import {
 } from "react-icons/hi";
 
 import { useUser } from "@/app/contexts/auth/useUser";
+import { useNavbarChatUnread } from "@/components/navbar/hooks/useNavbarChatUnread";
 import { cn } from "@/lib/utils";
 
 import {
@@ -24,6 +25,7 @@ import {
 export const MobileNavbar = () => {
   const size = 20;
   const { user } = useUser();
+  const { unreadCount, badgeLabel } = useNavbarChatUnread();
 
   const authenticatedItems: MobileNavbarItemData[] = [
     {
@@ -49,6 +51,9 @@ export const MobileNavbar = () => {
       icon: <HiOutlineChat size={size} />,
       activeIcon: <HiChat size={size} />,
       href: "/usuario/mensajes",
+      badgeLabel,
+      ariaLabel:
+        unreadCount > 0 ? `Chat, ${unreadCount} sin leer` : "Chat",
     },
     {
       label: "Perfil",

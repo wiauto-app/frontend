@@ -10,6 +10,8 @@ export interface MobileNavbarItemData {
   icon: React.ReactNode;
   activeIcon: React.ReactNode;
   label: string;
+  badgeLabel?: string | null;
+  ariaLabel?: string;
 }
 
 interface MobileNavbarItemProps {
@@ -31,7 +33,7 @@ export const MobileNavbarItem = ({ item }: MobileNavbarItemProps) => {
   return (
     <Link
       href={item.href}
-      aria-label={item.label}
+      aria-label={item.ariaLabel ?? item.label}
       aria-current={isActive ? "page" : undefined}
       className={cn(
         "relative flex flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2  transition-colors",
@@ -40,8 +42,18 @@ export const MobileNavbarItem = ({ item }: MobileNavbarItemProps) => {
           : "text-muted-foreground hover:text-foreground",
       )}
     >
-      <span className={cn("transition-transform", isActive && "scale-105")}>
+      <span
+        className={cn(
+          "relative transition-transform",
+          isActive && "scale-105",
+        )}
+      >
         {isActive ? item.activeIcon : item.icon}
+        {item.badgeLabel ? (
+          <span className="absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+            {item.badgeLabel}
+          </span>
+        ) : null}
       </span>
       <span
         className={cn(

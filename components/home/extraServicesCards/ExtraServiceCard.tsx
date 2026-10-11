@@ -2,11 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
-import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
-
-import { extraServicesIconPack } from "./extraServicesCards.constants";
 import type { ExtraServiceCardItem } from "./extraServicesCards.types";
 
 interface ExtraServiceCardProps {
@@ -14,8 +11,6 @@ interface ExtraServiceCardProps {
 }
 
 export const ExtraServiceCard = ({ item }: ExtraServiceCardProps) => {
-  const Icon =
-    resolveStrapiIconName(item.iconName, extraServicesIconPack) ?? Check;
 
   return (
     <Link
