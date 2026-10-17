@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
@@ -23,6 +23,12 @@ import { authService } from "@/services/authService";
 import { trackCompleteRegistration } from "@/lib/analytics/events";
 import { PasswordInput } from "@/components/ui/passwordInput";
 import { DEFAULT_PHONE_CODE, PhoneInput } from "@/components/forms/phoneInput";
+import { ReferralCaptureOnMount } from "@/components/referrals/ReferralCaptureOnMount";
+import {
+  consumePendingReferralCode,
+  persistPendingReferralCode,
+  savePostRegisterReferralCode,
+} from "@/lib/referrals/referralStorage";
 
 interface RegisterFormProps extends AuthPantallaProps<"registro"> {
   invitedEmail?: string;
@@ -36,12 +42,19 @@ export default function RegisterForm({
   const router = useRouter();
   const searchParams = useSearchParams();
   const invitationEmailFromQuery = searchParams.get("email")?.trim() ?? "";
+  const referralFromQuery = searchParams.get("ref")?.trim() ?? "";
   const invitedEmail = invitedEmailProp ?? invitationEmailFromQuery;
   const isInvitationFlow = invitedEmail.length > 0;
   const [isLoading, setIsLoading] = useState(false);
 
   const [acceptTerms, setAcceptTerms] = useState(false);
   const schema = useMemo(() => createRegisterSchema(content), [content]);
+  useEffect(() => {
+    if (referralFromQuery) {
+      persistPendingReferralCode(referralFromQuery);
+    }
+  }, [referralFromQuery]);
+
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -68,13 +81,22 @@ export default function RegisterForm({
     setIsLoading(true);
     try {
       const { phone, ...rest } = data;
+      const pendingReferralCode =
+        consumePendingReferralCode() ?? referralFromQuery;
+
       const response = await authService.register({
         ...rest,
         phone_code: phone.phone_code,
         phone: phone.phone,
+        ...(pendingReferralCode
+          ? { referral_code: pendingReferralCode }
+          : {}),
       });
 
       if (response.ok) {
+        if (response.referral_code) {
+          savePostRegisterReferralCode(response.referral_code);
+        }
         trackCompleteRegistration("email");
         toast.success(
           content.mensajes?.exito ||
@@ -98,6 +120,7 @@ export default function RegisterForm({
 
   return (
     <>
+      <ReferralCaptureOnMount />
       <div className="text-center">
         <StrapiEncabezado content={content.encabezado} />
         {isInvitationFlow ? (

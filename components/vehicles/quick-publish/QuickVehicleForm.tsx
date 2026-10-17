@@ -3,6 +3,7 @@
 import {
   Suspense,
   useEffect,
+  useRef,
   useState,
   type FormEvent,
   type KeyboardEvent,
@@ -25,8 +26,21 @@ import { appraisalService } from "@/services/appraisal/appraisalService";
 import { QuickVehiclePreview } from "./QuickVehiclePreview";
 import { QuickVehicleIntroWizard } from "./QuickVehicleIntroWizard";
 import { useUser } from "@/app/contexts/auth/useUser";
+import { SignInDialog } from "@/components/auth/signInDialog";
+import { isValidReturnPath } from "@/lib/auth/authReturnTo";
 import { QUICK_VEHICLE_SUBMIT_ATTR } from "./quick-vehicle-wizard.constants";
 import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
+import { useQuickPublishDraft } from "./hooks/useQuickPublishDraft";
+
+/** Ruta actual con querystring (`?step`, `?tasacion`) para volver tras el login. */
+const getCurrentReturnTo = (): string | undefined => {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  const path = `${window.location.pathname}${window.location.search}`;
+  return isValidReturnPath(path) ? path : undefined;
+};
 
 interface QuickVehicleFormProps {
   vehicleId?: string;
@@ -41,10 +55,13 @@ export const QuickVehicleForm = ({
   appraisalId,
 }: QuickVehicleFormProps) => {
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isAuthenticated } = useUser();
   const isEditMode = Boolean(vehicleId);
   const [hasIncompleteImageUploads, setHasIncompleteImageUploads] =
     useState(false);
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [signInReturnTo, setSignInReturnTo] = useState<string>();
+  const autoPublishStartedRef = useRef(false);
 
   const { data: vehicleDetail, isLoading: isLoadingVehicle } = useQuery({
     queryKey: ["vehicle", vehicleId],
@@ -70,30 +87,54 @@ export const QuickVehicleForm = ({
     mode: "onChange",
   });
 
+  const {
+    isDraftReady,
+    restoredFromDraft,
+    pendingPublish,
+    setPendingPublish,
+    saveDraftNow,
+    discardDraft,
+  } = useQuickPublishDraft({
+    form,
+    enabled: !isEditMode,
+    appraisalId,
+  });
+
   useEffect(() => {
     if (vehicleDetail) {
       form.reset(mapVehicleDetailToQuickFormValues(vehicleDetail));
     }
   }, [vehicleDetail]);
 
+  // Si se restauró un borrador de esta misma tasación, gana el borrador.
   useEffect(() => {
-    if (!appraisal || isEditMode) return;
+    if (!appraisal || isEditMode || !isDraftReady || restoredFromDraft) return;
     form.reset(mapAppraisalToQuickFormValues(appraisal, form.getValues()));
-  }, [appraisal, isEditMode, form]);
+  }, [appraisal, isEditMode, form, isDraftReady, restoredFromDraft]);
 
   useEffect(() => {
-    if (!user || isEditMode) return;
+    if (!user || isEditMode || !isDraftReady) return;
 
     if (user.email && !form.getValues("email")) {
       form.setValue("email", user.email);
     }
-  }, [user, isEditMode]);
+  }, [user, isEditMode, isDraftReady]);
 
   const handleSubmit = async (data: QuickVehicleSchema) => {
     if (hasIncompleteImageUploads) {
       toast.error(
         "Espera a que terminen de subirse todas las imágenes antes de publicar.",
       );
+      return;
+    }
+
+    // Anónimo: se guarda el borrador, se marca la publicación pendiente y se
+    // pide login. El efecto de auto-publicación publica al volver autenticado.
+    if (!isEditMode && !isAuthenticated) {
+      saveDraftNow(form.getValues());
+      setPendingPublish(true);
+      setSignInReturnTo(getCurrentReturnTo());
+      setIsSignInOpen(true);
       return;
     }
 
@@ -117,6 +158,11 @@ export const QuickVehicleForm = ({
     }
 
     const response = await vehiclesService.create(payload as never);
+    if (response.ok) {
+      // Contiene email y teléfono: no debe sobrevivir a la publicación.
+      discardDraft();
+    }
+
     if (response.ok && response.data?.id) {
       if (redirectTo) {
         router.push(`${redirectTo}?id=${encodeURIComponent(response.data.id)}`);
@@ -139,6 +185,33 @@ export const QuickVehicleForm = ({
 
     toast.error(response.message || "Error al publicar el vehículo");
   };
+
+  // Auto-publicación tras el login (contraseña u OAuth con redirect completo).
+  // `useUser.isLoading` arranca en `false` con `user` undefined: se gatea solo
+  // con `isAuthenticated === true`. El ref evita el doble disparo (StrictMode).
+  useEffect(() => {
+    if (isEditMode || autoPublishStartedRef.current) return;
+    if (
+      !isDraftReady ||
+      !pendingPublish ||
+      isAuthenticated !== true ||
+      hasIncompleteImageUploads
+    ) {
+      return;
+    }
+
+    autoPublishStartedRef.current = true;
+    // Se limpia ANTES de enviar: si falla, el borrador se conserva pero no se
+    // reintenta en bucle; el usuario corrige y vuelve a pulsar Publicar.
+    setPendingPublish(false);
+    void form.handleSubmit(handleSubmit)();
+  }, [
+    isEditMode,
+    isDraftReady,
+    pendingPublish,
+    isAuthenticated,
+    hasIncompleteImageUploads,
+  ]);
 
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -181,6 +254,15 @@ export const QuickVehicleForm = ({
 
   return (
     <FormProvider {...form}>
+      {!isEditMode ? (
+        // Fuera del <form>: los eventos de React atraviesan portales y el
+        // onSubmit/onKeyDown del formulario del anuncio interferiría con el login.
+        <SignInDialog
+          open={isSignInOpen}
+          onOpenChange={setIsSignInOpen}
+          returnTo={signInReturnTo}
+        />
+      ) : null}
       <form
         method="post"
         noValidate

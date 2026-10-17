@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { FaApple } from "react-icons/fa";
 
+import { APP_STORE_URL, PLAY_STORE_URL } from "@/lib/app-stores";
 import { cn } from "@/lib/utils";
 
 export interface StoreButtonsProps {
@@ -19,7 +20,7 @@ export const AppStoreLink = ({ soon = false, className }: StoreLinkProps) => {
 
   return (
     <a
-      href={soon ? undefined : "#"}
+      href={soon ? undefined : APP_STORE_URL}
       aria-disabled={soon || undefined}
       tabIndex={soon ? -1 : 0}
       aria-label={soon ? "App Store — Próximamente" : "App Store"}
@@ -49,7 +50,7 @@ export const AppStoreLink = ({ soon = false, className }: StoreLinkProps) => {
 
 export const PlayStoreLink = ({ className }: StoreLinkProps) => (
   <a
-    href="https://play.google.com/store/apps/details?id=com.faux.wiauto"
+    href={PLAY_STORE_URL}
     tabIndex={0}
     aria-label="Google Play"
     className={cn(

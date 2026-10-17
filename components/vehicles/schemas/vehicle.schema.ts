@@ -35,6 +35,8 @@ export const vehicle_image_schema = z.object({
   path: z.string().min(1).optional(),
   /** Solo UI: blob local o URL pública; no se envía al API. */
   preview_url: z.string().min(1).optional(),
+  /** Solo UI: caducidad (ISO) de la temp upload; sirve para descartar fotos del borrador. No se envía al API. */
+  expires_at: z.string().optional(),
   order: z
     .number({ error: "El orden de la imagen debe ser un número válido." })
     .int({ error: "El orden de la imagen debe ser un número entero." })

@@ -132,6 +132,13 @@ interface RequestTempImageUploadResponse {
   expires_at?: string;
 }
 
+export interface ConfirmTempImageUploadResponse {
+  /** URL GET firmada (≈24h) para mostrar la miniatura tras recargar. */
+  preview_url?: string;
+  /** Caducidad (ISO) de la temp upload tras confirmar. */
+  expires_at?: string;
+}
+
 interface UploadFileDto {
   file_key: string;
   content_type?: UploadContentType;
@@ -446,8 +453,10 @@ export const filesService = {
     return response.data;
   },
 
-  async confirmTempImageUpload(uploadId: string): Promise<boolean> {
-    const response = await apiPost<void>(
+  async confirmTempImageUpload(
+    uploadId: string,
+  ): Promise<ConfirmTempImageUploadResponse | null> {
+    const response = await apiPost<ConfirmTempImageUploadResponse | null>(
       CONFIRM_TEMP_UPLOAD_VEHICLE_IMAGE(uploadId),
       {},
     );
@@ -455,9 +464,9 @@ export const filesService = {
       toast.error(
         response.message || "No se pudo confirmar la subida de la imagen.",
       );
-      return false;
+      return null;
     }
-    return true;
+    return response.data ?? {};
   },
 
   async uploadToSignedUrl(

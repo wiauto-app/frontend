@@ -285,3 +285,10 @@ export const formatUsageVsLimit = (
 
   return `${used} / ${fallbackLimit}`;
 };
+
+/**
+ * Límite de fotos del plan gratuito (espejo de `FREE_ENTITLEMENTS` en el backend:
+ * `entitlement-features.ts`). Se usa cuando no hay `billing_summary` (usuario anónimo)
+ * para no permitir más fotos de las que el servidor aceptará tras el login.
+ */
+export const FREE_PLAN_PHOTOS_PER_VEHICLE_LIMIT = 10;

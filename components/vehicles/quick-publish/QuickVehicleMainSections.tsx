@@ -148,7 +148,13 @@ export const QuickVehicleMainSections = ({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Field>
             <FieldLabel htmlFor="contact-name">Nombre</FieldLabel>
-            <Input id="contact-name" value={contactName} readOnly disabled />
+            <Input
+              id="contact-name"
+              value={contactName}
+              placeholder="Se completará al iniciar sesión"
+              readOnly
+              disabled
+            />
           </Field>
           <Controller
             name="phone"

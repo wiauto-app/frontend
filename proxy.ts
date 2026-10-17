@@ -9,7 +9,7 @@ import {
 
 
 const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
-const PRIVATE_PATHS = ["/usuario", "/publicar"];
+const PRIVATE_PATHS = ["/usuario"];
 
 const buildLoginRedirectUrl = (req: NextRequest): URL => {
   const loginUrl = new URL("/iniciar-sesion", req.url);

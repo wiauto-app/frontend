@@ -15,6 +15,8 @@ import {
   type RecommendVehiclePriceResponse,
 } from "@/components/vehicles/services/vehicleAiService";
 import { useGenerationSettingsStore } from "@/components/vehicles/quick-publish/stores/generationSettingsStore";
+import { useUser } from "@/app/contexts/auth/useUser";
+import { GUEST_RATE_LIMIT_MESSAGE } from "@/lib/api";
 
 export type VehicleAiAction = "recommendPrice" | "generateDescription";
 
@@ -81,6 +83,11 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
 ): UseVehicleAiActionResult<TAction> => {
   const form = useFormContext<QuickVehicleSchema>();
   const { settings } = useGenerationSettingsStore();
+  const { isAuthenticated } = useUser();
+  // Invitados: el 429 viene del límite por IP; se les sugiere iniciar sesión.
+  const rateLimitMessage = isAuthenticated
+    ? VEHICLE_AI_RATE_LIMIT_MESSAGE
+    : GUEST_RATE_LIMIT_MESSAGE;
   const watchedValues = useWatch({ control: form.control });
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<VehicleAiActionError | null>(null);
@@ -130,7 +137,7 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
         const response = await vehicleAiService.recommendPrice(context);
 
         if (isVehicleAiRateLimited(response)) {
-          toast.error(VEHICLE_AI_RATE_LIMIT_MESSAGE);
+          toast.error(rateLimitMessage);
           setError("rate_limited");
           return { data: null, error: "rate_limited" };
         }
@@ -152,8 +159,15 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
       );
 
       if (isVehicleAiRateLimited(response)) {
-        const retryAfter =
-          response.retryAfter ?? DESCRIPTION_GENERATION_COOLDOWN_SECONDS;
+        // Sin `retryAfter` en el body el 429 es del throttler (límite por IP),
+        // no del cooldown de 10 s del servicio: no se simula una cuenta atrás.
+        if (response.retryAfter == null) {
+          toast.error(rateLimitMessage);
+          setError("rate_limited");
+          return { data: null, error: "rate_limited" };
+        }
+
+        const retryAfter = response.retryAfter;
         startCooldown(retryAfter);
         toast.error(getDescriptionCooldownMessage(retryAfter));
         setError("rate_limited");
@@ -183,6 +197,7 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
     cooldownSeconds,
     form,
     isPending,
+    rateLimitMessage,
     settings,
     startCooldown,
   ]);

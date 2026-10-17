@@ -1,5 +1,5 @@
 import { objectToQueryString } from "@/lib/utils";
-import { apiGet } from "@/lib/api";
+import { apiGet, isRateLimitedResponse } from "@/lib/api";
 import type { PaginatedResult } from "@/types/general.types";
 import type {
   CatalogVersionItem,
@@ -14,6 +14,14 @@ interface VersionResponse {
 }
 
 const DEFAULT_LIMIT = 100;
+
+/** 429 de la ficha técnica (límite por IP para invitados). */
+export class VehicleSpecsRateLimitedError extends Error {
+  constructor() {
+    super("vehicle_specs_rate_limited");
+    this.name = "VehicleSpecsRateLimitedError";
+  }
+}
 
 export const catalogVersionsService = {
   findAll: async (
@@ -40,6 +48,9 @@ export const catalogVersionsService = {
 
   getVehicleSpecs: async (versionId: number): Promise<VehicleSpecs> => {
     const response = await apiGet<VehicleSpecs>(`${V1_VEHICLE_SPECS}/${versionId}`);
+    if (isRateLimitedResponse(response)) {
+      throw new VehicleSpecsRateLimitedError();
+    }
     return response.data;
   },
 };

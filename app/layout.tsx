@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { AppDownloadBannerGate } from "@/components/app-download/AppDownloadBannerGate";
 import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
@@ -63,7 +64,13 @@ export default async function RootLayout({
         <ConsentModeScript />
         <Providers>
           <AssistantChatProvider>
-            <Navbar />
+            <div
+              className="sticky top-0 z-40"
+              style={{ viewTransitionName: "site-header" }}
+            >
+              <AppDownloadBannerGate />
+              <Navbar />
+            </div>
             <main className="flex flex-1 flex-col ">
               <MetaPixel />
               {children}

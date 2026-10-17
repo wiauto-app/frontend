@@ -11,6 +11,14 @@ export interface ApiResponse<T> {
   retryAfter?: number;
 }
 
+/** Mensaje para 429 de endpoints abiertos a invitados (límite por IP). */
+export const GUEST_RATE_LIMIT_MESSAGE =
+  "Has hecho demasiadas solicitudes. Inicia sesión o inténtalo en unos minutos.";
+
+export const isRateLimitedResponse = (
+  response: Pick<ApiResponse<unknown>, "status">,
+): boolean => response.status === 429;
+
 interface FetchWithAuthOptions extends RequestInit {
   noResponse?: boolean;
   _auth_retry_count?: number;

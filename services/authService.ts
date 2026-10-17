@@ -2,7 +2,13 @@ import { API_URL, FRONTEND_URL } from "@/constants";
 import { User } from "@/interfaces/user.interface";
 import { VehicleList } from "@/interfaces/vehicle-list.interface";
 import type { DealershipMembership } from "@/services/dealerships/types/team.types";
-import { ApiResponse, apiGet, apiPost, fetchWithAuth } from "@/lib/api";
+import {
+  ApiResponse,
+  apiGet,
+  apiPost,
+  buildApiUrl,
+  fetchWithAuth,
+} from "@/lib/api";
 import {
   AuthResponseDto,
   GoogleOneTapDto,
@@ -13,6 +19,10 @@ import {
   VerifyTwoFactorLoginResponse,
 } from "@/validations/auth";
 import { LoginDto, RegisterDto, ResetPasswordDto } from "@/validations/Schemas";
+
+export interface RegisterResult extends ApiResponse<User> {
+  referral_code?: string;
+}
 import { BillingMeResponse } from "@/interfaces/billing.interface";
 
 export interface MeResponseDto extends User {
@@ -27,8 +37,28 @@ export const authService = {
   login: (data: LoginDto): Promise<ApiResponse<AuthResponseDto>> =>
     apiPost<AuthResponseDto>(`/auth/login`, data),
 
-  register: (data: RegisterDto): Promise<ApiResponse<AuthResponseDto>> =>
-    apiPost<AuthResponseDto>(`/auth/register`, data),
+  register: async (data: RegisterDto): Promise<RegisterResult> => {
+    const response = await fetch(buildApiUrl("/auth/register"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const body = (await response.json()) as {
+      message?: string;
+      data?: User;
+      referral_code?: string;
+    };
+
+    return {
+      ok: response.ok,
+      status: response.status,
+      message: body.message ?? response.statusText,
+      data: body.data as User,
+      referral_code: body.referral_code,
+    };
+  },
 
   googleLogin: (opts?: { popup?: boolean }): string =>
     `${API_URL}/auth/google${opts?.popup ? "?popup=1" : ""}`,

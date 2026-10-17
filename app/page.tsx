@@ -29,6 +29,7 @@ import { mapLowEmissionsLinkToQuickLink } from "@/components/discovery/mappers/m
 import { getStrapiMediaUrl } from "@/lib/strapi-media";
 import { buildHomeSeo } from "@/lib/seo/build-home-seo";
 import { JsonLdScript } from "@/lib/seo/json-ld-script";
+import { MobileBrowseAllVehiclesCta } from "@/components/home/MobileBrowseAllVehiclesCta";
 import { LandingContainer } from "@/components/ui/landingContainer";
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -61,6 +62,7 @@ export default async function Home() {
         <VehicleExtraServices />
         <AppDownloadBanner data={home_data.homeAppAdvertisment} />
         <PromotionPlans data={home_data.promocion_planes} />
+        <MobileBrowseAllVehiclesCta />
         <Suspense fallback={<PopularCategoriesGridSkeleton />}>
           <PopularCategoriesGrid />
         </Suspense>

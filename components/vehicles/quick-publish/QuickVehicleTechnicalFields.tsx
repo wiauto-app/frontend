@@ -10,8 +10,15 @@ import { QuickVehicleElectricFields } from "./QuickVehicleElectricFields";
 import { useCanCharge } from "./hooks/useCanCharge";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { catalogVersionsService } from "../services/catalogVersionsService";
+import { toast } from "sonner";
+import {
+  catalogVersionsService,
+  VehicleSpecsRateLimitedError,
+} from "../services/catalogVersionsService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GUEST_RATE_LIMIT_MESSAGE } from "@/lib/api";
+
+const MAX_SPECS_RETRIES = 3;
 
 export const QuickVehicleTechnicalFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
@@ -36,10 +43,18 @@ export const QuickVehicleTechnicalFields = () => {
   const shouldFetchSpecs =
     Boolean(versionId) && (isVersionChangedByUser || !hasStoredSpecs);
 
-  const { data: vehicleSpecs, isFetching: isLoadingVehicleSpecs } = useQuery({
+  const {
+    data: vehicleSpecs,
+    isFetching: isLoadingVehicleSpecs,
+    error: vehicleSpecsError,
+  } = useQuery({
     queryKey: ["vehicleSpecs", versionId],
     queryFn: () => catalogVersionsService.getVehicleSpecs(versionId),
     enabled: shouldFetchSpecs,
+    // Un 429 (límite por IP de invitados) no se reintenta: solo empeora el bloqueo.
+    retry: (failureCount, error) =>
+      !(error instanceof VehicleSpecsRateLimitedError) &&
+      failureCount < MAX_SPECS_RETRIES,
     // Las specs de una versión del catálogo no cambian: evita repetir la
     // llamada al volver a este paso del asistente (el backend también cachea en Redis).
     staleTime: Infinity,
@@ -48,6 +63,12 @@ export const QuickVehicleTechnicalFields = () => {
     refetchOnMount: false,
     refetchOnReconnect: false,
   });
+
+  useEffect(() => {
+    if (vehicleSpecsError instanceof VehicleSpecsRateLimitedError) {
+      toast.error(GUEST_RATE_LIMIT_MESSAGE);
+    }
+  }, [vehicleSpecsError]);
 
   useEffect(() => {
     if (!shouldFetchSpecs || !vehicleSpecs) {

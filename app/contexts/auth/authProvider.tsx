@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { authService, type MeResponseDto } from "@/services/authService";
 import { AuthContext } from "./authContext";
 import { useRouter } from "next/navigation";
+import { usePendingReferralAttribute } from "@/hooks/usePendingReferralAttribute";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<MeResponseDto | undefined>(undefined);
@@ -35,6 +36,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(undefined);
     router.refresh();
   }, [router]);
+
+  usePendingReferralAttribute({ enabled: Boolean(user?.id) });
 
   const value = useMemo(
     () => ({

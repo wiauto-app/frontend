@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import ConfirmEmailForm from "@/app/(auth)/components/ConfirmEmailForm";
+import { ReferralAfterRegisterPrompt } from "@/components/referrals/ReferralAfterRegisterPrompt";
 import { getAutenticacionContenido } from "@/app/(auth)/services/autenticacionService";
 import { StrapiStructuredData } from "@/components/strapi/StrapiStructuredData";
 import { buildStrapiMetadata } from "@/lib/seo/build-strapi-metadata";
@@ -17,6 +18,7 @@ export default async function Page() {
     <>
       <StrapiStructuredData seo={props.content.seo} />
       <ConfirmEmailForm {...props} />
+      <ReferralAfterRegisterPrompt />
     </>
   );
 }

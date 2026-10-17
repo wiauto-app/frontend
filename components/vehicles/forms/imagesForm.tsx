@@ -309,6 +309,7 @@ export const ImagesForm = ({
       path?: string;
       upload_id?: string;
       preview_url?: string;
+      expires_at?: string;
     }) => {
       const sorted = normalize_vehicle_images(value_ref.current);
 
@@ -554,7 +555,7 @@ export const ImagesForm = ({
           )
         );
 
-        const confirm_success = await filesService.confirmTempImageUpload(
+        const confirm_response = await filesService.confirmTempImageUpload(
           upload_response.upload_id
         );
         if (cancelled_upload_keys_ref.current.has(temp_key)) {
@@ -562,7 +563,7 @@ export const ImagesForm = ({
           return;
         }
 
-        if (!confirm_success) {
+        if (!confirm_response) {
           setPendingItems((prev) =>
             prev.map((item) =>
               item.temp_key === temp_key
@@ -574,17 +575,20 @@ export const ImagesForm = ({
           return;
         }
 
-        // 4. Commit: conservar blob local (TEMP en R2 no es público).
+        // 4. Commit: preferir la URL GET firmada del confirm (sobrevive a una
+        //    recarga del borrador). Si el backend no la envía, conservar el blob local.
         const pending = pending_items_ref.current.find(
           (item) => item.temp_key === temp_key,
         );
+        const signed_preview_url = confirm_response.preview_url;
         append_committed_image({
           upload_id: upload_response.upload_id,
-          preview_url: pending?.preview_url,
+          preview_url: signed_preview_url ?? pending?.preview_url,
+          expires_at: confirm_response.expires_at,
         });
 
-        // 5. Quitar de pending sin revocar el blob (ahora lo usa committed).
-        remove_pending_item(temp_key, false);
+        // 5. Quitar de pending. El blob solo se conserva si committed lo usa.
+        remove_pending_item(temp_key, Boolean(signed_preview_url));
       } catch (error) {
         console.error(error);
 
@@ -609,14 +613,28 @@ export const ImagesForm = ({
   const handleAddedFiles = useCallback(
     (file_list: FileList | null) => {
       if (!file_list?.length) return;
-      if (maxImages && file_list.length > maxImages) {
-        toast.warning(`Solo se agregarán ${maxImages} imágenes`, {
-          position: "bottom-center",
-        });
+      // El límite cuenta las fotos ya añadidas y las que siguen subiendo.
+      const remaining_slots = maxImages
+        ? Math.max(
+            maxImages -
+              value_ref.current.length -
+              pending_items_ref.current.length,
+            0,
+          )
+        : undefined;
+      if (remaining_slots !== undefined && file_list.length > remaining_slots) {
+        toast.warning(
+          remaining_slots === 0
+            ? `Ya has alcanzado el máximo de ${maxImages} imágenes`
+            : `Solo se agregarán ${remaining_slots} imágenes (máximo ${maxImages})`,
+          {
+            position: "bottom-center",
+          },
+        );
       }
       const files = Array.from(file_list)
         .filter(is_valid_image_file)
-        .slice(0, maxImages ?? undefined);
+        .slice(0, remaining_slots);
 
       if (!files.length) return;
 

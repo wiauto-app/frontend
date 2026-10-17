@@ -67,6 +67,7 @@ export interface RegisterDto {
   last_name: string;
   phone_code: string;
   phone: string;
+  referral_code?: string;
 }
 
 

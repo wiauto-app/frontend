@@ -22,6 +22,7 @@ import { UpgradeListingAdd } from "./upgradeListingAdd";
 import { ListingDiagnosticSheet } from "@/components/vehicles/listing-insights/components/ListingDiagnosticSheet";
 import { useListingDiagnosticStore } from "@/components/vehicles/listing-insights/stores/listingDiagnosticStore";
 import { MY_LISTINGS_QUERY_KEY } from "../hooks/my-listings-query-keys";
+import { MyListingsReferralCard } from "@/components/referrals/MyListingsReferralCard";
 
 export const MyListing = () => {
   const { user, isLoading: isUserLoading } = useUser();
@@ -217,7 +218,10 @@ export const MyListing = () => {
           {entitlements.vehicles.limit === 2 ? <UpgradeListingAdd /> : null}
         </div>
 
-        <MyListingsPromoSidebar />
+        <div className="space-y-4">
+          <MyListingsReferralCard />
+          <MyListingsPromoSidebar />
+        </div>
       </div>
 
       <MyListingsHelpSection

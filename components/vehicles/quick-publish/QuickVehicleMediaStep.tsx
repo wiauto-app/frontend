@@ -7,7 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImagesForm } from "@/components/vehicles/forms/imagesForm";
 import { VideosForm } from "@/components/vehicles/forms/videosForm";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
+import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { FREE_PLAN_PHOTOS_PER_VEHICLE_LIMIT } from "@/lib/billing/entitlements";
 import { cn } from "@/lib/utils";
 
 interface QuickVehicleMediaStepProps {
@@ -21,8 +23,12 @@ export const QuickVehicleMediaStep = ({
 }: QuickVehicleMediaStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
 
+  const { isAuthenticated } = useUser();
   const { entitlements } = useEntitlements();
-  const limit = entitlements?.photos_per_vehicle?.limit;
+  // Anónimo: sin `billing_summary`; se aplica el límite del plan gratuito.
+  const limit = isAuthenticated
+    ? entitlements?.photos_per_vehicle?.limit
+    : FREE_PLAN_PHOTOS_PER_VEHICLE_LIMIT;
   const videosLimit = entitlements?.videos_per_vehicle?.limit;
   const canUploadVideos =
     entitlements?.videos_per_vehicle?.type === "unlimited" ||

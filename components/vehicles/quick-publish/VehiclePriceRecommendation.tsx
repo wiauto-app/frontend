@@ -15,6 +15,8 @@ import {
 } from "@/hooks/useVehicleAiAction";
 import { IconContainer } from "@/components/ui/iconContainer";
 import { toast } from "sonner";
+import { useUser } from "@/app/contexts/auth/useUser";
+import { GUEST_RATE_LIMIT_MESSAGE } from "@/lib/api";
 
 export type VehiclePriceRecommendationStatus =
   | "idle"
@@ -56,6 +58,7 @@ export const resolveVehiclePriceRecommendationStatus = (
 export const VehiclePriceRecommendation = () => {
   const form = useFormContext<QuickVehicleSchema>();
   const { execute, canExecute } = useVehicleAiAction("recommendPrice");
+  const { isAuthenticated } = useUser();
   const [status, setStatus] =
     useState<VehiclePriceRecommendationStatus>("idle");
   const [result, setResult] = useState<RecommendVehiclePriceResponse | null>(
@@ -129,8 +132,9 @@ export const VehiclePriceRecommendation = () => {
 
       {status === "rate_limited" ? (
         <p className="text-sm text-destructive">
-          Has alcanzado el límite de solicitudes. Espera un momento e inténtalo
-          de nuevo.
+          {isAuthenticated
+            ? "Has alcanzado el límite de solicitudes. Espera un momento e inténtalo de nuevo."
+            : GUEST_RATE_LIMIT_MESSAGE}
         </p>
       ) : null}
 
