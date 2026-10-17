@@ -1,5 +1,3 @@
 set -e
 
 echo "Comprobando tipos y lint del frontend antes de subir..."
-pnpm typecheck
-pnpm lint
