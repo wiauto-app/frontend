@@ -15,6 +15,15 @@ export const buildLoginRedirectUrl = (req: NextRequest): URL => {
 };
 
 /**
+ * Rutas públicas: nunca redirigir a login ni 2FA por sesión rota; limpiar cookies y seguir.
+ * Evita quedar atrapado en `/iniciar-sesion?redirect=%2F` al navegar con refresh inválido.
+ */
+export const resolvePublicSessionResponse = (
+  clearSessionCookiesOnResponse: (response: NextResponse) => NextResponse,
+): NextResponse =>
+  clearSessionCookiesOnResponse(NextResponse.next());
+
+/**
  * Sesión inválida (refresh 401): en rutas privadas → login; en públicas → limpiar cookies y continuar anónimo.
  */
 export const resolveSessionFailureResponse = (

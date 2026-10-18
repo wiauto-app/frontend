@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { describe, expect, it } from "vitest";
 
-import { cookiesConfig } from "@/config/cookies.config";
+import { clearSessionCookiesOnResponse } from "@/lib/ensure-session.server";
 import {
   buildLoginRedirectUrl,
   isPrivatePathname,
+  resolvePublicSessionResponse,
   resolveSessionFailureResponse,
 } from "@/lib/proxy-session";
 
@@ -29,16 +30,25 @@ describe("buildLoginRedirectUrl", () => {
   });
 });
 
-describe("resolveSessionFailureResponse", () => {
-  const clearCookies = (response: NextResponse): NextResponse => {
-    response.cookies.delete(cookiesConfig.accessToken.name);
-    response.cookies.delete(cookiesConfig.refreshToken.name);
-    return response;
-  };
+describe("resolvePublicSessionResponse", () => {
+  it("no redirige y expira cookies de sesión", () => {
+    const res = resolvePublicSessionResponse(clearSessionCookiesOnResponse);
 
+    expect(res.status).toBe(200);
+    expect(res.headers.get("location")).toBeNull();
+    expect(res.cookies.get("access_token")?.value).toBe("");
+    expect(res.cookies.get("refresh_token")?.value).toBe("");
+  });
+});
+
+describe("resolveSessionFailureResponse", () => {
   it("en ruta pública con refresh inválido no redirige a login (cookies caducadas)", () => {
     const req = new NextRequest("http://localhost:3000/");
-    const res = resolveSessionFailureResponse(req, false, clearCookies);
+    const res = resolveSessionFailureResponse(
+      req,
+      false,
+      clearSessionCookiesOnResponse,
+    );
 
     expect(res.status).toBe(200);
     expect(res.headers.get("location")).toBeNull();
@@ -46,7 +56,11 @@ describe("resolveSessionFailureResponse", () => {
 
   it("en /usuario sí redirige a iniciar-sesion con return path", () => {
     const req = new NextRequest("http://localhost:3000/usuario/inicio");
-    const res = resolveSessionFailureResponse(req, true, clearCookies);
+    const res = resolveSessionFailureResponse(
+      req,
+      true,
+      clearSessionCookiesOnResponse,
+    );
 
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toBe(

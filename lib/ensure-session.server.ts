@@ -217,10 +217,33 @@ export const setSessionCookies = async (
   );
 };
 
-/** Middleware: elimina cookies de sesión en la NextResponse (p. ej. redirect a login). */
+/** Middleware / proxy: expira cookies con el mismo path/domain que al crearlas (p. ej. `.wiauto.es`). */
 export const clearSessionCookiesOnResponse = (response: NextResponse): NextResponse => {
-  response.cookies.delete(cookiesConfig.accessToken.name);
-  response.cookies.delete(cookiesConfig.refreshToken.name);
+  const expire = (name: string, options: (typeof cookiesConfig)["accessToken"]["options"]) => {
+    response.cookies.set(name, "", { ...options, maxAge: 0 });
+  };
+
+  expire(cookiesConfig.accessToken.name, cookiesConfig.accessToken.options);
+  expire(cookiesConfig.refreshToken.name, cookiesConfig.refreshToken.options);
+  return response;
+};
+
+/** Middleware / proxy: escribe tokens en la NextResponse (no usar cookies() en proxy). */
+export const setSessionCookiesOnResponse = (
+  response: NextResponse,
+  access_token: string,
+  refresh_token_hash: string,
+): NextResponse => {
+  response.cookies.set(
+    cookiesConfig.accessToken.name,
+    access_token,
+    cookiesConfig.accessToken.options,
+  );
+  response.cookies.set(
+    cookiesConfig.refreshToken.name,
+    refresh_token_hash,
+    cookiesConfig.refreshToken.options,
+  );
   return response;
 };
 

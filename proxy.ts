@@ -4,21 +4,21 @@ import { cookiesConfig } from "@/config/cookies.config";
 import {
   buildLoginRedirectUrl,
   isPrivatePathname,
+  resolvePublicSessionResponse,
   resolveSessionFailureResponse,
 } from "@/lib/proxy-session";
 import {
   ensureValidSession,
-  setSessionCookies,
+  setSessionCookiesOnResponse,
   clearSessionCookiesOnResponse,
 } from "@/lib/ensure-session.server";
 
 const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
 
 /**
- * Refresca sesión al navegar si hay refresh_token (UX en rutas privadas y públicas).
- * El cliente usa POST /api/auth/refresh con single-flight; Nest mitiga rotación concurrente.
- * Ante refresh_unavailable / me_not_ok no borramos cookies (el cliente puede reintentar).
- * Si el refresh falla (401) en una ruta pública, se limpian cookies y se sirve la página sin login.
+ * Refresca sesión al navegar si hay refresh_token.
+ * Rutas públicas: nunca mandan a login por sesión inválida (limpian cookies y continúan).
+ * Rutas `/usuario/*`: exigen sesión válida o redirigen a iniciar-sesion / 2FA.
  */
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -41,6 +41,28 @@ export async function proxy(req: NextRequest) {
   }
 
   const result = await ensureValidSession({ refresh_token, access_token });
+
+  if (!isPrivatePath) {
+    if (result.outcome === "session_refreshed") {
+      const res = NextResponse.next();
+      return setSessionCookiesOnResponse(
+        res,
+        result.access_token,
+        result.refresh_token ?? "",
+      );
+    }
+
+    if (
+      result.outcome === "session_valid" ||
+      result.outcome === "me_not_ok" ||
+      result.outcome === "refresh_unavailable"
+    ) {
+      return NextResponse.next();
+    }
+
+    return resolvePublicSessionResponse(clearSessionCookiesOnResponse);
+  }
+
   if (
     result.outcome === "session_valid" ||
     result.outcome === "me_not_ok" ||
@@ -50,11 +72,12 @@ export async function proxy(req: NextRequest) {
   }
 
   if (result.outcome === "session_refreshed") {
-    await setSessionCookies(
+    const res = NextResponse.next();
+    return setSessionCookiesOnResponse(
+      res,
       result.access_token,
       result.refresh_token ?? "",
     );
-    return NextResponse.next();
   }
 
   if (result.outcome === "two_factor_pending") {
@@ -71,7 +94,7 @@ export async function proxy(req: NextRequest) {
 
   return resolveSessionFailureResponse(
     req,
-    isPrivatePath,
+    true,
     clearSessionCookiesOnResponse,
   );
 }
