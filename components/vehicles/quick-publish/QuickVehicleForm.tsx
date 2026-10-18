@@ -184,7 +184,6 @@ export const QuickVehicleForm = ({
       // Contiene email y teléfono: no debe sobrevivir a la publicación.
       discardDraft();
       const context = getPublishFunnelContext();
-      const province = response.data?.province;
       track(
         "anuncio_publicado",
         {
@@ -203,7 +202,6 @@ export const QuickVehicleForm = ({
           ...(typeof context.year === "number" ? { year: context.year } : {}),
           price: Number(data.price),
           currency: "EUR",
-          ...(province ? { province } : {}),
         },
         publishEventId,
       );
@@ -211,7 +209,9 @@ export const QuickVehicleForm = ({
 
       if (response.data?.id) {
         if (redirectTo) {
-          router.push(`${redirectTo}?id=${encodeURIComponent(response.data.id)}`);
+          router.push(
+            `${redirectTo}?id=${encodeURIComponent(response.data.id)}`,
+          );
         } else {
           router.push(
             `/publicar/exito?id=${encodeURIComponent(response.data.id)}`,
@@ -235,7 +235,12 @@ export const QuickVehicleForm = ({
   // `useUser.isLoading` arranca en `false` con `user` undefined: se gatea solo
   // con `isAuthenticated === true`. El ref evita el doble disparo (StrictMode).
   useEffect(() => {
-    if (isEditMode || isAuthenticated !== true || !user || publishAuthTrackedRef.current) {
+    if (
+      isEditMode ||
+      isAuthenticated !== true ||
+      !user ||
+      publishAuthTrackedRef.current
+    ) {
       return;
     }
 
