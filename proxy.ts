@@ -2,33 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { cookiesConfig } from "@/config/cookies.config";
 import {
+  buildLoginRedirectUrl,
+  isPrivatePathname,
+  resolveSessionFailureResponse,
+} from "@/lib/proxy-session";
+import {
   ensureValidSession,
   setSessionCookies,
   clearSessionCookiesOnResponse,
 } from "@/lib/ensure-session.server";
 
-
 const TWO_FACTOR_PATHS = ["/verificacion-2fa", "/oauth-popup-complete"];
-const PRIVATE_PATHS = ["/usuario"];
-
-const buildLoginRedirectUrl = (req: NextRequest): URL => {
-  const loginUrl = new URL("/iniciar-sesion", req.url);
-  const returnPath = `${req.nextUrl.pathname}${req.nextUrl.search}`;
-  if (returnPath.startsWith("/") && !returnPath.startsWith("//")) {
-    loginUrl.searchParams.set("redirect", returnPath);
-  }
-  return loginUrl;
-};
 
 /**
- * En rutas protegidas: refresca sesión al navegar (UX).
+ * Refresca sesión al navegar si hay refresh_token (UX en rutas privadas y públicas).
  * El cliente usa POST /api/auth/refresh con single-flight; Nest mitiga rotación concurrente.
  * Ante refresh_unavailable / me_not_ok no borramos cookies (el cliente puede reintentar).
+ * Si el refresh falla (401) en una ruta pública, se limpian cookies y se sirve la página sin login.
  */
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const isPrivatePath = PRIVATE_PATHS.some(p => pathname.startsWith(p));
-
+  const isPrivatePath = isPrivatePathname(pathname);
 
   const access_token = req.cookies.get(cookiesConfig.accessToken.name)?.value ?? null;
   const refresh_token = req.cookies.get(cookiesConfig.refreshToken.name)?.value ?? null;
@@ -38,11 +32,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(buildLoginRedirectUrl(req));
   }
 
-  if(!refresh_token && !isPrivatePath) {
+  if (!refresh_token && !isPrivatePath) {
     return NextResponse.next();
   }
 
-  if(!refresh_token) {
+  if (!refresh_token) {
     return NextResponse.redirect(buildLoginRedirectUrl(req));
   }
 
@@ -75,8 +69,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/verificacion-2fa", req.url));
   }
 
-  const redirect_res = NextResponse.redirect(buildLoginRedirectUrl(req));
-  return clearSessionCookiesOnResponse(redirect_res);
+  return resolveSessionFailureResponse(
+    req,
+    isPrivatePath,
+    clearSessionCookiesOnResponse,
+  );
 }
 
 export const config = {
