@@ -1,6 +1,7 @@
 services:
   web:
     build: .
+    restart: on-failure
     ports:
       - '3010:3010'
       
