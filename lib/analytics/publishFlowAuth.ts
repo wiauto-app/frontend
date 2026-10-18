@@ -20,7 +20,7 @@ export const isPublishFlowPath = (path?: string | null): boolean => {
   }
 
   const pathname = path.split("?")[0] ?? "";
-  return pathname === "/publicar" || pathname.startsWith("/publicar/");
+  return pathname === "/publicar";
 };
 
 export const markPublishFlowAuth = (): void => {

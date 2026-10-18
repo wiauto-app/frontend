@@ -54,7 +54,7 @@ export const QuickVehiclePublishDataTracker = () => {
 
     let brand = String(makeId);
     let model = String(modelId);
-    let year = yearId;
+    let year: number | undefined;
 
     try {
       const [make, modelItem, yearItem] = await Promise.all([
@@ -66,13 +66,13 @@ export const QuickVehiclePublishDataTracker = () => {
       model = modelItem.name;
       year = yearItem.year;
     } catch {
-      // Si el catálogo no responde, el evento sale con los ids.
+      // Si el catálogo no responde, el evento sale con los ids de marca y modelo.
     }
 
     track("publicar_datos", {
       brand,
       model,
-      year,
+      ...(typeof year === "number" ? { year } : {}),
       price: Number(values.price),
       currency: "EUR",
     });

@@ -102,10 +102,11 @@ export default function RegisterForm({
         if (response.referral_code) {
           savePostRegisterReferralCode(response.referral_code);
         }
-        trackCompleteRegistration("email");
         const redirect = searchParams.get("redirect");
         if (isPublishFlowPath(redirect) || isMarkedPublishFlow()) {
           void trackPublishFlowAuth({ method: "email", isNewUser: true });
+        } else {
+          trackCompleteRegistration("email");
         }
         toast.success(
           content.mensajes?.exito ||
