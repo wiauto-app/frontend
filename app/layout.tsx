@@ -40,6 +40,11 @@ export function generateMetadata(): Metadata {
   return {
     title: "Wiauto",
     description: "Wiauto",
+    verification: {
+      other: {
+        "facebook-domain-verification": "y9ztjy16o7ks2qs7tvdocwzo22ym45",
+      },
+    },
   };
 }
 
@@ -92,6 +97,7 @@ export default async function RootLayout({
             <CookieConsentBanner />
           </AssistantChatProvider>
         </Providers>
+        {/* Quitar GoogleAnalytics cuando G-D44GZQL4B2 esté publicado en GTM-PH39KM9H. */}
         {GOOGLE_ANALYTICS_ID ? (
           <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
         ) : null}

@@ -17,6 +17,7 @@ import { SORT_OPTIONS } from "../constants";
 import { useVehiclesListingFilters } from "../hooks/useVehiclesListingFilters";
 import { AiSearchForm } from "@/components/home/aiSearchForm";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { trackPublicarClick } from "@/lib/analytics/funnel";
 
 interface VehiclesToolbarProps {
   filtersNode?: React.ReactNode;
@@ -91,7 +92,10 @@ export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
             type="button"
             variant="outline"
             className="flex-1 sm:flex-none"
-            onClick={() => router.push("/publicar")}
+            onClick={() => {
+              trackPublicarClick("otros");
+              router.push("/publicar");
+            }}
           >
             Vender
           </Button>

@@ -147,7 +147,10 @@ export const CookieConsentBanner = () => {
                     </Label>
                     <p className="text-xs text-muted-foreground">
                       Se usan para mostrarte anuncios relevantes y medir su
-                      rendimiento.
+                      rendimiento. Si las aceptas, Meta Platforms Ireland
+                      Limited (Pixel y API de conversiones) puede recibir
+                      identificadores de cookies (_fbp, _fbc) y datos de
+                      conversión hasheados.
                     </p>
                   </div>
                   <Switch

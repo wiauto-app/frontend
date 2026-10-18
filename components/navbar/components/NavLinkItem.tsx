@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 
+import { trackPublicarClick } from "@/lib/analytics/funnel";
+
 import {
   BRAND_BLUE,
   type NavLink,
@@ -36,16 +38,27 @@ interface NavLinkRowProps {
   onNavigate?: () => void;
 }
 
+const trackPublishNavClick = (href: string) => {
+  if (href === "/publicar" || href === "/vender-vehiculo") {
+    trackPublicarClick("menu");
+  }
+};
+
 const NavLinkRow = ({ item, variant, onNavigate }: NavLinkRowProps) => {
   if (!item.href) {
     return null;
   }
 
+  const handleNavigate = () => {
+    trackPublishNavClick(item.href!);
+    onNavigate?.();
+  };
+
   if (variant === "mobile") {
     return (
       <Link
         href={item.href}
-        onClick={onNavigate}
+        onClick={handleNavigate}
         className="flex items-center gap-2 rounded-md px-1 py-2 text-sm text-slate-700 transition-colors hover:text-[#0061F2]"
       >
         {item.Icon ? <IconContainer Icon={item.Icon} size="xs" /> : null}
@@ -64,7 +77,7 @@ const NavLinkRow = ({ item, variant, onNavigate }: NavLinkRowProps) => {
   return (
     <NavigationMenuLink
       closeOnClick
-      render={<Link href={item.href} onClick={onNavigate} />}
+      render={<Link href={item.href} onClick={handleNavigate} />}
       className="flex items-center gap-3 rounded-md p-2"
     >
       {item.Icon ? <IconContainer Icon={item.Icon} size="md" /> : null}

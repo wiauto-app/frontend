@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { VEHICLE_CONDITION_OPTIONS } from "@/components/vehicles/constants/vehicle-enums.constants";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { VehiclePriceRecommendation } from "./VehiclePriceRecommendation";
+import { requestPublishDatosCheck } from "./QuickVehiclePublishDataTracker";
 
 export const QuickVehiclePricingFields = () => {
   const form = useFormContext<QuickVehicleSchema>();
@@ -58,6 +59,10 @@ export const QuickVehiclePricingFields = () => {
                 min={0}
                 max={9999999}
                 aria-invalid={fieldState.invalid}
+                onBlur={() => {
+                  field.onBlur();
+                  requestPublishDatosCheck();
+                }}
               />
             )}
           </ControllerInput>
@@ -74,6 +79,10 @@ export const QuickVehiclePricingFields = () => {
                 min={0}
                 max={9999999}
                 aria-invalid={fieldState.invalid}
+                onBlur={() => {
+                  field.onBlur();
+                  requestPublishDatosCheck();
+                }}
               />
             )}
           </ControllerInput>

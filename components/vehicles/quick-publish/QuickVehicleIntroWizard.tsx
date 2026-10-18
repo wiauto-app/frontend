@@ -24,6 +24,9 @@ import {
 import { cn } from "@/lib/utils";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
+import { track } from "@/lib/analytics/funnel";
+import { vehicleTypesService } from "@/components/vehicles/services/vehicleTypesService";
+import { QuickVehiclePublishInicioTracker } from "./QuickVehiclePublishInicioTracker";
 
 interface QuickVehicleIntroWizardProps {
   vehicleId?: string;
@@ -153,6 +156,24 @@ export const QuickVehicleIntroWizard = ({
       }
     }
 
+    if (currentStep === 1) {
+      const vehicleTypeId = form.getValues("vehicle_type_id");
+      if (vehicleTypeId) {
+        try {
+          const typesPage = await vehicleTypesService.findAll({
+            page: 1,
+            limit: 100,
+          });
+          const match = typesPage.data.find((type) => type.id === vehicleTypeId);
+          track("publicar_tipo", {
+            vehicle_type: match?.name?.toLowerCase() ?? vehicleTypeId,
+          });
+        } catch {
+          track("publicar_tipo", { vehicle_type: vehicleTypeId });
+        }
+      }
+    }
+
     if (isLastStep) {
       return;
     }
@@ -187,6 +208,9 @@ export const QuickVehicleIntroWizard = ({
 
   return (
     <div className="flex flex-col gap-4 lg:gap-6">
+      {!isEditMode ? (
+        <QuickVehiclePublishInicioTracker activeStep={currentStep} />
+      ) : null}
       <Stepper
         steps={stepItems}
         currentStep={currentStep}

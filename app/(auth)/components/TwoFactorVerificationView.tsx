@@ -10,6 +10,11 @@ import type { AuthPantallaProps } from "@/app/(auth)/types/strapi-autenticacion.
 import { useUser } from "@/app/contexts/auth/useUser";
 import { AUTH_ROUTES } from "@/constants/auth.constants";
 import { authService } from "@/services/authService";
+import {
+  consumePublishAuthMethod,
+  isRecentlyCreatedAccount,
+  trackPublishFlowAuth,
+} from "@/lib/analytics/publishFlowAuth";
 
 interface TwoFactorVerificationViewProps
   extends AuthPantallaProps<"verificacion_2fa"> {
@@ -50,6 +55,14 @@ export const TwoFactorVerificationView = ({
 
   const handleSuccess = async () => {
     await refreshUser();
+    const method = consumePublishAuthMethod();
+    if (method === "google" || method === "apple") {
+      const me = await authService.getMe();
+      void trackPublishFlowAuth({
+        method,
+        isNewUser: isRecentlyCreatedAccount(me.data?.created_at),
+      });
+    }
     toast.success(mensajesLogin?.exito);
     router.replace("/");
     router.refresh();

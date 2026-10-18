@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PublicarLink } from "@/components/analytics/PublicarLink";
 import { CheckCircle2, Eye, LayoutList, Plus, Sparkles } from "lucide-react";
 import { motion, type Variants } from "motion/react";
 
@@ -167,13 +168,14 @@ export const PublishSuccessView = ({
               Mis anuncios
             </Button>
           </div>
-          <Link
+          <PublicarLink
             href="/publicar"
+            source="otros"
             className="inline-flex items-center gap-1.5 self-start rounded-sm text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:self-auto sm:px-2"
           >
             <Plus className="size-3.5" aria-hidden />
             Publicar otro
-          </Link>
+          </PublicarLink>
         </motion.div>
       </motion.header>
 
@@ -281,13 +283,14 @@ export const PublishSuccessFallback = () => {
           </Button>
         </motion.div>
         <motion.p className="mt-6 text-sm" variants={item}>
-          <Link
+          <PublicarLink
             href="/publicar"
+            source="otros"
             className="inline-flex items-center gap-1.5 rounded-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <Plus className="size-3.5" aria-hidden />
             Publicar otro vehículo
-          </Link>
+          </PublicarLink>
         </motion.p>
       </motion.div>
     </div>

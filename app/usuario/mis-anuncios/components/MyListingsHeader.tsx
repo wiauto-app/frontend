@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BookOpen, Plus } from "lucide-react";
+import { PublicarLink } from "@/components/analytics/PublicarLink";
 import { Button } from "@/components/ui/button";
 
 export const MyListingsHeader = () => {
@@ -28,7 +29,13 @@ export const MyListingsHeader = () => {
         <Button
           className="bg-blue-600 hover:bg-blue-700 text-white"
           nativeButton={false}
-          render={<Link href="/publicar" aria-label="Crear nuevo anuncio" />}
+          render={
+            <PublicarLink
+              href="/publicar"
+              source="otros"
+              aria-label="Crear nuevo anuncio"
+            />
+          }
         >
           <Plus className="size-4" aria-hidden />
           Nuevo anuncio

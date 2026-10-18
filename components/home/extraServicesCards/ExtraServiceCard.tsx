@@ -5,6 +5,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import type { ExtraServiceCardItem } from "./extraServicesCards.types";
+import {
+  isPublishEntryHref,
+  trackPublicarClick,
+} from "@/lib/analytics/funnel";
 
 interface ExtraServiceCardProps {
   item: ExtraServiceCardItem;
@@ -16,6 +20,11 @@ export const ExtraServiceCard = ({ item }: ExtraServiceCardProps) => {
     <Link
       href={item.href}
       aria-label={item.title}
+      onClick={() => {
+        if (isPublishEntryHref(item.href)) {
+          trackPublicarClick("home");
+        }
+      }}
       {...(item.isExternal
         ? { target: "_blank", rel: "noopener noreferrer" }
         : {})}

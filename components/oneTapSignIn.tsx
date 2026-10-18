@@ -9,6 +9,10 @@ import { toast } from "sonner";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { GOOGLE_CLIENT_ID } from "@/constants/external.constant";
 import { authService } from "@/services/authService";
+import {
+  isPublishFlowPath,
+  PUBLISH_AUTH_METHOD_KEY,
+} from "@/lib/analytics/publishFlowAuth";
 
 const ONE_TAP_EXCLUDED_PATH_PREFIXES = [
   "/iniciar-sesion",
@@ -88,10 +92,16 @@ export const OneTapSignIn = () => {
         }
 
         if (apiResponse.data.type === "2fa_challenge") {
+          if (isPublishFlowPath(window.location.pathname)) {
+            sessionStorage.setItem(PUBLISH_AUTH_METHOD_KEY, "google");
+          }
           router.push("/verificacion-2fa");
           return;
         }
 
+        if (isPublishFlowPath(window.location.pathname)) {
+          sessionStorage.setItem(PUBLISH_AUTH_METHOD_KEY, "google");
+        }
         await refreshUser();
         router.refresh();
       } catch (error) {

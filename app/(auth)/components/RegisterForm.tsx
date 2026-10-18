@@ -21,6 +21,11 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/authService";
 import { trackCompleteRegistration } from "@/lib/analytics/events";
+import {
+  isMarkedPublishFlow,
+  isPublishFlowPath,
+  trackPublishFlowAuth,
+} from "@/lib/analytics/publishFlowAuth";
 import { PasswordInput } from "@/components/ui/passwordInput";
 import { DEFAULT_PHONE_CODE, PhoneInput } from "@/components/forms/phoneInput";
 import { ReferralCaptureOnMount } from "@/components/referrals/ReferralCaptureOnMount";
@@ -98,6 +103,10 @@ export default function RegisterForm({
           savePostRegisterReferralCode(response.referral_code);
         }
         trackCompleteRegistration("email");
+        const redirect = searchParams.get("redirect");
+        if (isPublishFlowPath(redirect) || isMarkedPublishFlow()) {
+          void trackPublishFlowAuth({ method: "email", isNewUser: true });
+        }
         toast.success(
           content.mensajes?.exito ||
             "Revisa tu correo para verificar la cuenta e iniciar sesión.",

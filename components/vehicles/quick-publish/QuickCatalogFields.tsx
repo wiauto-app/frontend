@@ -10,6 +10,7 @@ import { fuelTypesService } from "@/components/vehicles/services/fuelTypesServic
 import { BodyTypeSelector } from "@/components/dynamicSelectors/bodyTypeSelector";
 import { FuelTypeSelector } from "@/components/dynamicSelectors/fuelTypeSelector";
 import { CatalogVersionItem } from "../types/catalog.types";
+import { requestPublishDatosCheck } from "./QuickVehiclePublishDataTracker";
 
 const clearElectricFields = (
   setValue: ReturnType<typeof useFormContext<QuickVehicleSchema>>["setValue"],
@@ -95,7 +96,9 @@ export const QuickCatalogFields = () => {
       shouldValidate: true,
     });
 
-    void syncFieldsFromVersion(version);
+    void syncFieldsFromVersion(version).finally(() => {
+      requestPublishDatosCheck();
+    });
   };
 
   // useEffect(() => {
@@ -131,6 +134,7 @@ export const QuickCatalogFields = () => {
           });
 
           clearElectricFields(form.setValue);
+          requestPublishDatosCheck();
         }}
       />
 
@@ -157,6 +161,7 @@ export const QuickCatalogFields = () => {
           });
 
           clearElectricFields(form.setValue);
+          requestPublishDatosCheck();
         }}
       />
 
@@ -179,6 +184,7 @@ export const QuickCatalogFields = () => {
           form.setValue("catalog_year_id", value ? Number(value) : undefined, {
             shouldDirty: true,
           });
+          requestPublishDatosCheck();
         }}  
         versionId={versionId}
         disabled={!versionId}

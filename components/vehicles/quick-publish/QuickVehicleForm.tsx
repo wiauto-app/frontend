@@ -31,6 +31,21 @@ import { isValidReturnPath } from "@/lib/auth/authReturnTo";
 import { QUICK_VEHICLE_SUBMIT_ATTR } from "./quick-vehicle-wizard.constants";
 import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
 import { useQuickPublishDraft } from "./hooks/useQuickPublishDraft";
+import {
+  buildPublishTracking,
+  createPublishEventId,
+} from "@/lib/analytics/buildPublishTracking";
+import {
+  consumePublishAuthMethod,
+  isRecentlyCreatedAccount,
+  markPublishFlowAuth,
+  trackPublishFlowAuth,
+} from "@/lib/analytics/publishFlowAuth";
+import {
+  getPublishFunnelContext,
+  resetPublishFunnel,
+  track,
+} from "@/lib/analytics/funnel";
 
 /** Ruta actual con querystring (`?step`, `?tasacion`) para volver tras el login. */
 const getCurrentReturnTo = (): string | undefined => {
@@ -62,6 +77,7 @@ export const QuickVehicleForm = ({
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [signInReturnTo, setSignInReturnTo] = useState<string>();
   const autoPublishStartedRef = useRef(false);
+  const publishAuthTrackedRef = useRef(false);
 
   const { data: vehicleDetail, isLoading: isLoadingVehicle } = useQuery({
     queryKey: ["vehicle", vehicleId],
@@ -133,6 +149,7 @@ export const QuickVehicleForm = ({
     if (!isEditMode && !isAuthenticated) {
       saveDraftNow(form.getValues());
       setPendingPublish(true);
+      markPublishFlowAuth();
       setSignInReturnTo(getCurrentReturnTo());
       setIsSignInOpen(true);
       return;
@@ -157,24 +174,52 @@ export const QuickVehicleForm = ({
       return;
     }
 
-    const response = await vehiclesService.create(payload as never);
+    const publishEventId = createPublishEventId();
+    const response = await vehiclesService.create({
+      ...(payload as Record<string, unknown>),
+      tracking: buildPublishTracking(publishEventId),
+    } as never);
+
     if (response.ok) {
       // Contiene email y teléfono: no debe sobrevivir a la publicación.
       discardDraft();
-    }
+      const context = getPublishFunnelContext();
+      const province = response.data?.province;
+      track(
+        "anuncio_publicado",
+        {
+          ...(response.data?.id ? { listing_id: response.data.id } : {}),
+          vehicle_type: context.vehicleType ?? data.vehicle_type_id,
+          ...(context.brand
+            ? { brand: context.brand }
+            : data.catalog_make_id
+              ? { brand: String(data.catalog_make_id) }
+              : {}),
+          ...(context.model
+            ? { model: context.model }
+            : data.catalog_model_id
+              ? { model: String(data.catalog_model_id) }
+              : {}),
+          ...(typeof context.year === "number" ? { year: context.year } : {}),
+          price: Number(data.price),
+          currency: "EUR",
+          ...(province ? { province } : {}),
+        },
+        publishEventId,
+      );
+      resetPublishFunnel();
 
-    if (response.ok && response.data?.id) {
-      if (redirectTo) {
-        router.push(`${redirectTo}?id=${encodeURIComponent(response.data.id)}`);
-      } else {
-        router.push(
-          `/publicar/exito?id=${encodeURIComponent(response.data.id)}`,
-        );
+      if (response.data?.id) {
+        if (redirectTo) {
+          router.push(`${redirectTo}?id=${encodeURIComponent(response.data.id)}`);
+        } else {
+          router.push(
+            `/publicar/exito?id=${encodeURIComponent(response.data.id)}`,
+          );
+        }
+        return;
       }
-      return;
-    }
 
-    if (response.ok) {
       if (redirectTo) {
         router.push(redirectTo);
       } else {
@@ -189,6 +234,23 @@ export const QuickVehicleForm = ({
   // Auto-publicación tras el login (contraseña u OAuth con redirect completo).
   // `useUser.isLoading` arranca en `false` con `user` undefined: se gatea solo
   // con `isAuthenticated === true`. El ref evita el doble disparo (StrictMode).
+  useEffect(() => {
+    if (isEditMode || isAuthenticated !== true || !user || publishAuthTrackedRef.current) {
+      return;
+    }
+
+    const method = consumePublishAuthMethod();
+    if (method !== "google" && method !== "apple") {
+      return;
+    }
+
+    publishAuthTrackedRef.current = true;
+    void trackPublishFlowAuth({
+      method,
+      isNewUser: isRecentlyCreatedAccount(user.created_at),
+    });
+  }, [isEditMode, isAuthenticated, user]);
+
   useEffect(() => {
     if (isEditMode || autoPublishStartedRef.current) return;
     if (

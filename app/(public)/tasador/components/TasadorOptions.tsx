@@ -16,6 +16,10 @@ import {
   type StrapiIconPack,
 } from "@/lib/strapi/resolveStrapiIconName";
 import { cn } from "@/lib/utils";
+import {
+  isPublishEntryHref,
+  trackPublicarClick,
+} from "@/lib/analytics/funnel";
 
 interface TasadorOptionCardProps {
   option: StrapiTasadorOpcion;
@@ -120,6 +124,11 @@ export const TasadorOptions = ({
                 render={
                   <Link
                     href={`${publicar.boton.url}?tasacion=${encodeURIComponent(appraisalId)}`}
+                    onClick={() => {
+                      if (isPublishEntryHref(publicar.boton?.url ?? "")) {
+                        trackPublicarClick("otros");
+                      }
+                    }}
                   />
                 }
               >

@@ -1,16 +1,16 @@
-import Link from "next/link";
 import type { ComponentProps } from "react";
 
+import { PublicarLink } from "@/components/analytics/PublicarLink";
 import { Button } from "@/components/ui/button";
 
 type NavbarPublishButtonProps = ComponentProps<typeof Button>;
 
 export function NavbarPublishButton({ ...props }: NavbarPublishButtonProps) {
   return (
-    <Link href="/publicar">
+    <PublicarLink href="/publicar" source="header">
       <Button {...props} size="sm">
         Vender
       </Button>
-    </Link>
+    </PublicarLink>
   );
 }

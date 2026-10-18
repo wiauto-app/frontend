@@ -10,6 +10,10 @@ import {
 } from "@/lib/auth/oauthProviders";
 import { cn } from "@/lib/utils";
 import { saveRedirectUrlAction } from "./saveRedirectUrlAction";
+import {
+  isPublishFlowPath,
+  PUBLISH_AUTH_METHOD_KEY,
+} from "@/lib/analytics/publishFlowAuth";
 import { useRouter } from "next/navigation";
 
 interface OAuthButtonProps {
@@ -39,6 +43,9 @@ export const OAuthButton = ({
 
     try {
       const redirectPath = returnTo ?? window.location.pathname;
+      if (isPublishFlowPath(redirectPath)) {
+        sessionStorage.setItem(PUBLISH_AUTH_METHOD_KEY, provider);
+      }
       await saveRedirectUrlAction(redirectPath);
       const url = providerConfig.getUrl(false);
       console.log("url", url);

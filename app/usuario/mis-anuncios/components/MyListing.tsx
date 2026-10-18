@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
+import { PublicarLink } from "@/components/analytics/PublicarLink";
 import { useSearchParams } from "next/navigation";
 import { Car, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -196,12 +197,13 @@ export const MyListing = () => {
                   <p className="mt-4 text-gray-600">
                     Aún no tienes anuncios publicados
                   </p>
-                  <Link
+                  <PublicarLink
                     href="/publicar"
+                    source="otros"
                     className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80"
                   >
                     Nuevo anuncio
-                  </Link>
+                  </PublicarLink>
                 </>
               )}
             </div>

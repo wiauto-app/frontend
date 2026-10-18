@@ -26,6 +26,8 @@ import { GeneratedDescriptionConfig } from "./generatedDescription/generatedDesc
 // import { PromotionBanner } from "./promotionBanner";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { EquipmentForm } from "./equipmentForm";
+import { QuickVehiclePhotosTracker } from "./QuickVehiclePhotosTracker";
+import { QuickVehiclePublishDataTracker } from "./QuickVehiclePublishDataTracker";
 
 interface QuickVehicleMainSectionsProps {
   vehicleId?: string;
@@ -43,6 +45,8 @@ export const QuickVehicleMainSections = ({
   const { isSubscribed } = useEntitlements();
   return (
     <div className="flex flex-col gap-12">
+      <QuickVehiclePhotosTracker />
+      <QuickVehiclePublishDataTracker />
       {/* {!isSubscribed ? <PromotionBanner /> : null} */}
       <QuickVehicleIdentificationFields />
 

@@ -8,6 +8,10 @@ import { StrapiLink } from "@/interfaces/strapi-components.interface";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { ChevronRight } from "lucide-react";
+import {
+  isPublishEntryHref,
+  trackPublicarClick,
+} from "@/lib/analytics/funnel";
 
 interface StrapiButtonProps {
   button: StrapiLink;
@@ -79,6 +83,11 @@ export const StrapiButton = ({
   };
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (isPublishEntryHref(button.url)) {
+      const source = window.location.pathname === "/" ? "home" : "otros";
+      trackPublicarClick(source);
+    }
+
     if (
       event.defaultPrevented ||
       event.button !== 0 ||

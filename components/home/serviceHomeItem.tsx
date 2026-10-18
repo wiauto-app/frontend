@@ -11,6 +11,10 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import { IconContainer } from "../ui/iconContainer";
 import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 import type { VehicleExtraServiceItem } from "./types/vehicle-extra-service.types";
+import {
+  isPublishEntryHref,
+  trackPublicarClick,
+} from "@/lib/analytics/funnel";
 
 interface ServiceHomeItemProps {
   item: VehicleExtraServiceItem;
@@ -80,6 +84,11 @@ export const ServiceHomeItem = ({ item }: ServiceHomeItemProps) => {
     <Link
       href={item.href}
       aria-label={item.name}
+      onClick={() => {
+        if (isPublishEntryHref(item.href)) {
+          trackPublicarClick("home");
+        }
+      }}
       className="block h-full transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {card}

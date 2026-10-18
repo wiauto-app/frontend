@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Car, Compass, Home } from "lucide-react";
 
+import { PublicarLink } from "@/components/analytics/PublicarLink";
 import { BrandLogo } from "@/components/ui/brandLogo";
 import { Button } from "@/components/ui/button";
 
@@ -81,12 +82,22 @@ export default function NotFound() {
             <ul className="flex flex-wrap gap-2">
               {QUICK_LINKS.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="inline-flex items-center rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:border-[#0061F2]/40 hover:text-[#0061F2]"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.href === "/publicar" ? (
+                    <PublicarLink
+                      href={link.href}
+                      source="otros"
+                      className="inline-flex items-center rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:border-[#0061F2]/40 hover:text-[#0061F2]"
+                    >
+                      {link.label}
+                    </PublicarLink>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="inline-flex items-center rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:border-[#0061F2]/40 hover:text-[#0061F2]"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

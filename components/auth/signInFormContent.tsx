@@ -26,6 +26,11 @@ import { cn } from "@/lib/utils";
 import { authService } from "@/services/authService";
 import { createLoginSchema, LoginDto } from "@/validations/Schemas";
 import { PasswordInput } from "../ui/passwordInput";
+import {
+  isPublishFlowPath,
+  markPublishFlowAuth,
+  trackPublishFlowAuth,
+} from "@/lib/analytics/publishFlowAuth";
 
 interface SignInFormContentProps {
   onSuccess: () => void | Promise<void>;
@@ -69,6 +74,20 @@ export const SignInFormContent = ({
   });
 
   useEffect(() => {
+    if (isPublishFlowPath(returnTo)) {
+      markPublishFlowAuth();
+    }
+  }, [returnTo]);
+
+  const trackEmailLogin = () => {
+    if (!isPublishFlowPath(returnTo)) {
+      return;
+    }
+
+    void trackPublishFlowAuth({ method: "email", isNewUser: false });
+  };
+
+  useEffect(() => {
     const resumePendingChallenge = async () => {
       try {
         const response = await authService.getTwoFactorChallenge();
@@ -98,9 +117,10 @@ export const SignInFormContent = ({
         setStep("two_factor");
         return;
       }
-      if(returnTo) {
+      if (returnTo) {
         router.push(returnTo);
       }
+      trackEmailLogin();
       await onSuccess();
     } catch (error: Error | unknown) {
       console.error("Login error:", error);
@@ -125,6 +145,7 @@ export const SignInFormContent = ({
           content={contentVerificacion}
           email={pendingEmail}
           onSuccess={async () => {
+            trackEmailLogin();
             await onSuccess();
             router.push(returnTo ?? "/");
           }}

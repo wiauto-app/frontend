@@ -3,6 +3,7 @@ import { DashboardPriceDeviationCard } from "./DashboardPriceDeviationCard";
 import { DashboardQualityCard } from "./DashboardQualityCard";
 import { DashboardStockAgeCard } from "./DashboardStockAgeCard";
 import Link from "next/link";
+import { PublicarLink } from "@/components/analytics/PublicarLink";
 import { ChevronRight } from "lucide-react";
 import { formatNumber } from "./dashboard.utils";
 
@@ -38,12 +39,13 @@ export const DashboardInventorySection = ({
       {!hasActiveStock ? (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center">
           <p className="text-gray-600">Aún no tienes anuncios activos en stock.</p>
-          <Link
+          <PublicarLink
             href="/publicar"
+            source="otros"
             className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700"
           >
             Publicar vehículo
-          </Link>
+          </PublicarLink>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
