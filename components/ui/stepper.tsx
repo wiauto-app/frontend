@@ -1,11 +1,14 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import type { LucideIcon } from "lucide-react";
 import { Check } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 interface Step {
   id: number;
   name: string;
+  icon?: LucideIcon;
 }
 
 interface StepperProps {
@@ -15,17 +18,24 @@ interface StepperProps {
   className?: string;
 }
 
-export function Stepper({ steps, currentStep, onStepClick, className }: StepperProps) {
+export function Stepper({
+  steps,
+  currentStep,
+  onStepClick,
+  className,
+}: StepperProps) {
   return (
-    <div className={cn("flex items-center justify-between ", className)}>
+    <div className={cn("flex items-center justify-between", className)}>
       {steps.map((step, idx) => {
         const isCompleted = currentStep > step.id;
         const isActive = currentStep === step.id;
         const isPending = currentStep < step.id;
+        const StepIcon = step.icon;
 
         return (
-          <div key={step.id} className="flex items-center flex-1 last:flex-none">
+          <div key={step.id} className="flex flex-1 items-center last:flex-none">
             <button
+              type="button"
               onClick={() => onStepClick(step.id)}
               disabled={isPending}
               className={cn(
@@ -35,33 +45,39 @@ export function Stepper({ steps, currentStep, onStepClick, className }: StepperP
             >
               <span
                 className={cn(
-                  "flex items-center justify-center w-9 h-9 rounded-full text-sm font-semibold shrink-0 transition-colors",
-                  isActive && "bg-blue-600 text-white ring-4 ring-blue-100",
-                  isCompleted && "bg-blue-600 text-white",
-                  isPending && "bg-gray-100 text-gray-400",
+                  "flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors",
+                  isActive && "bg-primary text-primary-foreground ring-4 ring-primary/15",
+                  isCompleted && "bg-primary text-primary-foreground",
+                  isPending && "bg-muted text-muted-foreground",
                 )}
               >
-                {isCompleted ? <Check className="h-4 w-4" /> : idx + 1}
+                {isCompleted ? (
+                  <Check className="size-4" aria-hidden />
+                ) : StepIcon ? (
+                  <StepIcon className="size-4" aria-hidden />
+                ) : (
+                  idx + 1
+                )}
               </span>
               <span
                 className={cn(
-                  "text-xs text-center leading-tight max-w-24",
-                  isActive && "text-blue-700 font-semibold",
-                  isCompleted && "text-gray-600",
-                  isPending && "text-gray-400",
+                  "max-w-24 text-center text-xs leading-tight",
+                  isActive && "font-semibold text-primary",
+                  isCompleted && "text-muted-foreground",
+                  isPending && "text-muted-foreground/70",
                 )}
               >
                 {step.name}
               </span>
             </button>
-            {idx < steps.length - 1 && (
+            {idx < steps.length - 1 ? (
               <div
                 className={cn(
-                  "flex-1 h-0.5 mx-3 mt-[-1.5rem]",
-                  currentStep > step.id ? "bg-blue-600" : "bg-gray-200",
+                  "mx-3 mt-[-1.5rem] h-0.5 flex-1",
+                  currentStep > step.id ? "bg-primary" : "bg-border",
                 )}
               />
-            )}
+            ) : null}
           </div>
         );
       })}

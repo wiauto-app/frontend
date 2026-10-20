@@ -103,7 +103,12 @@ export function SectionHeading({
           ) : null}
         </motion.h2>
         {description && (
-          <p className={cn("text-xs lg:text-sm text-muted-foreground text-center", descriptionClassName)}>
+          <p
+            className={cn(
+              "text-xs lg:text-sm text-muted-foreground text-center",
+              descriptionClassName,
+            )}
+          >
             {description}
           </p>
         )}
@@ -123,7 +128,12 @@ export function SectionHeading({
         ) : null}
       </h2>
       {description && (
-        <p className={cn("text-xs lg:text-sm text-muted-foreground text-center", descriptionClassName)}>
+        <p
+          className={cn(
+            "text-xs lg:text-sm text-muted-foreground text-center",
+            descriptionClassName,
+          )}
+        >
           {description}
         </p>
       )}

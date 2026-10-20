@@ -1,8 +1,12 @@
+import type { LucideIcon } from "lucide-react";
+import { BadgePercent, Car, CarFront } from "lucide-react";
+
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 
 export interface QuickVehicleIntroStep {
   id: number;
   name: string;
+  icon: LucideIcon;
   fields: (keyof QuickVehicleSchema)[];
 }
 
@@ -15,11 +19,13 @@ export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
   {
     id: 1,
     name: "Tipo",
+    icon: CarFront,
     fields: ["vehicle_type_id"],
   },
   {
     id: 2,
     name: "Datos del vehículo",
+    icon: Car,
     fields: [
       "license_plate",
       "vin_code",
@@ -62,6 +68,7 @@ export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
   {
     id: 3,
     name: "Financiación y garantía",
+    icon: BadgePercent,
     fields: [
       "finance_price",
       "show_first_cuota",

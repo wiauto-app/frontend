@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import { ChevronLeft, ChevronRight, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
@@ -15,18 +15,14 @@ import { FinanceWarrantyForm } from "./financeWarrantyForm";
 
 import {
   findQuickVehicleErrorStep,
-  parseQuickVehicleStep,
-  QUICK_VEHICLE_INTRO_STEPS,
-  QUICK_VEHICLE_STEP_QUERY_PARAM,
-  type QuickVehicleIntroStep,
+  QUICK_VEHICLE_SUBMIT_ATTR,
 } from "./quick-vehicle-wizard.constants";
 
 import { cn } from "@/lib/utils";
-import { useEntitlements } from "@/hooks/useEntitlements";
-import { useFiltersManager } from "@/hooks/useFiltersManager";
 import { track } from "@/lib/analytics/funnel";
 import { vehicleTypesService } from "@/components/vehicles/services/vehicleTypesService";
 import { QuickVehiclePublishInicioTracker } from "./QuickVehiclePublishInicioTracker";
+import { useQuickPublishWizardSteps } from "./hooks/useQuickPublishWizardSteps";
 
 interface QuickVehicleIntroWizardProps {
   vehicleId?: string;
@@ -36,8 +32,6 @@ interface QuickVehicleIntroWizardProps {
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
 }
 
-const is_subscriber_only_step = (step_id: number) => step_id === 3;
-
 export const QuickVehicleIntroWizard = ({
   vehicleId,
   contactName,
@@ -46,63 +40,20 @@ export const QuickVehicleIntroWizard = ({
   onImageUploadStatusChange,
 }: QuickVehicleIntroWizardProps) => {
   const form = useFormContext<QuickVehicleSchema>();
-  const { values, handleChange } = useFiltersManager({
-    keys: [QUICK_VEHICLE_STEP_QUERY_PARAM],
-  });
 
-  const requested_step =
-    parseQuickVehicleStep(
-      values[QUICK_VEHICLE_STEP_QUERY_PARAM]?.toString() ?? null,
-    ) ?? 1;
-
-  const { isSubscribed } = useEntitlements();
-
-  const stepItems = useMemo(
-    () =>
-      QUICK_VEHICLE_INTRO_STEPS.filter((step) => {
-        if (is_subscriber_only_step(step.id)) {
-          return isSubscribed;
-        }
-
-        return true;
-      }),
-    [isSubscribed],
-  );
-
-  const current_step_index = useMemo(() => {
-    const index = stepItems.findIndex((step) => step.id === requested_step);
-    return index >= 0 ? index : 0;
-  }, [requested_step, stepItems]);
-
-  const currentStep = stepItems[current_step_index]?.id ?? stepItems[0]?.id ?? 1;
-  const current_step_config: QuickVehicleIntroStep | undefined =
-    stepItems[current_step_index];
+  const {
+    stepItems,
+    currentStep,
+    currentStepIndex,
+    currentStepConfig,
+    navigateToStep,
+    handleStepClick,
+    isFirstStep,
+    isLastStep,
+  } = useQuickPublishWizardSteps();
 
   const handledSubmitCountRef = useRef(0);
   const { errors, submitCount } = form.formState;
-
-  const isFirstStep = current_step_index === 0;
-  const isLastStep = current_step_index === stepItems.length - 1;
-
-  const navigateToStep = useCallback(
-    (step: number) => {
-      handleChange(QUICK_VEHICLE_STEP_QUERY_PARAM, String(step));
-    },
-    [handleChange],
-  );
-
-  // Si la URL apunta a un paso no disponible (p. ej. sin suscripción), corrige.
-  useEffect(() => {
-    const is_available = stepItems.some((step) => step.id === requested_step);
-    if (is_available) {
-      return;
-    }
-
-    const fallback = stepItems[0]?.id;
-    if (fallback != null) {
-      navigateToStep(fallback);
-    }
-  }, [requested_step, stepItems]);
 
   useEffect(() => {
     if (submitCount === 0 || submitCount <= handledSubmitCountRef.current) {
@@ -121,35 +72,26 @@ export const QuickVehicleIntroWizard = ({
     }
 
     toast.error(`Revisa los campos del paso «${errorStep.name}».`);
-  }, [currentStep, errors, stepItems, submitCount]);
-
-  const handleStepClick = (step: number) => {
-    const target_index = stepItems.findIndex((item) => item.id === step);
-    if (target_index < 0 || target_index >= current_step_index) {
-      return;
-    }
-
-    navigateToStep(step);
-  };
+  }, [currentStep, errors, stepItems, submitCount, navigateToStep]);
 
   const handlePrevious = () => {
     if (isFirstStep) {
       return;
     }
 
-    const previous = stepItems[current_step_index - 1];
+    const previous = stepItems[currentStepIndex - 1];
     if (previous) {
       navigateToStep(previous.id);
     }
   };
 
   const handleNext = async () => {
-    if (!current_step_config) {
+    if (!currentStepConfig) {
       return;
     }
 
-    if (current_step_config.fields.length > 0) {
-      const isValid = await form.trigger(current_step_config.fields);
+    if (currentStepConfig.fields.length > 0) {
+      const isValid = await form.trigger(currentStepConfig.fields);
 
       if (!isValid) {
         return;
@@ -178,7 +120,7 @@ export const QuickVehicleIntroWizard = ({
       return;
     }
 
-    const next = stepItems[current_step_index + 1];
+    const next = stepItems[currentStepIndex + 1];
     if (next) {
       navigateToStep(next.id);
     }
@@ -215,7 +157,7 @@ export const QuickVehicleIntroWizard = ({
         steps={stepItems}
         currentStep={currentStep}
         onStepClick={handleStepClick}
-        className="overflow-x-auto pb-2"
+        className="hidden overflow-x-auto pb-2 lg:flex"
       />
 
       {renderStep()}

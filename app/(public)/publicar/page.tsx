@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowLeft, Car, CarFront } from "lucide-react";
+import { ArrowLeft, CarFront } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { QuickPublishMobileStepBreadcrumb } from "@/components/vehicles/quick-publish/QuickPublishMobileStepBreadcrumb";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
 import { Metadata } from "next";
 import { SectionHeading } from "@/components/home/SectionHeading";
@@ -29,16 +30,22 @@ export default async function CrearVehiculoPage({
           <ArrowLeft className="h-4 w-4" />
           Volver al perfil
         </Link>
-        <div className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg">
-          <CarFront className="size-8 text-primary" />
-          <div className="flex flex-col">
-            <SectionHeading
-              descriptionClassName="text-sm text-muted-foreground text-start"
-              className="text-xl font-bold text-gray-900 not-sr-only text-start"
-              lead=" Publicación rápida"
-              description="Publica tu vehículo en menos de 1 minuto"
-            ></SectionHeading>
+        <div
+          id="quick-publish-heading"
+          className="flex justify-between gap-3 rounded-lg bg-primary/10 p-2 flex-row items-center lg:gap-4"
+        >
+          <div className="flex items-center gap-2 flex-1">
+            <CarFront className="size-8 shrink-0 text-primary" />
+            <div className="flex min-w-0 flex-col">
+              <SectionHeading
+                descriptionClassName="text-xs text-muted-foreground text-start"
+                className="text-md font-bold text-gray-900 not-sr-only text-start"
+                lead="Publica tu coche Gratis"
+                description="En menos de 1 minuto"
+              />
+            </div>
           </div>
+          <QuickPublishMobileStepBreadcrumb className="lg:hidden" />
         </div>
       </div>
 
