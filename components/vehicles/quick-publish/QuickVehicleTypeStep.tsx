@@ -34,7 +34,7 @@ export const QuickVehicleTypeStep = () => {
             {isLoading ? (
               <p className="text-sm text-muted-foreground">Cargando tipos…</p>
             ) : (
-              <div className="space-y-2 max-h-[320px] overflow-y-auto">
+              <div className="space-y-2 max-h-70 overflow-y-auto">
                 {vehicleTypes.map((vehicleType) => {
                   const active = field.value === vehicleType.id;
 
