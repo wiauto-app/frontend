@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Car, CarFront } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
 import { Metadata } from "next";
+import { SectionHeading } from "@/components/home/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Publicar un vehículo",
@@ -13,7 +14,9 @@ interface CrearVehiculoPageProps {
   searchParams: Promise<{ tasacion?: string }>;
 }
 
-export default async function CrearVehiculoPage({ searchParams }: CrearVehiculoPageProps) {
+export default async function CrearVehiculoPage({
+  searchParams,
+}: CrearVehiculoPageProps) {
   const { tasacion } = await searchParams;
 
   return (
@@ -26,12 +29,16 @@ export default async function CrearVehiculoPage({ searchParams }: CrearVehiculoP
           <ArrowLeft className="h-4 w-4" />
           Volver al perfil
         </Link>
-        <h1 className="text-xl font-bold text-gray-900 sr-only md:not-sr-only">
-          Publicación rápida
-        </h1>
-        <p className="text-sm text-muted-foreground  sr-only md:not-sr-only">
-          Publica tu vehículo en menos de 1 minuto
-        </p>
+        <div className="flex items-center gap-2">
+          <CarFront className="size-8 text-primary" />
+          <div className="flex flex-col">
+            <SectionHeading
+              className="text-xl font-bold text-gray-900 not-sr-only text-start"
+              lead=" Publicación rápida"
+              description="Publica tu vehículo en menos de 1 minuto"
+            ></SectionHeading>
+          </div>
+        </div>
       </div>
 
       <Card className="p-0 shadow-none border-none ring-0 lg:shadow-sm lg:p-4 lg:ring-1">

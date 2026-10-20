@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
-
 import {
   createQuickVehicleDefaultValues,
   type QuickVehicleSchema,
@@ -153,21 +151,12 @@ export const useQuickPublishDraft = ({
     const images = draftImages.filter((image) =>
       isRestorableImage(image, now),
     );
-    const droppedImages = draftImages.length - images.length;
 
     form.reset({
       ...createQuickVehicleDefaultValues,
       ...values,
       images: images.map((image, index) => ({ ...image, order: index })),
     });
-
-    if (droppedImages > 0) {
-      toast.warning(
-        droppedImages === 1
-          ? "Una foto de tu borrador ha caducado. Vuelve a subirla."
-          : `${droppedImages} fotos de tu borrador han caducado. Vuelve a subirlas.`,
-      );
-    }
 
     setRestoredFromDraft(true);
     setIsDraftReady(true);
