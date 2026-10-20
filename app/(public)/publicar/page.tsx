@@ -29,10 +29,11 @@ export default async function CrearVehiculoPage({
           <ArrowLeft className="h-4 w-4" />
           Volver al perfil
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg">
           <CarFront className="size-8 text-primary" />
           <div className="flex flex-col">
             <SectionHeading
+              descriptionClassName="text-sm text-muted-foreground text-start"
               className="text-xl font-bold text-gray-900 not-sr-only text-start"
               lead=" Publicación rápida"
               description="Publica tu vehículo en menos de 1 minuto"

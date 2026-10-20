@@ -76,7 +76,7 @@ export const QuickVehicleTypeStep = () => {
                         <p className="text-sm font-medium">
                           {vehicleType.name}
                         </p>
-                        {active ? <Check className="h-4 w-4 shrink-0" /> : null}
+                        {active ? <Check className="h-4 w-4 shrink-0 mr-4" /> : null}
                       </div>
                     </button>
                   );

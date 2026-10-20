@@ -10,6 +10,7 @@ interface SectionHeadingProps {
   lead: string;
   highlight?: string;
   className?: string;
+  descriptionClassName?: string;
   highlightClassName?: string;
   /** Si no hay `highlight`, resalta las últimas N palabras de `lead`. */
   highlightWordsCount?: number;
@@ -60,6 +61,7 @@ export function SectionHeading({
   highlightClassName,
   highlightWordsCount = 1,
   description,
+  descriptionClassName,
   animated = false,
 }: SectionHeadingProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -75,10 +77,6 @@ export function SectionHeading({
     className,
   );
   const leadSeparator = leadText ? " " : null;
-
-  const descriptionNode = description ? (
-    <p className="text-sm text-muted-foreground text-center">{description}</p>
-  ) : null;
 
   if (shouldAnimate) {
     return (
@@ -104,7 +102,11 @@ export function SectionHeading({
             </>
           ) : null}
         </motion.h2>
-        {descriptionNode}
+        {description && (
+          <p className={cn("text-xs lg:text-sm text-muted-foreground text-center", descriptionClassName)}>
+            {description}
+          </p>
+        )}
       </div>
     );
   }
@@ -120,7 +122,11 @@ export function SectionHeading({
           </>
         ) : null}
       </h2>
-      {descriptionNode}
+      {description && (
+        <p className={cn("text-xs lg:text-sm text-muted-foreground text-center", descriptionClassName)}>
+          {description}
+        </p>
+      )}
     </div>
   );
 }
