@@ -1,6 +1,8 @@
-import { termsService } from "../services/termsService";
-import { PolicyPageTemplate } from "../components/policyPageTemplate";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
+
+import { PolicyPageTemplate } from "../components/policyPageTemplate";
+import { legalPageService } from "../services/legalPageService";
 
 export const metadata: Metadata = {
   title: "Términos y Condiciones | Wiauto",
@@ -8,7 +10,16 @@ export const metadata: Metadata = {
 };
 
 export default async function TermsOfServicePage() {
-  const termsOfService = await termsService.getTermsOfService();
+  const termsOfService = await legalPageService.getBySlug("terminos");
 
-  return <PolicyPageTemplate title={termsOfService.titulo} content={termsOfService.contenido} />
+  if (!termsOfService) {
+    notFound();
+  }
+
+  return (
+    <PolicyPageTemplate
+      title={termsOfService.titulo}
+      content={termsOfService.contenido}
+    />
+  );
 }

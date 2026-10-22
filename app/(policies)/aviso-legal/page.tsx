@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import { LandingHeader } from "@/components/ui/landingHeader";
 import { COMPANY_LEGAL } from "@/lib/legal/company-legal";
+import { PolicyPageTemplate } from "../components/policyPageTemplate";
+import { legalPageService } from "../services/legalPageService";
 
 export const metadata: Metadata = {
   title: "Aviso legal | Wiauto",
@@ -10,7 +12,18 @@ export const metadata: Metadata = {
     "Datos identificativos de WIAUTO MOTOR DIGITAL S.L. e información legal de la plataforma WiAuto.",
 };
 
-export default function AvisoLegalPage() {
+export default async function AvisoLegalPage() {
+  const legalNotice = await legalPageService.getBySlug("aviso-legal").catch(() => null);
+
+  if (legalNotice) {
+    return (
+      <PolicyPageTemplate
+        title={legalNotice.titulo}
+        content={legalNotice.contenido}
+      />
+    );
+  }
+
   return (
     <>
       <LandingHeader title="Aviso legal" />
@@ -23,9 +36,9 @@ export default function AvisoLegalPage() {
           <h2>1. Titular del sitio web</h2>
           <p>
             En cumplimiento de la Ley 34/2002, de 11 de julio, de servicios de
-            la sociedad de la información y de comercio electrónico (LSSI-CE), se
-            informa que el titular de este sitio web y de la plataforma WiAuto
-            es:
+            la sociedad de la información y de comercio electrónico (LSSI-CE),
+            se informa que el titular de este sitio web y de la plataforma
+            WiAuto es:
           </p>
           <ul>
             <li>
@@ -42,7 +55,9 @@ export default function AvisoLegalPage() {
             </li>
             <li>
               <strong>Correo electrónico:</strong>{" "}
-              <a href={`mailto:${COMPANY_LEGAL.email}`}>{COMPANY_LEGAL.email}</a>
+              <a href={`mailto:${COMPANY_LEGAL.email}`}>
+                {COMPANY_LEGAL.email}
+              </a>
             </li>
             <li>
               <strong>Teléfono:</strong>{" "}
@@ -50,7 +65,8 @@ export default function AvisoLegalPage() {
             </li>
             <li>
               <strong>Datos registrales:</strong> Inscrita en el{" "}
-              {COMPANY_LEGAL.mercantileRegistry}, {COMPANY_LEGAL.mercantileRegistryEntry}.
+              {COMPANY_LEGAL.mercantileRegistry},{" "}
+              {COMPANY_LEGAL.mercantileRegistryEntry}.
             </li>
           </ul>
 
