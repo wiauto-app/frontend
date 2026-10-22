@@ -1,3 +1,4 @@
+import "@/lib/zod-es";
 import z from "zod";
 import { VEHICLE_CONDITION_VALUES } from "../constants/vehicle-enums.constants";
 import { phoneSchema } from "@/validations/resources/phone.schema";
@@ -36,6 +37,13 @@ const optional_vehicle_videos_array = z
   .optional()
   .default([]);
 
+const optionalCatalogId = (message: string) =>
+  z.coerce
+    .number({ error: message })
+    .int({ error: message })
+    .positive({ error: message })
+    .optional();
+
 const quickVehicleBaseSchema = z.object({
   vehicle_type_id: z.uuid({ error: "Selecciona un tipo de vehículo." }),
   ref: z
@@ -70,18 +78,28 @@ const quickVehicleBaseSchema = z.object({
   videos: optional_vehicle_videos_array,
   version_id: z.coerce
     .number({ error: "Selecciona una versión del catálogo." })
-    .int()
-    .positive(),
-  catalog_make_id: z.coerce.number().int().positive().optional(),
-  catalog_model_id: z.coerce.number().int().positive().optional(),
-  catalog_year_id: z.coerce.number().int().positive().optional(),
-  catalog_body_type_id: z.coerce.number().int().positive().optional(),
-  catalog_fuel_type_id: z.coerce.number().int().positive().optional(),
+    .int({ error: "Selecciona una versión del catálogo." })
+    .positive({ error: "Selecciona una versión del catálogo." }),
+  catalog_make_id: optionalCatalogId("Selecciona la marca."),
+  catalog_model_id: optionalCatalogId("Selecciona el modelo."),
+  catalog_year_id: optionalCatalogId("Selecciona el año."),
+  catalog_body_type_id: optionalCatalogId("Selecciona la carrocería."),
+  catalog_fuel_type_id: optionalCatalogId("Selecciona el combustible."),
   /** Solo formulario: indica si el combustible admite recarga. No se envía al API. */
   catalog_fuel_can_charge: z.boolean().optional().default(false),
-  condition: z.enum(VEHICLE_CONDITION_VALUES),
-  mileage: z.coerce.number().min(0, { error: "El kilometraje no puede ser negativo." }).max(9999999, { error: "El kilometraje no puede ser mayor a 9999999." }).nonnegative({ error: "El kilometraje no puede ser negativo." }),
-  price: z.coerce.number().min(0, { error: "El precio no puede ser negativo." }).max(9999999, { error: "El precio no puede ser mayor a 9999999." }).nonnegative({ error: "El precio no puede ser negativo." }),
+  condition: z.enum(VEHICLE_CONDITION_VALUES, {
+    error: "Selecciona si el vehículo es nuevo o usado.",
+  }),
+  mileage: z.coerce
+    .number({ error: "Introduce el kilometraje." })
+    .min(0, { error: "El kilometraje no puede ser negativo." })
+    .max(9_999_999, {
+      error: "El kilometraje no puede ser mayor a 9999999.",
+    }),
+  price: z.coerce
+    .number({ error: "Introduce el precio." })
+    .min(0, { error: "El precio no puede ser negativo." })
+    .max(9_999_999, { error: "El precio no puede ser mayor a 9999999." }),
   finance_price: optionalBoundedNumber(9999999, "El precio financiado no puede ser mayor a 9999999."),
   show_first_cuota: z.boolean().default(false),
   by_brand_warranty: z.boolean().default(false),
@@ -103,13 +121,13 @@ const quickVehicleBaseSchema = z.object({
     error: "Selecciona un tipo de transmisión.",
   }),
   power: z.coerce
-    .number()
-    .min(1, { error: "Introduce la potencia del vehículo." })
+    .number({ error: "Introduce la potencia en CV." })
+    .min(1, { error: "Introduce la potencia en CV." })
     .max(9999, { error: "La potencia no puede ser mayor a 9999 CV." }),
   displacement: z.coerce
-    .number()
-    .min(0, { error: "Introduce la cilindrada del vehículo." })
-    .max(20000, { error: "La cilindrada no puede ser mayor a 20000 cc." }),
+    .number({ error: "Introduce la cilindrada en cc." })
+    .min(0, { error: "La cilindrada no puede ser negativa." })
+    .max(20_000, { error: "La cilindrada no puede ser mayor a 20000 cc." }),
   autonomy: optionalBoundedNumber(2000, "La autonomía no puede ser mayor a 2000 km."),
   battery_capacity: optionalBoundedNumber(500, "La capacidad de la batería no puede ser mayor a 500 kWh."),
   time_to_charge: optionalBoundedNumber(100, "El tiempo de carga no puede ser mayor a 100 h."),
@@ -118,7 +136,11 @@ const quickVehicleBaseSchema = z.object({
   services_ids: optionalUuidArray,
   cuota_ids: optionalUuidArray,
   warranty_type_id: optionalUuid,
-  publisher_type: z.enum(["dealership", "particular"]).default("particular"),
+  publisher_type: z
+    .enum(["dealership", "particular"], {
+      error: "Selecciona el tipo de publicador.",
+    })
+    .default("particular"),
   show_review_collab: z.boolean().default(true),
 });
 
@@ -128,9 +150,18 @@ export const quickVehicleSchema = quickVehicleBaseSchema.superRefine((data, ctx)
   }
 
   const electricFields = [
-    { key: "autonomy" as const, label: "autonomía" },
-    { key: "battery_capacity" as const, label: "capacidad de la batería" },
-    { key: "time_to_charge" as const, label: "tiempo de carga" },
+    {
+      key: "autonomy" as const,
+      message: "Introduce la autonomía (km) del vehículo eléctrico.",
+    },
+    {
+      key: "battery_capacity" as const,
+      message: "Introduce la capacidad de la batería (kWh).",
+    },
+    {
+      key: "time_to_charge" as const,
+      message: "Introduce el tiempo de carga (h).",
+    },
   ];
 
   for (const field of electricFields) {
@@ -138,7 +169,7 @@ export const quickVehicleSchema = quickVehicleBaseSchema.superRefine((data, ctx)
     if (value == null || value <= 0) {
       ctx.addIssue({
         code: "custom",
-        message: `Introduce la ${field.label} del vehículo eléctrico.`,
+        message: field.message,
         path: [field.key],
       });
     }

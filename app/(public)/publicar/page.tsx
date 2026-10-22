@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, CarFront } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { QuickPublishMobileStepBreadcrumb } from "@/components/vehicles/quick-publish/QuickPublishMobileStepBreadcrumb";
+import { QuickPublishStepProgress } from "@/components/vehicles/quick-publish/QuickPublishStepProgress";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
 import { Metadata } from "next";
 import { SectionHeading } from "@/components/home/SectionHeading";
@@ -32,9 +33,9 @@ export default async function CrearVehiculoPage({
         </Link>
         <div
           id="quick-publish-heading"
-          className="flex justify-between gap-3 rounded-lg bg-primary/10 p-2 flex-row items-center lg:gap-4"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-primary/10 p-2 lg:gap-4"
         >
-          <div className="flex items-center gap-2 flex-1">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             <CarFront className="size-8 shrink-0 text-primary" />
             <div className="flex min-w-0 flex-col">
               <SectionHeading
@@ -45,7 +46,8 @@ export default async function CrearVehiculoPage({
               />
             </div>
           </div>
-          <QuickPublishMobileStepBreadcrumb className="lg:hidden" />
+          <QuickPublishMobileStepBreadcrumb className="shrink-0 lg:hidden" />
+          <QuickPublishStepProgress />
         </div>
       </div>
 

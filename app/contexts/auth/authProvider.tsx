@@ -10,6 +10,7 @@ import { usePendingReferralAttribute } from "@/hooks/usePendingReferralAttribute
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<MeResponseDto | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthResolved, setIsAuthResolved] = useState(false);
   const router = useRouter();
   const refreshUser = useCallback(async () => {
     try {
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(undefined);
     } finally {
       setIsLoading(false);
+      setIsAuthResolved(true);
     }
   }, []);
 
@@ -44,10 +46,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       user,
       isLoading,
       isAuthenticated: Boolean(user?.id),
+      isAuthResolved,
       refreshUser,
       logout,
     }),
-    [user, isLoading, refreshUser, logout],
+    [user, isLoading, isAuthResolved, refreshUser, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

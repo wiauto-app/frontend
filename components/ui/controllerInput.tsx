@@ -50,6 +50,7 @@ export const ControllerInput = <T extends FieldValues>({
       control={control}
       render={({ field, fieldState }) => (
         <Field
+          data-field-name={String(name)}
           data-invalid={fieldState.invalid}
           className="flex flex-col gap-1"
         >

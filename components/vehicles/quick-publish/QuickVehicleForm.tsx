@@ -70,7 +70,7 @@ export const QuickVehicleForm = ({
   appraisalId,
 }: QuickVehicleFormProps) => {
   const router = useRouter();
-  const { user, isAuthenticated } = useUser();
+  const { user, isAuthenticated, isAuthResolved } = useUser();
   const isEditMode = Boolean(vehicleId);
   const [hasIncompleteImageUploads, setHasIncompleteImageUploads] =
     useState(false);
@@ -114,6 +114,8 @@ export const QuickVehicleForm = ({
     form,
     enabled: !isEditMode,
     appraisalId,
+    // `isLoading` arranca en `false` antes de consultar la sesión: no sirve aquí.
+    isAuthenticated: isAuthResolved ? isAuthenticated : undefined,
   });
 
   useEffect(() => {
@@ -144,7 +146,7 @@ export const QuickVehicleForm = ({
       return;
     }
 
-    // Anónimo: se guarda el borrador, se marca la publicación pendiente y se
+    // Anónimo: se guarda el handoff, se marca la publicación pendiente y se
     // pide login. El efecto de auto-publicación publica al volver autenticado.
     if (!isEditMode && !isAuthenticated) {
       saveDraftNow(form.getValues());

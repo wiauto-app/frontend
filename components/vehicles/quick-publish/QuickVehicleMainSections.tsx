@@ -56,7 +56,9 @@ export const QuickVehicleMainSections = ({
       />
 
       <VehicleFormStep number={3} label="¿Qué vehículo vendes?">
-        <QuickCatalogFields />
+        <div data-field-name="version_id">
+          <QuickCatalogFields />
+        </div>
         {form.formState.errors.version_id ? (
           <p className="text-sm text-destructive">
             {form.formState.errors.version_id.message}
@@ -130,6 +132,7 @@ export const QuickVehicleMainSections = ({
           render={({ field: latField, fieldState }) => {
             const lng = form.watch("lng");
             return (
+              <div data-field-name="lat">
               <MapInput
                 value={{ lat: latField.value, lng }}
                 onChange={({ lat, lng: nextLng }) => {
@@ -143,6 +146,7 @@ export const QuickVehicleMainSections = ({
                   fieldState.invalid || Boolean(form.formState.errors.lng)
                 }
               />
+              </div>
             );
           }}
         />
@@ -164,7 +168,7 @@ export const QuickVehicleMainSections = ({
             name="phone"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-field-name="phone" data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="phone">Teléfono</FieldLabel>
                 <PhoneInput
                   value={field.value}

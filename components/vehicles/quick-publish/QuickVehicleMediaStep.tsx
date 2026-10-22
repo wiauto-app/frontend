@@ -67,7 +67,7 @@ export const QuickVehicleMediaStep = ({
             name="images"
             control={form.control}
             render={({ field, fieldState }) => (
-              <div>
+              <div data-field-name="images">
                 <ImagesForm
                   featureFirstImage={true}
                   value={field.value}

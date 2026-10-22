@@ -1,3 +1,4 @@
+import "@/lib/zod-es";
 import z from "zod";
 import {
   VEHICLE_CONDITION_VALUES,
@@ -30,9 +31,15 @@ const optionalUuidArray = z
 
 /** Imagen del vehículo: upload_id (nuevo flujo) o path (legacy) + orden de visualización (0 … n-1). */
 export const vehicle_image_schema = z.object({
-  id: z.uuid().optional(),
-  upload_id: z.string().min(1).optional(),
-  path: z.string().min(1).optional(),
+  id: z.uuid({ error: "Identificador no válido." }).optional(),
+  upload_id: z
+    .string()
+    .min(1, { error: "La foto no se ha subido correctamente." })
+    .optional(),
+  path: z
+    .string()
+    .min(1, { error: "La foto no se ha subido correctamente." })
+    .optional(),
   /** Solo UI: blob local o URL pública; no se envía al API. */
   preview_url: z.string().min(1).optional(),
   /** Solo UI: caducidad (ISO) de la temp upload; sirve para descartar fotos del borrador. No se envía al API. */
@@ -43,7 +50,10 @@ export const vehicle_image_schema = z.object({
     .min(0, { error: "El orden de la imagen no puede ser negativo." }),
 }).refine(
   (data) => data.upload_id || data.path,
-  { message: "Debe proporcionar upload_id o path.", path: ["upload_id"] }
+  {
+    message: "La foto no se ha subido correctamente. Vuelve a añadirla.",
+    path: ["upload_id"],
+  },
 );
 
 export type VehicleFormImage = z.infer<typeof vehicle_image_schema>;
@@ -75,8 +85,8 @@ const optionalNonNegativeNumber = z.coerce
   .optional();
 
 export const fileSchema = z.object({
-  path: z.string(),
-  key: z.string(),
+  path: z.string({ error: "La ruta del archivo no es válida." }),
+  key: z.string({ error: "La clave del archivo no es válida." }),
 });
 export const fileArray = z.array(fileSchema);
 
@@ -115,11 +125,31 @@ export const vehicleSchema = z.object({
     .int({ error: "Selecciona una versión del catálogo." })
     .positive({ error: "Selecciona una versión del catálogo." }),
   /** Solo formulario: precarga la cascada del catálogo al editar. No se envía al API. */
-  catalog_make_id: z.coerce.number().int().positive().optional(),
-  catalog_model_id: z.coerce.number().int().positive().optional(),
-  catalog_body_type_id: z.coerce.number().int().positive().optional(),
-  catalog_fuel_type_id: z.coerce.number().int().positive().optional(),
-  catalog_year_id: z.coerce.number().int().positive().optional(),
+  catalog_make_id: z.coerce
+    .number({ error: "Selecciona la marca." })
+    .int({ error: "Selecciona la marca." })
+    .positive({ error: "Selecciona la marca." })
+    .optional(),
+  catalog_model_id: z.coerce
+    .number({ error: "Selecciona el modelo." })
+    .int({ error: "Selecciona el modelo." })
+    .positive({ error: "Selecciona el modelo." })
+    .optional(),
+  catalog_body_type_id: z.coerce
+    .number({ error: "Selecciona la carrocería." })
+    .int({ error: "Selecciona la carrocería." })
+    .positive({ error: "Selecciona la carrocería." })
+    .optional(),
+  catalog_fuel_type_id: z.coerce
+    .number({ error: "Selecciona el combustible." })
+    .int({ error: "Selecciona el combustible." })
+    .positive({ error: "Selecciona el combustible." })
+    .optional(),
+  catalog_year_id: z.coerce
+    .number({ error: "Selecciona el año." })
+    .int({ error: "Selecciona el año." })
+    .positive({ error: "Selecciona el año." })
+    .optional(),
   /** Solo formulario: reactivar un precio histórico en update. No se envía en create. */
   vehicle_price_id: optionalUuid,
   traction_id: z.uuid({ error: "Selecciona un tipo de tracción." }),
@@ -127,10 +157,14 @@ export const vehicleSchema = z.object({
     error: "Selecciona un tipo de transmisión.",
   }).default("manual"),
   power: z.coerce
-    .number({ error: "Introduce la potencia." })
+    .number({ error: "Introduce la potencia en CV." })
+    .min(1, { error: "Introduce la potencia en CV." })
+    .max(9999, { error: "La potencia no puede ser mayor a 9999 CV." })
     .optional(),
   displacement: z.coerce
-    .number({ error: "Introduce la cilindrada." }),
+    .number({ error: "Introduce la cilindrada en cc." })
+    .min(0, { error: "La cilindrada no puede ser negativa." })
+    .max(20_000, { error: "La cilindrada no puede ser mayor a 20000 cc." }),
   autonomy: optionalNonNegativeNumber,
   battery_capacity: optionalNonNegativeNumber,
   time_to_charge: optionalNonNegativeNumber,

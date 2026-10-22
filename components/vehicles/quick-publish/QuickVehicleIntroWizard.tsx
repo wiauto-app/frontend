@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { FieldPath } from "react-hook-form";
 import { useFormContext } from "react-hook-form";
 import { ChevronLeft, ChevronRight, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
@@ -14,9 +15,11 @@ import { QuickVehicleTypeStep } from "./QuickVehicleTypeStep";
 import { FinanceWarrantyForm } from "./financeWarrantyForm";
 
 import {
-  findQuickVehicleErrorStep,
+  findFirstQuickVehicleErrorField,
+  QUICK_VEHICLE_FIELD_LABELS,
   QUICK_VEHICLE_SUBMIT_ATTR,
 } from "./quick-vehicle-wizard.constants";
+import { focusQuickVehicleField } from "./utils/focus-quick-vehicle-field";
 
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics/funnel";
@@ -53,6 +56,9 @@ export const QuickVehicleIntroWizard = ({
   } = useQuickPublishWizardSteps();
 
   const handledSubmitCountRef = useRef(0);
+  const [pendingFocusField, setPendingFocusField] = useState<
+    FieldPath<QuickVehicleSchema> | null
+  >(null);
   const { errors, submitCount } = form.formState;
 
   useEffect(() => {
@@ -61,18 +67,46 @@ export const QuickVehicleIntroWizard = ({
     }
 
     handledSubmitCountRef.current = submitCount;
-    const errorStep = findQuickVehicleErrorStep(errors, stepItems);
+    const match = findFirstQuickVehicleErrorField(errors, stepItems);
 
-    if (!errorStep) {
+    if (!match) {
       return;
     }
 
-    if (errorStep.id !== currentStep) {
-      navigateToStep(errorStep.id);
+    if (match.step.id !== currentStep) {
+      navigateToStep(match.step.id);
     }
 
-    toast.error(`Revisa los campos del paso «${errorStep.name}».`);
+    setPendingFocusField(match.field);
+
+    const label =
+      QUICK_VEHICLE_FIELD_LABELS[match.field] ?? match.step.name;
+    toast.error(`Revisa «${label}»: ${match.message}`);
   }, [currentStep, errors, stepItems, submitCount, navigateToStep]);
+
+  useEffect(() => {
+    if (!pendingFocusField) {
+      return;
+    }
+
+    const match = findFirstQuickVehicleErrorField(errors, stepItems);
+    if (!match || match.field !== pendingFocusField) {
+      setPendingFocusField(null);
+      return;
+    }
+
+    if (match.step.id !== currentStep) {
+      return;
+    }
+
+    const fieldToFocus = pendingFocusField;
+    const frame = requestAnimationFrame(() => {
+      focusQuickVehicleField(fieldToFocus);
+      setPendingFocusField(null);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [currentStep, errors, pendingFocusField, stepItems]);
 
   const handlePrevious = () => {
     if (isFirstStep) {
@@ -94,6 +128,16 @@ export const QuickVehicleIntroWizard = ({
       const isValid = await form.trigger(currentStepConfig.fields);
 
       if (!isValid) {
+        const match = findFirstQuickVehicleErrorField(
+          form.formState.errors,
+          stepItems,
+        );
+        if (match?.field) {
+          setPendingFocusField(match.field);
+          const label =
+            QUICK_VEHICLE_FIELD_LABELS[match.field] ?? match.step.name;
+          toast.error(`Revisa «${label}»: ${match.message}`);
+        }
         return;
       }
     }
