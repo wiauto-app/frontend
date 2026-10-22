@@ -76,7 +76,7 @@ export default async function RootLayout({
               <AppDownloadBannerGate />
               <Navbar />
             </div>
-            <main className="flex flex-1 flex-col ">
+            <main className="flex min-w-0 flex-1 flex-col overflow-x-clip">
               <MetaPixel />
               {children}
             </main>

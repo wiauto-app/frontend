@@ -58,7 +58,7 @@ export const PromotionPlans = ({
 
   return (
     <Hero
-      className="lg:h-auto gap-5 overflow-visible lg:px-0 py-0 px-0"
+      className="gap-5 overflow-x-clip py-0 px-0 lg:h-auto lg:px-0"
       contentClassName="gap-3 lg:gap-5"
       leftContent={
         <motion.div
@@ -66,7 +66,7 @@ export const PromotionPlans = ({
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={leftStagger}
-          className="flex flex-col gap-3 lg:gap-5"
+          className="flex flex-col gap-3 overflow-x-clip lg:gap-5"
         >
           <motion.div variants={leftItem}>
             <HeroTitle as="h3" className="text-foreground" highlight>

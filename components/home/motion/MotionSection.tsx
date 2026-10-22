@@ -48,7 +48,7 @@ export const MotionSection = ({
   return (
     <Component
       id={id}
-      className={cn(className)}
+      className={cn("overflow-x-clip", className)}
       initial="hidden"
       {...(inView
         ? { whileInView: "visible", viewport: { once: true, amount } }

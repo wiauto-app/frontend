@@ -41,6 +41,7 @@ export const TopDealershipsSlider = ({
     >
       <div className="relative px-10 sm:px-12">
         <motion.div
+          className="overflow-x-clip"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}

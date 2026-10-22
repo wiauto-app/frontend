@@ -57,7 +57,7 @@ export const VehicleDiscoveryMotionContent = ({
 
   return (
     <section
-      className={cn(className, "flex flex-col space-y-4")}
+      className={cn(className, "flex flex-col space-y-4 overflow-x-clip")}
       aria-labelledby="vehicle-discovery-title"
     >
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
