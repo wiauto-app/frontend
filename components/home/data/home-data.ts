@@ -50,6 +50,7 @@ export const VALUE_PROPOSITION_FEATURES = [
 ] as const;
 
 export const FOOTER_USEFUL_LINKS = [
+  { label: "Aviso legal", href: "/aviso-legal" },
   { label: "Políticas de privacidad", href: "/privacidad" },
   { label: "Términos y Condiciones", href: "/terminos" },
   { label: "Política de cookies", href: "/cookies" },

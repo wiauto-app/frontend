@@ -19,6 +19,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { PhoneInput } from "@/components/forms/phoneInput";
 import { leadsService } from "@/services/leads/leadsService";
 
+import { FormDataProtectionNotice } from "@/components/legal/FormDataProtectionNotice";
+import { LeadFormPrivacyConsent } from "@/components/legal/LeadFormPrivacyConsent";
+
 import { ContactProvinceSelect } from "./ContactProvinceSelect";
 import {
   contactLeadDefaultValues,
@@ -182,6 +185,24 @@ export default function ContactForm() {
                   <FieldError errors={[fieldState.error]} />
                 ) : null}
               </Field>
+            )}
+          />
+
+          <FormDataProtectionNotice purpose="atender tu consulta de contacto" />
+
+          <Controller
+            name="accepted_privacy"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <LeadFormPrivacyConsent
+                id="contact-accepted-privacy"
+                checked={field.value === true}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                name={field.name}
+                disabled={form.formState.isSubmitting}
+                errorMessage={fieldState.error?.message}
+              />
             )}
           />
 

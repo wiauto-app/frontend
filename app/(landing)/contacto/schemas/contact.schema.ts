@@ -17,6 +17,9 @@ export const contactLeadSchema = z.object({
     .string()
     .trim()
     .min(10, "Cuéntanos un poco más (mínimo 10 caracteres)"),
+  accepted_privacy: z.boolean().refine((value) => value, {
+    message: "Debes aceptar la política de privacidad",
+  }),
 });
 
 export type ContactLeadFormValues = z.infer<typeof contactLeadSchema>;
@@ -28,4 +31,5 @@ export const contactLeadDefaultValues: Partial<ContactLeadFormValues> = {
   phone: "",
   province_name: "",
   message: "",
+  accepted_privacy: false,
 };

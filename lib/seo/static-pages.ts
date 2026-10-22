@@ -15,6 +15,7 @@ export const INDEXABLE_STATIC_PAGES: readonly string[] = [
   "/noticias",
   "/prensa",
   "/privacidad",
+  "/aviso-legal",
   "/terminos",
   "/cookies",
 ];
