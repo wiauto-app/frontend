@@ -6,9 +6,13 @@
  * guardada y de propagarla a Google y a Meta cuando el usuario la cambia.
  */
 
+import { ensureMetaPixelLoaded } from "@/lib/analytics/loadMetaPixel";
+
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
+    fbq?: (...args: unknown[]) => void;
+    _fbq?: (...args: unknown[]) => void;
   }
 }
 
@@ -106,5 +110,13 @@ export const applyConsent = (preferences: ConsentPreferences): void => {
     analytics_storage: analytics,
   });
 
-  window.fbq?.("consent", preferences.marketing ? "grant" : "revoke");
+  if (!preferences.marketing) {
+    window.fbq?.("consent", "revoke");
+    return;
+  }
+
+  void ensureMetaPixelLoaded().then(() => {
+    window.fbq?.("consent", "grant");
+    window.fbq?.("track", "PageView");
+  });
 };
