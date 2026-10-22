@@ -40,6 +40,7 @@ export const Hero = ({
           className={cn("object-cover", imageClassName)}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 960px, 1300px"
           priority
+          fetchPriority="high"
         />
       ) : null}
 
