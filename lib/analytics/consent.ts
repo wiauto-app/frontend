@@ -1,20 +1,13 @@
 /**
- * Modo de consentimiento v2 de Google + consentimiento de Meta.
+ * Modo de consentimiento v2 de Google, Microsoft Clarity (analítica) y Meta.
  *
  * El estado por defecto (todo denegado) lo fija `ConsentModeScript` antes de
  * que carguen las etiquetas. Este módulo solo se ocupa de leer la decisión
  * guardada y de propagarla a Google y a Meta cuando el usuario la cambia.
  */
 
+import { ensureClarityLoaded } from "@/lib/analytics/loadClarity";
 import { ensureMetaPixelLoaded } from "@/lib/analytics/loadMetaPixel";
-
-declare global {
-  interface Window {
-    gtag?: (...args: unknown[]) => void;
-    fbq?: (...args: unknown[]) => void;
-    _fbq?: (...args: unknown[]) => void;
-  }
-}
 
 export interface ConsentPreferences {
   /** Medición de uso del sitio (GA4). */
@@ -109,6 +102,10 @@ export const applyConsent = (preferences: ConsentPreferences): void => {
     ad_personalization: marketing,
     analytics_storage: analytics,
   });
+
+  if (preferences.analytics) {
+    void ensureClarityLoaded();
+  }
 
   if (!preferences.marketing) {
     window.fbq?.("consent", "revoke");

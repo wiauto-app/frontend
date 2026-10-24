@@ -16,17 +16,6 @@ type MetaPixelStandardEvent =
   | "AddToWishlist"
   | "Purchase";
 
-declare global {
-  interface Window {
-    fbq?: (
-      action: string,
-      event: string,
-      params?: Record<string, unknown>,
-      options?: { eventID: string },
-    ) => void;
-  }
-}
-
 /** El catálogo es solo España, no hay multi-divisa en la parte pública. */
 const CURRENCY = "EUR";
 

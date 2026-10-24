@@ -15,17 +15,6 @@ export type FunnelEvent =
   | "publicar_datos"
   | "anuncio_publicado";
 
-declare global {
-  interface Window {
-    fbq?: (
-      action: string,
-      event: string,
-      params?: Record<string, unknown>,
-      options?: { eventID: string },
-    ) => void;
-  }
-}
-
 const ONCE_EVENTS: FunnelEvent[] = [
   "publicar_inicio",
   "publicar_tipo",

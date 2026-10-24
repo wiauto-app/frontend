@@ -1,10 +1,11 @@
 import { META_PIXEL_ID } from "@/constants/external.constant";
+import type { MetaFbqFunction } from "@/lib/analytics/window-globals";
 
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void;
-    _fbq?: (...args: unknown[]) => void;
-  }
+interface MetaFbqStub extends MetaFbqFunction {
+  queue: unknown[][];
+  loaded: boolean;
+  version: string;
+  push: (item: unknown[]) => number;
 }
 
 const META_PIXEL_SCRIPT_ID = "meta-pixel-sdk";
@@ -19,15 +20,14 @@ const installFbqStub = (): void => {
   }
 
   const queue: unknown[][] = [];
-  const fbq = ((...args: unknown[]) => {
-    queue.push(args);
-  }) as Window["fbq"] & {
-    callMethod?: (...args: unknown[]) => void;
-    queue: unknown[][];
-    loaded: boolean;
-    version: string;
-    push: typeof queue.push;
-  };
+  const fbq = ((
+    action: string,
+    event: string,
+    params?: Record<string, unknown>,
+    options?: { eventID: string },
+  ) => {
+    queue.push([action, event, params, options].filter((x) => x !== undefined));
+  }) as MetaFbqStub;
 
   fbq.queue = queue;
   fbq.loaded = true;
@@ -61,9 +61,10 @@ export const ensureMetaPixelLoaded = (): Promise<void> => {
       script.async = true;
       script.src = META_PIXEL_SRC;
       script.onload = () => {
-        if (!isInitialized && window.fbq) {
+        const pixelId = META_PIXEL_ID;
+        if (!isInitialized && window.fbq && pixelId) {
           window.fbq("consent", "revoke");
-          window.fbq("init", META_PIXEL_ID);
+          window.fbq("init", pixelId);
           isInitialized = true;
         }
         resolve();
