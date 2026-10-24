@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Camera } from "lucide-react";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import {
   Card,
@@ -13,14 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useVehicleImpressionTracker } from "@/components/vehicles/hooks/useVehicleImpressionTracker";
 import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
-import {
-  formatPrice,
-  formatMonthlyPrice,
-  getConditionLabel,
-  getImageUrl,
-  getPrimaryCuotaValue,
-  getVehicleUrl,
-} from "../utils";
+import { formatPrice, getImageUrl, getVehicleUrl } from "../utils";
 import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
 import { ViewTransition } from "react";
@@ -51,40 +43,16 @@ const VEHICLE_GRID_IMAGE_SIZES = `
 `;
 
 const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
-  const conditionLabel = getConditionLabel(vehicle.condition);
-  const photoCount = vehicle.images?.length ?? 0;
+  if (!vehicle.is_premium) {
+    return null;
+  }
 
   return (
-    <>
-      <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] flex-wrap gap-1.5">
-        <span className="rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-slate-700 uppercase shadow-sm backdrop-blur-sm">
-          {conditionLabel}
-        </span>
-        {vehicle.is_premium ? (
-          <span className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm">
-            Profesional
-          </span>
-        ) : null}
-        {vehicle.dgt_label?.code && (
-          <span
-            className="rounded-md bg-emerald-600/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm"
-            title={`Distintivo DGT ${vehicle.dgt_label.name || vehicle.dgt_label.code}`}
-          >
-            DGT {vehicle.dgt_label.code}
-          </span>
-        )}
-      </div>
-
-      {photoCount > 1 && (
-        <span
-          className="pointer-events-none absolute bottom-2 left-2 z-10 inline-flex items-center gap-1 rounded-md bg-slate-900/55 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm"
-          aria-label={`${photoCount} fotos`}
-        >
-          <Camera className="size-3" aria-hidden />
-          {photoCount}
-        </span>
-      )}
-    </>
+    <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] flex-wrap gap-1.5">
+      <span className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm">
+        Profesional
+      </span>
+    </div>
   );
 };
 
@@ -95,8 +63,6 @@ const VehicleGridCardBody = ({
   titleAs,
 }: VehicleGridCardBodyProps) => {
   const TitleTag = titleAs;
-  const cuotaValue = getPrimaryCuotaValue(vehicle);
-  const financedLabel = cuotaValue ? formatMonthlyPrice(cuotaValue) : null;
 
   return (
     <CardContent
@@ -112,55 +78,9 @@ const VehicleGridCardBody = ({
         {displayName}
       </TitleTag>
 
-      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-        <div className="flex items-start ">
-          <div className="flex flex-col ">
-            <p className="text-2xl font-bold tracking-tight text-primary">
-              {formatPrice(vehicle.price)}
-            </p>
-          </div>
-          {vehicle.finance_price && vehicle.finance_price > 0 && (
-            <div className="flex flex-col ">
-              <span className="text-xs font-semibold text-muted-foreground ">
-                Financiado: {formatPrice(vehicle.finance_price)}
-              </span>
-              <p className="text-2xl font-bold flex items-center gap-1 tracking-tight">
-                {financedLabel}{" "}
-                <span className="text-xs text-muted-foreground">/mes</span>
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-      {vehicle.warranty_type && (
-        <div className="flex items-center gap-1 ">
-          <p className="text-xs font-medium text-green-600">IVA incluido</p>
-          <span className="text-muted-foreground text-xs">•</span>
-          <p className="text-xs font-medium ">
-            Garantía {vehicle.warranty_type?.name}
-          </p>
-        </div>
-      )}
-
-      {/* {dealership && (
-        <div className="flex items-center gap-1">
-          <Badge>
-            Profesional
-            {dealershipRating && (
-              <>
-                {dealershipRating}
-                <Star
-                  aria-label="Puntuación de la concesionaria"
-                  //llenar con color
-                  fill="currentColor"
-                  className="size-3.5 text-yellow-500"
-                  aria-hidden
-                />
-              </>
-            )}
-          </Badge>
-        </div>
-      )} */}
+      <p className="text-2xl font-bold tracking-tight text-primary">
+        {formatPrice(vehicle.price)}
+      </p>
     </CardContent>
   );
 };
@@ -169,7 +89,6 @@ export const VehicleGridCard = ({
   vehicle,
   interactive = false,
   footer,
-  onDismissed,
   className,
   titleAs = "h3",
 }: VehicleGridCardProps) => {
@@ -201,15 +120,6 @@ export const VehicleGridCard = ({
               vehicleId={vehicle.id}
               className="rounded-full bg-white shadow-sm"
             />
-            {/* <VehicleShareButton
-            vehicleId={vehicle.id}
-            vehicleTitle={displayName}
-          />
-          <VehicleEngagementMenu
-            vehicleId={vehicle.id}
-            className="rounded-full bg-white shadow-sm"
-            onDismissed={onDismissed}
-            /> */}
           </div>
 
           <VehicleGridCardBadges vehicle={vehicle} />
