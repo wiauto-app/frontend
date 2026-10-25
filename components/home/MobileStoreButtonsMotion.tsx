@@ -1,8 +1,5 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 
-import { MotionStagger } from "./motion";
 import {
   AppStoreLink,
   PlayStoreLink,
@@ -14,12 +11,9 @@ export const MobileStoreButtonsMotion = ({
   soon = false,
 }: StoreButtonsProps) => {
   return (
-    <MotionStagger
-      inView={false}
-      className={cn("flex flex-wrap gap-3", className)}
-    >
+    <div className={cn("flex flex-wrap gap-3 overflow-x-clip", className)}>
       <AppStoreLink soon={soon} />
       <PlayStoreLink />
-    </MotionStagger>
+    </div>
   );
 };

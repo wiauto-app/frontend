@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { SectionContainer } from "@/components/home/SectionContainer";
-import { MotionSection, riseUp } from "@/components/home/motion";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import { cn } from "@/lib/utils";
@@ -24,7 +23,6 @@ interface VehiclesListingSectionProps {
   seeMoreHref?: string;
   seeMoreLabel?: string;
   className?: string;
-  animated?: boolean;
 }
 
 export const VehiclesListingSection = ({
@@ -38,7 +36,6 @@ export const VehiclesListingSection = ({
   seeMoreHref,
   seeMoreLabel = "Ver más",
   className,
-  animated = false,
 }: VehiclesListingSectionProps) => {
   if (vehicles?.length === 0) {
     return null;
@@ -63,13 +60,8 @@ export const VehiclesListingSection = ({
       <SectionHeading
         lead={title.lead}
         highlight={title.highlight ?? ""}
-        animated={animated}
       />
-      {animated && variant === "carousel" ? (
-        <MotionSection variants={riseUp}>{listingLayout}</MotionSection>
-      ) : (
-        listingLayout
-      )}
+      {listingLayout}
 
       {seeMoreHref ? (
         <div className="mt-10 flex justify-center sm:mt-12">

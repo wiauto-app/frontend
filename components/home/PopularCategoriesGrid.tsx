@@ -13,7 +13,7 @@ export async function PopularCategoriesGrid() {
 
   return (
     <SectionContainer className=" flex flex-col ">
-      <SectionHeading lead="Categorías" highlight="populares" animated />
+      <SectionHeading lead="Categorías" highlight="populares" />
       <PopularCategoriesSlider categories={categories} />
     </SectionContainer>
   );

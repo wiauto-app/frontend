@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import {
-  AppDownloadBanner,
   HeroSection,
   PopularCategoriesGrid,
   PopularCategoriesGridSkeleton,
@@ -12,12 +11,9 @@ import {
   VehiclesSuggestionsSkeleton,
   ZonesSkeleton,
 } from "@/components/home";
-import { PromotionPlans } from "@/components/home/promotionPlans";
-import { WiautoMatchForm } from "@/components/home/wiautoMatchForm";
 import { getHomeData } from "@/components/home/services/homeService";
 import { MobileStoreButtonsMotion } from "@/components/home/MobileStoreButtonsMotion";
 import { TopDealerships } from "@/components/home/topDealerships";
-import { VehicleExtraServices } from "@/components/home/vehicleExtraServices";
 import { ExtraServicesCards } from "@/components/home/extraServicesCards";
 import { VehiclesSuggestions } from "@/components/home/vehiclesSuggestions";
 import { Zones } from "@/components/home/zones";
@@ -31,6 +27,10 @@ import { buildHomeSeo } from "@/lib/seo/build-home-seo";
 import { JsonLdScript } from "@/lib/seo/json-ld-script";
 import { MobileBrowseAllVehiclesCta } from "@/components/home/MobileBrowseAllVehiclesCta";
 import { LandingContainer } from "@/components/ui/landingContainer";
+import { LazyWiautoMatch } from "@/components/home/lazyImports/LazyWiautoMatch";
+import { LazyExtraServices } from "@/components/home/lazyImports/LazyExtraServices";
+import { LazyAppDownloadBanner } from "@/components/home/lazyImports/LazyAppDownloadBanner";
+import { LazyPromotionPlans } from "@/components/home/lazyImports/LazyPromotionPlans";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
@@ -57,11 +57,11 @@ export default async function Home() {
           soon={true}
           className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden"
         />
-        <WiautoMatchForm />
+        <LazyWiautoMatch />
 
-        <VehicleExtraServices />
-        <AppDownloadBanner data={home_data.homeAppAdvertisment} />
-        <PromotionPlans data={home_data.promocion_planes} />
+        <LazyExtraServices />
+        <LazyAppDownloadBanner data={home_data.homeAppAdvertisment} />
+        <LazyPromotionPlans data={home_data.promocion_planes} />
         <MobileBrowseAllVehiclesCta />
         <Suspense fallback={<PopularCategoriesGridSkeleton />}>
           <PopularCategoriesGrid />

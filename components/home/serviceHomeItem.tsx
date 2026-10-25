@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
 
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { IconContainer } from "../ui/iconContainer";
-import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 import type { VehicleExtraServiceItem } from "./types/vehicle-extra-service.types";
 import {
   isPublishEntryHref,
@@ -29,7 +27,6 @@ const buildServiceGradient = (color: string): string =>
   )`;
 
 export const ServiceHomeItem = ({ item }: ServiceHomeItemProps) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
   const accentColor = item.color;
 
   const card = (
@@ -68,13 +65,7 @@ export const ServiceHomeItem = ({ item }: ServiceHomeItemProps) => {
           variant="outline"
           style={{ borderColor: accentColor, color: accentColor }}
         >
-          <motion.span
-            className="inline-flex"
-            whileHover={prefersReducedMotion ? undefined : { x: 4 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          >
-            <ArrowRight className="size-4" aria-hidden />
-          </motion.span>
+          <ArrowRight className="size-4" aria-hidden />
         </Button>
       </CardFooter>
     </Card>

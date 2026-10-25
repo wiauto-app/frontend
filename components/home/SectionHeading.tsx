@@ -1,10 +1,4 @@
-"use client";
-
-import { motion } from "motion/react";
-
 import { cn } from "@/lib/utils";
-
-import { blurIn, popIn, usePrefersReducedMotion, withDelay } from "./motion";
 
 interface SectionHeadingProps {
   lead: string;
@@ -15,8 +9,6 @@ interface SectionHeadingProps {
   /** Si no hay `highlight`, resalta las últimas N palabras de `lead`. */
   highlightWordsCount?: number;
   description?: string;
-  /** Anima el título al entrar en pantalla (blurIn + popIn del resaltado). */
-  animated?: boolean;
 }
 
 interface SplitHeading {
@@ -50,10 +42,6 @@ const splitLeadHighlight = (
   return { leadText, highlightText };
 };
 
-const HIGHLIGHT_DELAY = 0.25;
-
-const highlightVariants = withDelay(popIn, HIGHLIGHT_DELAY);
-
 export function SectionHeading({
   lead,
   highlight,
@@ -62,68 +50,29 @@ export function SectionHeading({
   highlightWordsCount = 1,
   description,
   descriptionClassName,
-  animated = false,
 }: SectionHeadingProps) {
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const shouldAnimate = animated && !prefersReducedMotion;
   const { leadText, highlightText } = splitLeadHighlight(
     lead,
     highlight,
     highlightWordsCount,
   );
-  const highlightClasses = cn("text-primary", highlightClassName);
-  const headingClassName = cn(
-    "text-center text-xl font-bold tracking-tight text-slate-900 sm:text-[1.75rem] lg:text-2xl",
-    className,
-  );
   const leadSeparator = leadText ? " " : null;
-
-  if (shouldAnimate) {
-    return (
-      <div>
-        <motion.h2
-          className={headingClassName}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.5 }}
-          variants={blurIn}
-        >
-          {leadText}
-          {highlightText ? (
-            <>
-              {leadSeparator}
-              {/* inline-block: los transforms no se aplican a elementos inline. */}
-              <motion.span
-                className={cn("inline-block", highlightClasses)}
-                variants={highlightVariants}
-              >
-                {highlightText}
-              </motion.span>
-            </>
-          ) : null}
-        </motion.h2>
-        {description && (
-          <p
-            className={cn(
-              "text-xs lg:text-sm text-muted-foreground text-center",
-              descriptionClassName,
-            )}
-          >
-            {description}
-          </p>
-        )}
-      </div>
-    );
-  }
 
   return (
     <div>
-      <h2 className={headingClassName}>
+      <h2
+        className={cn(
+          "text-center text-xl font-bold tracking-tight text-slate-900 sm:text-[1.75rem] lg:text-2xl",
+          className,
+        )}
+      >
         {leadText}
         {highlightText ? (
           <>
             {leadSeparator}
-            <span className={highlightClasses}>{highlightText}</span>
+            <span className={cn("text-primary", highlightClassName)}>
+              {highlightText}
+            </span>
           </>
         ) : null}
       </h2>

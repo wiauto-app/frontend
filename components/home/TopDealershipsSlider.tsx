@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "motion/react";
-
 import {
   Carousel,
   CarouselContent,
@@ -11,13 +9,6 @@ import {
 } from "@/components/ui/carousel";
 import type { DealershipListItem } from "@/services/dealerships/types/dealership.types";
 
-import { MotionHoverCard } from "./motion";
-import {
-  getVariant,
-  staggerContainerExpressive,
-  staggerItemPop,
-} from "./motion/motion-variants";
-import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 import { TopDealershipCard } from "./TopDealershipCard";
 
 interface TopDealershipsSliderProps {
@@ -27,39 +18,26 @@ interface TopDealershipsSliderProps {
 export const TopDealershipsSlider = ({
   dealerships,
 }: TopDealershipsSliderProps) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const containerVariants = getVariant(
-    staggerContainerExpressive,
-    prefersReducedMotion,
-  );
-  const itemVariants = getVariant(staggerItemPop, prefersReducedMotion);
-
   return (
     <Carousel
       className="w-full"
       opts={{ align: "start", loop: false, dragFree: true }}
     >
       <div className="relative px-10 sm:px-12">
-        <motion.div
-          className="overflow-x-clip"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={containerVariants}
-        >
+        <div className="overflow-x-clip">
           <CarouselContent className="-ml-3 sm:-ml-4">
             {dealerships.map((dealership) => (
               <CarouselItem
                 key={dealership.id}
                 className="basis-[78%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
               >
-                <MotionHoverCard variants={itemVariants} className="h-full">
+                <div className="h-full">
                   <TopDealershipCard dealership={dealership} />
-                </MotionHoverCard>
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-        </motion.div>
+        </div>
 
         <CarouselPrevious
           aria-label="Ver concesionarios anteriores"

@@ -12,7 +12,7 @@ export const Zones = async () => {
 
   return (
     <SectionContainer>
-      <SectionHeading lead="Últimos anuncios por" highlight="zona" animated />
+      <SectionHeading lead="Últimos anuncios por" highlight="zona" />
       <ProvincesZonesSlider provinces={provinces} />
     </SectionContainer>
   );

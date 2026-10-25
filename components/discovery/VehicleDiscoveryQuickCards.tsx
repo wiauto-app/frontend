@@ -1,17 +1,7 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { motion } from "motion/react";
 
-import {
-  getVariant,
-  MotionHoverCard,
-  staggerContainerExpressive,
-  staggerItemPop,
-  usePrefersReducedMotion,
-} from "@/components/home/motion";
 import { cn } from "@/lib/utils";
 
 import { IconContainer } from "../ui/iconContainer";
@@ -21,19 +11,12 @@ import { resolveLowEmissionsQuickLinkIcon } from "./utils/resolve-low-emissions-
 interface VehicleDiscoveryQuickCardsProps {
   quickLinks: QuickLink[];
   className?: string;
-  animated?: boolean;
 }
 
 export const VehicleDiscoveryQuickCards = ({
   quickLinks,
   className,
-  animated = false,
 }: VehicleDiscoveryQuickCardsProps) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const shouldAnimate = animated && !prefersReducedMotion;
-  const containerVariants = getVariant(staggerContainerExpressive, prefersReducedMotion);
-  const itemVariants = getVariant(staggerItemPop, prefersReducedMotion);
-
   const cards = quickLinks.map((link) => {
     const LinkIcon = resolveLowEmissionsQuickLinkIcon(link.href);
 
@@ -97,29 +80,9 @@ export const VehicleDiscoveryQuickCards = ({
     );
   });
 
-  if (!shouldAnimate) {
-    return (
-      <div className={cn("grid grid-cols-1 gap-4 sm:grid-cols-3", className)}>
-        {cards}
-      </div>
-    );
-  }
-
   return (
-    <motion.div
-      className={cn("grid grid-cols-1 gap-4 sm:grid-cols-3", className)}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={containerVariants}
-    >
-      {quickLinks.map((link, index) => (
-        <motion.div key={link.href} variants={itemVariants} className="h-full">
-          <MotionHoverCard className="h-full">
-            {cards[index]}
-          </MotionHoverCard>
-        </motion.div>
-      ))}
-    </motion.div>
+    <div className={cn("grid grid-cols-1 gap-4 sm:grid-cols-3", className)}>
+      {cards}
+    </div>
   );
 };

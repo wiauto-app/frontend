@@ -31,7 +31,6 @@ export async function RelatedNewsSection() {
       <SectionHeading
         lead="Novedades del"
         highlight="mundo de la automoción"
-        animated
       />
       <RelatedNewsGrid items={items} />
     </SectionContainer>

@@ -1,13 +1,6 @@
-"use client";
-
 import type { StrapiCard } from "@/interfaces/strapi-components.interface";
 import { cn } from "@/lib/utils";
 
-import { MotionHoverCard, MotionSection } from "../motion";
-import {
-  staggerContainerExpressive,
-  staggerItemPop,
-} from "../motion/motion-variants";
 import { ExtraServiceCard } from "./ExtraServiceCard";
 import { mapExtraServicesCards } from "./mapExtraServicesCards";
 
@@ -22,17 +15,14 @@ export const ExtraServicesCards = ({ data, className }: ExtraServicesCardsProps)
   const items = mapExtraServicesCards(data);
 
   return (
-    <MotionSection
-      as="section"
+    <section
       className={cn("grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-3", className)}
-      variants={staggerContainerExpressive}
-      amount={0.15}
     >
       {items.map((item) => (
-        <MotionHoverCard key={item.id} variants={staggerItemPop} className="h-full">
+        <div key={item.id} className="h-full">
           <ExtraServiceCard item={item} />
-        </MotionHoverCard>
+        </div>
       ))}
-    </MotionSection>
+    </section>
   );
 };

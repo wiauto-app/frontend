@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "motion/react";
-
 import {
   Carousel,
   CarouselContent,
@@ -11,13 +9,6 @@ import {
 } from "@/components/ui/carousel";
 import type { ProvinceZoneItem } from "@/lib/locations/buildProvinceZones";
 
-import { MotionHoverCard } from "./motion";
-import {
-  getVariant,
-  staggerContainerExpressive,
-  staggerItemPop,
-} from "./motion/motion-variants";
-import { usePrefersReducedMotion } from "./motion/usePrefersReducedMotion";
 import { ProvinceZoneCard } from "./ProvinceZoneCard";
 
 interface ProvincesZonesSliderProps {
@@ -27,38 +18,24 @@ interface ProvincesZonesSliderProps {
 export const ProvincesZonesSlider = ({
   provinces,
 }: ProvincesZonesSliderProps) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const containerVariants = getVariant(
-    staggerContainerExpressive,
-    prefersReducedMotion,
-  );
-  const itemVariants = getVariant(staggerItemPop, prefersReducedMotion);
-
   return (
     <Carousel
       className="w-full"
       opts={{ align: "start", loop: false, dragFree: true }}
     >
       <div className="relative sm:px-12">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={containerVariants}
-        >
-          <CarouselContent className="-ml-3 sm:-ml-4">
-            {provinces.map((province) => (
-              <CarouselItem
-                key={province.id}
-                className="basis-[78%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
-              >
-                <MotionHoverCard variants={itemVariants} className="h-full">
-                  <ProvinceZoneCard province={province} />
-                </MotionHoverCard>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </motion.div>
+        <CarouselContent className="-ml-3 sm:-ml-4">
+          {provinces.map((province) => (
+            <CarouselItem
+              key={province.id}
+              className="basis-[78%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
+            >
+              <div className="h-full">
+                <ProvinceZoneCard province={province} />
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
         <CarouselPrevious
           aria-label="Ver provincias anteriores"
