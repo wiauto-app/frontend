@@ -23,6 +23,7 @@ export const AppStoreLink = ({ soon = false, className }: StoreLinkProps) => {
       href={soon ? undefined : APP_STORE_URL}
       aria-disabled={soon || undefined}
       tabIndex={soon ? -1 : 0}
+      target="_blank"
       aria-label={soon ? "App Store — Próximamente" : "App Store"}
       className={cn(
         "relative inline-flex h-[52px] min-w-[155px] items-center gap-2.5 rounded-xl bg-black px-4 text-white transition-opacity",
@@ -51,6 +52,7 @@ export const AppStoreLink = ({ soon = false, className }: StoreLinkProps) => {
 export const PlayStoreLink = ({ className }: StoreLinkProps) => (
   <a
     href={PLAY_STORE_URL}
+    target="_blank"
     tabIndex={0}
     aria-label="Google Play"
     className={cn(
