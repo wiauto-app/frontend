@@ -62,11 +62,11 @@ export const ProvincesZonesSlider = ({
 
         <CarouselPrevious
           aria-label="Ver provincias anteriores"
-          className="hidden sm:block left-0 size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+          className="hidden sm:flex left-0 size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
         />
         <CarouselNext
           aria-label="Ver provincias siguientes"
-          className="hidden sm:block right-0 size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+          className="hidden sm:flex right-0 size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
         />
       </div>
     </Carousel>
