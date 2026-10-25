@@ -30,7 +30,7 @@ export function AppDownloadBannerMotion({ data }: AppDownloadBannerMotionProps) 
   const textItem = getVariant(slideFromRight, prefersReducedMotion);
 
   return (
-    <SectionContainer className="flex h-auto items-end lg:mt-44">
+    <SectionContainer className="flex h-auto items-end lg:mt-64">
       <MotionSection variants={bannerVariants} amount={0.2}>
         <div className="dots-background relative w-full rounded-[2rem] bg-primary sm:rounded-[2.5rem]">
           <div className="grid grid-cols-1 px-5 py-10 lg:grid-cols-2">
@@ -45,11 +45,10 @@ export function AppDownloadBannerMotion({ data }: AppDownloadBannerMotionProps) 
                 <Image
                   src={data.appMockup.url}
                   alt={data.title}
-                  width={260}
-                  height={520}
-                  sizes="260px"
-                  className="absolute bottom-16 hidden object-contain lg:block"
-                  style={{ width: 260, height: "auto" }}
+                  width={450}
+                  height={800}
+                  sizes="500px"
+                  className="absolute bottom-0 hidden object-contain lg:block "
                 />
               ) : (
                 <AppPhoneMockup />
