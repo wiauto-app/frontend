@@ -129,7 +129,7 @@ export const VehicleGridCard = ({
             share="morph"
             default="none"
           >
-            <span className="absolute inset-0 block">
+            <picture className="absolute inset-0 block">
               <Image
                 src={imageUrl}
                 alt={`Imagen del vehículo ${displayName}`}
@@ -139,7 +139,7 @@ export const VehicleGridCard = ({
                 sizes={VEHICLE_GRID_IMAGE_SIZES}
                 aria-hidden
               />
-            </span>
+            </picture>
           </ViewTransition>
         </CardHeader>
         <Link href={vehicleUrl} prefetch transitionTypes={["nav-forward"]}>

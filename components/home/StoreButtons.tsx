@@ -79,7 +79,7 @@ export const PlayStoreLink = ({ className }: StoreLinkProps) => (
 export function StoreButtons({ className, soon = false }: StoreButtonsProps) {
   return (
     <div className={cn("flex flex-wrap gap-3", className)}>
-      <AppStoreLink soon={soon} />
+      <AppStoreLink />
       <PlayStoreLink />
     </div>
   );
