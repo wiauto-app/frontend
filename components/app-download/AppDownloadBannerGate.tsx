@@ -1,28 +1,38 @@
-import { cookies, headers } from "next/headers";
+"use client";
+
+import { useEffect, useState } from "react";
 
 import {
   APP_DOWNLOAD_BANNER_COOKIE,
   isNativeWiautoApp,
   resolveAppStoreTarget,
+  type AppStoreTarget,
 } from "@/lib/app-stores";
 
 import { AppDownloadBanner } from "./AppDownloadBanner";
 
-export const AppDownloadBannerGate = async () => {
-  const cookieStore = await cookies();
-  const isDismissed =
-    cookieStore.get(APP_DOWNLOAD_BANNER_COOKIE)?.value === "1";
+const isBannerDismissed = (): boolean =>
+  document.cookie
+    .split("; ")
+    .some((cookie) => cookie === `${APP_DOWNLOAD_BANNER_COOKIE}=1`);
 
-  if (isDismissed) {
+/** Se resuelve en el cliente: leer cookies/headers en el layout haría dinámicas todas las rutas. */
+export const AppDownloadBannerGate = () => {
+  const [store, setStore] = useState<AppStoreTarget | null>(null);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+
+    if (isBannerDismissed() || isNativeWiautoApp(userAgent)) {
+      return;
+    }
+
+    setStore(resolveAppStoreTarget(userAgent));
+  }, []);
+
+  if (!store) {
     return null;
   }
 
-  const headerStore = await headers();
-  const userAgent = headerStore.get("user-agent") ?? "";
-
-  if (isNativeWiautoApp(userAgent)) {
-    return null;
-  }
-
-  return <AppDownloadBanner store={resolveAppStoreTarget(userAgent)} />;
+  return <AppDownloadBanner store={store} />;
 };
