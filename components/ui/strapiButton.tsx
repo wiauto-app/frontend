@@ -17,6 +17,8 @@ interface StrapiButtonProps {
   button: StrapiLink;
   className?: string;
   onFunctionClick?: () => void;
+  /** Se invoca al pulsar el enlace (no los botones de acción). */
+  onLinkClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 const getSamePageHashId = (href: string): string | null => {
@@ -66,6 +68,7 @@ export const StrapiButton = ({
   button,
   className,
   onFunctionClick,
+  onLinkClick,
 }: StrapiButtonProps) => {
   const strapiAction = useStrapiAction();
   const isPageFunctionAction = Boolean(
@@ -83,6 +86,8 @@ export const StrapiButton = ({
   };
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    onLinkClick?.(event);
+
     if (isPublishEntryHref(button.url)) {
       const source = window.location.pathname === "/" ? "home" : "otros";
       trackPublicarClick(source);

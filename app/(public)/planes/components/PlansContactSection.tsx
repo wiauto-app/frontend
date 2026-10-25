@@ -2,12 +2,17 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { ControlledInput } from "@/components/forms/controlledInput";
+import {
+  HoneypotField,
+  buildHoneypotPayload,
+} from "@/components/forms/HoneypotField";
 import {
   PhoneInput,
   type PhoneFieldValue,
@@ -45,6 +50,7 @@ export const PlansContactSection = ({ data }: PlansContactSectionProps) => {
     resolver: zodResolver(planContactFormSchema),
     defaultValues,
   });
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   const whatsappUrl = data.boton?.url;
   const whatsappLabel = data.boton?.label;
@@ -67,6 +73,7 @@ export const PlansContactSection = ({ data }: PlansContactSectionProps) => {
       const response = await planContactLeadService.create({
         phone: `${values.phone.phone_code} ${values.phone.phone}`.trim(),
         source: "planes",
+        ...buildHoneypotPayload(honeypotRef.current?.value),
       });
 
       if (!response.ok) {
@@ -138,6 +145,7 @@ export const PlansContactSection = ({ data }: PlansContactSectionProps) => {
               className="flex w-full flex-col gap-3 sm:flex-row sm:items-start"
               aria-label="Formulario para solicitar una llamada sobre planes"
             >
+              <HoneypotField ref={honeypotRef} id="plans-contact-hp-website" />
               <div className="min-w-0 flex-1 bg-white p-1.5 rounded-md">
                 <ControlledInput
                   name="phone"

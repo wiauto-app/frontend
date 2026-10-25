@@ -1,6 +1,8 @@
 import { MapPin, Mail, Phone, type LucideIcon } from "lucide-react";
 
+import { TrackedContactLink } from "@/components/analytics/TrackedContactLink";
 import { IconContainer } from "@/components/ui/iconContainer";
+import { CONTACT_LOCATION } from "@/lib/analytics/contactMethod";
 import { FaWhatsapp } from "react-icons/fa";
 import { IconType } from "react-icons";
 
@@ -56,9 +58,14 @@ export const ContactInfo = () => {
         return (
           <div key={item.title}>
             {item.href ? (
-              <a target="_blank" href={item.href} className="block h-full">
+              <TrackedContactLink
+                target="_blank"
+                href={item.href}
+                location={CONTACT_LOCATION.CONTACTO}
+                className="block h-full"
+              >
                 {Content}
-              </a>
+              </TrackedContactLink>
             ) : (
               Content
             )}

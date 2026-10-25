@@ -1,11 +1,17 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
+import {
+  HoneypotField,
+  buildHoneypotPayload,
+} from "@/components/forms/HoneypotField";
 import { FormDataProtectionNotice } from "@/components/legal/FormDataProtectionNotice";
 import { Input } from "@/components/ui/input";
+import { trackNewsletterSignup } from "@/lib/analytics/events";
+import { NEWSLETTER_LOCATION } from "@/lib/analytics/contactMethod";
 import { newsletterService } from "@/services/newsletterService";
 
 import { BRAND_BLUE } from "./data/home-data";
@@ -13,6 +19,7 @@ import { BRAND_BLUE } from "./data/home-data";
 export const NewsletterSubscribeForm = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -24,7 +31,10 @@ export const NewsletterSubscribeForm = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await newsletterService.subscribe({ email: normalized });
+      const response = await newsletterService.subscribe({
+        email: normalized,
+        ...buildHoneypotPayload(honeypotRef.current?.value),
+      });
       if (!response.ok) {
         toast.error(
           response.message || "No se pudo completar la suscripción",
@@ -32,6 +42,7 @@ export const NewsletterSubscribeForm = () => {
         return;
       }
 
+      trackNewsletterSignup(NEWSLETTER_LOCATION.FOOTER_NEWSLETTER);
       toast.success("Te has suscrito al newsletter correctamente");
       setEmail("");
     } catch (error) {
@@ -51,6 +62,7 @@ export const NewsletterSubscribeForm = () => {
         className="flex overflow-hidden rounded-lg bg-white shadow-sm"
         onSubmit={handleSubmit}
       >
+        <HoneypotField ref={honeypotRef} id="newsletter-hp-website" />
         <Input
           type="email"
           name="email"

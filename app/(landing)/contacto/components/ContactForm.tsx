@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -22,7 +23,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PhoneInput } from "@/components/forms/phoneInput";
+import {
+  HoneypotField,
+  buildHoneypotPayload,
+} from "@/components/forms/HoneypotField";
 import { leadsService } from "@/services/leads/leadsService";
+import { trackLead } from "@/lib/analytics/events";
 
 import { FormDataProtectionNotice } from "@/components/legal/FormDataProtectionNotice";
 import { LeadFormPrivacyConsent } from "@/components/legal/LeadFormPrivacyConsent";
@@ -35,12 +41,14 @@ import {
 } from "../schemas/contact.schema";
 
 const CONTACT_LEAD_TYPE = "contacto";
+const CONTACT_LEAD_SOURCE = "contacto";
 
 export default function ContactForm() {
   const form = useForm<ContactLeadFormValues>({
     resolver: zodResolver(contactLeadSchema),
     defaultValues: contactLeadDefaultValues,
   });
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   const provinceId = form.watch("province_id");
 
@@ -56,12 +64,17 @@ export default function ContactForm() {
           province_name: data.province_name,
           message: data.message,
         },
+        ...buildHoneypotPayload(honeypotRef.current?.value),
       });
 
       if (!response.ok) {
         throw new Error(response.message);
       }
 
+      trackLead({
+        contentName: "Formulario de contacto",
+        leadSource: CONTACT_LEAD_SOURCE,
+      });
       toast.success("Mensaje enviado. Te contactaremos pronto.");
       form.reset(contactLeadDefaultValues);
     } catch {
@@ -88,6 +101,7 @@ export default function ContactForm() {
           className="flex flex-col gap-4"
           onSubmit={form.handleSubmit(onSubmit)}
         >
+          <HoneypotField ref={honeypotRef} id="contact-hp-website" />
           <FieldGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Controller
               name="name"

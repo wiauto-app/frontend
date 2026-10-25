@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -10,6 +10,10 @@ import { useUser } from "@/app/contexts/auth/useUser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ControlledInput } from "@/components/forms/controlledInput";
+import {
+  HoneypotField,
+  buildHoneypotPayload,
+} from "@/components/forms/HoneypotField";
 import { CustomCheckbox } from "@/components/ui/customCheckbox";
 import { leadService } from "@/services/leadService";
 import { trackLead } from "@/lib/analytics/events";
@@ -55,6 +59,7 @@ export const VehicleDetailContactForm = ({
 }: VehicleDetailContactFormProps) => {
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useUser();
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   const guestForm = useForm<GuestContactFormValues>({
     resolver: zodResolver(guestContactFormSchema),
@@ -86,6 +91,7 @@ export const VehicleDetailContactForm = ({
       phone_code: data.phone.phone_code,
       message: data.message,
       accepted_terms: data.accepted_terms,
+      ...buildHoneypotPayload(honeypotRef.current?.value),
     });
 
     if (!response.ok) {
@@ -108,6 +114,7 @@ export const VehicleDetailContactForm = ({
       phone_code: data.phone?.phone_code?.trim() || undefined,
       message: data.message,
       accepted_terms: data.accepted_terms,
+      ...buildHoneypotPayload(honeypotRef.current?.value),
     });
 
     if (!response.ok) {
@@ -143,6 +150,7 @@ export const VehicleDetailContactForm = ({
   if (!isAuthenticated) {
     return (
       <form onSubmit={guestForm.handleSubmit(handleGuestSubmit)}>
+        <HoneypotField ref={honeypotRef} id="vehicle-contact-hp-website-guest" />
         <h3 className="mb-4 font-semibold text-gray-900">
           Contacta con el anunciante
         </h3>
@@ -227,6 +235,7 @@ export const VehicleDetailContactForm = ({
 
   return (
     <form onSubmit={authenticatedForm.handleSubmit(handleAuthenticatedSubmit)}>
+      <HoneypotField ref={honeypotRef} id="vehicle-contact-hp-website-auth" />
       <h3 className="mb-4 font-semibold text-gray-900">
         Contacta con el anunciante
       </h3>

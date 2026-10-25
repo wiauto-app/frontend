@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import { CreateTicketDialog } from "@/components/support/CreateTicketDialog";
+import { trackContactHref } from "@/lib/analytics/events";
+import { CONTACT_LOCATION } from "@/lib/analytics/contactMethod";
 import { defaultStrapiIconPack } from "@/lib/strapi/defaultStrapiIconPack";
 import { resolveStrapiIconName } from "@/lib/strapi/resolveStrapiIconName";
 import {
@@ -41,6 +43,9 @@ export const ChannelCard = ({ channel }: { channel: SoporteCard }) => {
             <StrapiButton
               button={channel.boton}
               onFunctionClick={() => setIsTicketDialogOpen(true)}
+              onLinkClick={() =>
+                trackContactHref(channel.boton?.url, CONTACT_LOCATION.SOPORTE)
+              }
             />
           ) : null}
         </CardContent>

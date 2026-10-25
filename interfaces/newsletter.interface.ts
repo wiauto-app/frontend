@@ -14,6 +14,8 @@ export interface NewsletterSubscription {
 
 export interface SubscribeNewsletterPayload {
   email: string;
+  /** Campo trampa antispam; solo se envía si viene relleno. */
+  hp_website?: string;
 }
 
 export interface UpdateNewsletterPreferencesPayload {

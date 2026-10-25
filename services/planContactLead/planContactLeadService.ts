@@ -4,6 +4,8 @@ import { V1_PUBLIC_BILLING_PLAN_CONTACT_LEADS } from "@/services/planContactLead
 export interface CreatePlanContactLeadPayload {
   phone: string;
   source: "planes";
+  /** Campo trampa antispam; solo se envía si viene relleno. */
+  hp_website?: string;
 }
 
 export const planContactLeadService = {

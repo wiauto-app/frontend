@@ -8,11 +8,19 @@ import {
   gaAddToWishlist,
   gaContact,
   gaGenerateLead,
+  gaNewsletterSignup,
   gaPurchase,
   gaSearch,
   gaSignUp,
   gaViewItem,
 } from "./googleAnalytics";
+import {
+  CONTACT_METHOD,
+  getContactMethodFromHref,
+  type ContactLocation,
+  type ContactMethod,
+  type NewsletterLocation,
+} from "./contactMethod";
 import {
   trackMetaAddToWishlist,
   trackMetaCompleteRegistration,
@@ -63,28 +71,57 @@ export const trackCompleteRegistration = (method: string): void => {
   gaSignUp(method);
 };
 
-/** Formulario de solicitud de información enviado. */
+/**
+ * Formulario de solicitud de información enviado. `leadSource` fija el
+ * `lead_source` de GA4; si se omite se usa `contentName`, como hasta ahora.
+ */
 export const trackLead = ({
   contentName,
   vehicleId,
+  leadSource,
 }: {
   contentName: string;
   vehicleId?: string;
+  leadSource?: string;
 }): void => {
   trackMetaLead({ contentName, vehicleId });
-  gaGenerateLead(contentName, vehicleId);
+  gaGenerateLead(leadSource ?? contentName, vehicleId);
 };
 
-/** Contacto directo con el vendedor. */
+/**
+ * Contacto directo (teléfono, WhatsApp o email). Meta solo recibe los
+ * contactos con vehículo, que son los que alimentan el catálogo.
+ */
 export const trackContact = ({
   channel,
   vehicle,
+  location,
 }: {
-  channel: "phone" | "whatsapp";
-  vehicle: VehicleAnalyticsItem;
+  channel: ContactMethod;
+  vehicle?: VehicleAnalyticsItem;
+  location?: ContactLocation;
 }): void => {
-  trackMetaContact({ channel, vehicle });
-  gaContact(channel, vehicle);
+  if (vehicle && channel !== CONTACT_METHOD.EMAIL) {
+    trackMetaContact({ channel, vehicle });
+  }
+  gaContact(channel, vehicle, location);
+};
+
+/** Clic en un enlace `tel:`, `mailto:` o de WhatsApp. Ignora el resto. */
+export const trackContactHref = (
+  href: string | null | undefined,
+  location: ContactLocation,
+): void => {
+  const channel = getContactMethodFromHref(href);
+  if (!channel) {
+    return;
+  }
+  trackContact({ channel, location });
+};
+
+/** Alta en el newsletter completada. */
+export const trackNewsletterSignup = (location: NewsletterLocation): void => {
+  gaNewsletterSignup(location);
 };
 
 /** Vehículo guardado en favoritos. */

@@ -8,6 +8,8 @@ export interface CreateLeadDto {
   phone: string;
   email: string;
   extra_data?: Record<string, unknown>;
+  /** Campo trampa antispam; solo se envía si viene relleno. */
+  hp_website?: string;
 }
 
 export interface LeadResponse {

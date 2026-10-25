@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { vehicleContactClickService } from "@/services/vehicleContactClickService";
 import { trackContact } from "@/lib/analytics/events";
+import { CONTACT_LOCATION } from "@/lib/analytics/contactMethod";
 
 interface UseVehicleContactDialogsOptions {
   vehicleId: string;
@@ -59,6 +60,7 @@ export const useVehicleContactDialogs = ({
         trackContact({
           channel: "phone",
           vehicle: { id: vehicleId, name: vehicleTitle },
+          location: CONTACT_LOCATION.VEHICLE_DETAIL,
         });
 
         setPhoneCode(response.data.phone_code);
@@ -86,6 +88,7 @@ export const useVehicleContactDialogs = ({
         trackContact({
           channel: "whatsapp",
           vehicle: { id: vehicleId, name: vehicleTitle },
+          location: CONTACT_LOCATION.VEHICLE_DETAIL,
         });
 
         setWhatsappUrl(response.data.whatsapp_url);

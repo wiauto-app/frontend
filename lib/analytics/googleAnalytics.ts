@@ -9,6 +9,12 @@
 
 import { sendGAEvent } from "@next/third-parties/google";
 
+import type {
+  ContactLocation,
+  ContactMethod,
+  NewsletterLocation,
+} from "./contactMethod";
+
 const CURRENCY = "EUR";
 
 const sendEvent = (event: string, params: Record<string, unknown> = {}): void => {
@@ -58,15 +64,27 @@ export const gaGenerateLead = (leadSource: string, vehicleId?: string): void =>
     ...(vehicleId ? { items: [{ item_id: vehicleId, quantity: 1 }] } : {}),
   });
 
-/** GA4 no tiene evento estándar de contacto; se envía como personalizado. */
+/**
+ * GA4 no tiene evento estándar de contacto; se envía como personalizado.
+ * Con vehículo se añaden `listing_id` e `items`; sin él (footer, /contacto,
+ * /soporte) basta con `method` y `location`.
+ */
 export const gaContact = (
-  channel: "phone" | "whatsapp",
-  vehicle: VehicleItemInput,
+  method: ContactMethod,
+  vehicle?: VehicleItemInput,
+  location?: ContactLocation,
 ): void =>
   sendEvent("contact", {
-    method: channel,
-    items: buildItems(vehicle),
+    method,
+    ...(location ? { location } : {}),
+    ...(vehicle
+      ? { listing_id: vehicle.id, items: buildItems(vehicle) }
+      : {}),
   });
+
+/** Alta en el newsletter completada. Evento personalizado. */
+export const gaNewsletterSignup = (location: NewsletterLocation): void =>
+  sendEvent("newsletter_signup", { location });
 
 export const gaAddToWishlist = (vehicle: VehicleItemInput): void =>
   sendEvent("add_to_wishlist", {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Controller, useForm } from "react-hook-form";
@@ -9,6 +9,10 @@ import { useUser } from "@/app/contexts/auth/useUser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ControlledInput } from "@/components/forms/controlledInput";
+import {
+  HoneypotField,
+  buildHoneypotPayload,
+} from "@/components/forms/HoneypotField";
 import { CustomCheckbox } from "@/components/ui/customCheckbox";
 import { leadService } from "@/services/leadService";
 import { trackLead } from "@/lib/analytics/events";
@@ -52,6 +56,7 @@ export const VehicleDetailCallMeForm = ({
   vehicleId,
 }: VehicleDetailCallMeFormProps) => {
   const { user, isAuthenticated, isLoading } = useUser();
+  const honeypotRef = useRef<HTMLInputElement>(null);
   const todayMinDate = getTodayMinDate();
 
   const guestForm = useForm<GuestCallMeFormValues>({
@@ -82,6 +87,7 @@ export const VehicleDetailCallMeForm = ({
       phone_code: data.phone.phone_code,
       callback_scheduled_at: data.callback_scheduled_at,
       accepted_terms: data.accepted_terms,
+      ...buildHoneypotPayload(honeypotRef.current?.value),
     });
 
     if (!response.ok) {
@@ -103,6 +109,7 @@ export const VehicleDetailCallMeForm = ({
       phone_code: data.phone.phone_code,
       callback_scheduled_at: data.callback_scheduled_at,
       accepted_terms: data.accepted_terms,
+      ...buildHoneypotPayload(honeypotRef.current?.value),
     });
 
     if (!response.ok) {
@@ -130,6 +137,7 @@ export const VehicleDetailCallMeForm = ({
   if (!isAuthenticated) {
     return (
       <form onSubmit={guestForm.handleSubmit(handleGuestSubmit)}>
+        <HoneypotField ref={honeypotRef} id="vehicle-call-me-hp-website-guest" />
         <h3 className="mb-4 font-semibold text-gray-900">
           Solicita que te llamen
         </h3>
@@ -208,6 +216,7 @@ export const VehicleDetailCallMeForm = ({
 
   return (
     <form onSubmit={authenticatedForm.handleSubmit(handleAuthenticatedSubmit)}>
+      <HoneypotField ref={honeypotRef} id="vehicle-call-me-hp-website-auth" />
       <h3 className="mb-4 font-semibold text-gray-900">
         Solicita que te llamen
       </h3>

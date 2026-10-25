@@ -73,6 +73,8 @@ export interface CreateLeadPayload {
   phone_code?: string;
   message: string;
   accepted_terms: boolean;
+  /** Campo trampa antispam; solo se envía si viene relleno. */
+  hp_website?: string;
 }
 
 export interface CreateCallMePayload {
@@ -81,6 +83,8 @@ export interface CreateCallMePayload {
   phone_code: string;
   callback_scheduled_at: string;
   accepted_terms: boolean;
+  /** Campo trampa antispam; solo se envía si viene relleno. */
+  hp_website?: string;
 }
 
 export interface CreateLeadResponse {

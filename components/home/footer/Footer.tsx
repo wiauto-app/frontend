@@ -8,6 +8,11 @@ import type {
 
 import { Separator } from "../../ui/separator";
 import { CookiePreferencesButton } from "@/components/consent/cookiePreferencesButton";
+import { TrackedContactLink } from "@/components/analytics/TrackedContactLink";
+import {
+  CONTACT_LOCATION,
+  getContactMethodFromHref,
+} from "@/lib/analytics/contactMethod";
 import { getAllColaboraciones } from "@/services/colaboracionesService";
 import type { StrapiColaboracionLanding } from "@/interfaces/landings-colaboracion.interface";
 import { findSocialNetworkByLabel } from "./footer.constants";
@@ -48,7 +53,18 @@ const FooterSectionColumn = ({ section }: FooterSectionColumnProps) => (
       <ul className="mt-4 space-y-2.5 sm:mt-5">
         {section.links.map((link) => (
           <li key={link.id}>
-            {isExternalUrl(link.url) ? (
+            {getContactMethodFromHref(link.url) ? (
+              <TrackedContactLink
+                href={link.url}
+                location={CONTACT_LOCATION.FOOTER}
+                {...(isExternalUrl(link.url)
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className="inline-block text-sm text-white/85 transition-colors hover:text-white"
+              >
+                {link.label}
+              </TrackedContactLink>
+            ) : isExternalUrl(link.url) ? (
               <a
                 href={link.url}
                 target="_blank"
@@ -97,30 +113,38 @@ const buildServiciosSection = (
 
 const SocialLinkButton = ({ link }: SocialLinkButtonProps) => {
   const external = isExternalUrl(link.url);
+  const linkProps = {
+    href: link.url,
+    "aria-label": link.label,
+    target: external ? "_blank" : undefined,
+    rel: external ? "noopener noreferrer" : undefined,
+    className:
+      "inline-flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 text-white transition-opacity hover:opacity-90",
+  };
 
-  return (
-    <a
-      href={link.url}
-      aria-label={link.label}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noopener noreferrer" : undefined}
-      className="inline-flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 text-white transition-opacity hover:opacity-90"
-    >
-      {link.image_url ? (
-        <Image
-          src={link.image_url}
-          alt=""
-          width={40}
-          height={40}
-          className="size-full object-cover"
-          style={{ width: "100%", height: "100%" }}
-          aria-hidden
-        />
-      ) : (
-        renderSocialIcon(link.label)
-      )}
-    </a>
+  const content = link.image_url ? (
+    <Image
+      src={link.image_url}
+      alt=""
+      width={40}
+      height={40}
+      className="size-full object-cover"
+      style={{ width: "100%", height: "100%" }}
+      aria-hidden
+    />
+  ) : (
+    renderSocialIcon(link.label)
   );
+
+  if (getContactMethodFromHref(link.url)) {
+    return (
+      <TrackedContactLink {...linkProps} location={CONTACT_LOCATION.FOOTER}>
+        {content}
+      </TrackedContactLink>
+    );
+  }
+
+  return <a {...linkProps}>{content}</a>;
 };
 
 export async function Footer() {
