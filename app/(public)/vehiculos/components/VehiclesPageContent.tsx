@@ -75,11 +75,11 @@ const VehiclesListingView = ({
             <VehicleFeaturedCard key={vehicle.id} vehicle={vehicle} titleAs="h2" />
           ) : (
             <VehicleGridCard
-              className="bg-white shadow-md hover:shadow-xl"
               key={vehicle.id}
               vehicle={vehicle}
               titleAs="h2"
               onDismissed={onDismissed}
+              priority={true}
             />
           ),
         )}
