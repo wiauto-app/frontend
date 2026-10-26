@@ -93,6 +93,7 @@ export const VehicleDetailGallery = ({
                   alt={`${title} - imagen 1`}
                   className="object-cover"
                   sizes={MAIN_IMAGE_SIZES}
+                  fetchPriority="high"
                   quality={70}
                   priority
                 />
