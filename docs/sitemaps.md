@@ -15,8 +15,8 @@ El maestro lista **únicamente sitemaps hoja** (`<urlset>`): un sitemap index no
  ├─ /sitemap/colaboraciones/sitemap.xml        /colaboraciones/{slug}  (Strapi)
  ├─ /sitemap/concesionarios/sitemap.xml        /concesionario/{slug}   (API Nest)
  ├─ /vehiculo/sitemap/{0..N-1}.xml             /vehiculo/{id}
- ├─ /sitemap/vehiculos/catalog/sitemap/{0..}.xml         /vehiculos/{marca}/{modelo}
- └─ /sitemap/vehiculos/with-province/sitemap/{0..}.xml   /vehiculos/{marca}/{modelo}/{provincia}
+ ├─ /sitemap/vehiculos/catalog/sitemap/{0..}.xml         /vehiculos/marca-{marca}/modelo-{modelo}
+ └─ /sitemap/vehiculos/with-province/sitemap/{0..}.xml   /vehiculos/marca-{marca}/modelo-{modelo}/provincia-{provincia}
 ```
 
 Se mantienen, **sin enviarse ni listarse en el maestro**, dos índices auxiliares útiles para depurar:
@@ -37,8 +37,8 @@ Se mantienen, **sin enviarse ni listarse en el maestro**, dos índices auxiliare
 | `/sitemap/colaboraciones/sitemap.xml` | `/colaboraciones/{slug}` | `app/(public)/sitemap/colaboraciones/sitemap.ts` (mismos helpers) | Strapi `/landings-colaboracions` |
 | `/sitemap/concesionarios/sitemap.xml` | `/concesionario/{slug}` | `app/(public)/sitemap/concesionarios/sitemap.ts` + `lib/seo/fetch-dealership-sitemap.ts` | `GET /v1/dealerships` |
 | `/vehiculo/sitemap/{id}.xml` | `/vehiculo/{uuid}` (activos) | `app/(public)/vehiculo/sitemap.ts` + `lib/seo/fetch-vehicle-sitemap.ts` | `GET /v1/sitemap/vehicles` |
-| `/sitemap/vehiculos/catalog/sitemap/{id}.xml` | `/vehiculos/{makeSlug}/{modelSlug}` | `app/(public)/sitemap/vehiculos/catalog/sitemap.ts` + `lib/seo/fetch-vehicle-listing-sitemap.ts` | `GET /v1/sitemap/vehicle-listings?variant=catalog` |
-| `/sitemap/vehiculos/with-province/sitemap/{id}.xml` | `/vehiculos/{makeSlug}/{modelSlug}/{provinceSlug}` | `app/(public)/sitemap/vehiculos/with-province/sitemap.ts` (mismos helpers) | `GET /v1/sitemap/vehicle-listings?variant=with-province` |
+| `/sitemap/vehiculos/catalog/sitemap/{id}.xml` | `/vehiculos/marca-{makeSlug}/modelo-{modelSlug}` | `app/(public)/sitemap/vehiculos/catalog/sitemap.ts` + `lib/seo/build-vehicle-listing-sitemap-url.ts` | `GET /v1/sitemap/vehicle-listings?variant=catalog` |
+| `/sitemap/vehiculos/with-province/sitemap/{id}.xml` | `/vehiculos/marca-{makeSlug}/modelo-{modelSlug}/provincia-{provinceSlug}` | `app/(public)/sitemap/vehiculos/with-province/sitemap.ts` (mismos helpers) | `GET /v1/sitemap/vehicle-listings?variant=with-province` |
 | `/vehiculo/sitemap-index.xml` | (auxiliar, no enviado) | `app/(public)/vehiculo/sitemap-index.xml/route.ts` | meta de vehículos |
 | `/sitemap/vehiculos/listings-index.xml` | (auxiliar, no enviado) | `app/(public)/sitemap/vehiculos/listings-index.xml/route.ts` | metas de listados |
 
@@ -86,8 +86,8 @@ Backend: `GET /v1/sitemap/vehicles/meta` y `GET /v1/sitemap/vehicles` (`vehicle-
 
 ### 3.6 Listados indexables
 
-- **catalog:** `/vehiculos/{makeSlug}/{modelSlug}`, `weekly`, prioridad `0.7`.
-- **with-province:** `/vehiculos/{makeSlug}/{modelSlug}/{provinceSlug}`, filtra entradas sin `provinceSlug`, `weekly`, prioridad `0.65`.
+- **catalog:** `/vehiculos/marca-{makeSlug}/modelo-{modelSlug}` (solo si `resolveListingIndexability` marca la URL como indexable), `weekly`, prioridad `0.7`.
+- **with-province:** `/vehiculos/marca-{makeSlug}/modelo-{modelSlug}/provincia-{provinceSlug}`, omite entradas sin `provinceSlug` o no indexables, `weekly`, prioridad `0.65`.
 
 Backend: `GET /v1/sitemap/vehicle-listings/meta?variant=` y `GET /v1/sitemap/vehicle-listings?variant=&page=&limit=` (`vehicle-sitemap-list.controller.ts`). Criterio: vehículo `ACTIVE`, no borrado, con `version_id`; `with-province` exige `lat`/`lng` y `ST_Intersects` con `provinces`. `PAGE_SIZE = 5000`.
 

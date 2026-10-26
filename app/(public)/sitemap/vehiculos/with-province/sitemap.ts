@@ -1,13 +1,12 @@
 import type { MetadataRoute } from "next";
 
-import { absoluteUrl } from "@/lib/seo/absolute-url";
 import {
   fetchVehicleListingSitemapMeta,
   fetchVehicleListingSitemapPage,
 } from "@/lib/seo/fetch-vehicle-listing-sitemap";
+import { buildWithProvinceListingSitemapUrl } from "@/lib/seo/build-vehicle-listing-sitemap-url";
 import { VEHICLE_LISTING_SITEMAP_WITH_PROVINCE_PRIORITY } from "@/lib/seo/vehicle-listing-sitemap.constants";
 import { getVehicleSitemapSegmentIds } from "@/lib/seo/vehicle-sitemap-segments";
-import { buildVehicleListingHref } from "@/lib/vehicles/listing-url";
 
 export async function generateSitemaps() {
   const meta = await fetchVehicleListingSitemapMeta("with-province");
@@ -24,17 +23,20 @@ export default async function sitemap({
   const page = Number.isFinite(sitemapId) ? sitemapId + 1 : 1;
   const result = await fetchVehicleListingSitemapPage("with-province", page);
 
-  return result.data
-    .filter((entry) => entry.provinceSlug)
-    .map((entry) => ({
-      url: absoluteUrl(
-        buildVehicleListingHref({
-          makes_slugs: [entry.makeSlug],
-          models_slugs: [entry.modelSlug],
-          provinces_slugs: [entry.provinceSlug!],
-        }),
-      ),
+  const entries: MetadataRoute.Sitemap = [];
+
+  for (const entry of result.data) {
+    const url = buildWithProvinceListingSitemapUrl(entry);
+    if (!url) {
+      continue;
+    }
+
+    entries.push({
+      url,
       changeFrequency: "weekly",
       priority: VEHICLE_LISTING_SITEMAP_WITH_PROVINCE_PRIORITY,
-    }));
+    });
+  }
+
+  return entries;
 }
