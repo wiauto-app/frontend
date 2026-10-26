@@ -148,7 +148,7 @@ No bloquea `/_next/` (Google necesita los assets para renderizar) ni las página
 
 ## 8. Por qué los XML de listados NO viven bajo `/vehiculos/`
 
-La página de listado es un catch-all (`app/(public)/vehiculos/[[...slug]]/page.tsx`): cualquier path bajo `/vehiculos/*` (p. ej. `/vehiculos/sitemap.xml`) se interpretaría como slug de filtros. Por eso los ficheros XML de listados viven en `/sitemap/vehiculos/...`. Las URLs **dentro** del XML sí son listados públicos (`/vehiculos/toyota/avensis`).
+La página de listado es un catch-all (`app/(public)/vehiculos/[[...slug]]/page.tsx`): cualquier path bajo `/vehiculos/*` (p. ej. `/vehiculos/sitemap.xml`) se interpretaría como slug de filtros. Por eso los ficheros XML de listados viven en `/sitemap/vehiculos/...`. Las URLs **dentro** del XML sí son listados públicos (`/vehiculos/marca-toyota/modelo-avensis`).
 
 Las fichas usan `/vehiculo/...` (singular), que no choca con el catch-all.
 
@@ -176,7 +176,7 @@ Segmentación: `totalPages <= 0` → `"0"`; `totalPages = N` → `"0"…"N-1"`; 
 | Listado catalog | 0.7 |
 | Listado with-province | 0.65 |
 
-Solo entran al sitemap de listados las combinaciones marca + modelo (y provincia geolocalizada) con vehículos activos. El path indexable se define en `lib/vehicles/listing-url/indexable-catalog-listing-url.ts` (`buildIndexableCatalogListingPath`, `isIndexableCatalogSlugPath`, `CATALOG_DEGRADED_QUERY_KEYS`).
+Solo entran al sitemap de listados las combinaciones marca + modelo (y provincia geolocalizada) con vehículos activos cuya ruta sea indexable. El path canónico lo resuelve `resolveListingIndexability` (`lib/vehicles/listing-url/resolve-listing-indexability.ts`); si `isIndexable` es falso, la entrada se omite. Los `<loc>` los arma `lib/seo/build-vehicle-listing-sitemap-url.ts`.
 
 ---
 
@@ -268,11 +268,12 @@ wiauto-frontend/
   lib/seo/vehicle-listing-sitemap.constants.ts
   lib/seo/fetch-vehicle-sitemap.ts
   lib/seo/fetch-vehicle-listing-sitemap.ts
+  lib/seo/build-vehicle-listing-sitemap-url.ts
   lib/seo/build-vehicle-sitemap-index.ts
   lib/seo/build-vehicle-listing-sitemap-index.ts
   lib/seo/vehicle-sitemap-segments.ts
   lib/seo/get-vehicle-sitemap-priority.ts
-  lib/vehicles/listing-url/indexable-catalog-listing-url.ts
+  lib/vehicles/listing-url/resolve-listing-indexability.ts
 
 wiauto-backend/
   src/contexts/vehicles/api/route.constants.ts
