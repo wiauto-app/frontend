@@ -1,30 +1,20 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 
-import { useUser } from "@/app/contexts/auth/useUser";
-
-const NotificationSocketProvider = dynamic(
-  () =>
-    import("@/components/notifications/context/notificationSocketContext").then(
-      (mod) => mod.NotificationSocketProvider,
-    ),
-  { ssr: false },
-);
+import { NotificationSocketProvider } from "@/components/notifications/context/notificationSocketContext";
 
 interface AuthenticatedNotificationSocketProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Mantiene un único árbol de providers: al envolver solo tras `isAuthenticated`
+ * se remontaba todo el layout (flash en blanco al recargar con sesión).
+ * La conexión socket se carga en lazy dentro del provider.
+ */
 export const AuthenticatedNotificationSocketProvider = ({
   children,
 }: AuthenticatedNotificationSocketProviderProps) => {
-  const { isAuthenticated } = useUser();
-
-  if (!isAuthenticated) {
-    return children;
-  }
-
   return <NotificationSocketProvider>{children}</NotificationSocketProvider>;
 };

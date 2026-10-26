@@ -16,7 +16,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { io, type Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import { toast } from "sonner";
 
 interface NotificationSocketContextValue {
@@ -70,10 +70,8 @@ export const NotificationSocketProvider = ({
       return;
     }
 
-    const socket: Socket = io(`${getSocketBaseUrl()}/notifications`, {
-      withCredentials: true,
-      transports: ["websocket", "polling"],
-    });
+    let socket: Socket | undefined;
+    let cancelled = false;
 
     const handleConnect = () => setIsConnected(true);
     const handleDisconnect = () => setIsConnected(false);
@@ -88,14 +86,31 @@ export const NotificationSocketProvider = ({
       });
     };
 
-    socket.on("connect", handleConnect);
-    socket.on("disconnect", handleDisconnect);
-    socket.on(
-      NOTIFICATION_SOCKET_EVENTS.NOTIFICATION_NEW,
-      handleNotificationNew,
-    );
+    void import("socket.io-client").then(({ io }) => {
+      if (cancelled) {
+        return;
+      }
+
+      socket = io(`${getSocketBaseUrl()}/notifications`, {
+        withCredentials: true,
+        transports: ["websocket", "polling"],
+      });
+
+      socket.on("connect", handleConnect);
+      socket.on("disconnect", handleDisconnect);
+      socket.on(
+        NOTIFICATION_SOCKET_EVENTS.NOTIFICATION_NEW,
+        handleNotificationNew,
+      );
+    });
 
     return () => {
+      cancelled = true;
+      if (!socket) {
+        setIsConnected(false);
+        return;
+      }
+
       socket.off("connect", handleConnect);
       socket.off("disconnect", handleDisconnect);
       socket.off(
