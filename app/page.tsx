@@ -28,7 +28,7 @@ import { JsonLdScript } from "@/lib/seo/json-ld-script";
 import { MobileBrowseAllVehiclesCta } from "@/components/home/MobileBrowseAllVehiclesCta";
 import { LandingContainer } from "@/components/ui/landingContainer";
 import { LazyWiautoMatch } from "@/components/home/lazyImports/LazyWiautoMatch";
-import { LazyExtraServices } from "@/components/home/lazyImports/LazyExtraServices";
+import { VehicleExtraServices } from "@/components/home/vehicleExtraServices";
 import { LazyAppDownloadBanner } from "@/components/home/lazyImports/LazyAppDownloadBanner";
 import { LazyPromotionPlans } from "@/components/home/lazyImports/LazyPromotionPlans";
 
@@ -59,7 +59,7 @@ export default async function Home() {
         />
         <LazyWiautoMatch />
 
-        <LazyExtraServices />
+        <VehicleExtraServices />
         <LazyAppDownloadBanner data={home_data.homeAppAdvertisment} />
         <LazyPromotionPlans data={home_data.promocion_planes} />
         <MobileBrowseAllVehiclesCta />

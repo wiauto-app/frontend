@@ -94,8 +94,7 @@ export const getAllColaboraciones = async (): Promise<StrapiColaboracionLanding[
     );
 
     const response = await getStrapiData<StrapiColaboracionResponse>(
-      `/landings-colaboracions?${query}`,
-      { revalidate: 1800 },
+      `/landings-colaboracions?${query}`
     );
 
     return response.data ?? [];

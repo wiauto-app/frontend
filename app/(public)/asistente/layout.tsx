@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { AssistantChatProviderLayout } from "@/components/assistant/AssistantChatProviderLayout";
 import { AssistantLayoutHeader } from "@/components/assistant/assistantLayoutHeader";
 import { AssistantLayoutPreview } from "@/components/assistant/AssistantLayoutPreview";
 import { AssistantMainArea } from "@/components/assistant/assistantMainArea";
@@ -57,7 +58,11 @@ export default async function Layout({ children, modal }: LayoutProps) {
         </div>
       }
     >
-      <AssistantLayoutContent modal={modal}>{children}</AssistantLayoutContent>
+      <AssistantChatProviderLayout>
+        <AssistantLayoutContent modal={modal}>
+          {children}
+        </AssistantLayoutContent>
+      </AssistantChatProviderLayout>
     </Suspense>
   );
 }

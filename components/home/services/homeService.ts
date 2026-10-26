@@ -1,7 +1,10 @@
 import qs from "qs";
+import { cache } from "react";
 
 import { getStrapiData, type StrapiResponse } from "@/lib/strapi-api";
 import { HERO_POPULATE } from "@/lib/strapi-populate";
+
+import type { StrapiNewsletter } from "@/interfaces/strapi-components.interface";
 
 import type { StrapiHomepageResponse } from "../types/strapi-home.types";
 
@@ -80,7 +83,13 @@ const HOME_POPULATE_QUERY = {
   },
 };
 
-export const getHomeData = async (): Promise<StrapiHomepageResponse> => {
+const HOME_NEWSLETTER_POPULATE_QUERY = {
+  populate: {
+    homeNewsletter: true,
+  },
+};
+
+export const getHomeData = cache(async (): Promise<StrapiHomepageResponse> => {
   const query = qs.stringify(HOME_POPULATE_QUERY, {
     encodeValuesOnly: true,
   });
@@ -88,4 +97,15 @@ export const getHomeData = async (): Promise<StrapiHomepageResponse> => {
     `/homepage?${query}`,
   );
   return response.data;
-};
+});
+
+/** Solo bloque newsletter; evita el populate completo del homepage en el footer. */
+export const getHomeNewsletterData = cache(async (): Promise<StrapiNewsletter> => {
+  const query = qs.stringify(HOME_NEWSLETTER_POPULATE_QUERY, {
+    encodeValuesOnly: true,
+  });
+  const response = await getStrapiData<
+    StrapiResponse<Pick<StrapiHomepageResponse, "homeNewsletter">>
+  >(`/homepage?${query}`);
+  return response.data.homeNewsletter;
+});

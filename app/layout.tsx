@@ -1,13 +1,13 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppDownloadBannerGate } from "@/components/app-download/AppDownloadBannerGate";
 import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
 import { Footer, NewsletterSection } from "@/components/home";
-import { LazyAssistantDialog } from "@/components/home/lazyImports/LazyAssistantDialog";
+import { LazyAssistantShell } from "@/components/home/lazyImports/LazyAssistantShell";
 import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
-import { AssistantChatProvider } from "@/components/assistant/assistantChatProvider";
+import { ConsentModeScript } from "@/components/consent/consentModeScript";
 import { ViewTransitionStyles } from "@/components/view-transitions/view-transition-styles";
 import { Metadata } from "next";
 import { LazyMobileNavbar } from "@/components/home/lazyImports/LazyMobileNavbar";
@@ -17,17 +17,8 @@ import { LazyThirdPartyLibraries } from "@/components/home/lazyImports/LazyThird
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export function generateMetadata(): Metadata {
@@ -48,46 +39,36 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={cn(
-        "antialiased",
-        geistSans.variable,
-        geistMono.variable,
-        "font-sans",
-        inter.variable,
-      )}
-    >
+    <html lang="es" className={cn("antialiased font-sans", inter.variable)}>
       <body className="flex flex-col relative">
+        <ConsentModeScript />
         <ViewTransitionStyles />
         <Providers>
-          <AssistantChatProvider>
-            <div
-              className="sticky top-0 z-40"
-              style={{ viewTransitionName: "site-header" }}
-            >
-              <AppDownloadBannerGate />
-              <Navbar />
-            </div>
-            <main className="flex min-w-0 flex-1 flex-col overflow-x-clip">
-              {children}
-            </main>
-            <ConditionalWrapper
-              hideOnPaths={[
-                "/usuario",
-                "/asistente",
-                "/publicar",
-                "/editar-vehiculo",
-                "/billing-plan",
-              ]}
-            >
-              <NewsletterSection />
-              <Footer />
-            </ConditionalWrapper>
-            <LazyAssistantDialog />
-            <LazyMobileNavbar />
-            <LazyCookieConsentBanner />
-          </AssistantChatProvider>
+          <div
+            className="sticky top-0 z-40"
+            style={{ viewTransitionName: "site-header" }}
+          >
+            <AppDownloadBannerGate />
+            <Navbar />
+          </div>
+          <main className="flex min-w-0 flex-1 flex-col overflow-x-clip">
+            {children}
+          </main>
+          <ConditionalWrapper
+            hideOnPaths={[
+              "/usuario",
+              "/asistente",
+              "/publicar",
+              "/editar-vehiculo",
+              "/billing-plan",
+            ]}
+          >
+            <NewsletterSection />
+            <Footer />
+          </ConditionalWrapper>
+          <LazyAssistantShell />
+          <LazyMobileNavbar />
+          <LazyCookieConsentBanner />
         </Providers>
         <LazyThirdPartyLibraries />
       </body>

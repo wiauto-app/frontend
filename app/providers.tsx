@@ -4,10 +4,10 @@ import { AuthProvider } from "./contexts/auth/authProvider";
 import { FavoritesProvider } from "./contexts/favorites/favoritesProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthReturnRedirect } from "@/components/auth/AuthReturnRedirect";
-import { NotificationSocketProvider } from "@/components/notifications/context/notificationSocketContext";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { CookieConsentProvider } from "@/components/consent/cookieConsentProvider";
-import { OneTapSignIn } from "@/components/oneTapSignIn";
+import { DeferredOneTapSignIn } from "@/components/providers/DeferredOneTapSignIn";
+import { AuthenticatedNotificationSocketProvider } from "@/components/providers/AuthenticatedNotificationSocketProvider";
 
 const queryClient = new QueryClient();
 
@@ -15,11 +15,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   return (
     <AuthProvider>
-      <OneTapSignIn />
+      <DeferredOneTapSignIn />
       <AuthReturnRedirect />
       <QueryClientProvider client={queryClient}>
         <FavoritesProvider>
-          <NotificationSocketProvider>
+          <AuthenticatedNotificationSocketProvider>
             <CookieConsentProvider>
               {children}
               <Toaster
@@ -27,7 +27,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 position={isMobile ? "bottom-center" : "top-right"}
               />
             </CookieConsentProvider>
-          </NotificationSocketProvider>
+          </AuthenticatedNotificationSocketProvider>
         </FavoritesProvider>
       </QueryClientProvider>
     </AuthProvider>

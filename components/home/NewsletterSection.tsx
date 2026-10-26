@@ -1,10 +1,9 @@
 import { SectionContainer } from "./SectionContainer";
 import { NewsletterSubscribeForm } from "./NewsletterSubscribeForm";
-import { getHomeData } from "./services/homeService";
+import { getHomeNewsletterData } from "./services/homeService";
 
 export async function NewsletterSection() {
-  const home_data = await getHomeData();
-  const data = home_data.homeNewsletter;
+  const data = await getHomeNewsletterData();
   return (
     <SectionContainer
       className="py-8 bg-primary/10"
