@@ -26,8 +26,8 @@ export const ProfessionalSidebarItem = ({
         render={
           <Link
             className={cn(
-              "flex items-center justify-between font-semibold",
-              isActive && "border border-white/40 font-bold",
+              "flex w-full items-center justify-between font-medium",
+              isActive && "font-semibold",
             )}
             href={item.href}
           >

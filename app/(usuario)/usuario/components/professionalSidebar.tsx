@@ -4,6 +4,9 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -17,7 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useUserSidebarItems } from "@/hooks/useUserSidebarItems";
+import { useUserSidebarSections } from "@/hooks/useUserSidebarItems";
 
 const SIDEBAR_SKELETON_ITEMS = 8;
 
@@ -35,7 +38,7 @@ const ProfessionalSidebarSkeleton = ({
       <Skeleton className="h-8 w-28" />
     </SidebarHeader>
     <Separator />
-    <SidebarContent className="p-2">
+    <SidebarContent className="p-2 overflow-y-auto ">
       <SidebarMenu className="gap-2">
         {Array.from({ length: SIDEBAR_SKELETON_ITEMS }).map((_, index) => (
           <SidebarMenuItem key={index}>
@@ -66,7 +69,7 @@ export function ProfessionalSidebar({
   const pathname = usePathname();
 
   const isOnUsuarioPath = pathname.includes("usuario");
-  const sidebarItems = useUserSidebarItems();
+  const sidebarSections = useUserSidebarSections();
 
   if (!isOnUsuarioPath) {
     return null;
@@ -77,30 +80,36 @@ export function ProfessionalSidebar({
   }
 
   return (
-    <Sidebar
-      className={cn(
-        "bg-pro-sidebar text-white",
-        className,
-      )}
-      {...props}
-    >
+    <Sidebar className={cn("bg-pro-sidebar text-white", className)} {...props}>
       <SidebarHeader className="flex h-20 items-center justify-center bg-white">
         <BrandLogo variant="pro-black" />
       </SidebarHeader>
       <Separator />
-      <SidebarContent className="p-2">
-        <SidebarMenu className="gap-2">
-          {sidebarItems.map((item) => (
-            <ProfessionalSidebarItem
-              className={cn(
-                "text-primary-foreground hover:bg-white/10 hover:text-primary-foreground active:bg-white/15 active:text-primary-foreground",
-                "data-active:bg-white/15 data-active:text-primary-foreground data-active:hover:bg-white/20 data-active:hover:text-primary-foreground",
-              )}
-              key={item.href}
-              item={item}
-            />
-          ))}
-        </SidebarMenu>
+      <SidebarContent className="gap-1 overflow-y-auto p-2">
+        {sidebarSections.map((section) => (
+          <SidebarGroup key={section.id} className="p-0">
+            <SidebarGroupLabel
+              className="px-2 text-muted-foreground uppercase"
+            >
+              {section.title}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-1">
+                {section.links.map((item) => (
+                  <ProfessionalSidebarItem
+                    className={cn(
+                      "border border-transparent text-white/90 hover:bg-white/10 hover:text-white",
+                      "data-active:border-primary data-active:bg-primary/25 data-active:text-white data-active:shadow-sm data-active:shadow-primary/25",
+                      "data-active:hover:bg-primary/30 data-active:hover:text-white data-active:[&_svg]:text-white",
+                    )}
+                    key={item.href}
+                    item={item}
+                  />
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenuItem>

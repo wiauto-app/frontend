@@ -50,7 +50,7 @@ export function UserDropdown() {
         className="flex items-center gap-1 text-sm font-semibold hover:text-primary hover:underline"
       >
         <User className="hidden size-4 lg:block" />
-        Ingresar
+        Iniciar sesión
       </Link>
     );
   }

@@ -9,7 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/navbar/components/userAvatar";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
-import { useUserSidebarItems } from "@/hooks/useUserSidebarItems";
+import { useUserSidebarSections } from "@/hooks/useUserSidebarItems";
+import { cn } from "@/lib/utils";
 
 const USER_AREA_BASE_PATH = "/usuario";
 const PERFIL_PATH = `${USER_AREA_BASE_PATH}/perfil`;
@@ -50,7 +51,7 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
 
   const { user, logout } = useUser();
   const { isSubscribed } = useEntitlements();
-  const sidebarItems = useUserSidebarItems();
+  const sidebarSections = useUserSidebarSections();
 
   return (
     <div className="w-full  flex flex-col gap-4">
@@ -91,27 +92,37 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
 
       {/* Navigation Links */}
       <Card size="sm">
-        <CardContent>
-          <nav className="flex flex-col space-y-1">
-            {sidebarItems.map((link) => {
-              const isActive = isSidebarLinkActive(link.href, pathname);
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => onSelect?.()}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? "text-blue-600 bg-blue-50"
-                      : "text-gray-600 hover:text-blue-600 hover:bg-blue-50/50"
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  {link.label}
-                </Link>
-              );
-            })}
+        <CardContent className="space-y-4">
+          <nav className="flex flex-col gap-4" aria-label="Menú de usuario">
+            {sidebarSections.map((section) => (
+              <div key={section.id} className="flex flex-col gap-1">
+                <p className="px-3 font-medium text-primary uppercase">
+                  {section.title}
+                </p>
+                <div className="flex flex-col space-y-1">
+                  {section.links.map((link) => {
+                    const isActive = isSidebarLinkActive(link.href, pathname);
+                    const Icon = link.icon;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => onSelect?.()}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                          isActive
+                            ? "border-primary bg-primary/10 font-semibold text-primary shadow-sm shadow-primary/10"
+                            : "border-transparent text-gray-600 hover:border-primary/25 hover:bg-primary/5 hover:text-primary",
+                        )}
+                      >
+                        <Icon className="h-5 w-5 shrink-0" aria-hidden />
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
         </CardContent>
 
