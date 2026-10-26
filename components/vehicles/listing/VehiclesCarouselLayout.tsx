@@ -166,7 +166,7 @@ export const VehiclesCarouselLayout = ({
 
         <CarouselPrevious
           aria-label="Ver vehículos anteriores"
-          className="hidden sm:block left-0 size-9 border-slate-200 bg-white shadow-sm"
+          className="hidden sm:flex left-0 size-9 border-slate-200 bg-white shadow-sm"
         />
 
         <Button
@@ -176,7 +176,7 @@ export const VehiclesCarouselLayout = ({
           aria-label="Ver vehículos siguientes"
           disabled={isNextDisabled}
           onClick={handleNextClick}
-          className="absolute hidden sm:block top-1/2 -right-0 size-9 -translate-y-1/2 touch-manipulation rounded-full border-slate-200 bg-white shadow-sm"
+          className="absolute hidden sm:flex top-1/2 -right-0 size-9 -translate-y-1/2 touch-manipulation rounded-full border-slate-200 bg-white shadow-sm"
         >
           {isLoadingMore ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
