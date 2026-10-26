@@ -66,14 +66,6 @@ export default async function VehiclesListingPage(props: {
   const slug_segments = slug ?? [];
   const url_search_params = toUrlSearchParams(search_params);
 
-  const normalized_href = normalizeVehicleListingHref(
-    slug_segments,
-    url_search_params,
-  );
-  if (normalized_href) {
-    permanentRedirect(normalized_href);
-  }
-
   const filters = parseVehicleListingUrl(slug_segments, url_search_params);
 
   const [listing, activeFilters] = await Promise.all([
