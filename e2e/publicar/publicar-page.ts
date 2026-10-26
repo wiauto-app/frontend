@@ -120,7 +120,7 @@ export class PublicarPage {
   /** Paso 3, solo perfil con suscripción: un plan, precio financiado y garantía. */
   async fillFinanceAndWarranty(financePrice = 14_000) {
     await expect(
-      this.page.getByText("Financiación y garantía", { exact: false }),
+      this.page.getByText("Garantía y financiación", { exact: false }),
     ).toBeVisible({ timeout: 15_000 });
 
     const firstPlan = this.page.locator("button[aria-pressed]").first();

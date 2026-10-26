@@ -116,7 +116,7 @@ const quickVehicleBaseSchema = z.object({
   email: z.email({ error: "Introduce un correo electrónico válido." }),
   description: z
     .string()
-    .max(1000, { error: "La descripción no puede tener más de 1000 caracteres." })
+    .max(3000, { error: "La descripción no puede tener más de 3000 caracteres." })
     .optional(),
   transmission_type: z.enum(["manual", "automatic"], {
     error: "Selecciona un tipo de transmisión.",

@@ -25,6 +25,7 @@ import {
   type AuthenticatedContactFormValues,
   type GuestContactFormValues,
 } from "../schemas/contactForm.schema";
+import Link from "next/link";
 
 type VehicleDetailContactFormProps = {
   vehicleId: string;
@@ -247,16 +248,13 @@ export const VehicleDetailContactForm = ({
             )}
           </Button>
 
-          <Button
-            type="button"
-            variant="link"
-            className="w-full"
-            onClick={() =>
-              router.push(`/simulador-financiacion?vehicleId=${vehicleId}`)
-            }
+          <Link
+            className="w-full text-sm text-primary hover:underline"
+            target="_blank"
+            href={`/simulador-financiacion?vehicleId=${vehicleId}`}
           >
             Ir al simulador de financiación →
-          </Button>
+          </Link>
         </div>
       </form>
     );
@@ -359,9 +357,13 @@ export const VehicleDetailContactForm = ({
           )}
         </Button>
 
-        <Button type="button" variant="link" className="w-full">
+        <Link
+          className="w-full text-sm text-primary hover:underline"
+          target="_blank"
+          href={`/simulador-financiacion?vehicleId=${vehicleId}`}
+        >
           Ir al simulador de financiación →
-        </Button>
+        </Link>
       </div>
     </form>
   );
