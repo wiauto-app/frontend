@@ -1,21 +1,19 @@
 import {
   COMMUNITY_KEY,
-  CONDITION_KEY,
   MAKE_KEY,
   MODEL_KEY,
   MUNICIPALITY_KEY,
-  PRICE_KEYS,
   PROVINCE_KEY,
 } from "@/app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants";
 import type { MakeModelUrlPayload } from "@/components/selectors/FilterMakeSelector/utils/make-model-selection";
 import type { LocationUrlPayload } from "@/components/selectors/FilterLocationSelector/utils/location-selection";
-import type { ConditionVehicle } from "@/interfaces/vehicle.interface";
-import {
-  FILTERS_QS_STRINGIFY_REPEAT_OPTIONS,
-  stringifyFiltersQuery,
-  type FiltersQueryRecord,
-} from "./filters-query";
-import { VEHICLES_LISTING_BASE_PATH } from "./constants";
+import type {
+  ConditionVehicle,
+  FindAllVehiclesParams,
+} from "@/interfaces/vehicle.interface";
+
+import { buildVehicleListingHref } from "./build-listing-url";
+import { emptyToUndefined } from "./empty-to-undefined";
 
 export type HeroListingSearchState = MakeModelUrlPayload &
   LocationUrlPayload & {
@@ -24,36 +22,15 @@ export type HeroListingSearchState = MakeModelUrlPayload &
   };
 
 export const buildHeroListingHref = (state: HeroListingSearchState): string => {
-  const record: FiltersQueryRecord = {};
+  const params: FindAllVehiclesParams = {
+    makes_slugs: emptyToUndefined(state[MAKE_KEY]),
+    models_slugs: emptyToUndefined(state[MODEL_KEY]),
+    comunities_slugs: emptyToUndefined(state[COMMUNITY_KEY]),
+    provinces_slugs: emptyToUndefined(state[PROVINCE_KEY]),
+    municipalities_slugs: emptyToUndefined(state[MUNICIPALITY_KEY]),
+    until_price: state.precio_hasta,
+    condition: state.condicion,
+  };
 
-  if (state[MAKE_KEY]?.length) {
-    record[MAKE_KEY] = state[MAKE_KEY];
-  }
-  if (state[MODEL_KEY]?.length) {
-    record[MODEL_KEY] = state[MODEL_KEY];
-  }
-  if (state[COMMUNITY_KEY]?.length) {
-    record[COMMUNITY_KEY] = state[COMMUNITY_KEY];
-  }
-  if (state[PROVINCE_KEY]?.length) {
-    record[PROVINCE_KEY] = state[PROVINCE_KEY];
-  }
-  if (state[MUNICIPALITY_KEY]?.length) {
-    record[MUNICIPALITY_KEY] = state[MUNICIPALITY_KEY];
-  }
-  if (state.precio_hasta !== undefined) {
-    record[PRICE_KEYS.UNTIL] = String(state.precio_hasta);
-  }
-  if (state.condicion) {
-    record[CONDITION_KEY] = state.condicion;
-  }
-
-  const search = stringifyFiltersQuery(
-    record,
-    FILTERS_QS_STRINGIFY_REPEAT_OPTIONS,
-  );
-
-  return search
-    ? `${VEHICLES_LISTING_BASE_PATH}?${search}`
-    : VEHICLES_LISTING_BASE_PATH;
+  return buildVehicleListingHref(params);
 };

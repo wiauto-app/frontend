@@ -324,7 +324,11 @@ export const apiGet = async <T>(
 ): Promise<ApiResponse<T>> => {
   let query = "";
   if (queryParams) {
-    query = qs.stringify(queryParams, { skipNulls: true, addQueryPrefix: true });
+    query = qs.stringify(queryParams, {
+      skipNulls: true,
+      addQueryPrefix: true,
+      arrayFormat: "repeat",
+    });
   }
   const url = `${path}${query}`;
   return fetchWithAuth<T>(url, { method: "GET", next: { revalidate } });

@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Category } from "@/interfaces/vehicle.interface";
 import { getImageUrl } from "@/app/(public)/vehiculos/utils";
 import { cn } from "@/lib/utils";
+import { buildVehicleListingHref } from "@/lib/vehicles/listing-url";
 import { BRAND_BLUE, BRAND_BLUE_LIGHT } from "./data/home-data";
 
 type PopularCategoryCardProps = {
@@ -17,7 +18,9 @@ export const PopularCategoryCard = ({ category }: PopularCategoryCardProps) => {
 
   return (
     <Link
-      href={`/vehiculos?categoria=${category.slug}`}
+      href={buildVehicleListingHref({
+        categories_slugs: [category.slug],
+      })}
       aria-label={`Explorar vehículos de categoría ${category.name}`}
       className={cn(
         "home-card-interactive group relative block h-full overflow-hidden rounded-2xl",

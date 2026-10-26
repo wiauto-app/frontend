@@ -16,13 +16,14 @@ import type { HierarchyMultiValue } from "@/components/selectors/types";
 import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 import { trackSearch } from "@/lib/analytics/events";
 import {
-  buildClassicCatalogListingHref,
   buildVehicleListingHref,
-  isIndexableCatalogSlugPath,
   orderDirectionFromUrlSegment,
   orderDirectionToUrlSegment,
   parseVehicleListingUrl,
 } from "@/lib/vehicles/listing-url";
+import {
+  withPreservedListingUiQuery,
+} from "./useListingUrlUpdater";
 import { getConditionLabel } from "../utils";
 
 type FilterChip = {
@@ -34,6 +35,7 @@ type FilterChip = {
 export type VehiclesListingFiltersContextValue = {
   filters: FindAllVehiclesParams;
   commitFilters: (nextFilters: FindAllVehiclesParams) => void;
+  updateFilters: (patch: Partial<FindAllVehiclesParams>) => void;
   priceMin: string;
   priceMax: string;
   selectedGenerations: string[];
@@ -147,38 +149,42 @@ export const VehiclesListingFiltersProvider = ({
     filters.order_direction ?? "DESC",
   )}`;
 
-  const isIndexableSlugUrl = useMemo(
-    () => isIndexableCatalogSlugPath(slugSegments),
-    [slugSegments],
-  );
-
-  const buildListingHref = useCallback(
-    (nextFilters: FindAllVehiclesParams, catalogInQueryOnly = false) => {
-      if (catalogInQueryOnly) {
-        return buildClassicCatalogListingHref(nextFilters);
-      }
-
-      return buildVehicleListingHref(nextFilters);
+  const pushListingHref = useCallback(
+    (nextFilters: FindAllVehiclesParams) => {
+      return withPreservedListingUiQuery(
+        buildVehicleListingHref(nextFilters),
+        searchParams,
+      );
     },
-    [],
+    [searchParams],
   );
 
   const pushFilters = useCallback(
     (nextFilters: FindAllVehiclesParams) => {
-      router.push(buildListingHref(nextFilters));
+      router.push(pushListingHref(nextFilters));
     },
-    [buildListingHref, router],
+    [pushListingHref, router],
   );
 
   const commitFilters = useCallback(
     (nextFilters: FindAllVehiclesParams) => {
       startTransition(() => {
-        router.push(
-          buildListingHref(nextFilters, isIndexableSlugUrl),
-        );
+        router.push(pushListingHref(nextFilters), { scroll: false });
       });
     },
-    [buildListingHref, isIndexableSlugUrl, router],
+    [pushListingHref, router],
+  );
+
+  const updateFilters = useCallback(
+    (patch: Partial<FindAllVehiclesParams>) => {
+      const next: FindAllVehiclesParams = {
+        ...filters,
+        ...patch,
+        page: patch.page ?? 1,
+      };
+      commitFilters(next);
+    },
+    [commitFilters, filters],
   );
 
   const resetLocalFilters = useCallback(() => {
@@ -476,6 +482,7 @@ export const VehiclesListingFiltersProvider = ({
     () => ({
       filters,
       commitFilters,
+      updateFilters,
       priceMin,
       priceMax,
       selectedGenerations,
@@ -512,6 +519,7 @@ export const VehiclesListingFiltersProvider = ({
     [
       activeFilterChips,
       commitFilters,
+      updateFilters,
       filters,
       goToPage,
       handleBodyTypeToggle,

@@ -6,16 +6,18 @@ export const PROVINCE_PATH_PREFIX = "provincia-";
 export const COMMUNITY_PATH_PREFIX = "comunidad-";
 export const MUNICIPALITY_PATH_PREFIX = "municipio-";
 
-/** Máximo: comunidad + provincia + municipio (marca/modelo solo en query). */
-export const MAX_PATH_SEGMENTS = 3;
-
-/** Query params de catálogo degradados (no indexables directamente). */
+/** @deprecated Las URLs de catálogo viven en el path con prefijos; se mantiene para compat. */
 export const CATALOG_DEGRADED_QUERY_KEYS = [
   "marcas",
   "modelos",
   "provincias",
   "comunidades",
   "municipios",
+  "tipo",
+  "condicion",
+  "combustible",
+  "color",
+  "equipamiento",
 ] as const;
 
 export const DEFAULT_LISTING_PARAMS: Required<
@@ -108,6 +110,7 @@ export const LEGACY_API_QUERY_KEYS = new Set([
   "displacement_since",
   "displacement_until",
   "dgt_label_ids",
+  "dgt_label_slugs",
   "autonomy_since",
   "battery_capacity_since",
   "battery_capacity_until",
@@ -133,6 +136,7 @@ export const ARRAY_DTO_KEYS = new Set<keyof FindAllVehiclesParams>([
   "fuel_type_slugs",
   "traction_slugs",
   "dgt_label_ids",
+  "dgt_label_slugs",
   "features_slugs",
   "color_slugs",
   "cuota_slugs",

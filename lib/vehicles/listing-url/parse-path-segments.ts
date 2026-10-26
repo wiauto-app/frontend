@@ -2,10 +2,10 @@ import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 
 import {
   COMMUNITY_PATH_PREFIX,
-  MAX_PATH_SEGMENTS,
   MUNICIPALITY_PATH_PREFIX,
   PROVINCE_PATH_PREFIX,
 } from "./constants";
+import { findPathFilterDefinition } from "./path-filters.registry";
 import { splitCommaSlugs } from "./split-comma-slugs";
 
 const stripPrefix = (segment: string, prefix: string): string =>
@@ -67,13 +67,15 @@ export const parsePathSegments = (
   | "provinces_slugs"
   | "municipalities_slugs"
 > => {
-  const full_segments = slug ?? [];
+  const full_segments = (slug ?? []).filter(
+    (segment) => !findPathFilterDefinition(segment),
+  );
   const legacy = parseLegacyPathSegments(full_segments);
   if (legacy) {
     return legacy;
   }
 
-  const segments = full_segments.slice(0, MAX_PATH_SEGMENTS);
+  const segments = full_segments;
 
   const result: Pick<
     FindAllVehiclesParams,

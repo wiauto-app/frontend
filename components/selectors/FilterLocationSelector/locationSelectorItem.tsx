@@ -18,8 +18,13 @@ import {
 } from "./utils/location-selection";
 
 import { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
+import { usePathname } from "next/navigation";
+
+import { useListingUrlUpdater } from "@/app/(public)/vehiculos/hooks/useListingUrlUpdater";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
+import { emptyToUndefined } from "@/lib/vehicles/listing-url";
 import {
+  COMMUNITY_KEY,
   GEO_LOCATION_KEYS,
   MUNICIPALITY_KEY,
   PROVINCE_KEY,
@@ -38,6 +43,10 @@ export const LocationSelectorItem = ({
   const store = useSelectedLocationItemsStore();
   const selectedItems = controlledSelectedItems ?? store.selectedItems;
   const setSelectedItems = controlledSetSelectedItems ?? store.setSelectedItems;
+  const pathname = usePathname();
+  const { updateFilters } = useListingUrlUpdater();
+  const is_vehicles_listing =
+    pathname === "/vehiculos" || pathname.startsWith("/vehiculos/");
   const { applyUrlUpdates } = useFiltersManager({
     keys: [PROVINCE_KEY, MUNICIPALITY_KEY],
   });
@@ -77,6 +86,18 @@ export const LocationSelectorItem = ({
 
     if (onApplyLocationPayload) {
       onApplyLocationPayload(payload);
+      return;
+    }
+
+    if (is_vehicles_listing) {
+      updateFilters({
+        comunities_slugs: emptyToUndefined(payload[COMMUNITY_KEY]),
+        provinces_slugs: emptyToUndefined(payload[PROVINCE_KEY]),
+        municipalities_slugs: emptyToUndefined(payload[MUNICIPALITY_KEY]),
+        lat: undefined,
+        lng: undefined,
+        radius: undefined,
+      });
       return;
     }
 

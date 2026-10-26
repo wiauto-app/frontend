@@ -13,7 +13,11 @@ import {
 import { useSelectedItemsStore } from "./stores/selectedItemsStore";
 
 import { HeroCatalogFacetItem } from "@/interfaces/hero-facet.interface";
+import { usePathname } from "next/navigation";
+
+import { useListingUrlUpdater } from "@/app/(public)/vehiculos/hooks/useListingUrlUpdater";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
+import { emptyToUndefined } from "@/lib/vehicles/listing-url";
 import {
   MAKE_KEY,
   MODEL_KEY,
@@ -37,6 +41,10 @@ export const MakeSelectorItem = ({
   const store = useSelectedItemsStore();
   const selectedItems = controlledSelectedItems ?? store.selectedItems;
   const setSelectedItems = controlledSetSelectedItems ?? store.setSelectedItems;
+  const pathname = usePathname();
+  const { updateFilters } = useListingUrlUpdater();
+  const is_vehicles_listing =
+    pathname === "/vehiculos" || pathname.startsWith("/vehiculos/");
   const { handleMultiKeysChange } = useFiltersManager({
     keys: [MAKE_KEY, MODEL_KEY],
   });
@@ -68,6 +76,14 @@ export const MakeSelectorItem = ({
 
     if (onApplyMakeModelPayload) {
       onApplyMakeModelPayload(payload);
+      return;
+    }
+
+    if (is_vehicles_listing) {
+      updateFilters({
+        makes_slugs: emptyToUndefined(payload[MAKE_KEY]),
+        models_slugs: emptyToUndefined(payload[MODEL_KEY]),
+      });
       return;
     }
 

@@ -1,17 +1,30 @@
 import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 
-import { buildPathSegments } from "./build-path-segments";
-import {
-  resolveCatalogForPath,
-  resolveCatalogForQuery,
-} from "./catalog-path-resolution";
+import { buildFilterSegments } from "./build-filter-segments";
 import {
   DEFAULT_LISTING_PARAMS,
-  DTO_TO_FRIENDLY_QUERY,
-  LEGACY_API_QUERY_KEYS,
   VEHICLES_LISTING_BASE_PATH,
 } from "./constants";
+import { getPathFilterDtoKeys } from "./path-filters.registry";
 import { orderDirectionToUrlSegment } from "./order-direction";
+
+const PATH_DTO_KEYS = getPathFilterDtoKeys();
+
+const QUERY_ONLY_KEYS = new Set<keyof FindAllVehiclesParams>([
+  "page",
+  "limit",
+  "query",
+  "order_by",
+  "order_direction",
+  "lat",
+  "lng",
+  "radius",
+  "dealership_ids",
+  "exclude_vehicle_ids",
+]);
+
+/** Claves que no van al path pero pueden ir en query (p. ej. UI). */
+export const LISTING_UI_QUERY_KEYS = ["show_map"] as const;
 
 const shouldOmitQueryValue = (
   key: keyof FindAllVehiclesParams,
@@ -40,83 +53,39 @@ const shouldOmitQueryValue = (
   return false;
 };
 
-const CATALOG_DTO_KEYS = new Set<keyof FindAllVehiclesParams>([
-  "makes_slugs",
-  "models_slugs",
-  "comunities_slugs",
-  "provinces_slugs",
-  "municipalities_slugs",
-]);
-
-interface BuildVehicleListingUrlOptions {
-  catalogInQueryOnly?: boolean;
-}
-
-const buildFriendlySearch = (
-  params: FindAllVehiclesParams,
-  options?: BuildVehicleListingUrlOptions,
-): string => {
+const buildFriendlySearch = (params: FindAllVehiclesParams): string => {
   const search = new URLSearchParams();
-  const catalog_in_path = options?.catalogInQueryOnly
-    ? {}
-    : resolveCatalogForPath(params);
-  const catalog_query = resolveCatalogForQuery(params, catalog_in_path);
 
-  Object.entries(catalog_query).forEach(([friendly_key, raw]) => {
+  const setQuery = (key: string, raw: string) => {
     if (raw.length > 0) {
-      search.set(friendly_key, raw);
-    }
-  });
-
-  const setFriendly = (friendly_key: string, raw: string) => {
-    if (raw.length > 0) {
-      search.set(friendly_key, raw);
+      search.set(key, raw);
     }
   };
 
-  (Object.entries(params) as [keyof FindAllVehiclesParams, unknown][]).forEach(
-    ([key, value]) => {
-      if (CATALOG_DTO_KEYS.has(key) || shouldOmitQueryValue(key, value)) {
-        return;
-      }
-
-      if (key === "order_by" || key === "order_direction") {
-        return;
-      }
-
-      let friendly_key = DTO_TO_FRIENDLY_QUERY[key];
-      if (key === "since_price") {
-        friendly_key = params.cuota_slugs?.length ? "cuota_desde" : "precio_desde";
-      }
-      if (key === "until_price") {
-        friendly_key = params.cuota_slugs?.length ? "cuota_hasta" : "precio_hasta";
-      }
-      if (
-        !friendly_key &&
-        LEGACY_API_QUERY_KEYS.has(key) &&
-        !CATALOG_DTO_KEYS.has(key)
-      ) {
-        friendly_key = key;
-      }
-      if (!friendly_key) {
-        return;
-      }
-
-      if (Array.isArray(value)) {
-        if (value.length > 0) {
-          setFriendly(friendly_key, value.join(","));
-        }
-        return;
-      }
-
-      if (typeof value === "boolean") {
-        setFriendly(friendly_key, value ? "true" : "false");
-        return;
-      }
-
-      setFriendly(friendly_key, String(value));
-    },
-  );
+  if (!shouldOmitQueryValue("page", params.page)) {
+    setQuery("pagina", String(params.page));
+  }
+  if (!shouldOmitQueryValue("limit", params.limit)) {
+    setQuery("limite", String(params.limit));
+  }
+  if (params.query?.trim()) {
+    setQuery("q", params.query.trim());
+  }
+  if (params.lat !== undefined) {
+    setQuery("lat", String(params.lat));
+  }
+  if (params.lng !== undefined) {
+    setQuery("lng", String(params.lng));
+  }
+  if (params.radius !== undefined) {
+    setQuery("radio", String(params.radius));
+  }
+  if (params.dealership_ids?.length) {
+    setQuery("dealership_ids", params.dealership_ids.join(","));
+  }
+  if (params.dgt_label_ids?.length) {
+    setQuery("etiqueta", params.dgt_label_ids.join(","));
+  }
 
   const order_by = params.order_by ?? DEFAULT_LISTING_PARAMS.order_by;
   const order_direction =
@@ -137,9 +106,8 @@ const buildFriendlySearch = (
 
 export const buildVehicleListingUrl = (
   params: FindAllVehiclesParams,
-  options?: BuildVehicleListingUrlOptions,
 ): { pathname: string; search: string } => {
-  const segments = options?.catalogInQueryOnly ? [] : buildPathSegments(params);
+  const segments = buildFilterSegments(params);
   const pathname =
     segments.length > 0
       ? `${VEHICLES_LISTING_BASE_PATH}/${segments.join("/")}`
@@ -147,19 +115,36 @@ export const buildVehicleListingUrl = (
 
   return {
     pathname,
-    search: buildFriendlySearch(params, options),
+    search: buildFriendlySearch(params),
   };
+};
+
+export const appendListingUiQuery = (
+  href: string,
+  search_params: URLSearchParams,
+): string => {
+  const url = new URL(href, "http://localhost");
+  for (const key of LISTING_UI_QUERY_KEYS) {
+    const value = search_params.get(key);
+    if (value) {
+      url.searchParams.set(key, value);
+    }
+  }
+  const search = url.searchParams.toString();
+  return search ? `${url.pathname}?${search}` : url.pathname;
 };
 
 export const buildVehicleListingHref = (
   params: FindAllVehiclesParams,
-  options?: BuildVehicleListingUrlOptions,
 ): string => {
-  const { pathname, search } = buildVehicleListingUrl(params, options);
+  const { pathname, search } = buildVehicleListingUrl(params);
   return search ? `${pathname}?${search}` : pathname;
 };
 
-/** Navegación clásica: todo el catálogo en query y path base sin slugs. */
+/** @deprecated Usar buildVehicleListingHref; se mantiene temporalmente para imports legacy. */
 export const buildClassicCatalogListingHref = (
   params: FindAllVehiclesParams,
-): string => buildVehicleListingHref(params, { catalogInQueryOnly: true });
+): string => buildVehicleListingHref(params);
+
+export const isPathBackedDtoKey = (key: keyof FindAllVehiclesParams): boolean =>
+  PATH_DTO_KEYS.has(key) && !QUERY_ONLY_KEYS.has(key);

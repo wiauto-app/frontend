@@ -9,7 +9,7 @@ describe("buildListingHrefFromApiQuery", () => {
     expect(buildListingHrefFromApiQuery(["bmw"])).toBe("/vehiculos");
   });
 
-  it("mapea claves DTO a la URL amigable del listado", () => {
+  it("mapea claves DTO a segmentos del path", () => {
     const href = buildListingHrefFromApiQuery({
       makes_slugs: ["bmw"],
       models_slugs: ["serie-3"],
@@ -18,15 +18,11 @@ describe("buildListingHrefFromApiQuery", () => {
       until_year: 2022,
       until_price: 30000,
     });
-    const url = new URL(href, "https://wiauto.test");
 
-    expect(url.pathname.startsWith("/vehiculos")).toBe(true);
-    expect(url.searchParams.get("marcas")).toBe("bmw");
-    expect(url.searchParams.get("modelos")).toBe("serie-3");
-    expect(url.searchParams.get("combustible")).toBe("diesel");
-    expect(url.searchParams.get("anio_desde")).toBe("2018");
-    expect(url.searchParams.get("anio_hasta")).toBe("2022");
-    expect(url.searchParams.get("precio_hasta")).toBe("30000");
+    expect(href).toContain("/vehiculos/marca-bmw/modelo-serie-3");
+    expect(href).toContain("combustible-diesel");
+    expect(href).toContain("anio-2018-2022");
+    expect(href).toContain("precio-hasta-30000");
   });
 
   it("normaliza tipos laxos y descarta paginación y claves desconocidas", () => {
@@ -38,17 +34,15 @@ describe("buildListingHrefFromApiQuery", () => {
       limit: 50,
       unknown_key: "x",
     });
-    const url = new URL(href, "https://wiauto.test");
 
-    expect(url.searchParams.get("combustible")).toBe("diesel,gasolina");
-    expect(url.searchParams.get("oferta")).toBe("true");
-    expect(url.searchParams.get("precio_desde")).toBe("5000");
-    expect(url.searchParams.has("pagina")).toBe(false);
-    expect(url.searchParams.has("limite")).toBe(false);
-    expect(url.searchParams.has("unknown_key")).toBe(false);
+    expect(href).toContain("combustible-diesel,gasolina");
+    expect(href).toContain("con-oferta");
+    expect(href).toContain("precio-desde-5000");
+    expect(href).not.toContain("pagina=");
+    expect(href).not.toContain("unknown_key");
   });
 
-  it("conserva el texto libre y claves sin alias amigable", () => {
+  it("conserva el texto libre en query", () => {
     const href = buildListingHrefFromApiQuery({
       query: "golf gti",
       power_since: 150,
@@ -56,6 +50,6 @@ describe("buildListingHrefFromApiQuery", () => {
     const url = new URL(href, "https://wiauto.test");
 
     expect(url.searchParams.get("q")).toBe("golf gti");
-    expect(url.searchParams.get("power_since")).toBe("150");
+    expect(href).toContain("potencia-desde-150");
   });
 });
