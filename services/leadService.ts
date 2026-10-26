@@ -1,6 +1,7 @@
 import { apiGet, apiPost, type ApiResponse } from "@/lib/api";
 import type {
   CreateCallMePayload,
+  CreateFinancingLeadPayload,
   CreateLeadPayload,
   CreateLeadResponse,
   FindLeadsParams,
@@ -27,6 +28,15 @@ export const leadService = {
     payload: CreateLeadPayload,
   ): Promise<ApiResponse<CreateLeadResponse>> =>
     apiPost<CreateLeadResponse>(`/v1/vehicles/${vehicleId}/leads`, payload),
+
+  createFinancing: (
+    vehicleId: string,
+    payload: CreateFinancingLeadPayload,
+  ): Promise<ApiResponse<CreateLeadResponse>> =>
+    apiPost<CreateLeadResponse>(
+      `/v1/vehicles/${vehicleId}/leads/financing`,
+      payload,
+    ),
 
   createCallMe: (
     vehicleId: string,

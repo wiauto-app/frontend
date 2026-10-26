@@ -14,6 +14,12 @@ import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { useUser } from "@/app/contexts/auth/useUser";
+import {
+  DEALERSHIP_FINANCING_STATUS_QUERY_KEY,
+  dealershipFinancingService,
+} from "@/services/dealershipFinancingService";
 
 const toggleCuotaIdInList = (
   current_ids: string[],
@@ -36,9 +42,67 @@ export const FinanceWarrantyForm = () => {
 
   const cuotas = cuotas_page?.data ?? [];
 
+  const { user } = useUser();
+  const membership = user?.dealership_membership ?? null;
+  const canManageFinancing =
+    membership?.role === "owner" || membership?.role === "admin";
+
+  const { data: financing_status } = useQuery({
+    queryKey: DEALERSHIP_FINANCING_STATUS_QUERY_KEY,
+    enabled: Boolean(membership),
+    retry: false,
+    queryFn: async () => {
+      const response = await dealershipFinancingService.getStatus();
+      return response.ok && response.data ? response.data : { enabled: false };
+    },
+  });
+
+  const financing_available = Boolean(membership) && financing_status?.enabled === true;
+
   return (
     <VehicleFormStep number={1} label="Financiación y garantía">
       <div className="space-y-7">
+        {membership ? (
+          <ControllerInput
+            name="offer_financing"
+            control={form.control}
+            label="Ofrecer financiación de mi concesionario"
+            orientation="horizontal"
+          >
+            {({ field, fieldState }) => (
+              <div className="space-y-1">
+                <Switch
+                  checked={financing_available && (field.value as boolean)}
+                  disabled={!financing_available}
+                  onCheckedChange={(checked) =>
+                    field.onChange(checked as boolean)
+                  }
+                  aria-invalid={fieldState.invalid}
+                />
+                {financing_available ? (
+                  <p className="text-xs text-muted-foreground">
+                    Mostraremos una cuota orientativa y un formulario para
+                    solicitar financiación en este anuncio.
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Tu concesionario aún no tiene la financiación activa.{" "}
+                    {canManageFinancing ? (
+                      <Link
+                        href="/usuario/mi-financiacion"
+                        className="font-medium text-primary underline"
+                      >
+                        Configurar en Mi financiación
+                      </Link>
+                    ) : (
+                      "Pide al propietario o a un administrador que la configure."
+                    )}
+                  </p>
+                )}
+              </div>
+            )}
+          </ControllerInput>
+        ) : null}
         {/* Financiación */}
         <div className="space-y-3">
           <Controller

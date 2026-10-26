@@ -101,6 +101,7 @@ const quickVehicleBaseSchema = z.object({
     .min(0, { error: "El precio no puede ser negativo." })
     .max(9_999_999, { error: "El precio no puede ser mayor a 9999999." }),
   finance_price: optionalBoundedNumber(9999999, "El precio financiado no puede ser mayor a 9999999."),
+  offer_financing: z.boolean().default(false),
   show_first_cuota: z.boolean().default(false),
   by_brand_warranty: z.boolean().default(false),
   show_exact_location: z.boolean().default(false),
@@ -201,6 +202,7 @@ export const createQuickVehicleDefaultValues: QuickVehicleSchema = {
   power: 0,
   displacement: 0,
   traction_id: "",
+  offer_financing: false,
   show_first_cuota: false,
   by_brand_warranty: false,
   show_exact_location: false,

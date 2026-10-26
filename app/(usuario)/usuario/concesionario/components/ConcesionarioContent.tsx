@@ -305,7 +305,7 @@ export const ConcesionarioContent = () => {
               control={control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Banner de la concesionaria</FieldLabel>
+                  <FieldLabel>Imagen de portada</FieldLabel>
                   <ImageInput
                     value={field.value}
                     onChange={(url) => field.onChange(url ?? "")}

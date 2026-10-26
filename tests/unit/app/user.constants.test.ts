@@ -108,4 +108,38 @@ describe("getUserSidebarLinks", () => {
       true,
     );
   });
+
+  it("muestra Mi financiación solo a owner/admin con suscripción", () => {
+    const member = (role: "owner" | "admin" | "member") =>
+      getUserSidebarLinks({
+        dealershipMembership: {
+          dealership_id: "dealer-1",
+          dealership_name: "Auto Norte",
+          member_id: "member-1",
+          role,
+        },
+        isSubscribed: true,
+      }).some((link) => link.href === "/usuario/mi-financiacion");
+
+    expect(member("owner")).toBe(true);
+    expect(member("admin")).toBe(true);
+    expect(member("member")).toBe(false);
+    expect(
+      getUserSidebarLinks({
+        dealershipMembership: null,
+        isSubscribed: true,
+      }).some((link) => link.href === "/usuario/mi-financiacion"),
+    ).toBe(false);
+    expect(
+      getUserSidebarLinks({
+        dealershipMembership: {
+          dealership_id: "dealer-1",
+          dealership_name: "Auto Norte",
+          member_id: "member-1",
+          role: "owner",
+        },
+        isSubscribed: false,
+      }).some((link) => link.href === "/usuario/mi-financiacion"),
+    ).toBe(false);
+  });
 });

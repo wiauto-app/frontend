@@ -1,6 +1,7 @@
+import type { LeadFinancingSnapshot } from "@/interfaces/financing.interface";
 import type { LeadScoreSignal, LeadTier } from "@/lib/leads/lead-scoring-ui";
 
-export type LeadType = "contact" | "call_me";
+export type LeadType = "contact" | "call_me" | "financing";
 export type LeadSort = "asc" | "desc";
 export type LeadSortDirection = LeadSort;
 export type LeadListSortBy = "date" | "score";
@@ -28,6 +29,7 @@ export interface Lead {
   phone_code: string | null;
   message?: string | null;
   callback_scheduled_at?: string | null;
+  financing_snapshot?: LeadFinancingSnapshot | null;
   profile_id: string | null;
   created_at: string;
   updated_at: string;
@@ -84,6 +86,19 @@ export interface CreateCallMePayload {
   phone: string;
   phone_code: string;
   callback_scheduled_at: string;
+  accepted_terms: boolean;
+  /** Campo trampa antispam; solo se envía si viene relleno. */
+  hp_website?: string;
+}
+
+export interface CreateFinancingLeadPayload {
+  name: string;
+  email: string;
+  phone: string;
+  phone_code: string;
+  down_payment_percent: number;
+  term_months: number;
+  message?: string;
   accepted_terms: boolean;
   /** Campo trampa antispam; solo se envía si viene relleno. */
   hp_website?: string;

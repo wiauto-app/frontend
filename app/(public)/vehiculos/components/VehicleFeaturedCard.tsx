@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 import { formatPrice, getImageUrl, getVehicleUrl } from "../utils";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
+import { VehicleFinancingFrom } from "./VehicleFinancingFrom";
 import { Button } from "@/components/ui/button";
 import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
 import { ViewTransition } from "react";
@@ -93,6 +94,7 @@ export const VehicleFeaturedCard = ({
         <p className="text-[28px] leading-8 font-black text-white">
           {formatPrice(vehicle.price)}
         </p>
+        <VehicleFinancingFrom offer={vehicle.financing_offer} tone="dark" />
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-3">
           <div className="flex min-w-0 items-center gap-1">

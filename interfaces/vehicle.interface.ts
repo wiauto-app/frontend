@@ -1,5 +1,9 @@
 import { DealershipDetail, DealershipScheduleDay } from "@/services/dealerships/types/dealership.types";
 import { VehiclePriceHistoryItem } from "./vehicle-price.interface";
+import type {
+  VehicleFinancingOffer,
+  VehicleFinancingOfferSummary,
+} from "./financing.interface";
 
 export const PUBLISHER_TYPE = {
   DEALERSHIP: "dealership",
@@ -111,6 +115,8 @@ export interface VehicleListItemPublisher {
  * Alineada con el `VehicleListItem` del backend.
  */
 export interface VehicleListItem {
+  offer_financing?: boolean;
+  financing_offer?: VehicleFinancingOfferSummary | null;
   id: string;
   is_premium: boolean;
   ref: number;
@@ -164,6 +170,8 @@ export interface VehicleDetailDealership {
 }
 
 export interface Vehicle {
+  offer_financing?: boolean;
+  financing_offer?: VehicleFinancingOffer | null;
   id: string;
   ref?: string | null;
   price: number;

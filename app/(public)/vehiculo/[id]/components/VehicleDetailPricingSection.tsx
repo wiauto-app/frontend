@@ -44,10 +44,22 @@ export const VehicleDetailPricingSection = ({
         <p className="text-green-600">IVA incluido</p>
       </div>
       <div className="flex items-center gap-5 text-muted-foreground">
-        <FinancingSelector
-          current_price={current_price}
-          cuotas={vehicle.cuotas}
-        />
+        {vehicle.financing_offer ? (
+          <a
+            href="#financiacion"
+            className="text-sm text-muted-foreground hover:underline"
+          >
+            Fináncialo desde{" "}
+            <span className="font-semibold text-primary">
+              {formatPrice(vehicle.financing_offer.monthly_from)}/mes
+            </span>
+          </a>
+        ) : (
+          <FinancingSelector
+            current_price={current_price}
+            cuotas={vehicle.cuotas}
+          />
+        )}
        
       </div>
       <div className="flex flex-wrap items-center gap-2">

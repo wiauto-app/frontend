@@ -7,6 +7,7 @@ import { VehicleDetailSaveSearchSection } from "./VehicleDetailSaveSearchSection
 import { VehicleDetailDescription } from "./VehicleDetailDescription";
 import { VehicleDetailServicesSection } from "./VehicleDetailServicesSection";
 import { VehicleDetailTitleSection } from "./VehicleDetailTitleSection";
+import { VehicleDetailDealershipFinancing } from "./VehicleDetailDealershipFinancing";
 import { VehicleDetailTopBar } from "./VehicleDetailTopBar";
 import { VehicleDetailAdvertiserSection } from "./VehicleDetailAdvertiserSection";
 import { VehicleSimilarVehiclesSection } from "./VehicleSimilarVehiclesSection";
@@ -63,6 +64,12 @@ export const VehicleDetailBody = async ({
               shareImageTransition={shareImageTransition}
             />
             <VehicleDetailTitleSection vehicle={vehicle} />
+            {vehicle.financing_offer ? (
+              <VehicleDetailDealershipFinancing
+                vehicleId={vehicle.id}
+                offer={vehicle.financing_offer}
+              />
+            ) : null}
             <VehicleDetailMobileContactBar
               vehicleId={vehicle.id}
               showPhone={showPhone}

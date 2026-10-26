@@ -72,6 +72,7 @@ export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
     name: "Financiación y garantía",
     icon: BadgePercent,
     fields: [
+      "offer_financing",
       "finance_price",
       "show_first_cuota",
       "by_brand_warranty",

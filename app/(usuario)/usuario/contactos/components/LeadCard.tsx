@@ -28,7 +28,20 @@ interface LeadCardProps {
 const LEAD_TYPE_LABELS: Record<LeadType, string> = {
   contact: "Contacto",
   call_me: "Llámame",
+  financing: "Financiación",
 };
+
+const formatEuros = (value: number): string =>
+  new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 2,
+  }).format(value);
+
+const formatFinancingSummary = (
+  snapshot: NonNullable<LeadListItem["financing_snapshot"]>,
+): string =>
+  `Entrada ${snapshot.down_payment_percent} % (${formatEuros(snapshot.down_payment)}) · ${snapshot.term_months} meses · ${formatEuros(snapshot.monthly_payment)}/mes (TIN ${snapshot.tin} %)`;
 
 const getVehicleLabel = (lead: LeadListItem): string =>
   lead.vehicle.display_name?.trim() ||
@@ -182,6 +195,20 @@ export const LeadCard = ({ lead, scoringLocked = false }: LeadCardProps) => {
 
           <p className="text-sm text-gray-700">{getVehicleLabel(lead)}</p>
 
+          {lead.type === "financing" && lead.financing_snapshot ? (
+            <div className="space-y-1 rounded-lg bg-slate-50 p-3 text-sm text-gray-700">
+              <p className="font-medium">
+                {formatFinancingSummary(lead.financing_snapshot)}
+              </p>
+              <p className="text-xs text-gray-500">
+                Precio {formatEuros(lead.financing_snapshot.price)}
+                {lead.financing_snapshot.financial_entity
+                  ? ` · ${lead.financing_snapshot.financial_entity}`
+                  : ""}
+              </p>
+            </div>
+          ) : null}
+
           {lead.type === "call_me" && lead.callback_scheduled_at ? (
             <p className="text-sm text-gray-600">
               Callback:{" "}
@@ -189,7 +216,7 @@ export const LeadCard = ({ lead, scoringLocked = false }: LeadCardProps) => {
                 locale: es,
               })}
             </p>
-          ) : lead.message ? (
+          ) : lead.message && lead.type !== "financing" ? (
             <p className="line-clamp-3 text-sm text-gray-600">{lead.message}</p>
           ) : null}
 

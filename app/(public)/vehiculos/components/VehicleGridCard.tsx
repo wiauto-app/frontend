@@ -15,6 +15,7 @@ import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import { formatPrice, getImageUrl, getVehicleUrl } from "../utils";
 import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
+import { VehicleFinancingFrom } from "./VehicleFinancingFrom";
 import { ViewTransition } from "react";
 interface VehicleGridCardProps {
   vehicle: VehicleListItem;
@@ -80,6 +81,7 @@ const VehicleGridCardBody = ({
       <p className="text-2xl font-bold tracking-tight text-primary">
         {formatPrice(vehicle.price)}
       </p>
+      <VehicleFinancingFrom offer={vehicle.financing_offer} />
     </CardContent>
   );
 };

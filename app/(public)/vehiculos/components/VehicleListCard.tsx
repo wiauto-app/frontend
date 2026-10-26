@@ -9,6 +9,7 @@ import {
   getVehicleModelName,
 } from "../utils";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
+import { VehicleFinancingFrom } from "./VehicleFinancingFrom";
 import { VehicleImageCarousel } from "./VehicleImageCarousel";
 
 type VehicleListCardProps = {
@@ -48,6 +49,10 @@ export function VehicleListCard({ vehicle }: VehicleListCardProps) {
             <p className="text-2xl font-bold text-slate-900">
               {formatPrice(vehicle.price)}
             </p>
+            <VehicleFinancingFrom
+              offer={vehicle.financing_offer}
+              className="text-sm"
+            />
           </div>
         </div>
       </div>

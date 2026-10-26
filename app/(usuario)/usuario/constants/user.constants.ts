@@ -19,6 +19,7 @@ import {
   Building2,
   EyeOff,
   History,
+  Landmark,
 } from "lucide-react";
 import type { DealershipMembership } from "@/services/dealerships/types/team.types";
 
@@ -176,6 +177,11 @@ const USER_SIDEBAR_SECTION_DEALERSHIP: UserSidebarSection = {
       label: "Equipo",
       icon: Users,
     },
+    {
+      href: `${basePath}/mi-financiacion`,
+      label: "Mi financiación",
+      icon: Landmark,
+    },
   ],
 };
 
@@ -217,6 +223,10 @@ const filterDealershipSectionLinks = (
   links: section.links.filter((link) => {
     if (link.href === `${basePath}/equipo`) {
       return Boolean(dealershipMembership);
+    }
+    if (link.href === `${basePath}/mi-financiacion`) {
+      const role = dealershipMembership?.role;
+      return role === "owner" || role === "admin";
     }
     return true;
   }),

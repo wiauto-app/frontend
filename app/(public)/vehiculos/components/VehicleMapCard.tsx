@@ -18,6 +18,7 @@ import {
 } from "../utils";
 import { buildVehicleGridSpecs } from "../utils/build-vehicle-grid-specs";
 import { useSelectedVehicleStore } from "../stores/selectedVehicleStore";
+import { VehicleFinancingFrom } from "./VehicleFinancingFrom";
 import { VehicleImageCarousel } from "./VehicleImageCarousel";
 
 export const VehicleMapCard = () => {
@@ -102,7 +103,9 @@ export const VehicleMapCard = () => {
           <p className="text-lg font-bold tracking-tight text-slate-900">
             {formatPrice(selectedVehicle.price)}
           </p>
-          {financedLabel && (
+          {selectedVehicle.financing_offer ? (
+            <VehicleFinancingFrom offer={selectedVehicle.financing_offer} />
+          ) : financedLabel && (
             <p
               className="text-xs font-medium text-muted-foreground"
               title="Precio financiado estimado"
