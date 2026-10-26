@@ -16,6 +16,8 @@ export interface SubscribeNewsletterPayload {
   email: string;
   /** Campo trampa antispam; solo se envía si viene relleno. */
   hp_website?: string;
+  /** Token de Cloudflare Turnstile. */
+  turnstile_token?: string;
 }
 
 export interface UpdateNewsletterPreferencesPayload {

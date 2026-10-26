@@ -27,6 +27,8 @@ import {
   HoneypotField,
   buildHoneypotPayload,
 } from "@/components/forms/HoneypotField";
+import { TurnstileField } from "@/components/forms/TurnstileField";
+import { useTurnstileField } from "@/components/forms/useTurnstileField";
 import { leadsService } from "@/services/leads/leadsService";
 import { trackLead } from "@/lib/analytics/events";
 
@@ -49,10 +51,21 @@ export default function ContactForm() {
     defaultValues: contactLeadDefaultValues,
   });
   const honeypotRef = useRef<HTMLInputElement>(null);
+  const {
+    turnstileRef,
+    setTurnstileToken,
+    resetTurnstile,
+    requireToken,
+    getPayload: getTurnstilePayload,
+  } = useTurnstileField();
 
   const provinceId = form.watch("province_id");
 
   const onSubmit = async (data: ContactLeadFormValues) => {
+    if (!requireToken()) {
+      return;
+    }
+
     try {
       const response = await leadsService.create({
         type: CONTACT_LEAD_TYPE,
@@ -65,6 +78,7 @@ export default function ContactForm() {
           message: data.message,
         },
         ...buildHoneypotPayload(honeypotRef.current?.value),
+        ...getTurnstilePayload(),
       });
 
       if (!response.ok) {
@@ -77,8 +91,10 @@ export default function ContactForm() {
       });
       toast.success("Mensaje enviado. Te contactaremos pronto.");
       form.reset(contactLeadDefaultValues);
+      resetTurnstile();
     } catch {
       toast.error("No se pudo enviar el mensaje. Inténtalo de nuevo.");
+      resetTurnstile();
     }
   };
 
@@ -223,6 +239,12 @@ export default function ContactForm() {
                 errorMessage={fieldState.error?.message}
               />
             )}
+          />
+
+          <TurnstileField
+            turnstileRef={turnstileRef}
+            onSuccess={setTurnstileToken}
+            className="flex justify-center"
           />
 
           <Button

@@ -10,6 +10,8 @@ export interface CreateLeadDto {
   extra_data?: Record<string, unknown>;
   /** Campo trampa antispam; solo se envía si viene relleno. */
   hp_website?: string;
+  /** Token de Cloudflare Turnstile. */
+  turnstile_token?: string;
 }
 
 export interface LeadResponse {

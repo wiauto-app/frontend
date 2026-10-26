@@ -14,6 +14,8 @@ import {
   HoneypotField,
   buildHoneypotPayload,
 } from "@/components/forms/HoneypotField";
+import { TurnstileField } from "@/components/forms/TurnstileField";
+import { useTurnstileField } from "@/components/forms/useTurnstileField";
 import { CustomCheckbox } from "@/components/ui/customCheckbox";
 import { leadService } from "@/services/leadService";
 import { trackLead } from "@/lib/analytics/events";
@@ -60,6 +62,13 @@ export const VehicleDetailContactForm = ({
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useUser();
   const honeypotRef = useRef<HTMLInputElement>(null);
+  const {
+    turnstileRef,
+    setTurnstileToken,
+    resetTurnstile,
+    requireToken,
+    getPayload: getTurnstilePayload,
+  } = useTurnstileField();
 
   const guestForm = useForm<GuestContactFormValues>({
     resolver: zodResolver(guestContactFormSchema),
@@ -84,6 +93,10 @@ export const VehicleDetailContactForm = ({
   }, [isAuthenticated, user, authenticatedForm]);
 
   const handleGuestSubmit = async (data: GuestContactFormValues) => {
+    if (!requireToken()) {
+      return;
+    }
+
     const response = await leadService.create(vehicleId, {
       name: data.name,
       email: data.email,
@@ -92,21 +105,28 @@ export const VehicleDetailContactForm = ({
       message: data.message,
       accepted_terms: data.accepted_terms,
       ...buildHoneypotPayload(honeypotRef.current?.value),
+      ...getTurnstilePayload(),
     });
 
     if (!response.ok) {
       toast.error(response.message || "No se pudo enviar la consulta");
+      resetTurnstile();
       return;
     }
 
     trackLead({ contentName: "Consulta sobre vehículo", vehicleId });
     toast.success("Consulta enviada");
     guestForm.reset(defaultGuestValues);
+    resetTurnstile();
   };
 
   const handleAuthenticatedSubmit = async (
     data: AuthenticatedContactFormValues,
   ) => {
+    if (!requireToken()) {
+      return;
+    }
+
     const response = await leadService.create(vehicleId, {
       name: data.name,
       email: data.email,
@@ -115,10 +135,12 @@ export const VehicleDetailContactForm = ({
       message: data.message,
       accepted_terms: data.accepted_terms,
       ...buildHoneypotPayload(honeypotRef.current?.value),
+      ...getTurnstilePayload(),
     });
 
     if (!response.ok) {
       toast.error(response.message || "No se pudo enviar la consulta");
+      resetTurnstile();
       return;
     }
 
@@ -136,6 +158,7 @@ export const VehicleDetailContactForm = ({
       name: buildAuthenticatedName(user?.name, user?.last_name),
       email: user?.email ?? "",
     });
+    resetTurnstile();
   };
 
   if (isLoading) {
@@ -201,6 +224,12 @@ export const VehicleDetailContactForm = ({
                 label="Acepto las condiciones de uso y la información básica de mis datos"
               />
             )}
+          />
+
+          <TurnstileField
+            turnstileRef={turnstileRef}
+            onSuccess={setTurnstileToken}
+            className="flex justify-center"
           />
 
           <Button
@@ -307,6 +336,12 @@ export const VehicleDetailContactForm = ({
               label="Acepto las condiciones de uso y la información básica de mis datos"
             />
           )}
+        />
+
+        <TurnstileField
+          turnstileRef={turnstileRef}
+          onSuccess={setTurnstileToken}
+          className="flex justify-center"
         />
 
         <Button

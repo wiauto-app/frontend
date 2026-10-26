@@ -8,6 +8,8 @@ import {
   HoneypotField,
   buildHoneypotPayload,
 } from "@/components/forms/HoneypotField";
+import { TurnstileField } from "@/components/forms/TurnstileField";
+import { useTurnstileField } from "@/components/forms/useTurnstileField";
 import { FormDataProtectionNotice } from "@/components/legal/FormDataProtectionNotice";
 import { Input } from "@/components/ui/input";
 import { trackNewsletterSignup } from "@/lib/analytics/events";
@@ -20,6 +22,13 @@ export const NewsletterSubscribeForm = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const honeypotRef = useRef<HTMLInputElement>(null);
+  const {
+    turnstileRef,
+    setTurnstileToken,
+    resetTurnstile,
+    requireToken,
+    getPayload: getTurnstilePayload,
+  } = useTurnstileField();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,29 +37,36 @@ export const NewsletterSubscribeForm = () => {
       toast.error("Introduce un correo electrónico válido");
       return;
     }
+    if (!requireToken()) {
+      return;
+    }
 
     setIsSubmitting(true);
     try {
       const response = await newsletterService.subscribe({
         email: normalized,
         ...buildHoneypotPayload(honeypotRef.current?.value),
+        ...getTurnstilePayload(),
       });
       if (!response.ok) {
         toast.error(
           response.message || "No se pudo completar la suscripción",
         );
+        resetTurnstile();
         return;
       }
 
       trackNewsletterSignup(NEWSLETTER_LOCATION.FOOTER_NEWSLETTER);
       toast.success("Te has suscrito al newsletter correctamente");
       setEmail("");
+      resetTurnstile();
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
           : "No se pudo completar la suscripción",
       );
+      resetTurnstile();
     } finally {
       setIsSubmitting(false);
     }
@@ -85,6 +101,11 @@ export const NewsletterSubscribeForm = () => {
           <ChevronRight className="size-5" aria-hidden />
         </button>
       </form>
+      <TurnstileField
+        turnstileRef={turnstileRef}
+        onSuccess={setTurnstileToken}
+        className="flex justify-center"
+      />
       <FormDataProtectionNotice
         id="newsletter-privacy-notice"
         className="text-left text-slate-700"
