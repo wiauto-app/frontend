@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getUserSidebarLinks } from "@/app/usuario/constants/user.constants";
+import { getUserSidebarLinks } from "@/app/(usuario)/usuario/constants/user.constants";
 
 describe("getUserSidebarLinks", () => {
   it("muestra Contactos / Leads solo con suscripción", () => {

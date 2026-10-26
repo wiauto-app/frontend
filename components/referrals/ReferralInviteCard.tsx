@@ -117,7 +117,7 @@ export const ReferralInviteCard = ({
         Código: {referralCode}
       </p>
 
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+      <div className="mt-4 flex flex-col gap-2 ">
         <Button
           type="button"
           className="w-full gap-2 bg-gray-900 text-white hover:bg-gray-800"

@@ -6,7 +6,7 @@ import type {
   DealershipInvitation,
   DealershipInvitationJoinStatus,
 } from "./types/team.types";
-import { InviteUserSchema } from "@/app/usuario/equipo/schemas/inviteUser.schema";
+import { InviteUserSchema } from "@/app/(usuario)/usuario/equipo/schemas/inviteUser.schema";
 
 export type ListInvitationsParams = {
   dealership_id: string;

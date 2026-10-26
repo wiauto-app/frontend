@@ -44,13 +44,7 @@ export default async function RootLayout({
         <ConsentModeScript />
         <ViewTransitionStyles />
         <Providers>
-          <div
-            className="sticky top-0 z-40"
-            style={{ viewTransitionName: "site-header" }}
-          >
-            <AppDownloadBannerGate />
-            <Navbar />
-          </div>
+        
           <main className="flex min-w-0 flex-1 flex-col overflow-x-clip">
             {children}
           </main>

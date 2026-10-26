@@ -31,6 +31,7 @@ import { LazyWiautoMatch } from "@/components/home/lazyImports/LazyWiautoMatch";
 import { VehicleExtraServices } from "@/components/home/vehicleExtraServices";
 import { LazyAppDownloadBanner } from "@/components/home/lazyImports/LazyAppDownloadBanner";
 import { LazyPromotionPlans } from "@/components/home/lazyImports/LazyPromotionPlans";
+import { NavbarLayout } from "@/components/layout/navbarLayout";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
@@ -48,7 +49,7 @@ export default async function Home() {
       : undefined;
 
   return (
-    <>
+    <NavbarLayout>
       <JsonLdScript data={jsonLdGraph} />
       <LandingContainer>
         <HeroSection data={home_data.homeHero} />
@@ -89,6 +90,6 @@ export default async function Home() {
           />
         </Suspense>
       </LandingContainer>
-    </>
+    </NavbarLayout>
   );
 }

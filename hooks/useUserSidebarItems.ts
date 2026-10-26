@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 
 import { useUser } from "@/app/contexts/auth/useUser";
-import { getUserSidebarLinks } from "@/app/usuario/constants/user.constants";
+import { getUserSidebarLinks } from "@/app/(usuario)/usuario/constants/user.constants";
 import { useEntitlements } from "./useEntitlements";
 
 export const useUserSidebarItems = () => {
