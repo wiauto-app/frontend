@@ -101,7 +101,7 @@ export const VehicleGridCard = ({
       <Card
         ref={impressionRef}
         className={cn(
-          "group relative gap-2 overflow-hidden border-none bg-muted-foreground/10 pt-0 shadow-none ring-0 transition-shadow duration-200 hover:shadow-md pb-3 rounded-2xl h-full",
+          "group relative gap-2 overflow-hidden border-none  pt-0 shadow-none ring-0 transition-shadow duration-200  pb-3 rounded-2xl h-full",
           className,
         )}
       >
