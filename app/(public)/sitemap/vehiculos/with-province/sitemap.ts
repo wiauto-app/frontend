@@ -7,6 +7,7 @@ import {
 } from "@/lib/seo/fetch-vehicle-listing-sitemap";
 import { VEHICLE_LISTING_SITEMAP_WITH_PROVINCE_PRIORITY } from "@/lib/seo/vehicle-listing-sitemap.constants";
 import { getVehicleSitemapSegmentIds } from "@/lib/seo/vehicle-sitemap-segments";
+import { buildVehicleListingHref } from "@/lib/vehicles/listing-url";
 
 export async function generateSitemaps() {
   const meta = await fetchVehicleListingSitemapMeta("with-province");
@@ -27,7 +28,11 @@ export default async function sitemap({
     .filter((entry) => entry.provinceSlug)
     .map((entry) => ({
       url: absoluteUrl(
-        `/vehiculos/${entry.makeSlug}/${entry.modelSlug}/${entry.provinceSlug}`,
+        buildVehicleListingHref({
+          makes_slugs: [entry.makeSlug],
+          models_slugs: [entry.modelSlug],
+          provinces_slugs: [entry.provinceSlug!],
+        }),
       ),
       changeFrequency: "weekly",
       priority: VEHICLE_LISTING_SITEMAP_WITH_PROVINCE_PRIORITY,

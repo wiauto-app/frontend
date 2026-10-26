@@ -116,6 +116,17 @@ export const DealershipVehiclesFiltersProvider = ({
     [pushFilters],
   );
 
+  const updateFilters = useCallback(
+    (patch: Partial<FindAllVehiclesParams>) => {
+      commitFilters({
+        ...filters,
+        ...patch,
+        page: patch.page ?? 1,
+      });
+    },
+    [commitFilters, filters],
+  );
+
   const resetLocalFilters = useCallback(() => {
     setSearchInput("");
     setPriceMin("");
@@ -405,6 +416,7 @@ export const DealershipVehiclesFiltersProvider = ({
     () => ({
       filters,
       commitFilters,
+      updateFilters,
       priceMin,
       priceMax,
       selectedGenerations,
@@ -470,6 +482,7 @@ export const DealershipVehiclesFiltersProvider = ({
       selectedTrunks,
       selectedVersions,
       sortValue,
+      updateFilters,
     ],
   );
 

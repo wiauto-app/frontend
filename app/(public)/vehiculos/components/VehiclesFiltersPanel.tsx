@@ -29,15 +29,14 @@ import { useActiveFiltersStore } from "../stores/activeFiltersStore";
 import { Separator } from "@/components/ui/separator";
 import { FilterItem } from "./filterItem";
 import { VehicleTypeSelector } from "./vehicleTypeSelector";
-import { useFiltersManager } from "@/hooks/useFiltersManager";
 import {
   MAKE_KEY,
   MODEL_KEY,
   COMMUNITY_KEY,
+  MUNICIPALITY_KEY,
   PROVINCE_KEY,
-  PUBLISHER_TYPE_KEY,
-  VEHICLE_TYPE_KEY,
 } from "../[[...slug]]/constants/filterKeys.constants";
+import { emptyToUndefined } from "@/lib/vehicles/listing-url";
 import {
   HiOutlineCalendar,
   HiOutlineHome,
@@ -97,18 +96,12 @@ const mapActiveProvinceToFacet = (province: {
 export const VehiclesFiltersPanel = ({
   catalog,
 }: VehiclesFiltersPanelProps) => {
-  const { filters, commitFilters } = useVehiclesListingFilters();
+  const { filters, updateFilters } = useVehiclesListingFilters();
   const { replaceMakeModelSelection, replaceLocationSelection } =
     useHeroSearchFilters();
   const { activeFilters } = useActiveFiltersStore();
-  const { values, handleMultiChange, handleChange } = useFiltersManager({
-    keys: [PUBLISHER_TYPE_KEY, COMMUNITY_KEY, PROVINCE_KEY, VEHICLE_TYPE_KEY],
-    multiValueKeys: [PUBLISHER_TYPE_KEY, COMMUNITY_KEY, PROVINCE_KEY],
-  });
-  const provinces = values[PROVINCE_KEY] as string[] | undefined;
-  const publisher_types = (values[PUBLISHER_TYPE_KEY] ??
-    []) as PublisherTypesValue;
-  const type_slug = values[VEHICLE_TYPE_KEY] as string;
+  const publisher_types = (filters.publisher_types ?? []) as PublisherTypesValue;
+  const type_slug = filters.type_slug;
 
   const [battery_until, setBatteryUntil] = useState<number | undefined>(
     filters.battery_capacity_until,
@@ -240,31 +233,25 @@ export const VehiclesFiltersPanel = ({
   ]);
 
   const handlePriceChange = (next: PriceFilterValue) => {
-    commitFilters({
-      ...filters,
+    updateFilters({
       since_price: next.since,
       until_price: next.until,
       cuota_slugs: undefined,
-      page: 1,
     });
   };
 
   const handleBatteryChange = (next: { since?: number; until?: number }) => {
     setBatteryUntil(next.until);
-    commitFilters({
-      ...filters,
+    updateFilters({
       battery_capacity_since: next.since,
       battery_capacity_until: next.until,
-      page: 1,
     });
   };
 
   const handleMakeModelApply = (payload: MakeModelUrlPayload) => {
-    commitFilters({
-      ...filters,
-      makes_slugs: payload[MAKE_KEY],
-      models_slugs: payload[MODEL_KEY],
-      page: 1,
+    updateFilters({
+      makes_slugs: emptyToUndefined(payload[MAKE_KEY]),
+      models_slugs: emptyToUndefined(payload[MODEL_KEY]),
     });
   };
 
@@ -276,7 +263,7 @@ export const VehiclesFiltersPanel = ({
         vehicleTypes={catalog.vehicleTypes}
         value={type_slug}
         onChange={(next) => {
-          handleChange(VEHICLE_TYPE_KEY, next ?? undefined);
+          updateFilters({ type_slug: next ?? undefined });
         }}
       />
 
@@ -288,11 +275,7 @@ export const VehiclesFiltersPanel = ({
         <ConditionSelector
           value={filters.condition}
           onChange={(next?: ConditionVehicle) =>
-            commitFilters({
-              ...filters,
-              condition: next,
-              page: 1,
-            })
+            updateFilters({ condition: next })
           }
         />
       </FilterItem>
@@ -320,8 +303,14 @@ export const VehiclesFiltersPanel = ({
       >
         <HeroFiltersLocationSelector
           onApplyLocationPayload={(payload: LocationUrlPayload) => {
-            handleMultiChange(COMMUNITY_KEY, payload.comunidades ?? []);
-            handleMultiChange(PROVINCE_KEY, payload.provincias ?? []);
+            updateFilters({
+              comunities_slugs: emptyToUndefined(payload[COMMUNITY_KEY]),
+              provinces_slugs: emptyToUndefined(payload[PROVINCE_KEY]),
+              municipalities_slugs: emptyToUndefined(payload[MUNICIPALITY_KEY]),
+              lat: undefined,
+              lng: undefined,
+              radius: undefined,
+            });
           }}
         />
       </FilterItem>
@@ -334,7 +323,9 @@ export const VehiclesFiltersPanel = ({
         <SellersSelector
           value={publisher_types}
           onChange={(next) => {
-            handleMultiChange(PUBLISHER_TYPE_KEY, next as PublisherTypesValue);
+            updateFilters({
+              publisher_types: emptyToUndefined(next as PublisherTypesValue),
+            });
           }}
         />
       </FilterItem>
@@ -347,11 +338,9 @@ export const VehiclesFiltersPanel = ({
         <YearSelector
           value={year_range}
           onChange={(range) =>
-            commitFilters({
-              ...filters,
+            updateFilters({
               since_year: range.since,
               until_year: range.until,
-              page: 1,
             })
           }
         />
@@ -365,11 +354,9 @@ export const VehiclesFiltersPanel = ({
         <KmSelector
           value={km_range}
           onChange={(range) =>
-            commitFilters({
-              ...filters,
+            updateFilters({
               since_mileage: range.since,
               until_mileage: range.until,
-              page: 1,
             })
           }
         />
@@ -385,28 +372,18 @@ export const VehiclesFiltersPanel = ({
           tractions={catalog.tractions}
           fuelTypeSlugs={filters.fuel_type_slugs ?? []}
           onFuelTypeSlugsChange={(next) =>
-            commitFilters({
-              ...filters,
-              fuel_type_slugs: next.length > 0 ? next : undefined,
-              page: 1,
-            })
+            updateFilters({ fuel_type_slugs: emptyToUndefined(next) })
           }
           tractionSlugs={filters.traction_slugs ?? []}
           onTractionSlugsChange={(next) =>
-            commitFilters({
-              ...filters,
-              traction_slugs: next.length > 0 ? next : undefined,
-              page: 1,
-            })
+            updateFilters({ traction_slugs: emptyToUndefined(next) })
           }
           transmissionTypes={
             (filters.transmission_types ?? []) as TransmissionType[]
           }
           onTransmissionTypesChange={(next) =>
-            commitFilters({
-              ...filters,
-              transmission_types: next.length > 0 ? next : undefined,
-              page: 1,
+            updateFilters({
+              transmission_types: emptyToUndefined(next) as TransmissionType[],
             })
           }
         />
@@ -420,11 +397,7 @@ export const VehiclesFiltersPanel = ({
         <ElectricSelector
           autonomyValue={filters.autonomy_since}
           onAutonomyChange={(value) =>
-            commitFilters({
-              ...filters,
-              autonomy_since: value,
-              page: 1,
-            })
+            updateFilters({ autonomy_since: value })
           }
           batteryValue={battery_range}
           onBatteryChange={handleBatteryChange}
@@ -439,13 +412,9 @@ export const VehiclesFiltersPanel = ({
       >
         <DgtLabelSelector
           dgtLabels={catalog.dgtLabels}
-          value={filters.dgt_label_ids ?? []}
+          value={filters.dgt_label_slugs ?? []}
           onChange={(next) =>
-            commitFilters({
-              ...filters,
-              dgt_label_ids: next.length > 0 ? next : undefined,
-              page: 1,
-            })
+            updateFilters({ dgt_label_slugs: emptyToUndefined(next) })
           }
         />
       </FilterItem>
@@ -460,11 +429,7 @@ export const VehiclesFiltersPanel = ({
           features={catalog.features}
           value={filters.features_slugs ?? []}
           onChange={(next) =>
-            commitFilters({
-              ...filters,
-              features_slugs: next.length > 0 ? next : undefined,
-              page: 1,
-            })
+            updateFilters({ features_slugs: emptyToUndefined(next) })
           }
         />
       </FilterItem>
@@ -478,11 +443,7 @@ export const VehiclesFiltersPanel = ({
           colors={catalog.colors}
           value={filters.color_slugs ?? []}
           onChange={(next) =>
-            commitFilters({
-              ...filters,
-              color_slugs: next.length > 0 ? next : undefined,
-              page: 1,
-            })
+            updateFilters({ color_slugs: emptyToUndefined(next) })
           }
         />
       </FilterItem>

@@ -8,21 +8,6 @@ import {
 } from "../helpers/catalogNetwork";
 import { HeroSearchFormPage } from "./hero-search-form-page";
 
-/**
- * Nombres de query param amigables que construye `buildHeroListingHref`
- * (`lib/vehicles/listing-url/build-hero-listing-href.ts`), a partir de las
- * constantes en
- * `app/(public)/vehiculos/[[...slug]]/constants/filterKeys.constants.ts`:
- *   MAKE_KEY = "marcas", MODEL_KEY = "modelos", PROVINCE_KEY = "provincias",
- *   PRICE_KEYS.UNTIL = "precio_hasta".
- * Los arrays se serializan repitiendo la clave (`FILTERS_QS_STRINGIFY_REPEAT_OPTIONS`,
- * `arrayFormat: "repeat"`), por lo que con un solo valor queda `marcas=<slug>`.
- */
-const MAKE_KEY = "marcas";
-const MODEL_KEY = "modelos";
-const PROVINCE_KEY = "provincias";
-const PRICE_UNTIL_KEY = "precio_hasta";
-
 const LISTING_BASE_PATH = "/vehiculos";
 
 /** Espera a que el store de red tenga el slug de un ítem buscado por nombre. */
@@ -42,6 +27,14 @@ const waitForCatalogSlug = async (
     throw new Error(`No se encontró el slug de "${name}" en la red.`);
   }
   return item.slug;
+};
+
+const expectListingPathSegment = (
+  pathname: string,
+  segment: string,
+): void => {
+  expect(pathname.startsWith(LISTING_BASE_PATH)).toBe(true);
+  expect(pathname).toContain(segment);
 };
 
 test.describe("HeroSearchForm (home)", () => {
@@ -71,13 +64,10 @@ test.describe("HeroSearchForm (home)", () => {
     });
 
     const result_url = new URL(page.url());
-    expect(result_url.pathname).toBe(LISTING_BASE_PATH);
-    expect(result_url.searchParams.getAll(MAKE_KEY)).toEqual([makeSlug]);
-    expect(result_url.searchParams.getAll(MODEL_KEY)).toEqual([modelSlug]);
-    expect(result_url.searchParams.getAll(PROVINCE_KEY)).toEqual([
-      provinceSlug,
-    ]);
-    expect(result_url.searchParams.get(PRICE_UNTIL_KEY)).toMatch(/^\d+$/);
+    expectListingPathSegment(result_url.pathname, `marca-${makeSlug}`);
+    expectListingPathSegment(result_url.pathname, `modelo-${modelSlug}`);
+    expectListingPathSegment(result_url.pathname, `provincia-${provinceSlug}`);
+    expectListingPathSegment(result_url.pathname, "precio-hasta-");
   });
 
   test("solo marca: navega con únicamente el filtro de marca", async ({
@@ -98,11 +88,7 @@ test.describe("HeroSearchForm (home)", () => {
     });
 
     const result_url = new URL(page.url());
-    expect(result_url.pathname).toBe(LISTING_BASE_PATH);
-    expect(result_url.searchParams.getAll(MAKE_KEY)).toEqual([makeSlug]);
-    expect(result_url.searchParams.has(MODEL_KEY)).toBe(false);
-    expect(result_url.searchParams.has(PROVINCE_KEY)).toBe(false);
-    expect(result_url.searchParams.has(PRICE_UNTIL_KEY)).toBe(false);
+    expect(result_url.pathname).toBe(`${LISTING_BASE_PATH}/marca-${makeSlug}`);
   });
 
   test("solo provincia: navega con únicamente el filtro de ubicación", async ({
@@ -126,13 +112,9 @@ test.describe("HeroSearchForm (home)", () => {
     });
 
     const result_url = new URL(page.url());
-    expect(result_url.pathname).toBe(LISTING_BASE_PATH);
-    expect(result_url.searchParams.getAll(PROVINCE_KEY)).toEqual([
-      provinceSlug,
-    ]);
-    expect(result_url.searchParams.has(MAKE_KEY)).toBe(false);
-    expect(result_url.searchParams.has(MODEL_KEY)).toBe(false);
-    expect(result_url.searchParams.has(PRICE_UNTIL_KEY)).toBe(false);
+    expect(result_url.pathname).toBe(
+      `${LISTING_BASE_PATH}/provincia-${provinceSlug}`,
+    );
   });
 
   test("solo precio: navega con únicamente el filtro de precio", async ({
@@ -151,11 +133,7 @@ test.describe("HeroSearchForm (home)", () => {
     });
 
     const result_url = new URL(page.url());
-    expect(result_url.pathname).toBe(LISTING_BASE_PATH);
-    expect(result_url.searchParams.get(PRICE_UNTIL_KEY)).toMatch(/^\d+$/);
-    expect(result_url.searchParams.has(MAKE_KEY)).toBe(false);
-    expect(result_url.searchParams.has(MODEL_KEY)).toBe(false);
-    expect(result_url.searchParams.has(PROVINCE_KEY)).toBe(false);
+    expectListingPathSegment(result_url.pathname, "precio-hasta-");
   });
 
   test("búsqueda vacía: navega al listado base sin filtros", async ({

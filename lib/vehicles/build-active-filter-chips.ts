@@ -22,6 +22,7 @@ type SlugFilterKey = Extract<
   | "service_slugs"
   | "warranty_slugs"
   | "color_slugs"
+  | "dgt_label_slugs"
   | "features_slugs"
   | "fuel_type_slugs"
   | "traction_slugs"
@@ -414,17 +415,10 @@ export const buildActiveFilterChips = (
 
   resolved.dgt_labels.forEach((label) => {
     chips.push({
-      key: `dgt-${label.id}`,
+      key: `dgt-${label.slug}`,
       label: label.code ? `Etiqueta DGT ${label.code}` : label.name,
-      onRemove: () => {
-        const current = filters.dgt_label_ids ?? [];
-        const next = current.filter((id) => String(id) !== String(label.id));
-        commitFilters({
-          ...filters,
-          dgt_label_ids: next.length > 0 ? next : undefined,
-          page: 1,
-        });
-      },
+      onRemove: () =>
+        remove_slug_from_filter("dgt_label_slugs", label.slug, handlers),
     });
   });
 

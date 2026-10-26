@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
+import { permanentRedirect } from "next/navigation";
 
 import { ActiveFilters } from "../components/activeFilters";
 import { VehiclesPageContent } from "../components/VehiclesPageContent";
 import { findAllVehicles } from "./services/findAllVehicles.server";
 import { toUrlSearchParams } from "./utils/toUrlSearchParams";
 import {
-  buildCanonicalListingHref,
-  buildIndexableCatalogListingPath,
-  CATALOG_DEGRADED_QUERY_KEYS,
-  isIndexableCatalogSlugPath,
+  normalizeVehicleListingHref,
   parseVehicleListingUrl,
+  resolveListingIndexability,
 } from "@/lib/vehicles/listing-url";
 import { activeFiltersService } from "../services/activeFiltersService";
 import { FRONTEND_URL } from "@/constants";
@@ -33,29 +32,28 @@ export async function generateMetadata(props: {
   const { slug } = await props.params;
   const search_params = await props.searchParams;
   const slug_segments = slug ?? [];
-  const filters = parseVehicleListingUrl(
+  const url_search_params = toUrlSearchParams(search_params);
+
+  const normalized_href_for_metadata = normalizeVehicleListingHref(
     slug_segments,
-    toUrlSearchParams(search_params),
+    url_search_params,
   );
+  if (normalized_href_for_metadata) {
+    permanentRedirect(normalized_href_for_metadata);
+  }
+
+  const filters = parseVehicleListingUrl(slug_segments, url_search_params);
 
   const [listing, activeFilters] = await Promise.all([
     findAllVehicles(filters),
     activeFiltersService.getActiveFilters(filters),
   ]);
 
-  const url_search_params = toUrlSearchParams(search_params);
-  const has_degraded_catalog_query = CATALOG_DEGRADED_QUERY_KEYS.some((key) =>
-    url_search_params.has(key),
-  );
-  const indexable_path =
-    isIndexableCatalogSlugPath(slug_segments) && !has_degraded_catalog_query
-      ? buildIndexableCatalogListingPath(filters)
-      : null;
-  const canonical_path = indexable_path ?? buildCanonicalListingHref(filters);
+  const { isIndexable, canonicalPath } = resolveListingIndexability(filters);
 
   return buildVehicleListingMetadata(activeFilters.title, {
-    canonical: `${FRONTEND_URL}${canonical_path}`,
-    noindex: listing.total < THIN_LISTING_RESULT_THRESHOLD,
+    canonical: `${FRONTEND_URL}${canonicalPath}`,
+    noindex: !isIndexable || listing.total < THIN_LISTING_RESULT_THRESHOLD,
   });
 }
 
@@ -66,10 +64,17 @@ export default async function VehiclesListingPage(props: {
   const { slug } = await props.params;
   const search_params = await props.searchParams;
   const slug_segments = slug ?? [];
-  const filters = parseVehicleListingUrl(
+  const url_search_params = toUrlSearchParams(search_params);
+
+  const normalized_href = normalizeVehicleListingHref(
     slug_segments,
-    toUrlSearchParams(search_params),
+    url_search_params,
   );
+  if (normalized_href) {
+    permanentRedirect(normalized_href);
+  }
+
+  const filters = parseVehicleListingUrl(slug_segments, url_search_params);
 
   const [listing, activeFilters] = await Promise.all([
     findAllVehicles(filters),
@@ -77,7 +82,7 @@ export default async function VehiclesListingPage(props: {
   ]);
   const isMapVisible = search_params[SHOW_MAP_KEY] === "true";
   const listingCopy = buildVehicleListingCopy(activeFilters.title);
-  const canonicalPath = buildCanonicalListingHref(filters);
+  const { canonicalPath } = resolveListingIndexability(filters);
 
   return (
     <>

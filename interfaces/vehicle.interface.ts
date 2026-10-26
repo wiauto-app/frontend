@@ -352,6 +352,7 @@ export interface FindAllVehiclesParams {
   displacement_since?: number;
   displacement_until?: number;
   dgt_label_ids?: string[];
+  dgt_label_slugs?: string[];
   autonomy_since?: number;
   battery_capacity_since?: number;
   battery_capacity_until?: number;

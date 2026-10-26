@@ -41,7 +41,7 @@ describe("buildAiSearchListingHref", () => {
       until_price: 20000,
     });
 
-    expect(href).toBe("/vehiculos?marcas=toyota&precio_hasta=20000");
+    expect(href).toBe("/vehiculos/marca-toyota/precio-hasta-20000");
   });
 
   it("fallback a q= con filtros vacíos", () => {
@@ -56,6 +56,6 @@ describe("buildAiSearchListingHref", () => {
       provinces_slugs: ["madrid"],
     });
 
-    expect(href).toBe("/vehiculos/provincia-madrid?marcas=toyota");
+    expect(href).toBe("/vehiculos/marca-toyota/provincia-madrid");
   });
 });

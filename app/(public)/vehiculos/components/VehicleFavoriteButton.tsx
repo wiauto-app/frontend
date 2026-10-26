@@ -163,7 +163,6 @@ export const VehicleFavoriteButton = ({
               type="button"
               variant={variant}
               size="icon"
-              disabled={isAuthLoading}
               aria-expanded={open}
               aria-label="Guardar en listas"
               onClick={(event) => {

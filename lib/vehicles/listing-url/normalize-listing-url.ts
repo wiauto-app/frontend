@@ -1,4 +1,7 @@
-import { buildVehicleListingHref } from "./build-listing-url";
+import {
+  appendListingUiQuery,
+  buildVehicleListingHref,
+} from "./build-listing-url";
 import { parseVehicleListingUrl } from "./parse-listing-url";
 
 const normalizeHref = (href: string): string => {
@@ -15,7 +18,10 @@ export const normalizeVehicleListingHref = (
   search_params: URLSearchParams,
 ): string | null => {
   const params = parseVehicleListingUrl(slug, search_params);
-  const target = buildVehicleListingHref(params);
+  const target = appendListingUiQuery(
+    buildVehicleListingHref(params),
+    search_params,
+  );
 
   const slug_path =
     slug && slug.length > 0 ? `/vehiculos/${slug.join("/")}` : "/vehiculos";

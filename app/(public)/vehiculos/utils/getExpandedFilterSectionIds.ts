@@ -89,7 +89,10 @@ export const getExpandedFilterSectionIds = (
     open.push(FILTER_SECTION_IDS.ENGINE);
   }
 
-  if (hasNonEmptyArray(filters.dgt_label_ids)) {
+  if (
+    hasNonEmptyArray(filters.dgt_label_ids) ||
+    hasNonEmptyArray(filters.dgt_label_slugs)
+  ) {
     open.push(FILTER_SECTION_IDS.DGT);
   }
 

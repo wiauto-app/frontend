@@ -7,7 +7,6 @@ export {
   DTO_TO_FRIENDLY_QUERY,
   FRIENDLY_QUERY_TO_DTO,
   LEGACY_API_QUERY_KEYS,
-  MAX_PATH_SEGMENTS,
   MUNICIPALITY_PATH_PREFIX,
   NUMERIC_DTO_KEYS,
   PROVINCE_PATH_PREFIX,
@@ -31,8 +30,15 @@ export {
 export {
   buildCanonicalListingHref,
   buildCanonicalListingPath,
-  toCanonicalCatalogParams,
 } from "./build-canonical-url";
+
+export { buildFilterSegments } from "./build-filter-segments";
+export { parseFilterSegments } from "./parse-filter-segments";
+export { emptyToUndefined } from "./empty-to-undefined";
+export {
+  resolveListingIndexability,
+  type ListingIndexability,
+} from "./resolve-listing-indexability";
 
 export { normalizeVehicleListingHref } from "./normalize-listing-url";
 export { isIndexableListingPathname } from "./indexable-listing-url";

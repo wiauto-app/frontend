@@ -7,6 +7,7 @@ import {
 
 import { normalizeFilterQueryValue, parseFiltersQueryString } from "./filters-query";
 import { mergeCatalogSlugLists } from "./merge-catalog-slugs";
+import { parseFilterSegments } from "./parse-filter-segments";
 import { parsePathSegments } from "./parse-path-segments";
 import {
   ARRAY_DTO_KEYS,
@@ -202,7 +203,10 @@ export const parseVehicleListingUrl = (
   slug: string[] | undefined,
   search_params: URLSearchParams,
 ): FindAllVehiclesParams => {
-  const path_filters = parsePathSegments(slug);
+  const path_filters = {
+    ...parsePathSegments(slug),
+    ...parseFilterSegments(slug),
+  };
   const query_filters = parseQueryParams(search_params);
   const makes_slugs = mergeCatalogSlugLists(
     path_filters.makes_slugs,

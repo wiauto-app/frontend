@@ -65,11 +65,11 @@ describe("buildVehicleDetailSeo", () => {
     });
     expect(seo.breadcrumbItems[2]).toEqual({
       label: "Volkswagen",
-      href: "/vehiculos?marcas=volkswagen",
+      href: "/vehiculos/marca-volkswagen",
     });
     expect(seo.breadcrumbItems[3]).toEqual({
       label: "Golf",
-      href: "/vehiculos?marcas=volkswagen&modelos=golf",
+      href: "/vehiculos/marca-volkswagen/modelo-golf",
     });
     expect(seo.breadcrumbItems[4]).toEqual({
       label: "Volkswagen Golf 1.6 TDI",

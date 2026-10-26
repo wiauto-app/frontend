@@ -17,7 +17,7 @@ export const DgtLabelSelector = ({
   return (
     <MultiCheckboxFilter
       items={dgtLabels.map((dgtLabel) => ({
-        key: dgtLabel.id,
+        key: dgtLabel.slug,
         label: dgtLabel.name,
       }))}
       value={value}

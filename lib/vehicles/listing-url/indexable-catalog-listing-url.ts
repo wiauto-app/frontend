@@ -1,57 +1,57 @@
 import type { FindAllVehiclesParams } from "@/interfaces/vehicle.interface";
 
-import { VEHICLES_LISTING_BASE_PATH } from "./constants";
-import { hasGeoPrefix } from "./parse-path-segments";
+import { buildVehicleListingUrl } from "./build-listing-url";
+import { resolveListingIndexability } from "./resolve-listing-indexability";
 
-const isLegacyDuplicateSlugPath = (segments: string[]): boolean => {
-  if (segments.length === 2 && segments[0] === segments[1]) {
-    return true;
-  }
-
-  if (
-    segments.length === 4 &&
-    segments[2] === segments[3] &&
-    !segments.some(hasGeoPrefix)
-  ) {
-    return true;
-  }
-
-  return false;
-};
-
+/** @deprecated Usar resolveListingIndexability sobre params parseados. */
 export const isIndexableCatalogSlugPath = (segments: string[]): boolean => {
-  if (segments.length !== 2 && segments.length !== 3) {
-    return false;
+  if (segments.length === 0) {
+    return true;
   }
-
-  if (segments.some(hasGeoPrefix)) {
-    return false;
-  }
-
-  return !isLegacyDuplicateSlugPath(segments);
+  return segments.every((segment) =>
+    /^(marca-|modelo-|provincia-|tipo-|estado-|combustible-|comunidad-)/.test(
+      decodeURIComponent(segment),
+    ),
+  );
 };
 
 type IndexableCatalogListingPathParams = Pick<
   FindAllVehiclesParams,
-  "makes_slugs" | "models_slugs" | "provinces_slugs"
+  | "type_slug"
+  | "condition"
+  | "makes_slugs"
+  | "models_slugs"
+  | "provinces_slugs"
+  | "comunities_slugs"
+  | "fuel_type_slugs"
 >;
 
+/** @deprecated Usar buildVehicleListingHref + resolveListingIndexability. */
 export const buildIndexableCatalogListingPath = (
   params: IndexableCatalogListingPathParams,
 ): string | null => {
-  const make = params.makes_slugs?.length === 1 ? params.makes_slugs[0] : null;
-  const model = params.models_slugs?.length === 1 ? params.models_slugs[0] : null;
-
-  if (!make || !model) {
-    return null;
+  const { pathname } = buildVehicleListingUrl({
+    page: 1,
+    limit: 30,
+    order_by: "created_at",
+    order_direction: "DESC",
+    ...params,
+  });
+  const { isIndexable } = resolveListingIndexability({
+    page: 1,
+    limit: 30,
+    order_by: "created_at",
+    order_direction: "DESC",
+    ...params,
+  });
+  if (!isIndexable) {
+    return resolveListingIndexability({
+      page: 1,
+      limit: 30,
+      order_by: "created_at",
+      order_direction: "DESC",
+      ...params,
+    }).canonicalPath;
   }
-
-  const province =
-    params.provinces_slugs?.length === 1 ? params.provinces_slugs[0] : null;
-
-  if (province) {
-    return `${VEHICLES_LISTING_BASE_PATH}/${make}/${model}/${province}`;
-  }
-
-  return `${VEHICLES_LISTING_BASE_PATH}/${make}/${model}`;
+  return pathname === "/vehiculos" ? null : pathname;
 };

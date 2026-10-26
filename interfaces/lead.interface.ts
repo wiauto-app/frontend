@@ -75,6 +75,8 @@ export interface CreateLeadPayload {
   accepted_terms: boolean;
   /** Campo trampa antispam; solo se envía si viene relleno. */
   hp_website?: string;
+  /** Token de Cloudflare Turnstile. */
+  turnstile_token?: string;
 }
 
 export interface CreateCallMePayload {
