@@ -5,20 +5,14 @@ import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
 import { Footer, NewsletterSection } from "@/components/home";
-import { AssistantDialog } from "@/components/assistant/assistantDialog";
-import { MobileNavbar } from "@/components/mobileNavbar/mobileNavbar";
+import { LazyAssistantDialog } from "@/components/home/lazyImports/LazyAssistantDialog";
 import { ConditionalWrapper } from "@/components/ui/ConditionalWrapper";
 import { AssistantChatProvider } from "@/components/assistant/assistantChatProvider";
-import { MetaPixel } from "@/components/metaPixel";
-import { ConsentModeScript } from "@/components/consent/consentModeScript";
-import { CookieConsentBanner } from "@/components/consent/cookieConsentBanner";
-import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
-import {
-  GOOGLE_ANALYTICS_ID,
-  GOOGLE_TAG_MANAGER_ID,
-} from "@/constants/external.constant";
 import { ViewTransitionStyles } from "@/components/view-transitions/view-transition-styles";
 import { Metadata } from "next";
+import { LazyMobileNavbar } from "@/components/home/lazyImports/LazyMobileNavbar";
+import { LazyCookieConsentBanner } from "@/components/home/lazyImports/LazyCookieConsentBanner";
+import { LazyThirdPartyLibraries } from "@/components/home/lazyImports/LazyThirdPartyLibraries";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -66,7 +60,6 @@ export default async function RootLayout({
     >
       <body className="flex flex-col relative">
         <ViewTransitionStyles />
-        <ConsentModeScript />
         <Providers>
           <AssistantChatProvider>
             <div
@@ -77,7 +70,6 @@ export default async function RootLayout({
               <Navbar />
             </div>
             <main className="flex min-w-0 flex-1 flex-col overflow-x-clip">
-              <MetaPixel />
               {children}
             </main>
             <ConditionalWrapper
@@ -92,18 +84,12 @@ export default async function RootLayout({
               <NewsletterSection />
               <Footer />
             </ConditionalWrapper>
-            <AssistantDialog />
-            <MobileNavbar />
-            <CookieConsentBanner />
+            <LazyAssistantDialog />
+            <LazyMobileNavbar />
+            <LazyCookieConsentBanner />
           </AssistantChatProvider>
         </Providers>
-        {/* Quitar GoogleAnalytics cuando G-D44GZQL4B2 esté publicado en GTM-PH39KM9H. */}
-        {GOOGLE_ANALYTICS_ID ? (
-          <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
-        ) : null}
-        {GOOGLE_TAG_MANAGER_ID ? (
-          <GoogleTagManager gtmId={GOOGLE_TAG_MANAGER_ID} />
-        ) : null}
+        <LazyThirdPartyLibraries />
       </body>
     </html>
   );

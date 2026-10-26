@@ -3,34 +3,30 @@
 import { useEffect, useState } from "react";
 
 import {
-  APP_DOWNLOAD_BANNER_COOKIE,
   isNativeWiautoApp,
   resolveAppStoreTarget,
   type AppStoreTarget,
 } from "@/lib/app-stores";
 
 import { AppDownloadBanner } from "./AppDownloadBanner";
-
-const isBannerDismissed = (): boolean =>
-  document.cookie
-    .split("; ")
-    .some((cookie) => cookie === `${APP_DOWNLOAD_BANNER_COOKIE}=1`);
+import { useAppDownloadBannerStore } from "./stores/appDownloadBannerStore";
 
 /** Se resuelve en el cliente: leer cookies/headers en el layout haría dinámicas todas las rutas. */
 export const AppDownloadBannerGate = () => {
+  const isDismissed = useAppDownloadBannerStore((state) => state.isDismissed);
   const [store, setStore] = useState<AppStoreTarget | null>(null);
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
 
-    if (isBannerDismissed() || isNativeWiautoApp(userAgent)) {
+    if (isNativeWiautoApp(userAgent)) {
       return;
     }
 
     setStore(resolveAppStoreTarget(userAgent));
   }, []);
 
-  if (!store) {
+  if (!store || isDismissed) {
     return null;
   }
 

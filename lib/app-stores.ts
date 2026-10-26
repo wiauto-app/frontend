@@ -1,5 +1,3 @@
-export const APP_DOWNLOAD_BANNER_COOKIE = "wiauto_app_download_banner_dismissed";
-
 export const PLAY_STORE_URL =
   process.env.NEXT_PUBLIC_GOOGLE_PLAY_URL ??
   "https://play.google.com/store/apps/details?id=com.faux.wiauto";
@@ -49,9 +47,4 @@ export const resolveAppStoreTarget = (userAgent: string): AppStoreTarget => {
   }
 
   return PLAY_STORE_TARGET;
-};
-
-export const dismissAppDownloadBannerCookie = (): string => {
-  const maxAge = 60 * 60 * 24 * 365;
-  return `${APP_DOWNLOAD_BANNER_COOKIE}=1; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
 };

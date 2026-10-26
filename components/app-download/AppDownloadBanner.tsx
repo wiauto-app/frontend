@@ -2,31 +2,20 @@
 
 import Image from "next/image";
 import { X } from "lucide-react";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  dismissAppDownloadBannerCookie,
-  type AppStoreTarget,
-} from "@/lib/app-stores";
+import type { AppStoreTarget } from "@/lib/app-stores";
 import { LOGOS } from "@/lib/logos";
 import { cn } from "@/lib/utils";
+
+import { useAppDownloadBannerStore } from "./stores/appDownloadBannerStore";
 
 interface AppDownloadBannerProps {
   store: AppStoreTarget;
 }
 
 export const AppDownloadBanner = ({ store }: AppDownloadBannerProps) => {
-  const [isVisible, setIsVisible] = useState(true);
-
-  const handleDismiss = () => {
-    document.cookie = dismissAppDownloadBannerCookie();
-    setIsVisible(false);
-  };
-
-  if (!isVisible) {
-    return null;
-  }
+  const handleDismiss = useAppDownloadBannerStore((state) => state.dismiss);
 
   return (
     <div
