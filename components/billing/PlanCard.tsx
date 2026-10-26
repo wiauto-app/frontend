@@ -29,7 +29,7 @@ import { WiautoMatchCard } from "./wiautoMatchCard";
 const VISIBLE_FEATURES_COUNT = 5;
 /** Frontend-only launch promo: inflate list price, keep Stripe amount unchanged. */
 const LAUNCH_PRICE_INFLATE_FACTOR = 1.25;
-const LAUNCH_DISCOUNT_PERCENT = 25;
+const LAUNCH_DISCOUNT_PERCENT = 20;
 
 interface PlanCardProps {
   plan: BillingCatalogPlan;
