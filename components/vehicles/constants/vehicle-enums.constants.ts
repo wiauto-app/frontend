@@ -49,7 +49,7 @@ export const VEHICLE_PUBLISHER_TYPE_OPTIONS: {
   value: VehiclePublisherTypeValue;
   label: string;
 }[] = [
-  { value: "dealership", label: "Concesionaria" },
+  { value: "dealership", label: "Concesionario" },
   { value: "particular", label: "Particular" },
 ];
 

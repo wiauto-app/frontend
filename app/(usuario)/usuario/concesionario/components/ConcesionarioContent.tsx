@@ -52,7 +52,7 @@ export const ConcesionarioContent = () => {
       const response = await dealershipService.findOne(dealershipId!);
       if (!response.ok || !response.data) {
         throw new Error(
-          response.message || "No se pudo cargar la concesionaria",
+          response.message || "No se pudo cargar el concesionario",
         );
       }
       return response.data;
@@ -117,12 +117,12 @@ export const ConcesionarioContent = () => {
 
       if (!response.ok) {
         toast.error(
-          response.message || "Ocurrió un error al crear la concesionaria",
+          response.message || "Ocurrió un error al crear el concesionario",
         );
         return;
       }
 
-      toast.success("Concesionaria creada");
+      toast.success("Concesionario creado correctamente");
       await refreshUser();
       await queryClient.invalidateQueries({ queryKey: ["dealership-profile"] });
       return;
@@ -135,12 +135,12 @@ export const ConcesionarioContent = () => {
 
     if (!response.ok) {
       toast.error(
-        response.message || "Ocurrió un error al actualizar la concesionaria",
+        response.message || "Ocurrió un error al actualizar el concesionario",
       );
       return;
     }
 
-    toast.success("Concesionaria actualizada");
+    toast.success("Concesionario actualizado correctamente");
     await queryClient.invalidateQueries({ queryKey: ["dealership-profile"] });
   };
 
@@ -155,12 +155,12 @@ export const ConcesionarioContent = () => {
 
       if (!response.ok) {
         toast.error(
-          response.message || "No se pudo eliminar la concesionaria",
+          response.message || "No se pudo eliminar el concesionario",
         );
         return;
       }
 
-      toast.success("Concesionaria eliminada");
+      toast.success("Concesionario eliminado correctamente");
       setIsDeleteOpen(false);
       queryClient.removeQueries({ queryKey: ["dealership-profile"] });
       // Sin membresía el formulario vuelve solo al modo "crear".
@@ -178,7 +178,7 @@ export const ConcesionarioContent = () => {
 
   if (dealershipId && !canManageTeam(membershipRole)) {
     const membershipName =
-      user?.dealership_membership?.dealership_name || "Tu concesionaria";
+      user?.dealership_membership?.dealership_name || "Tu concesionario";
 
     return (
       <div className="space-y-6">
@@ -201,7 +201,7 @@ export const ConcesionarioContent = () => {
           role="status"
         >
           Solo el propietario y los administradores pueden editar los datos de
-          la concesionaria. Tu rol actual es miembro.
+          el concesionario. Tu rol actual es miembro.
         </div>
       </div>
     );
@@ -212,7 +212,7 @@ export const ConcesionarioContent = () => {
       <div
         className="flex min-h-48 items-center justify-center rounded-xl border border-gray-100 bg-white p-6 shadow-sm"
         role="status"
-        aria-label="Cargando concesionaria"
+        aria-label="Cargando concesionario"
       >
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>
@@ -222,7 +222,7 @@ export const ConcesionarioContent = () => {
   if (!isCreateMode && isDealershipError) {
     return (
       <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-sm text-red-700">
-        No se pudieron cargar los datos de tu concesionaria. Intenta recargar la
+        No se pudieron cargar los datos de tu concesionario. Intenta recargar la
         página.
       </div>
     );
@@ -231,7 +231,7 @@ export const ConcesionarioContent = () => {
   const displayName =
     dealership?.name ||
     user?.dealership_membership?.dealership_name ||
-    "Tu concesionaria";
+    "Tu concesionario";
 
   return (
     <div className="space-y-6 ">
@@ -269,8 +269,8 @@ export const ConcesionarioContent = () => {
             <h2 className="text-2xl font-bold text-gray-900">{displayName}</h2>
             <p className="text-sm font-medium text-gray-700">
               {isCreateMode
-                ? "Completa los datos para registrar tu concesionaria"
-                : "Actualiza la información pública de tu concesionaria"}
+                ? "Completa los datos para registrar tu concesionario"
+                : "Actualiza la información pública de tu concesionario"}
             </p>
           </div>
         </div>
@@ -284,7 +284,7 @@ export const ConcesionarioContent = () => {
               control={control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Avatar de la concesionaria</FieldLabel>
+                  <FieldLabel>Logo de tu concesionario</FieldLabel>
                   <ImageInput
                     value={field.value}
                     onChange={(url) => field.onChange(url ?? "")}
@@ -305,7 +305,7 @@ export const ConcesionarioContent = () => {
               control={control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Imagen de portada</FieldLabel>
+                  <FieldLabel>Foto de portada</FieldLabel>
                   <ImageInput
                     value={field.value}
                     onChange={(url) => field.onChange(url ?? "")}
@@ -346,7 +346,7 @@ export const ConcesionarioContent = () => {
               <Textarea
                 id="dealership-description"
                 rows={4}
-                placeholder="Cuéntanos qué hace especial a tu concesionaria"
+                placeholder="Cuéntanos qué hace especial a tu concesionario"
                 aria-invalid={Boolean(errors.description)}
                 {...register("description")}
               />
@@ -360,7 +360,7 @@ export const ConcesionarioContent = () => {
               <Input
                 id="dealership-website"
                 type="url"
-                placeholder="https://www.tuconcesionaria.com"
+                placeholder="https://www.tuconcesionario.com"
                 aria-invalid={Boolean(errors.website_url)}
                 {...register("website_url")}
               />
@@ -374,7 +374,7 @@ export const ConcesionarioContent = () => {
               <Input
                 id="dealership-email"
                 type="email"
-                placeholder="contacto@tuconcesionaria.com"
+                placeholder="contacto@tuconcesionario.com"
                 aria-invalid={Boolean(errors.email)}
                 {...register("email")}
               />
@@ -475,7 +475,7 @@ export const ConcesionarioContent = () => {
             {isSubmitting
               ? "Guardando..."
               : isCreateMode
-                ? "Crear concesionaria"
+                ? "Crear concesionario"
                 : "Guardar cambios"}
           </Button>
         </form>
@@ -492,12 +492,12 @@ export const ConcesionarioContent = () => {
       {canDeleteProfile ? (
         <div className="rounded-xl border border-red-100 bg-white p-6 shadow-sm sm:p-8">
           <h3 className="text-base font-semibold text-red-700">
-            Eliminar concesionaria
+            Eliminar concesionario
           </h3>
           <p className="mt-1 text-sm text-gray-600">
             Se eliminará el perfil público, el equipo, los horarios y las
             reseñas. Tus anuncios seguirán publicados pero dejarán de estar
-            vinculados a la concesionaria. Esta acción no se puede deshacer.
+            vinculados al concesionario. Esta acción no se puede deshacer.
           </p>
           <Button
             type="button"
@@ -506,13 +506,13 @@ export const ConcesionarioContent = () => {
             disabled={isDeleting}
             onClick={() => setIsDeleteOpen(true)}
           >
-            Eliminar concesionaria
+            Eliminar concesionario
           </Button>
 
           <CustomAlertDialog
             open={isDeleteOpen}
             onOpenChange={setIsDeleteOpen}
-            title="¿Eliminar la concesionaria?"
+            title="¿Eliminar el concesionario?"
             description={`Vas a eliminar "${displayName}" de forma permanente. Esta acción no se puede deshacer.`}
             confirmText="Sí, eliminar"
             isConfirming={isDeleting}

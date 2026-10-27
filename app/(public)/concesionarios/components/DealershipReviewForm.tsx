@@ -81,7 +81,7 @@ export function DealershipReviewForm({
     isSubmitting || rating === null || comment.trim().length === 0;
   const dealership_label = dealership_name
     ? ` sobre ${dealership_name}`
-    : " sobre esta concesionaria";
+    : " sobre este concesionario";
 
   return (
     <Card size="sm" className="border-slate-200 shadow-none">

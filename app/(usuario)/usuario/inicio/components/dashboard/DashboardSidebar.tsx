@@ -78,7 +78,7 @@ export const DashboardSidebar = ({
             href="/usuario/concesionario"
             className="mt-4 inline-flex text-sm font-medium text-blue-600 hover:text-blue-700"
           >
-            Gestionar perfil de concesionaria
+            Gestionar perfil de concesionario
           </Link>
         </section>
       ) : null}

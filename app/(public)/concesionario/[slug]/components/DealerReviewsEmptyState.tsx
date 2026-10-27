@@ -12,7 +12,7 @@ export function DealerReviewsEmptyState() {
         </h3>
         <p className="text-sm leading-6 text-muted-foreground">
           Sé la primera persona en compartir cómo fue su experiencia con esta
-          concesionaria.
+          concesionario.
         </p>
       </div>
     </div>

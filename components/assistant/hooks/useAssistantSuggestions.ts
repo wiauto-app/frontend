@@ -14,8 +14,8 @@ const PLACEHOLDER_BY_ROUTE = {
     { label: "Comparar dos modelos", prompt: "Quiero comparar dos modelos antes de decidir cuál comprar." },
   ],
   "/concesionarios": [
-    { label: "Concesionarias cercanas", prompt: "Busca concesionarias cerca de mi ubicación." },
-    { label: "Mejor valoradas", prompt: "Enséñame concesionarias con buenas valoraciones." },
+    { label: "Concesionarios cercanos", prompt: "Busca concesionarios cerca de mi ubicación." },
+    { label: "Mejor valorados", prompt: "Enséñame concesionarios con buenas valoraciones." },
   ],
   "/noticias": [
     { label: "Noticias destacadas", prompt: "Muéstrame las noticias destacadas más recientes de WiAuto." },

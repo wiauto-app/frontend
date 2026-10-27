@@ -103,7 +103,7 @@ export function ConcesionariasPageContent({
               <DialogHeader className="sr-only">
                 <DialogTitle>Dejar reseña</DialogTitle>
                 <DialogDescription>
-                  Valora tu experiencia con la concesionaria seleccionada.
+                  Valora tu experiencia con el concesionario seleccionado.
                 </DialogDescription>
               </DialogHeader>
               {reviewDealer && (
