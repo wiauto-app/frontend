@@ -22,7 +22,24 @@ import { LoginDto, RegisterDto, ResetPasswordDto } from "@/validations/Schemas";
 
 export interface RegisterResult extends ApiResponse<User> {
   referral_code?: string;
+  /** Anuncio creado como borrador; se publica al verificar el correo. */
+  pending_vehicle_id?: string;
+  /** El anuncio quedó encolado; el identificador llega al verificar el correo. */
+  pending_vehicle_queued?: boolean;
+  /** El registro fue bien, pero el anuncio no se pudo guardar. */
+  pending_vehicle_error?: string;
 }
+
+/** Cuerpo interno de POST /auth/register tras el ResponseInterceptor del backend. */
+interface RegisterApiPayload {
+  message?: string;
+  data?: User;
+  referral_code?: string;
+  pending_vehicle_id?: string;
+  pending_vehicle_queued?: boolean;
+  pending_vehicle_error?: string;
+}
+
 import { BillingMeResponse } from "@/interfaces/billing.interface";
 
 export interface MeResponseDto extends User {
@@ -46,17 +63,39 @@ export const authService = {
     });
 
     const body = (await response.json()) as {
+      ok?: boolean;
+      status?: number;
       message?: string;
-      data?: User;
-      referral_code?: string;
+      data?: RegisterApiPayload | User;
     };
 
+    const envelope =
+      typeof body.data === "object" &&
+      body.data !== null &&
+      ("pending_vehicle_id" in body.data ||
+        "pending_vehicle_queued" in body.data ||
+        "pending_vehicle_error" in body.data ||
+        "referral_code" in body.data ||
+        ("data" in body.data && "message" in body.data))
+        ? (body.data as RegisterApiPayload)
+        : null;
+
+    const user = envelope?.data ?? (body.data as User | undefined);
+    const ok =
+      typeof body.ok === "boolean" ? body.ok : response.ok;
+    const status =
+      typeof body.status === "number" ? body.status : response.status;
+
     return {
-      ok: response.ok,
-      status: response.status,
-      message: body.message ?? response.statusText,
-      data: body.data as User,
-      referral_code: body.referral_code,
+      ok,
+      status,
+      message:
+        envelope?.message ?? body.message ?? response.statusText,
+      data: user as User,
+      referral_code: envelope?.referral_code,
+      pending_vehicle_id: envelope?.pending_vehicle_id,
+      pending_vehicle_queued: envelope?.pending_vehicle_queued,
+      pending_vehicle_error: envelope?.pending_vehicle_error,
     };
   },
 

@@ -82,6 +82,8 @@ export const MyListingActionsMenu = ({
   const isActive = listing.status === "active";
   const isSold = listing.status === "sold";
   const isArchived = listing.status === "archived";
+  // Un borrador solo se publica al verificar el correo.
+  const isDraft = listing.status === "draft";
 
   return (
     <>
@@ -146,7 +148,7 @@ export const MyListingActionsMenu = ({
               Archivar
             </DropdownMenuItem>
           ) : null}
-          {!isActive && !canToggleStatus ? (
+          {!isActive && !canToggleStatus && !isDraft ? (
             <DropdownMenuItem onClick={() => void handleToggleStatus("active")}>
               <Power className="size-4" aria-hidden />
               Activar

@@ -15,7 +15,7 @@ export interface AuthSessionCallbackParams {
 
 export interface AuthSessionCallbackOptions {
   /**
-   * Tras sesión válida (sin 2FA), redirige siempre a `/?verified=1`.
+   * Tras sesión válida (sin 2FA), redirige a `next` (si es válido) o a `/`, con `verified=1`.
    * Usado por el deep link de verificación de correo.
    */
   forceVerifiedHome?: boolean;
@@ -36,6 +36,14 @@ const resolvePostLoginPath = (
   }
 
   return "/";
+};
+
+/** `next` (p. ej. `/publicar/exito?id=…`) si es ruta propia; si no, la home. Siempre con `verified=1`. */
+const buildVerifiedRedirectUrl = (next: string | null): URL => {
+  const path = next && isValidReturnPath(next) ? next : "/";
+  const url = new URL(path, FRONTEND_URL);
+  url.searchParams.set("verified", "1");
+  return url;
 };
 
 export const setAuthSessionCookies = async (
@@ -87,7 +95,7 @@ export const handleAuthSessionCallback = async (
   }
 
   if (forceVerifiedHome || message) {
-    return NextResponse.redirect(new URL("/?verified=1", FRONTEND_URL));
+    return NextResponse.redirect(buildVerifiedRedirectUrl(next));
   }
 
   const redirectPath = resolvePostLoginPath(redirectUrl, next);

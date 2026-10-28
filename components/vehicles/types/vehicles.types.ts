@@ -41,7 +41,7 @@ export interface AdminVehicleListItem {
   lat: number;
   lng: number;
   condition: "new" | "used";
-  status: "active" | "pending" | "inactive" | "sold" | "archived";
+  status: "active" | "pending" | "draft" | "inactive" | "sold" | "archived";
   is_featured: boolean;
   views: number;
   publisher_type: "dealership" | "particular";
@@ -135,7 +135,7 @@ export interface Vehicle {
   price: number;
   mileage: number;
   condition: "new" | "used";
-  status: "active" | "pending" | "inactive" | "sold" | "archived";
+  status: "active" | "pending" | "draft" | "inactive" | "sold" | "archived";
   is_featured: boolean;
   views: number;
   publisher_type: "dealership" | "particular";

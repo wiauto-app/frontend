@@ -68,7 +68,12 @@ export interface RegisterDto {
   phone_code: string;
   phone: string;
   referral_code?: string;
+  /** Mismo payload que `POST /vehicles`; el backend lo guarda como borrador. */
+  pending_vehicle?: PendingVehiclePayload;
 }
+
+/** `serializeVehiclePayload(data)` + `tracking`, ya listo para la API. */
+export type PendingVehiclePayload = Record<string, unknown>;
 
 
 export const createForgotPasswordSchema = (

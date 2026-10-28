@@ -6,9 +6,10 @@ import {
   PublishSuccessFallback,
   PublishSuccessView,
 } from "./components/PublishSuccessView";
+import { VerifiedPublishNotice } from "./components/VerifiedPublishNotice";
 
 interface CrearVehiculoExitoPageProps {
-  searchParams: Promise<{ id?: string; checkout?: string }>;
+  searchParams: Promise<{ id?: string; checkout?: string; verified?: string }>;
 }
 
 export const metadata: Metadata = {
@@ -39,13 +40,17 @@ export default async function CrearVehiculoExitoPage({
   }
 
   const insights = await getVehicleInsights(vehicleId);
+  const isJustVerified = params.verified === "1";
 
   return (
-    <PublishSuccessView
-      vehicleId={vehicleId}
-      displayName={insights?.display_name ?? null}
-      initialInsights={insights}
-      checkoutStatus={checkoutStatus}
-    />
+    <>
+      {isJustVerified ? <VerifiedPublishNotice vehicleId={vehicleId} /> : null}
+      <PublishSuccessView
+        vehicleId={vehicleId}
+        displayName={insights?.display_name ?? null}
+        initialInsights={insights}
+        checkoutStatus={checkoutStatus}
+      />
+    </>
   );
 }

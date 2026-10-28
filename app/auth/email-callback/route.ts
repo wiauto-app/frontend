@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
       refreshToken: searchParams.get("refresh_token"),
       type: searchParams.get("type"),
       message: searchParams.get("message"),
+      next: searchParams.get("next"),
     },
     {
       forceVerifiedHome: true,

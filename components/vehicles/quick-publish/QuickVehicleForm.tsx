@@ -46,6 +46,7 @@ import {
   resetPublishFunnel,
   track,
 } from "@/lib/analytics/funnel";
+import type { PendingVehiclePayload } from "@/validations/Schemas";
 
 /** Ruta actual con querystring (`?step`, `?tasacion`) para volver tras el login. */
 const getCurrentReturnTo = (): string | undefined => {
@@ -76,6 +77,8 @@ export const QuickVehicleForm = ({
     useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [signInReturnTo, setSignInReturnTo] = useState<string>();
+  const [pendingVehiclePayload, setPendingVehiclePayload] =
+    useState<PendingVehiclePayload>();
   const autoPublishStartedRef = useRef(false);
   const publishAuthTrackedRef = useRef(false);
 
@@ -148,10 +151,15 @@ export const QuickVehicleForm = ({
 
     // Anónimo: se guarda el handoff, se marca la publicación pendiente y se
     // pide login. El efecto de auto-publicación publica al volver autenticado.
+    // Si se registra con correo, el anuncio viaja en el registro como borrador.
     if (!isEditMode && !isAuthenticated) {
       saveDraftNow(form.getValues());
       setPendingPublish(true);
       markPublishFlowAuth();
+      setPendingVehiclePayload({
+        ...serializeVehiclePayload(data),
+        tracking: buildPublishTracking(createPublishEventId()),
+      });
       setSignInReturnTo(getCurrentReturnTo());
       setIsSignInOpen(true);
       return;
@@ -282,6 +290,13 @@ export const QuickVehicleForm = ({
     hasIncompleteImageUploads,
   ]);
 
+  // El borrador ya vive en el backend: contiene email y teléfono, no se guarda en local.
+  const handlePendingVehicleCreated = () => {
+    discardDraft();
+    resetPublishFunnel();
+    setPendingVehiclePayload(undefined);
+  };
+
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -330,6 +345,8 @@ export const QuickVehicleForm = ({
           open={isSignInOpen}
           onOpenChange={setIsSignInOpen}
           returnTo={signInReturnTo}
+          pendingVehiclePayload={pendingVehiclePayload}
+          onPendingVehicleCreated={handlePendingVehicleCreated}
         />
       ) : null}
       <form

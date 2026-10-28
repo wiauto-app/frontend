@@ -32,6 +32,7 @@ const formatMileage = (mileage: number): string =>
 const statusBadgeClass: Record<VehicleStatus, string> = {
   active: "bg-green-100 text-green-700",
   pending: "bg-amber-100 text-amber-700",
+  draft: "bg-orange-100 text-orange-700",
   inactive: "bg-gray-100 text-gray-700",
   sold: "bg-blue-100 text-blue-700",
   archived: "bg-slate-100 text-slate-700",

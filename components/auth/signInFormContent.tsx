@@ -36,6 +36,8 @@ interface SignInFormContentProps {
   onSuccess: () => void | Promise<void>;
   showTitle?: boolean;
   showSocialLogins?: boolean;
+  showFooterLink?: boolean;
+  onSwitchToRegister?: () => void;
   className?: string;
   returnTo?: string;
   /** Textos de `auth.login`; sin ellos (p. ej. en el modal) se usan los de respaldo. */
@@ -51,6 +53,8 @@ export const SignInFormContent = ({
   onSuccess,
   showTitle = true,
   showSocialLogins = true,
+  showFooterLink = true,
+  onSwitchToRegister,
   className,
   returnTo,
   content = AUTENTICACION_DEFAULT.login as StrapiAuthLogin,
@@ -243,7 +247,24 @@ export const SignInFormContent = ({
       </Button>
 
       <div className="space-y-2 text-center">
-        <StrapiTextoEnlace content={content.pie} />
+        {showFooterLink ? (
+          <StrapiTextoEnlace content={content.pie} />
+        ) : content.pie && onSwitchToRegister ? (
+          <p className="text-sm text-gray-600">
+            {content.pie.texto}
+            {content.pie.texto && content.pie.enlace ? " " : null}
+            {content.pie.enlace ? (
+              <Button
+                type="button"
+                variant="link"
+                className="h-auto p-0 text-blue-600 hover:text-blue-700"
+                onClick={onSwitchToRegister}
+              >
+                {content.pie.enlace.label}
+              </Button>
+            ) : null}
+          </p>
+        ) : null}
         {content.enlace_olvide_contrasena ? (
           <Button
             type="button"

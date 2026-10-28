@@ -11,6 +11,7 @@ vi.mock("@/lib/api", () => ({
   fetchWithAuth: (...args: unknown[]) => fetchWithAuthMock(...args),
   apiGet: vi.fn(),
   apiPost: vi.fn(),
+  buildApiUrl: (path: string) => `http://localhost:3001/api${path}`,
 }));
 
 import { authService } from "@/services/authService";
@@ -63,6 +64,65 @@ describe("authService.getMe", () => {
       data: null,
     });
     expect(fetchWithAuthMock).not.toHaveBeenCalled();
+  });
+
+  it("desenvuelve pending_vehicle_id del ResponseInterceptor en register", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        ok: true,
+        status: 200,
+        data: {
+          message: "Te enviamos un correo con el enlace de verificación.",
+          data: { id: "user-1", email: "a@b.com" },
+          referral_code: "REF1",
+          pending_vehicle_id: "vehicle-draft-1",
+        },
+      }),
+    } as Response);
+
+    const result = await authService.register({
+      email: "a@b.com",
+      password: "secret123",
+      name: "Ana",
+      phone_code: "+34",
+      phone: "600000000",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual({ id: "user-1", email: "a@b.com" });
+    expect(result.referral_code).toBe("REF1");
+    expect(result.pending_vehicle_id).toBe("vehicle-draft-1");
+  });
+
+  it("desenvuelve pending_vehicle_queued del ResponseInterceptor en register", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        ok: true,
+        status: 200,
+        data: {
+          message: "Te enviamos un correo con el enlace de verificación.",
+          data: { id: "user-1", email: "a@b.com" },
+          pending_vehicle_queued: true,
+        },
+      }),
+    } as Response);
+
+    const result = await authService.register({
+      email: "a@b.com",
+      password: "secret123",
+      name: "Ana",
+      phone_code: "+34",
+      phone: "600000000",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual({ id: "user-1", email: "a@b.com" });
+    expect(result.pending_vehicle_queued).toBe(true);
+    expect(result.pending_vehicle_id).toBeUndefined();
   });
 
   it("usa skipAuthRefresh cuando se pasa accessToken explícito", async () => {

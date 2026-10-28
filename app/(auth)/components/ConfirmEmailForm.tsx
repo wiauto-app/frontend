@@ -4,12 +4,28 @@ import type { AuthPantallaProps } from "@/app/(auth)/types/strapi-autenticacion.
 import { StrapiEncabezado } from "@/components/strapi/StrapiEncabezado";
 import { StrapiTextoEnlace } from "@/components/strapi/StrapiTextoEnlace";
 
+interface ConfirmEmailFormProps extends AuthPantallaProps<"confirmar_correo"> {
+  /** Registro desde `/publicar`: hay un anuncio guardado como borrador. */
+  hasPendingListing?: boolean;
+}
+
 export default function ConfirmEmailForm({
   content,
-}: AuthPantallaProps<"confirmar_correo">) {
+  hasPendingListing = false,
+}: ConfirmEmailFormProps) {
   return (
     <>
       <StrapiEncabezado content={content.encabezado} />
+
+      {hasPendingListing ? (
+        <p
+          className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm text-blue-800"
+          role="note"
+        >
+          Tu anuncio está guardado como borrador y se publicará al verificar tu
+          cuenta.
+        </p>
+      ) : null}
 
       {content.ayuda ? (
         <p className="text-center text-sm text-muted-foreground">
