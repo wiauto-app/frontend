@@ -6,7 +6,10 @@ import { VehicleFormStep } from "@/app/(public)/components/vehicleFormStep";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImagesForm } from "@/components/vehicles/forms/imagesForm";
 import { VideosForm } from "@/components/vehicles/forms/videosForm";
-import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
+import {
+  RECOMMENDED_VEHICLE_IMAGES,
+  type QuickVehicleSchema,
+} from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { FREE_PLAN_PHOTOS_PER_VEHICLE_LIMIT } from "@/lib/billing/entitlements";
@@ -34,16 +37,29 @@ export const QuickVehicleMediaStep = ({
     entitlements?.videos_per_vehicle?.type === "unlimited" ||
     entitlements?.videos_per_vehicle?.unlimited === true ||
     (typeof videosLimit === "number" && videosLimit > 0);
+  const imageCount = form.watch("images")?.length ?? 0;
+  const missingRecommendedImages = RECOMMENDED_VEHICLE_IMAGES - imageCount;
+
   return (
     <VehicleFormStep
-      number={2}
-      label="Fotos y vídeos"
+      label="Sube las fotografías del vehículo"
       description={
         canUploadVideos
-          ? "Añade al menos 3 fotos. Los vídeos son opcionales."
-          : "Añade al menos 3 fotos."
+          ? `Con 1 foto ya puedes publicar, pero recomendamos subir al menos ${RECOMMENDED_VEHICLE_IMAGES}: exterior, interior y salpicadero. Los vídeos son opcionales.`
+          : `Con 1 foto ya puedes publicar, pero recomendamos subir al menos ${RECOMMENDED_VEHICLE_IMAGES}: exterior, interior y salpicadero.`
       }
     >
+      {imageCount > 0 && missingRecommendedImages > 0 ? (
+        <p
+          className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+          role="status"
+          aria-live="polite"
+        >
+          {missingRecommendedImages === 1
+            ? "Sube 1 foto más: los anuncios con más fotografías reciben más contactos."
+            : `Sube ${missingRecommendedImages} fotos más: los anuncios con más fotografías reciben más contactos.`}
+        </p>
+      ) : null}
       <Tabs defaultValue="images">
         <TabsList
           className={cn(

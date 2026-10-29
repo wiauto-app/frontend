@@ -26,7 +26,10 @@ import { appraisalService } from "@/services/appraisal/appraisalService";
 import { QuickVehiclePreview } from "./QuickVehiclePreview";
 import { QuickVehicleIntroWizard } from "./QuickVehicleIntroWizard";
 import { useUser } from "@/app/contexts/auth/useUser";
-import { SignInDialog } from "@/components/auth/signInDialog";
+import {
+  SignInDialog,
+  type AuthDialogTab,
+} from "@/components/auth/signInDialog";
 import { isValidReturnPath } from "@/lib/auth/authReturnTo";
 import { QUICK_VEHICLE_SUBMIT_ATTR } from "./quick-vehicle-wizard.constants";
 import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
@@ -45,6 +48,7 @@ import {
   getPublishFunnelContext,
   resetPublishFunnel,
   track,
+  trackPublishAuthView,
 } from "@/lib/analytics/funnel";
 import type { PendingVehiclePayload } from "@/validations/Schemas";
 
@@ -297,6 +301,10 @@ export const QuickVehicleForm = ({
     setPendingVehiclePayload(undefined);
   };
 
+  const handleAuthTabView = (tab: AuthDialogTab) => {
+    trackPublishAuthView(tab === "register" ? "registro" : "login");
+  };
+
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -347,6 +355,7 @@ export const QuickVehicleForm = ({
           returnTo={signInReturnTo}
           pendingVehiclePayload={pendingVehiclePayload}
           onPendingVehicleCreated={handlePendingVehicleCreated}
+          onTabView={handleAuthTabView}
         />
       ) : null}
       <form
@@ -377,19 +386,6 @@ export const QuickVehicleForm = ({
 
         <aside className="hidden lg:flex flex-col gap-6 lg:col-span-1 relative">
           <QuickVehiclePreview className="sticky top-0 left-0 w-full h-full" />
-          <button
-            type="button"
-            className="text-left text-sm text-primary hover:underline"
-            onClick={() => {
-              document
-                .getElementById("quick-optional-sections")
-                ?.scrollIntoView({
-                  behavior: "smooth",
-                });
-            }}
-          >
-            Completar después →
-          </button>
         </aside>
       </form>
     </FormProvider>

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BadgePercent, Car, CarFront } from "lucide-react";
+import { BadgePercent, Car, ImageIcon, ListChecks, Send } from "lucide-react";
 
 import type { FieldErrors } from "react-hook-form";
 
@@ -17,70 +17,121 @@ export const QUICK_VEHICLE_STEP_QUERY_PARAM = "step";
 /** Marca el único botón que puede publicar (evita submit por Enter en inputs). */
 export const QUICK_VEHICLE_SUBMIT_ATTR = "data-quick-vehicle-submit";
 
+/** Ids estables (van en `?step`); el orden del array define el recorrido. */
+export const QUICK_VEHICLE_STEP_IDS = {
+  photos: 1,
+  vehicle: 2,
+  financing: 3,
+  contact: 4,
+  details: 5,
+} as const;
+
+const TECHNICAL_SHEET_FIELDS: (keyof QuickVehicleSchema)[] = [
+  "transmission_type",
+  "power",
+  "displacement",
+  "autonomy",
+  "battery_capacity",
+  "time_to_charge",
+  "traction_id",
+];
+
+const PHOTOS_STEP: QuickVehicleIntroStep = {
+  id: QUICK_VEHICLE_STEP_IDS.photos,
+  name: "Fotos",
+  icon: ImageIcon,
+  fields: ["images", "videos"],
+};
+
+const VEHICLE_STEP_FIELDS: (keyof QuickVehicleSchema)[] = [
+  "vehicle_type_id",
+  "license_plate",
+  "vin_code",
+  "ref",
+  "version_id",
+  "catalog_make_id",
+  "catalog_model_id",
+  "catalog_year_id",
+  "catalog_body_type_id",
+  "catalog_fuel_type_id",
+  "catalog_fuel_can_charge",
+  "condition",
+  "mileage",
+  "price",
+  "publisher_type",
+];
+
+const FINANCING_STEP: QuickVehicleIntroStep = {
+  id: QUICK_VEHICLE_STEP_IDS.financing,
+  name: "Garantía y financiación",
+  icon: BadgePercent,
+  fields: [
+    "offer_financing",
+    "finance_price",
+    "show_first_cuota",
+    "by_brand_warranty",
+    "cuota_ids",
+    "warranty_type_id",
+  ],
+};
+
+const CONTACT_STEP: QuickVehicleIntroStep = {
+  id: QUICK_VEHICLE_STEP_IDS.contact,
+  name: "Contacto y publicar",
+  icon: Send,
+  fields: [
+    "lat",
+    "lng",
+    "show_exact_location",
+    "phone",
+    "show_phone",
+    "has_whatsapp",
+    "email",
+    "show_review_collab",
+  ],
+};
+
+/** Alta rápida: 3 pantallas. Ficha, color y financiación se completan al editar. */
 export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
+  PHOTOS_STEP,
   {
-    id: 1,
-    name: "Tipo",
-    icon: CarFront,
-    fields: ["vehicle_type_id"],
+    id: QUICK_VEHICLE_STEP_IDS.vehicle,
+    name: "Coche",
+    icon: Car,
+    fields: VEHICLE_STEP_FIELDS,
+  },
+  CONTACT_STEP,
+];
+
+/** Edición («Mejora tu anuncio»): añade los detalles que no se piden al publicar. */
+export const QUICK_VEHICLE_EDIT_STEPS: QuickVehicleIntroStep[] = [
+  PHOTOS_STEP,
+  {
+    id: QUICK_VEHICLE_STEP_IDS.vehicle,
+    name: "Coche",
+    icon: Car,
+    fields: VEHICLE_STEP_FIELDS,
   },
   {
-    id: 2,
-    name: "Datos del vehículo",
-    icon: Car,
+    id: QUICK_VEHICLE_STEP_IDS.details,
+    name: "Detalles",
+    icon: ListChecks,
     fields: [
-      "license_plate",
-      "vin_code",
-      "ref",
-      "images",
-      "videos",
-      "version_id",
-      "catalog_make_id",
-      "catalog_model_id",
-      "catalog_year_id",
-      "catalog_body_type_id",
-      "catalog_fuel_type_id",
-      "catalog_fuel_can_charge",
-      "condition",
-      "mileage",
-      "price",
-      "show_exact_location",
       "color_id",
       "category_id",
       "dgt_label_id",
-      "lat",
-      "lng",
-      "phone",
-      "show_phone",
-      "has_whatsapp",
-      "email",
-      "description",
-      "transmission_type",
-      "power",
-      "displacement",
-      "autonomy",
-      "battery_capacity",
-      "time_to_charge",
-      "traction_id",
+      ...TECHNICAL_SHEET_FIELDS,
       "features_ids",
       "services_ids",
-      "publisher_type",
+      "description",
     ],
   },
-  {
-    id: 3,
-    name: "Garantía y financiación",
-    icon: BadgePercent,
-    fields: [
-      "offer_financing",
-      "finance_price",
-      "show_first_cuota",
-      "by_brand_warranty",
-      "cuota_ids",
-      "warranty_type_id",
-    ],
-  },
+  FINANCING_STEP,
+  CONTACT_STEP,
 ];
+
+export const isSubscriberOnlyQuickVehicleStep = (stepId: number): boolean =>
+  stepId === QUICK_VEHICLE_STEP_IDS.financing;
 
 export const QUICK_VEHICLE_FIELD_LABELS: Partial<
   Record<keyof QuickVehicleSchema, string>
@@ -114,6 +165,10 @@ export const QUICK_VEHICLE_FIELD_LABELS: Partial<
   finance_price: "Precio financiado",
   cuota_ids: "Cuotas",
   warranty_type_id: "Garantía",
+  color_id: "Color",
+  category_id: "Categoría",
+  dgt_label_id: "Etiqueta DGT",
+  description: "Descripción",
 };
 
 export const getQuickVehicleFieldErrorMessage = (
@@ -179,7 +234,7 @@ export const getQuickPublishStepMotivation = (
   totalSteps: number,
 ): string => {
   if (totalSteps <= 1 || stepIndex <= 0) {
-    return "Empieza eligiendo el tipo de vehículo";
+    return "Empieza subiendo las fotografías del vehículo";
   }
 
   if (stepIndex >= totalSteps - 1) {
@@ -199,9 +254,9 @@ export const parseQuickVehicleStep = (value: string | null): number | null => {
     return null;
   }
 
-  if (parsed < 1 || parsed > QUICK_VEHICLE_INTRO_STEPS.length) {
-    return null;
-  }
+  const isKnownStep = Object.values(QUICK_VEHICLE_STEP_IDS).some(
+    (stepId) => stepId === parsed,
+  );
 
-  return parsed;
+  return isKnownStep ? parsed : null;
 };

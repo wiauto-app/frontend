@@ -6,37 +6,45 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 import { useFiltersManager } from "@/hooks/useFiltersManager";
 
 import {
+  isSubscriberOnlyQuickVehicleStep,
   parseQuickVehicleStep,
+  QUICK_VEHICLE_EDIT_STEPS,
   QUICK_VEHICLE_INTRO_STEPS,
   QUICK_VEHICLE_STEP_QUERY_PARAM,
   type QuickVehicleIntroStep,
 } from "../quick-vehicle-wizard.constants";
 
-const isSubscriberOnlyStep = (stepId: number) => stepId === 3;
+interface UseQuickPublishWizardStepsOptions {
+  isEditMode?: boolean;
+}
 
-export const useQuickPublishWizardSteps = () => {
+export const useQuickPublishWizardSteps = ({
+  isEditMode = false,
+}: UseQuickPublishWizardStepsOptions = {}) => {
   const { values, handleChange } = useFiltersManager({
     keys: [QUICK_VEHICLE_STEP_QUERY_PARAM],
   });
 
   const { isSubscribed } = useEntitlements();
 
-  const requestedStep =
-    parseQuickVehicleStep(
-      values[QUICK_VEHICLE_STEP_QUERY_PARAM]?.toString() ?? null,
-    ) ?? 1;
+  const steps = isEditMode ? QUICK_VEHICLE_EDIT_STEPS : QUICK_VEHICLE_INTRO_STEPS;
 
   const stepItems = useMemo(
     () =>
-      QUICK_VEHICLE_INTRO_STEPS.filter((step) => {
-        if (isSubscriberOnlyStep(step.id)) {
+      steps.filter((step) => {
+        if (isSubscriberOnlyQuickVehicleStep(step.id)) {
           return isSubscribed;
         }
 
         return true;
       }),
-    [isSubscribed],
+    [isSubscribed, steps],
   );
+
+  const requestedStep =
+    parseQuickVehicleStep(
+      values[QUICK_VEHICLE_STEP_QUERY_PARAM]?.toString() ?? null,
+    ) ?? stepItems[0]?.id;
 
   const currentStepIndex = useMemo(() => {
     const index = stepItems.findIndex((step) => step.id === requestedStep);
@@ -71,13 +79,14 @@ export const useQuickPublishWizardSteps = () => {
   const handleStepClick = useCallback(
     (step: number) => {
       const targetIndex = stepItems.findIndex((item) => item.id === step);
-      if (targetIndex < 0 || targetIndex >= currentStepIndex) {
+      // En edición todos los datos ya existen: se puede saltar a cualquier paso.
+      if (targetIndex < 0 || (!isEditMode && targetIndex >= currentStepIndex)) {
         return;
       }
 
       navigateToStep(step);
     },
-    [stepItems, currentStepIndex, navigateToStep],
+    [stepItems, currentStepIndex, navigateToStep, isEditMode],
   );
 
   return {

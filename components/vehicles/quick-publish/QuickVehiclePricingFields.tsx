@@ -11,10 +11,16 @@ import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-veh
 import { VehiclePriceRecommendation } from "./VehiclePriceRecommendation";
 import { requestPublishDatosCheck } from "./QuickVehiclePublishDataTracker";
 
-export const QuickVehiclePricingFields = () => {
+interface QuickVehiclePricingFieldsProps {
+  stepNumber?: number;
+}
+
+export const QuickVehiclePricingFields = ({
+  stepNumber,
+}: QuickVehiclePricingFieldsProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   return (
-    <VehicleFormStep number={3} label="Estado, kilometraje y precio">
+    <VehicleFormStep number={stepNumber} label="Estado, kilometraje y precio">
       <div className="grid grid-cols-1 gap-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <ControllerInput
@@ -56,8 +62,10 @@ export const QuickVehiclePricingFields = () => {
                 {...field}
                 value={field.value == null ? "" : String(field.value)}
                 type="number"
+                inputMode="numeric"
                 min={0}
                 max={9999999}
+                placeholder="Ej. 85000"
                 aria-invalid={fieldState.invalid}
                 onBlur={() => {
                   field.onBlur();
@@ -76,8 +84,10 @@ export const QuickVehiclePricingFields = () => {
                 {...field}
                 value={field.value == null ? "" : String(field.value)}
                 type="number"
-                min={0}
+                inputMode="numeric"
+                min={1}
                 max={9999999}
+                placeholder="Ej. 12500"
                 aria-invalid={fieldState.invalid}
                 onBlur={() => {
                   field.onBlur();
@@ -86,7 +96,7 @@ export const QuickVehiclePricingFields = () => {
               />
             )}
           </ControllerInput>
-         
+
         </div>
         <VehiclePriceRecommendation />
       </div>

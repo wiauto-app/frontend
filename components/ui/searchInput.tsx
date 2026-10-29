@@ -1,5 +1,6 @@
 "use client";
 
+import type { KeyboardEventHandler } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "./input";
 import { cn } from "@/lib/utils";
@@ -9,6 +10,7 @@ interface SearchInputProps {
   placeholder?: string;
   onChange?: (value: string) => void;
   onClear?: () => void;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
   className?: string;
   "aria-label"?: string;
 }

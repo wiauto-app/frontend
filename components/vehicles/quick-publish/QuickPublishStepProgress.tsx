@@ -1,9 +1,17 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+
 import { useQuickPublishWizardSteps } from "./hooks/useQuickPublishWizardSteps";
 import { getQuickPublishStepMotivation } from "./quick-vehicle-wizard.constants";
 
-export const QuickPublishStepProgress = () => {
+interface QuickPublishStepProgressProps {
+  className?: string;
+}
+
+export const QuickPublishStepProgress = ({
+  className,
+}: QuickPublishStepProgressProps) => {
   const { currentStepIndex, stepItems } = useQuickPublishWizardSteps();
   const totalSteps = stepItems.length;
   const currentHumanStep = currentStepIndex + 1;
@@ -15,7 +23,7 @@ export const QuickPublishStepProgress = () => {
   );
 
   return (
-    <div className="w-full min-w-0 space-y-1.5">
+    <div className={cn("w-full min-w-0 space-y-1.5", className)}>
       <p className="text-xs font-medium text-muted-foreground sm:text-sm">
         Paso {currentHumanStep} de {totalSteps} · {motivation}
       </p>

@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+
+import { isFocusedFlowPath } from "@/lib/focusedFlowRoutes";
 
 import {
   isNativeWiautoApp,
@@ -13,6 +16,7 @@ import { useAppDownloadBannerStore } from "./stores/appDownloadBannerStore";
 
 /** Se resuelve en el cliente: leer cookies/headers en el layout haría dinámicas todas las rutas. */
 export const AppDownloadBannerGate = () => {
+  const pathname = usePathname();
   const isDismissed = useAppDownloadBannerStore((state) => state.isDismissed);
   const [store, setStore] = useState<AppStoreTarget | null>(null);
 
@@ -26,7 +30,7 @@ export const AppDownloadBannerGate = () => {
     setStore(resolveAppStoreTarget(userAgent));
   }, []);
 
-  if (!store || isDismissed) {
+  if (!store || isDismissed || isFocusedFlowPath(pathname)) {
     return null;
   }
 

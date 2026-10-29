@@ -10,20 +10,29 @@ import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/stepper";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 
-import { QuickVehicleMainSections } from "./QuickVehicleMainSections";
-import { QuickVehicleTypeStep } from "./QuickVehicleTypeStep";
+import { QuickVehicleCarStep } from "./QuickVehicleCarStep";
+import { QuickVehicleContactStep } from "./QuickVehicleContactStep";
+import { QuickVehicleDetailsStep } from "./QuickVehicleDetailsStep";
+import { QuickVehicleMediaStep } from "./QuickVehicleMediaStep";
+import { QuickVehiclePhotosTracker } from "./QuickVehiclePhotosTracker";
+import { QuickVehicleSpecsAutofill } from "./QuickVehicleSpecsAutofill";
 import { FinanceWarrantyForm } from "./financeWarrantyForm";
 
 import {
   findFirstQuickVehicleErrorField,
   QUICK_VEHICLE_FIELD_LABELS,
+  QUICK_VEHICLE_STEP_IDS,
   QUICK_VEHICLE_SUBMIT_ATTR,
+  type QuickVehicleFieldErrorMatch,
 } from "./quick-vehicle-wizard.constants";
 import { focusQuickVehicleField } from "./utils/focus-quick-vehicle-field";
 
 import { cn } from "@/lib/utils";
-import { track } from "@/lib/analytics/funnel";
-import { vehicleTypesService } from "@/components/vehicles/services/vehicleTypesService";
+import {
+  trackPublishSubmitClick,
+  trackPublishValidationError,
+  type PublishValidationTrigger,
+} from "@/lib/analytics/funnel";
 import { QuickVehiclePublishInicioTracker } from "./QuickVehiclePublishInicioTracker";
 import { useQuickPublishWizardSteps } from "./hooks/useQuickPublishWizardSteps";
 
@@ -53,13 +62,29 @@ export const QuickVehicleIntroWizard = ({
     handleStepClick,
     isFirstStep,
     isLastStep,
-  } = useQuickPublishWizardSteps();
+  } = useQuickPublishWizardSteps({ isEditMode });
 
   const handledSubmitCountRef = useRef(0);
   const [pendingFocusField, setPendingFocusField] = useState<
     FieldPath<QuickVehicleSchema> | null
   >(null);
   const { errors, submitCount } = form.formState;
+
+  const reportValidationError = (
+    match: QuickVehicleFieldErrorMatch,
+    trigger: PublishValidationTrigger,
+  ) => {
+    const label = QUICK_VEHICLE_FIELD_LABELS[match.field] ?? match.step.name;
+    toast.error(`Revisa «${label}»: ${match.message}`);
+
+    if (!isEditMode) {
+      trackPublishValidationError({
+        field: match.field,
+        step: match.step.name,
+        trigger,
+      });
+    }
+  };
 
   useEffect(() => {
     if (submitCount === 0 || submitCount <= handledSubmitCountRef.current) {
@@ -78,10 +103,7 @@ export const QuickVehicleIntroWizard = ({
     }
 
     setPendingFocusField(match.field);
-
-    const label =
-      QUICK_VEHICLE_FIELD_LABELS[match.field] ?? match.step.name;
-    toast.error(`Revisa «${label}»: ${match.message}`);
+    reportValidationError(match, "publicar");
   }, [currentStep, errors, stepItems, submitCount, navigateToStep]);
 
   useEffect(() => {
@@ -108,6 +130,10 @@ export const QuickVehicleIntroWizard = ({
     return () => cancelAnimationFrame(frame);
   }, [currentStep, errors, pendingFocusField, stepItems]);
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handlePrevious = () => {
     if (isFirstStep) {
       return;
@@ -116,6 +142,7 @@ export const QuickVehicleIntroWizard = ({
     const previous = stepItems[currentStepIndex - 1];
     if (previous) {
       navigateToStep(previous.id);
+      scrollToTop();
     }
   };
 
@@ -134,29 +161,9 @@ export const QuickVehicleIntroWizard = ({
         );
         if (match?.field) {
           setPendingFocusField(match.field);
-          const label =
-            QUICK_VEHICLE_FIELD_LABELS[match.field] ?? match.step.name;
-          toast.error(`Revisa «${label}»: ${match.message}`);
+          reportValidationError(match, "siguiente");
         }
         return;
-      }
-    }
-
-    if (currentStep === 1) {
-      const vehicleTypeId = form.getValues("vehicle_type_id");
-      if (vehicleTypeId) {
-        try {
-          const typesPage = await vehicleTypesService.findAll({
-            page: 1,
-            limit: 100,
-          });
-          const match = typesPage.data.find((type) => type.id === vehicleTypeId);
-          track("publicar_tipo", {
-            vehicle_type: match?.name?.toLowerCase() ?? vehicleTypeId,
-          });
-        } catch {
-          track("publicar_tipo", { vehicle_type: vehicleTypeId });
-        }
       }
     }
 
@@ -167,35 +174,62 @@ export const QuickVehicleIntroWizard = ({
     const next = stepItems[currentStepIndex + 1];
     if (next) {
       navigateToStep(next.id);
+      scrollToTop();
     }
+  };
+
+  const handlePublishClick = () => {
+    if (isEditMode || !currentStepConfig) {
+      return;
+    }
+
+    trackPublishSubmitClick({ step: currentStepConfig.name });
   };
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1:
-        return <QuickVehicleTypeStep />;
-
-      case 2:
+      case QUICK_VEHICLE_STEP_IDS.photos:
         return (
-          <QuickVehicleMainSections
+          <QuickVehicleMediaStep
             vehicleId={vehicleId}
-            contactName={contactName}
             onImageUploadStatusChange={onImageUploadStatusChange}
           />
         );
 
-      case 3:
+      case QUICK_VEHICLE_STEP_IDS.vehicle:
+        return <QuickVehicleCarStep />;
+
+      case QUICK_VEHICLE_STEP_IDS.details:
+        return <QuickVehicleDetailsStep />;
+
+      case QUICK_VEHICLE_STEP_IDS.financing:
         return <FinanceWarrantyForm />;
+
+      case QUICK_VEHICLE_STEP_IDS.contact:
+        return (
+          <QuickVehicleContactStep
+            contactName={contactName}
+            isEditMode={isEditMode}
+          />
+        );
 
       default:
         return null;
     }
   };
 
+  const isSubmitting = form.formState.isSubmitting;
+  // En edición se puede guardar desde cualquier paso.
+  const showSubmitButton = isLastStep || isEditMode;
+
   return (
     <div className="flex flex-col gap-4 lg:gap-6">
       {!isEditMode ? (
-        <QuickVehiclePublishInicioTracker activeStep={currentStep} />
+        <>
+          <QuickVehiclePublishInicioTracker activeStep={currentStep} />
+          <QuickVehiclePhotosTracker />
+          <QuickVehicleSpecsAutofill />
+        </>
       ) : null}
       <Stepper
         steps={stepItems}
@@ -206,15 +240,16 @@ export const QuickVehicleIntroWizard = ({
 
       {renderStep()}
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         {!isFirstStep ? (
           <Button
             type="button"
             variant="outline"
             className={cn("w-9 sm:w-auto")}
             onClick={handlePrevious}
+            aria-label="Paso anterior"
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-4" aria-hidden />
             <span className="hidden sm:block">Anterior</span>
           </Button>
         ) : null}
@@ -222,31 +257,29 @@ export const QuickVehicleIntroWizard = ({
         {!isLastStep ? (
           <Button
             type="button"
+            variant={isEditMode ? "outline" : "default"}
             className="flex-1 sm:flex-none"
             onClick={handleNext}
           >
             Siguiente
-            <ChevronRight className="size-4" />
+            <ChevronRight className="size-4" aria-hidden />
           </Button>
         ) : null}
 
-        {isLastStep ? (
+        {showSubmitButton ? (
           <Button
             type="submit"
             size="lg"
-            disabled={
-              form.formState.isSubmitting || hasIncompleteImageUploads
-            }
+            disabled={isSubmitting || hasIncompleteImageUploads}
             className="w-full sm:w-auto"
-            data-quick-vehicle-submit="true"
-            aria-disabled={
-              form.formState.isSubmitting || hasIncompleteImageUploads
-            }
+            {...{ [QUICK_VEHICLE_SUBMIT_ATTR]: "true" }}
+            aria-disabled={isSubmitting || hasIncompleteImageUploads}
+            onClick={handlePublishClick}
           >
-            {form.formState.isSubmitting ? (
-              <Loader2 className="size-4 animate-spin" />
+            {isSubmitting ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden />
             ) : (
-              <Send className="size-4" />
+              <Send className="size-4" aria-hidden />
             )}
 
             {hasIncompleteImageUploads

@@ -24,6 +24,8 @@ const baseValidPayload = {
   displacement: 1600,
   phone: { phone_code: "+34", phone: "612345678" },
   email: "test@example.com",
+  lat: 40.4168,
+  lng: -3.7038,
 };
 
 describe("quickVehicleSchema", () => {
@@ -41,35 +43,65 @@ describe("quickVehicleSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("exige campos eléctricos cuando catalog_fuel_can_charge es true", () => {
+  it("acepta una sola fotografía y rechaza el envío sin fotos", () => {
+    const withOneImage = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      images: [{ path: "temp/a.jpg", order: 0 }],
+    });
+    expect(withOneImage.success).toBe(true);
+
+    const withoutImages = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      images: [],
+    });
+    expect(withoutImages.success).toBe(false);
+    if (!withoutImages.success) {
+      expect(withoutImages.error.issues[0]?.message).toBe(
+        "Sube al menos una fotografía del vehículo.",
+      );
+    }
+  });
+
+  it("exige km y precio en español y no convierte el vacío en 0", () => {
+    const emptyPrice = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      price: "",
+    });
+    expect(emptyPrice.success).toBe(false);
+    if (!emptyPrice.success) {
+      expect(emptyPrice.error.issues[0]?.message).toBe("Introduce el precio.");
+      expect(emptyPrice.error.issues[0]?.message).not.toMatch(/Too small/i);
+    }
+
+    const emptyMileage = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      mileage: "",
+    });
+    expect(emptyMileage.success).toBe(false);
+    if (!emptyMileage.success) {
+      expect(emptyMileage.error.issues[0]?.message).toBe(
+        "Introduce el kilometraje.",
+      );
+    }
+  });
+
+  it("permite publicar sin tracción ni potencia", () => {
+    const result = quickVehicleSchema.safeParse({
+      ...baseValidPayload,
+      traction_id: "",
+      power: undefined,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("no exige ficha eléctrica para publicar", () => {
     const withoutElectric = quickVehicleSchema.safeParse({
       ...baseValidPayload,
       catalog_fuel_can_charge: true,
     });
 
-    expect(withoutElectric.success).toBe(false);
-
-    const withElectric = quickVehicleSchema.safeParse({
-      ...baseValidPayload,
-      catalog_fuel_can_charge: true,
-      autonomy: 400,
-      battery_capacity: 75,
-      time_to_charge: 8,
-    });
-
-    expect(withElectric.success).toBe(true);
-  });
-
-  it("rechaza campos eléctricos con valor cero cuando es recargable", () => {
-    const result = quickVehicleSchema.safeParse({
-      ...baseValidPayload,
-      catalog_fuel_can_charge: true,
-      autonomy: 0,
-      battery_capacity: 50,
-      time_to_charge: 4,
-    });
-
-    expect(result.success).toBe(false);
+    expect(withoutElectric.success).toBe(true);
   });
 
   it("permite matrícula y VIN vacíos", () => {
@@ -115,7 +147,7 @@ describe("quickVehicleSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("valida description como string opcional sin mínimo pero con máximo de 1000", () => {
+  it("valida description como string opcional sin mínimo pero con máximo de 3000", () => {
     const shortDescription = quickVehicleSchema.safeParse({
       ...baseValidPayload,
       description: "corta",
@@ -130,7 +162,7 @@ describe("quickVehicleSchema", () => {
 
     const maxDescription = quickVehicleSchema.safeParse({
       ...baseValidPayload,
-      description: "a".repeat(1000),
+      description: "a".repeat(3000),
     });
     expect(maxDescription.success).toBe(true);
 

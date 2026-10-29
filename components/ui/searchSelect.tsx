@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState, type UIEvent } from "react";
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type UIEvent,
+} from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Check, ChevronDown, Loader2 } from "lucide-react";
 
@@ -191,6 +199,20 @@ export const SearchSelect = ({
     setQuery("");
   };
 
+  const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const firstOption = options[0];
+    if (!isLoading && firstOption) {
+      handleSelect(firstOption);
+    }
+  };
+
   const handleInitialFocus = (interactionType: string) => {
     // Touch: evita teclado virtual automático (comportamiento Base UI).
     if (interactionType === "touch") {
@@ -262,6 +284,9 @@ export const SearchSelect = ({
               value={query}
               placeholder={searchPlaceholder}
               onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              autoComplete="off"
+              enterKeyHint="done"
             />
           </div>
 

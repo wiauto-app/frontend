@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
@@ -70,21 +70,22 @@ const applyIdentificationToForm = (
   }
 };
 
-export const QuickVehicleIdentificationFields = () => {
+interface QuickVehicleIdentificationFieldsProps {
+  stepNumber?: number;
+}
+
+export const QuickVehicleIdentificationFields = ({
+  stepNumber,
+}: QuickVehicleIdentificationFieldsProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const { isSubscribed } = useEntitlements();
   const { lookupByLicensePlate, lookupByVin, isLoading, result } =
     useVehicleIdentificationLookup();
   const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false);
   const [isLookupAvailable, setIsLookupAvailable] = useState(false);
+  const lastLookedUpPlateRef = useRef("");
 
   useEffect(() => {
-    if (!isSubscribed) {
-      setIsAvailabilityLoading(false);
-      setIsLookupAvailable(false);
-      return;
-    }
-
     let cancelled = false;
 
     const loadAvailability = async () => {
@@ -112,9 +113,9 @@ export const QuickVehicleIdentificationFields = () => {
     return () => {
       cancelled = true;
     };
-  }, [isSubscribed]);
+  }, []);
 
-  const showLookupUi = isSubscribed && isLookupAvailable;
+  const showLookupUi = isLookupAvailable;
 
   const handleLookupOutcome = (outcome: VehicleIdentificationLookupOutcome) => {
     if (outcome.error) {
@@ -129,15 +130,26 @@ export const QuickVehicleIdentificationFields = () => {
     toast.success("Datos del vehículo aplicados al formulario.");
   };
 
-  const handleLookupByPlate = async () => {
-    const plate = form.getValues("license_plate")?.trim() ?? "";
-    if (plate.replace(/\s+/g, "").length < 5) {
-      toast.error("Introduce una matrícula válida para buscar.");
+  const lookupPlateIfValid = async (rawPlate: string, silent: boolean) => {
+    const plate = rawPlate.trim().toUpperCase().replace(/\s+/g, "");
+    if (!/^\d{4}[A-Z]{3}$/.test(plate)) {
+      if (!silent) {
+        toast.error("Introduce una matrícula válida para buscar.");
+      }
       return;
     }
 
+    if (silent && lastLookedUpPlateRef.current === plate) {
+      return;
+    }
+
+    lastLookedUpPlateRef.current = plate;
     const outcome = await lookupByLicensePlate(plate);
     handleLookupOutcome(outcome);
+  };
+
+  const handleLookupByPlate = async () => {
+    await lookupPlateIfValid(form.getValues("license_plate") ?? "", false);
   };
 
   const handleLookupByVin = async () => {
@@ -154,12 +166,12 @@ export const QuickVehicleIdentificationFields = () => {
   return (
     <section className="flex flex-col gap-4">
       <VehicleFormStep
-        number={1}
+        number={stepNumber}
         isOptional
         label="Identificación del vehículo"
         description={
           showLookupUi
-            ? "Opcional. Busca por matrícula o VIN para rellenar automáticamente los datos del vehículo."
+            ? "Introduce la matrícula y autocompletaremos marca, modelo, versión y ficha técnica."
             : "Opcional. Introduce la matrícula y el VIN de forma manual."
         }
       />
@@ -175,9 +187,24 @@ export const QuickVehicleIdentificationFields = () => {
               <Input
                 {...field}
                 value={String(field.value ?? "")}
-                placeholder="Ej. 1234 ABC"
+                placeholder="Ej. 1234ABC"
                 maxLength={7}
                 aria-invalid={fieldState.invalid}
+                onBlur={() => {
+                  field.onBlur();
+                  if (showLookupUi) {
+                    void lookupPlateIfValid(String(field.value ?? ""), true);
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter") {
+                    return;
+                  }
+                  event.preventDefault();
+                  if (showLookupUi) {
+                    void handleLookupByPlate();
+                  }
+                }}
               />
               {showLookupUi ? (
                 <Button
@@ -254,7 +281,7 @@ export const QuickVehicleIdentificationFields = () => {
         </ControllerInput>
       ) : null}
 
-      {isSubscribed && isAvailabilityLoading ? (
+      {isAvailabilityLoading ? (
         <p
           className="flex items-center gap-2 text-sm text-slate-500"
           role="status"

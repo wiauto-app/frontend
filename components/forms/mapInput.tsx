@@ -21,28 +21,55 @@ export interface MapInputValue {
 }
 
 interface MapInputProps {
-  value: MapInputValue;
+  /** Sin coordenadas (`undefined`) no se pinta marcador y el mapa muestra España. */
+  value: Partial<MapInputValue>;
   onChange: (value: MapInputValue) => void;
   ariaInvalid?: boolean;
+  /** Si el navegador ya tiene concedido el permiso, se usa la ubicación actual al montar. */
+  autoLocateWhenPermitted?: boolean;
+  searchPlaceholder?: string;
 }
 
-const MapPanToValue = ({ value }: { value: MapInputValue }) => {
+const SELECTED_LOCATION_ZOOM = 13;
+
+const isMapInputValue = (
+  value: Partial<MapInputValue>,
+): value is MapInputValue =>
+  Number.isFinite(value.lat) && Number.isFinite(value.lng);
+
+const MapPanToValue = ({ value }: { value: Partial<MapInputValue> }) => {
   const map = useMap();
   const { lat, lng } = value;
 
   useEffect(() => {
     if (!map) return;
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-    map.panTo({ lat, lng });
+    map.panTo({ lat: lat as number, lng: lng as number });
+    if ((map.getZoom() ?? 0) < SELECTED_LOCATION_ZOOM) {
+      map.setZoom(SELECTED_LOCATION_ZOOM);
+    }
   }, [map, lat, lng]);
 
   return null;
 };
 
-const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
+const GEOLOCATION_ERROR_MESSAGE =
+  "No hemos podido obtener tu ubicación. Escribe tu código postal o ciudad.";
+
+const MapInputInner = ({
+  value,
+  onChange,
+  ariaInvalid,
+  autoLocateWhenPermitted = false,
+  searchPlaceholder = "Buscar localidad o dirección",
+}: MapInputProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const autoLocateAttemptedRef = useRef(false);
   const placesLibrary = useMapsLibrary("places");
   const [isLocating, setIsLocating] = useState(false);
+  const [geolocationError, setGeolocationError] = useState<string | null>(null);
+
+  const hasCoords = isMapInputValue(value);
 
   const handleMapClick = useCallback(
     (event: MapMouseEvent) => {
@@ -54,21 +81,54 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
     [onChange],
   );
 
+  const locateUser = useCallback(
+    ({ silent }: { silent: boolean }) => {
+      if (!navigator.geolocation) {
+        if (!silent) setGeolocationError(GEOLOCATION_ERROR_MESSAGE);
+        return;
+      }
+
+      setIsLocating(true);
+      setGeolocationError(null);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          onChange({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          setIsLocating(false);
+        },
+        () => {
+          setIsLocating(false);
+          if (!silent) setGeolocationError(GEOLOCATION_ERROR_MESSAGE);
+        },
+        { enableHighAccuracy: true, timeout: 10_000 },
+      );
+    },
+    [onChange],
+  );
+
   const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) return;
-    setIsLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        onChange({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-        setIsLocating(false);
-      },
-      () => setIsLocating(false),
-      { enableHighAccuracy: true },
-    );
+    locateUser({ silent: false });
   };
+
+  useEffect(() => {
+    if (!autoLocateWhenPermitted || hasCoords || autoLocateAttemptedRef.current) {
+      return;
+    }
+    autoLocateAttemptedRef.current = true;
+
+    // Sin permiso previo no se lanza el aviso del navegador: lo pide el botón.
+    if (!navigator.permissions?.query) return;
+    void navigator.permissions
+      .query({ name: "geolocation" })
+      .then((status) => {
+        if (status.state === "granted") {
+          locateUser({ silent: true });
+        }
+      })
+      .catch(() => undefined);
+  }, [autoLocateWhenPermitted, hasCoords, locateUser]);
 
   useEffect(() => {
     if (!placesLibrary || !searchInputRef.current) return;
@@ -84,6 +144,7 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
       const place = autocomplete.getPlace();
       const location = place.geometry?.location;
       if (!location) return;
+      setGeolocationError(null);
       onChange({ lat: location.lat(), lng: location.lng() });
       if (searchInputRef.current && place.formatted_address) {
         searchInputRef.current.value = place.formatted_address;
@@ -95,8 +156,6 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
     };
   }, [placesLibrary, onChange]);
 
-  const hasCoords = Number.isFinite(value.lat) && Number.isFinite(value.lng);
-
   return (
     <div className="flex flex-col gap-3" data-invalid={ariaInvalid}>
       <div className="flex flex-col gap-2 sm:flex-row">
@@ -105,10 +164,12 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
           <Input
             ref={searchInputRef}
             defaultValue=""
-            placeholder="Buscar localidad o dirección"
+            placeholder={searchPlaceholder}
             className="pl-9"
+            aria-label={searchPlaceholder}
             aria-invalid={ariaInvalid}
             autoComplete="off"
+            inputMode="search"
           />
         </div>
         <Button
@@ -117,11 +178,18 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
           onClick={handleUseCurrentLocation}
           disabled={isLocating}
           className="shrink-0"
+          aria-label="Usar mi ubicación actual"
         >
-          <LocateFixed className="size-4" />
+          <LocateFixed className="size-4" aria-hidden />
           {isLocating ? "Localizando..." : "Mi ubicación"}
         </Button>
       </div>
+
+      {geolocationError ? (
+        <p className="text-sm text-destructive" role="alert">
+          {geolocationError}
+        </p>
+      ) : null}
 
       <div
         className={cn(
@@ -151,8 +219,9 @@ const MapInputInner = ({ value, onChange, ariaInvalid }: MapInputProps) => {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Haz clic en el mapa o busca una dirección para fijar la ubicación del
-        anuncio.
+        {hasCoords
+          ? "Ubicación fijada. Puedes ajustarla haciendo clic en el mapa."
+          : "Busca la ubicación, pulsa «Mi ubicación» o haz clic en el mapa."}
       </p>
     </div>
   );

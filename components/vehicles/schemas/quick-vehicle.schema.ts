@@ -7,6 +7,12 @@ import {
   vehicle_video_schema,
 } from "./vehicle.schema";
 
+export const QUICK_VEHICLE_LOCATION_REQUIRED_MESSAGE =
+  "Indica dónde está el vehículo: código postal, ciudad o «Mi ubicación».";
+
+/** Por debajo de este número se sugiere subir más fotos (no bloquea). */
+export const RECOMMENDED_VEHICLE_IMAGES = 6;
+
 const optionalUuid = z
   .union([
     z.uuid({ error: "Identificador no válido." }),
@@ -24,6 +30,15 @@ const optionalUuidArray = z
   .array(z.uuid({ error: "Identificador no válido." }))
   .optional()
   .default([]);
+
+/** Los inputs numéricos vacíos llegan como `""`: sin esto, `coerce` los convierte en 0. */
+const emptyToUndefined = (value: unknown) =>
+  value === "" || value === null ? undefined : value;
+
+const emptyOrZeroToUndefined = (value: unknown) =>
+  value === "" || value === null || Number(value) === 0 ? undefined : value;
+
+const MIN_VEHICLE_IMAGES = 1;
 
 const optionalBoundedNumber = (max: number, maxMessage: string) =>
   z.coerce
@@ -74,7 +89,9 @@ const quickVehicleBaseSchema = z.object({
     ),
   images: z
     .array(vehicle_image_schema)
-    .min(3, { error: "Añade al menos 3 fotos del vehículo." }),
+    .min(MIN_VEHICLE_IMAGES, {
+      error: "Sube al menos una fotografía del vehículo.",
+    }),
   videos: optional_vehicle_videos_array,
   version_id: z.coerce
     .number({ error: "Selecciona una versión del catálogo." })
@@ -90,16 +107,24 @@ const quickVehicleBaseSchema = z.object({
   condition: z.enum(VEHICLE_CONDITION_VALUES, {
     error: "Selecciona si el vehículo es nuevo o usado.",
   }),
-  mileage: z.coerce
-    .number({ error: "Introduce el kilometraje." })
-    .min(0, { error: "El kilometraje no puede ser negativo." })
-    .max(9_999_999, {
-      error: "El kilometraje no puede ser mayor a 9999999.",
-    }),
-  price: z.coerce
-    .number({ error: "Introduce el precio." })
-    .min(0, { error: "El precio no puede ser negativo." })
-    .max(9_999_999, { error: "El precio no puede ser mayor a 9999999." }),
+  mileage: z.preprocess(
+    emptyToUndefined,
+    z.coerce
+      .number({ error: "Introduce el kilometraje." })
+      .min(0, { error: "El kilometraje no puede ser negativo." })
+      .max(9_999_999, {
+        error: "El kilometraje no puede ser mayor a 9.999.999 km.",
+      }),
+  ),
+  price: z.preprocess(
+    emptyToUndefined,
+    z.coerce
+      .number({ error: "Introduce el precio." })
+      .min(1, { error: "El precio debe ser mayor que 0 €." })
+      .max(9_999_999, {
+        error: "El precio no puede ser mayor a 9.999.999 €.",
+      }),
+  ),
   finance_price: optionalBoundedNumber(9999999, "El precio financiado no puede ser mayor a 9999999."),
   offer_financing: z.boolean().default(false),
   show_first_cuota: z.boolean().default(false),
@@ -108,8 +133,14 @@ const quickVehicleBaseSchema = z.object({
   color_id: optionalUuid,
   category_id: optionalUuid,
   dgt_label_id: optionalUuid,
-  lat: z.coerce.number({ error: "Selecciona una ubicación en el mapa." }),
-  lng: z.coerce.number({ error: "Selecciona una ubicación en el mapa." }),
+  lat: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number({ error: QUICK_VEHICLE_LOCATION_REQUIRED_MESSAGE }),
+  ),
+  lng: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number({ error: QUICK_VEHICLE_LOCATION_REQUIRED_MESSAGE }),
+  ),
   phone: phoneSchema,
   show_phone: z.boolean().default(true),
   has_whatsapp: z.boolean().default(false),
@@ -121,18 +152,25 @@ const quickVehicleBaseSchema = z.object({
   transmission_type: z.enum(["manual", "automatic"], {
     error: "Selecciona un tipo de transmisión.",
   }),
-  power: z.coerce
-    .number({ error: "Introduce la potencia en CV." })
-    .min(1, { error: "Introduce la potencia en CV." })
-    .max(9999, { error: "La potencia no puede ser mayor a 9999 CV." }),
-  displacement: z.coerce
-    .number({ error: "Introduce la cilindrada en cc." })
-    .min(0, { error: "La cilindrada no puede ser negativa." })
-    .max(20_000, { error: "La cilindrada no puede ser mayor a 20000 cc." }),
+  power: z.preprocess(
+    emptyOrZeroToUndefined,
+    z.coerce
+      .number({ error: "Introduce la potencia en CV." })
+      .min(1, { error: "La potencia debe ser de al menos 1 CV." })
+      .max(9999, { error: "La potencia no puede ser mayor a 9999 CV." })
+      .optional(),
+  ),
+  displacement: z.preprocess(
+    (value) => emptyToUndefined(value) ?? 0,
+    z.coerce
+      .number({ error: "Introduce la cilindrada en cc." })
+      .min(0, { error: "La cilindrada no puede ser negativa." })
+      .max(20_000, { error: "La cilindrada no puede ser mayor a 20000 cc." }),
+  ),
   autonomy: optionalBoundedNumber(2000, "La autonomía no puede ser mayor a 2000 km."),
   battery_capacity: optionalBoundedNumber(500, "La capacidad de la batería no puede ser mayor a 500 kWh."),
   time_to_charge: optionalBoundedNumber(100, "El tiempo de carga no puede ser mayor a 100 h."),
-  traction_id: z.uuid({ error: "Selecciona un tipo de tracción." }),
+  traction_id: optionalUuid,
   features_ids: optionalUuidArray,
   services_ids: optionalUuidArray,
   cuota_ids: optionalUuidArray,
@@ -145,41 +183,21 @@ const quickVehicleBaseSchema = z.object({
   show_review_collab: z.boolean().default(true),
 });
 
-export const quickVehicleSchema = quickVehicleBaseSchema.superRefine((data, ctx) => {
-  if (!data.catalog_fuel_can_charge) {
-    return;
-  }
-
-  const electricFields = [
-    {
-      key: "autonomy" as const,
-      message: "Introduce la autonomía (km) del vehículo eléctrico.",
-    },
-    {
-      key: "battery_capacity" as const,
-      message: "Introduce la capacidad de la batería (kWh).",
-    },
-    {
-      key: "time_to_charge" as const,
-      message: "Introduce el tiempo de carga (h).",
-    },
-  ];
-
-  for (const field of electricFields) {
-    const value = data[field.key];
-    if (value == null || value <= 0) {
-      ctx.addIssue({
-        code: "custom",
-        message: field.message,
-        path: [field.key],
-      });
-    }
-  }
-});
+/** La ficha técnica (incluidos los datos eléctricos) se autocompleta y es opcional. */
+export const quickVehicleSchema = quickVehicleBaseSchema;
 
 export type QuickVehicleSchema = z.infer<typeof quickVehicleSchema>;
 
-export const createQuickVehicleDefaultValues: QuickVehicleSchema = {
+/** Km, precio y ubicación arrancan vacíos: el usuario debe rellenarlos. */
+export interface QuickVehicleDefaultValues
+  extends Omit<QuickVehicleSchema, "mileage" | "price" | "lat" | "lng"> {
+  mileage?: number;
+  price?: number;
+  lat?: number;
+  lng?: number;
+}
+
+export const createQuickVehicleDefaultValues: QuickVehicleDefaultValues = {
   vehicle_type_id: "",
   ref: "",
   license_plate: "",
@@ -189,17 +207,17 @@ export const createQuickVehicleDefaultValues: QuickVehicleSchema = {
   version_id: 0,
   catalog_fuel_can_charge: false,
   condition: "used",
-  mileage: 0,
-  price: 0,
-  lat: 40.4168,
-  lng: -3.7038,
+  mileage: undefined,
+  price: undefined,
+  lat: undefined,
+  lng: undefined,
   phone: { phone_code: "+34", phone: "" },
   show_phone: true,
   has_whatsapp: false,
   email: "",
   description: "",
   transmission_type: "manual",
-  power: 0,
+  power: undefined,
   displacement: 0,
   traction_id: "",
   offer_financing: false,

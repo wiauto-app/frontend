@@ -8,12 +8,18 @@ import { DgtLabelsSelector } from "@/components/dynamicSelectors/dgtLabelsSelect
 import { ControllerInput } from "@/components/ui/controllerInput";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 
-export const QuickVehicleClassificationFields = () => {
+interface QuickVehicleClassificationFieldsProps {
+  stepNumber?: number;
+}
+
+export const QuickVehicleClassificationFields = ({
+  stepNumber,
+}: QuickVehicleClassificationFieldsProps) => {
   const form = useFormContext<QuickVehicleSchema>();
 
   return (
     <VehicleFormStep
-      number={4}
+      number={stepNumber}
       label="Color, categoría y etiqueta DGT"
       description="Clasifica tu vehículo para que los compradores lo encuentren más fácilmente."
     >

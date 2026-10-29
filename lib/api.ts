@@ -55,7 +55,8 @@ const isAuthLogoutRequest = (requestUrl: string): boolean =>
 
 const isOptionalAuthRequest = (requestUrl: string): boolean =>
   requestUrl.includes("/auth/admin/two-factor/challenge") ||
-  requestUrl.includes("/auth/two-factor/challenge");
+  requestUrl.includes("/auth/two-factor/challenge") ||
+  requestUrl.includes("/v1/vehicles/identification/");
 
 const buildJsonHeaders = (
   requestHeaders: HeadersInit | undefined,

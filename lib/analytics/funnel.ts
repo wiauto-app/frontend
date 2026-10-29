@@ -13,6 +13,9 @@ export type FunnelEvent =
   | "publicar_tipo"
   | "publicar_fotos"
   | "publicar_datos"
+  | "publicar_submit_click"
+  | "publicar_error_validacion"
+  | "publicar_auth_view"
   | "anuncio_publicado";
 
 const ONCE_EVENTS: FunnelEvent[] = [
@@ -28,6 +31,9 @@ const META_CUSTOM: Partial<Record<FunnelEvent, string>> = {
   publicar_tipo: "PublicarTipo",
   publicar_fotos: "PublicarFotos",
   publicar_datos: "PublicarDatos",
+  publicar_submit_click: "PublicarSubmitClick",
+  publicar_error_validacion: "PublicarErrorValidacion",
+  publicar_auth_view: "PublicarAuthView",
   anuncio_publicado: "AnuncioPublicado",
 };
 
@@ -238,6 +244,26 @@ export type PublicarClickSource = "header" | "home" | "menu" | "otros";
 
 export const trackPublicarClick = (source: PublicarClickSource): void => {
   track("publicar_click", { source });
+};
+
+export const trackPublishSubmitClick = (params: { step: string }): void => {
+  track("publicar_submit_click", params);
+};
+
+export type PublishValidationTrigger = "siguiente" | "publicar";
+
+export const trackPublishValidationError = (params: {
+  field: string;
+  step: string;
+  trigger: PublishValidationTrigger;
+}): void => {
+  track("publicar_error_validacion", params);
+};
+
+export type PublishAuthViewMode = "login" | "registro";
+
+export const trackPublishAuthView = (mode: PublishAuthViewMode): void => {
+  track("publicar_auth_view", { mode });
 };
 
 export const isPublishEntryHref = (href: string): boolean => {

@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 
+import { isFocusedFlowPath } from "@/lib/focusedFlowRoutes";
+
 const AssistantChatBundle = dynamic(
   () =>
     import("@/components/assistant/AssistantChatBundle").then(
@@ -20,7 +22,7 @@ const ASSISTANT_ROUTE_PREFIX = "/asistente";
 export const LazyAssistantShell = () => {
   const pathname = usePathname();
 
-  if (pathname.startsWith(ASSISTANT_ROUTE_PREFIX)) {
+  if (pathname.startsWith(ASSISTANT_ROUTE_PREFIX) || isFocusedFlowPath(pathname)) {
     return null;
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
@@ -24,7 +24,7 @@ import type { PendingVehiclePayload } from "@/validations/Schemas";
 import { RegisterFormContent } from "./registerFormContent";
 import { SignInFormContent } from "./signInFormContent";
 
-type AuthDialogTab = "login" | "register";
+export type AuthDialogTab = "login" | "register";
 
 interface SignInDialogProps {
   open?: boolean;
@@ -35,6 +35,8 @@ interface SignInDialogProps {
   /** Anuncio del invitado que se guardará como borrador al registrarse. */
   pendingVehiclePayload?: PendingVehiclePayload;
   onPendingVehicleCreated?: () => void;
+  /** Se llama cada vez que el usuario ve una pestaña (al abrir y al cambiar). */
+  onTabView?: (tab: AuthDialogTab) => void;
 }
 
 export const SignInDialog = ({
@@ -45,6 +47,7 @@ export const SignInDialog = ({
   returnTo,
   pendingVehiclePayload,
   onPendingVehicleCreated,
+  onTabView,
 }: SignInDialogProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -72,6 +75,16 @@ export const SignInDialog = ({
       setActiveTab("login");
     }
   };
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    onTabView?.(activeTab);
+    // Solo al abrir y al cambiar de pestaña; `onTabView` puede no ser estable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, activeTab]);
 
   const handleSuccess = async () => {
     await refreshUser();

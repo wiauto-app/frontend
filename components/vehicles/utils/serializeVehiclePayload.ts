@@ -15,6 +15,7 @@ const catalog_form_field_keys = [
   "catalog_body_type_id",
   "catalog_fuel_type_id",
   "catalog_year_id",
+  "catalog_fuel_can_charge",
 ] as const;
 
 export const serializeVehiclePayload = (

@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 
@@ -57,9 +64,10 @@ const RowSkeletons = ({ count }: { count: number }) => (
 interface MakeModelsProps {
   make: HeroCatalogFacetItem;
   search: string;
+  onRegisterEnterSelect?: (selectFirst: (() => void) | null) => void;
 }
 
-const MakeModels = ({ make, search }: MakeModelsProps) => {
+const MakeModels = ({ make, search, onRegisterEnterSelect }: MakeModelsProps) => {
   const { selectedMakes, selectedModels, handleToggleMake, handleToggleModel } =
     useHeroSearchFilters();
 
@@ -103,6 +111,39 @@ const MakeModels = ({ make, search }: MakeModelsProps) => {
     handleToggleMake(make, false);
   };
 
+  useEffect(() => {
+    if (!onRegisterEnterSelect) {
+      return;
+    }
+
+    const selectFirstResult = () => {
+      if (!make_name_matches_search && models[0]) {
+        handleToggleModel(models[0], true);
+        return;
+      }
+
+      selectedModels
+        .filter(
+          (model) => model.make_id === make.id || model.make_slug === make.slug,
+        )
+        .forEach((model) => handleToggleModel(model, false));
+      handleToggleMake(make, true);
+    };
+
+    onRegisterEnterSelect(selectFirstResult);
+    return () => {
+      onRegisterEnterSelect(null);
+    };
+  }, [
+    handleToggleMake,
+    handleToggleModel,
+    make,
+    make_name_matches_search,
+    models,
+    onRegisterEnterSelect,
+    selectedModels,
+  ]);
+
   return (
     <div className="flex flex-col gap-2 py-2 pl-8 pr-2">
       <CustomCheckbox
@@ -135,6 +176,7 @@ interface MakeRowProps {
   isSelected: boolean;
   search: string;
   onToggle: (make: HeroCatalogFacetItem) => void;
+  onRegisterEnterSelect?: (selectFirst: (() => void) | null) => void;
 }
 
 const MakeRow = ({
@@ -143,6 +185,7 @@ const MakeRow = ({
   isSelected,
   search,
   onToggle,
+  onRegisterEnterSelect,
 }: MakeRowProps) => (
   <div className="border-b last:border-b-0">
     <button
@@ -182,7 +225,13 @@ const MakeRow = ({
         aria-hidden
       />
     </button>
-    {isOpen ? <MakeModels make={make} search={search} /> : null}
+    {isOpen ? (
+      <MakeModels
+        make={make}
+        search={search}
+        onRegisterEnterSelect={onRegisterEnterSelect}
+      />
+    ) : null}
   </div>
 );
 
@@ -202,12 +251,14 @@ export const HeroFiltersMakeSelector = ({
     selectedModels,
     makeModelPayload,
     replaceMakeModelSelection,
+    handleToggleMake,
   } = useHeroSearchFilters();
 
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [openMakeId, setOpenMakeId] = useState<number | null>(null);
   const snapshotRef = useRef<MakeModelSnapshot | null>(null);
+  const enterSelectRef = useRef<(() => void) | null>(null);
   const debounced_search = useDebouncedValue(search, 300);
   const trimmed_search = debounced_search.trim();
 
@@ -258,6 +309,31 @@ export const HeroFiltersMakeSelector = ({
 
   const handleToggleRow = (make: HeroCatalogFacetItem) => {
     setOpenMakeId((current) => (current === make.id ? null : make.id));
+  };
+
+  const handleRegisterEnterSelect = useCallback(
+    (selectFirst: (() => void) | null) => {
+      enterSelectRef.current = selectFirst;
+    },
+    [],
+  );
+
+  const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (enterSelectRef.current) {
+      enterSelectRef.current();
+      return;
+    }
+
+    const firstMake = makes[0];
+    if (firstMake) {
+      handleToggleMake(firstMake, true);
+    }
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -311,6 +387,7 @@ export const HeroFiltersMakeSelector = ({
           value={search}
           onChange={setSearch}
           onClear={() => setSearch("")}
+          onKeyDown={handleSearchKeyDown}
           aria-label="Buscar marca o modelo"
         />
 
@@ -330,6 +407,9 @@ export const HeroFiltersMakeSelector = ({
                 isSelected={selected_make_ids.has(make.id)}
                 search={trimmed_search}
                 onToggle={handleToggleRow}
+                onRegisterEnterSelect={
+                  openMakeId === make.id ? handleRegisterEnterSelect : undefined
+                }
               />
             ))}
         </div>

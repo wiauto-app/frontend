@@ -4,11 +4,17 @@ import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 
 import { MetaPixel } from "@/components/metaPixel";
 import {
+  ENVIRONMENT,
   GOOGLE_ANALYTICS_ID,
   GOOGLE_TAG_MANAGER_ID,
 } from "@/constants/external.constant";
 
 export const ThirdPartyLibrariesInner = () => {
+
+  if(ENVIRONMENT !== "production") {
+    return null;
+  }
+
   return (
     <>
       <MetaPixel />

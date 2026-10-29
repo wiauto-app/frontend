@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { PublicarLink } from "@/components/analytics/PublicarLink";
-import { CheckCircle2, Eye, LayoutList, Plus, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Eye,
+  LayoutList,
+  ListChecks,
+  Plus,
+  Sparkles,
+} from "lucide-react";
 import { motion, type Variants } from "motion/react";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +27,10 @@ import {
 } from "@/components/home/motion/motion-variants";
 import { usePrefersReducedMotion } from "@/components/home/motion/usePrefersReducedMotion";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import {
+  QUICK_VEHICLE_STEP_IDS,
+  QUICK_VEHICLE_STEP_QUERY_PARAM,
+} from "@/components/vehicles/quick-publish/quick-vehicle-wizard.constants";
 
 interface PublishSuccessViewProps {
   vehicleId: string;
@@ -178,6 +190,43 @@ export const PublishSuccessView = ({
           </PublicarLink>
         </motion.div>
       </motion.header>
+
+      <motion.section
+        aria-labelledby="improve-listing-heading"
+        className="mt-8 flex flex-col gap-4 rounded-2xl border border-border bg-card px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+        variants={panel}
+      >
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <ListChecks className="size-5" aria-hidden />
+          </div>
+          <div className="min-w-0 space-y-1">
+            <h2
+              id="improve-listing-heading"
+              className="text-lg font-semibold tracking-tight text-foreground"
+            >
+              Mejora tu anuncio
+            </h2>
+            <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Añade equipamiento, color, etiqueta DGT, ficha técnica y una
+              descripción. Los anuncios completos aparecen en más búsquedas y
+              generan más confianza.
+            </p>
+          </div>
+        </div>
+        <Button
+          className="h-10 shrink-0 px-4"
+          nativeButton={false}
+          render={
+            <Link
+              href={`/editar-vehiculo/${vehicleId}?${QUICK_VEHICLE_STEP_QUERY_PARAM}=${QUICK_VEHICLE_STEP_IDS.details}`}
+            />
+          }
+        >
+          Completar detalles
+          <ArrowRight aria-hidden />
+        </Button>
+      </motion.section>
 
       {showListingInsights ? (
         <>

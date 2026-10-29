@@ -1,7 +1,5 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AppDownloadBannerGate } from "@/components/app-download/AppDownloadBannerGate";
-import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
 import { Footer, NewsletterSection } from "@/components/home";

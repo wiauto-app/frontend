@@ -8,6 +8,9 @@ import {
   peekVehicleDataEventId,
   resetPublishFunnel,
   track,
+  trackPublishAuthView,
+  trackPublishSubmitClick,
+  trackPublishValidationError,
 } from "@/lib/analytics/funnel";
 
 interface MemoryStorage {
@@ -176,5 +179,54 @@ describe("funnel", () => {
 
   it("genera un event id", () => {
     expect(newEventId().length).toBeGreaterThan(8);
+  });
+
+  it("envía clic en publicar, error de validación y llegada al login", () => {
+    setConsent(true);
+
+    trackPublishSubmitClick({ step: "Contacto y publicar" });
+    trackPublishValidationError({
+      field: "price",
+      step: "Coche",
+      trigger: "siguiente",
+    });
+    trackPublishAuthView("registro");
+
+    expect(window.dataLayer).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          event: "publicar_submit_click",
+          step: "Contacto y publicar",
+        }),
+        expect.objectContaining({
+          event: "publicar_error_validacion",
+          field: "price",
+          step: "Coche",
+          trigger: "siguiente",
+        }),
+        expect.objectContaining({
+          event: "publicar_auth_view",
+          mode: "registro",
+        }),
+      ]),
+    );
+    expect(fbq).toHaveBeenCalledWith(
+      "trackCustom",
+      "PublicarSubmitClick",
+      { step: "Contacto y publicar" },
+      expect.objectContaining({ eventID: expect.any(String) }),
+    );
+    expect(fbq).toHaveBeenCalledWith(
+      "trackCustom",
+      "PublicarErrorValidacion",
+      { field: "price", step: "Coche", trigger: "siguiente" },
+      expect.objectContaining({ eventID: expect.any(String) }),
+    );
+    expect(fbq).toHaveBeenCalledWith(
+      "trackCustom",
+      "PublicarAuthView",
+      { mode: "registro" },
+      expect.objectContaining({ eventID: expect.any(String) }),
+    );
   });
 });

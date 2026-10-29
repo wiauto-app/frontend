@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { ArrowLeft, CarFront } from "lucide-react";
+import { CarFront } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { QuickPublishBackLink } from "@/components/vehicles/quick-publish/QuickPublishBackLink";
 import { QuickPublishMobileStepBreadcrumb } from "@/components/vehicles/quick-publish/QuickPublishMobileStepBreadcrumb";
 import { QuickPublishStepProgress } from "@/components/vehicles/quick-publish/QuickPublishStepProgress";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
@@ -24,13 +24,7 @@ export default async function CrearVehiculoPage({
   return (
     <div className="container-custom mx-auto lg:py-8 py-4 space-y-4">
       <div>
-        <Link
-          href="/usuario/perfil"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-4"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver al perfil
-        </Link>
+        <QuickPublishBackLink />
         <div
           id="quick-publish-heading"
           className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-primary/10 p-2 lg:gap-4"
@@ -47,7 +41,7 @@ export default async function CrearVehiculoPage({
             </div>
           </div>
           <QuickPublishMobileStepBreadcrumb className="shrink-0 lg:hidden" />
-          <QuickPublishStepProgress />
+          <QuickPublishStepProgress className="hidden min-w-40 lg:block" />
         </div>
       </div>
 
