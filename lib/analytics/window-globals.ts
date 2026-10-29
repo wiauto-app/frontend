@@ -5,6 +5,11 @@ export interface MetaFbqFunction {
     params?: Record<string, unknown>,
     options?: { eventID: string },
   ): void;
+  callMethod?: (...args: unknown[]) => void;
+  queue?: ArrayLike<unknown>[];
+  loaded?: boolean;
+  version?: string;
+  push?: MetaFbqFunction;
 }
 
 export interface ClarityFunction {
