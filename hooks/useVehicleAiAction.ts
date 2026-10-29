@@ -53,7 +53,7 @@ export const getVehicleAiCanExecute = (
   return (
     hasBaseFields &&
     Boolean(values.transmission_type) &&
-    values.power > 0 &&
+    (values.power ?? 0) > 0 &&
     isValidUuid(values.traction_id)
   );
 };

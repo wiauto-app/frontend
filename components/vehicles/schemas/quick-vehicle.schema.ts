@@ -21,8 +21,9 @@ const optionalUuid = z
   ])
   .optional()
   .transform((value) => {
-    if (value === "" || value === undefined) return undefined;
-    if (value === null) return null;
+    if (value === "" || value === undefined || value === null) {
+      return undefined;
+    }
     return value;
   });
 

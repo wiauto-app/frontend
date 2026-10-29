@@ -79,7 +79,7 @@ export const buildVehicleAiContext = (
   color_id: values.color_id,
   category_id: values.category_id,
   dgt_label_id: values.dgt_label_id,
-  traction_id: values.traction_id,
+  traction_id: values.traction_id ?? undefined,
   lat: values.lat,
   lng: values.lng,
   vehicle_type_id: values.vehicle_type_id,
