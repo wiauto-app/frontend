@@ -25,7 +25,7 @@ export const PlansHeroSection = ({ hero }: PlansHeroSectionProps) => {
         </>
       }
       rightContent={
-        <div className=" flex justify-center w-full">
+        <div className="flex w-full min-w-0 justify-center">
           <PlansLeadForm />
         </div>
       }

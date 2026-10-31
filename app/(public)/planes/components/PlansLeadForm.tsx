@@ -68,7 +68,7 @@ export const PlansLeadForm = () => {
   };
 
   return (
-    <Card size="sm" className="z-10 gap-2">
+    <Card size="sm" className="z-10 w-full min-w-0 max-w-md gap-2">
       <CardHeader>
         <h3 className="text-lg font-semibold">¿Quieres que te asesoremos?</h3>
         <CardDescription className="sr-only">
@@ -79,8 +79,9 @@ export const PlansLeadForm = () => {
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
           aria-label="Formulario de contacto para planes profesionales"
+          className="min-w-0"
         >
-          <div className="flex flex-col gap-2">
+          <div className="flex min-w-0 flex-col gap-2">
             <ControlledInput
               name="name"
               control={form.control}
@@ -147,12 +148,13 @@ export const PlansLeadForm = () => {
               )}
             </ControlledInput>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex min-w-0 flex-col gap-2">
               <Label htmlFor="planes-lead-mensaje">Mensaje</Label>
               <Textarea
                 id="planes-lead-mensaje"
                 placeholder="Cuéntanos sobre tu concesionario o negocio"
                 rows={3}
+                className="field-sizing-fixed resize-y break-words"
                 {...form.register("message")}
               />
             </div>

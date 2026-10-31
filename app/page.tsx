@@ -55,7 +55,6 @@ export default async function Home() {
         <HeroSection data={home_data.homeHero} />
         {/* <div className="block sm:hidden h-50" /> */}
         <MobileStoreButtonsMotion
-          soon={true}
           className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden"
         />
         <LazyWiautoMatch />
