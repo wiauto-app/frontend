@@ -30,6 +30,7 @@ import {
   SignInDialog,
   type AuthDialogTab,
 } from "@/components/auth/signInDialog";
+import { ReferralCaptureOnMount } from "@/components/referrals/ReferralCaptureOnMount";
 import { isValidReturnPath } from "@/lib/auth/authReturnTo";
 import { QUICK_VEHICLE_SUBMIT_ATTR } from "./quick-vehicle-wizard.constants";
 import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
@@ -346,6 +347,11 @@ export const QuickVehicleForm = ({
 
   return (
     <FormProvider {...form}>
+      {!isEditMode ? (
+        <Suspense fallback={null}>
+          <ReferralCaptureOnMount />
+        </Suspense>
+      ) : null}
       {!isEditMode ? (
         // Fuera del <form>: los eventos de React atraviesan portales y el
         // onSubmit/onKeyDown del formulario del anuncio interferiría con el login.

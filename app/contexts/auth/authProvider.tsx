@@ -39,7 +39,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.refresh();
   }, [router]);
 
-  usePendingReferralAttribute({ enabled: Boolean(user?.id) });
+  usePendingReferralAttribute({
+    enabled: Boolean(user?.id),
+    accountCreatedAt: user?.created_at,
+  });
 
   const value = useMemo(
     () => ({

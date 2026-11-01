@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { isRecentlyCreatedAccount } from "@/lib/analytics/publishFlowAuth";
 import {
   clearPendingReferralCode,
   getPendingReferralCode,
@@ -9,15 +10,17 @@ import { referralsService } from "@/services/referralsService";
 
 interface UsePendingReferralAttributeOptions {
   enabled: boolean;
+  accountCreatedAt?: string | null;
 }
 
 export const usePendingReferralAttribute = ({
   enabled,
+  accountCreatedAt,
 }: UsePendingReferralAttributeOptions) => {
-  const has_attempted = useRef(false);
+  const hasAttempted = useRef(false);
 
   useEffect(() => {
-    if (!enabled || has_attempted.current) {
+    if (!enabled || hasAttempted.current) {
       return;
     }
 
@@ -26,7 +29,13 @@ export const usePendingReferralAttribute = ({
       return;
     }
 
-    has_attempted.current = true;
+    if (!isRecentlyCreatedAccount(accountCreatedAt)) {
+      clearPendingReferralCode();
+      hasAttempted.current = true;
+      return;
+    }
+
+    hasAttempted.current = true;
 
     void referralsService
       .attribute(code)
@@ -34,7 +43,7 @@ export const usePendingReferralAttribute = ({
         clearPendingReferralCode();
       })
       .catch(() => {
-        has_attempted.current = false;
+        hasAttempted.current = false;
       });
-  }, [enabled]);
+  }, [enabled, accountCreatedAt]);
 };

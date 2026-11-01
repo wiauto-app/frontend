@@ -21,7 +21,7 @@ export const ReferralAfterRegisterPrompt = () => {
     }
 
     const base = (FRONTEND_URL ?? "").replace(/\/$/, "");
-    return `${base}/registro?ref=${encodeURIComponent(referralCode)}`;
+    return `${base}/publicar?ref=${encodeURIComponent(referralCode)}`;
   }, [referralCode]);
 
   if (!referralCode) {
