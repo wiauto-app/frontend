@@ -80,6 +80,17 @@ describe("parseVehicleListingUrl", () => {
       color_slugs: ["rojo", "azul"],
     });
   });
+
+  it("conserva vendedor en path aunque no venga en query", () => {
+    expect(
+      parseVehicleListingUrl(
+        ["vendedor-profesional"],
+        new URLSearchParams(),
+      ),
+    ).toMatchObject({
+      publisher_types: ["dealership"],
+    });
+  });
 });
 
 describe("buildVehicleListingUrl", () => {
@@ -180,6 +191,15 @@ describe("normalizeVehicleListingHref", () => {
       normalizeVehicleListingHref(
         ["marca-toyota"],
         new URLSearchParams("show_map=true"),
+      ),
+    ).toBeNull();
+  });
+
+  it("no elimina vendedor-profesional al normalizar URL canónica", () => {
+    expect(
+      normalizeVehicleListingHref(
+        ["vendedor-profesional"],
+        new URLSearchParams(),
       ),
     ).toBeNull();
   });

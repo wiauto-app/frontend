@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 export const BRAND_BLUE = "#0061F2";
-
+const BASE_VEHICLES_URL = "/vehiculos";
 export interface NavLinkGroup {
   label: string;
   Icon?: LucideIcon;
@@ -46,20 +46,25 @@ export const NAV_LINKS: NavLink[] = [
         Icon: Car,
         items: [
           {
-            href: "/vehiculos",
+            href: `${BASE_VEHICLES_URL}/estado-usado`,
             label: "Vehículos de segunda mano",
           },
           // {
           //   href: "/vehiculos?km_hasta=5000",
           //   label: "Vehículos 0 km",
           // },
+       
           {
-            href: "/vehiculos?combustible=electrico",
+            href: `${BASE_VEHICLES_URL}/combustible-hibrido`,
+            label: "Híbridos",
+          },
+          {
+            href: `${BASE_VEHICLES_URL}/combustible-electrico`,
             label: "Eléctricos",
           },
           {
-            href: "/vehiculos?combustible=hibrido",
-            label: "Híbridos",
+            href: `${BASE_VEHICLES_URL}/estado-nuevo`,
+            label: "Nuevos",
           },
         ],
       },
@@ -68,11 +73,11 @@ export const NAV_LINKS: NavLink[] = [
         Icon: Users,
         items: [
           {
-            href: "/vehiculos?publisher_types=dealership",
+            href: `${BASE_VEHICLES_URL}/vendedor-profesional`,
             label: "Profesional",
           },
           {
-            href: "/vehiculos?publisher_types=particular",
+            href: `${BASE_VEHICLES_URL}/vendedor-particular`,
             label: "Particular",
           },
         ],
@@ -83,15 +88,15 @@ export const NAV_LINKS: NavLink[] = [
         items: [
           {
             label: "Recién publicados",
-            href: "/vehiculos",
+            href: `${BASE_VEHICLES_URL}`,
           },
           {
             label: "Más vistos",
-            href: "/vehiculos?orden=views-desc",
+            href: `${BASE_VEHICLES_URL}?orden=views-desc`,
           },
           {
             label: "Más baratos",
-            href: "/vehiculos?orden=price-asc",
+            href: `${BASE_VEHICLES_URL}?orden=price-asc`,
           },
         ],
       },

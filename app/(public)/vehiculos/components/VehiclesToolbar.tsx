@@ -78,7 +78,7 @@ export function VehiclesToolbar({ filtersNode }: VehiclesToolbarProps) {
   };
 
   return (
-    <div className="sticky top-14 z-30 border-b border-slate-200 bg-[#EEF3FA] md:top-20">
+    <div className="sticky z-30 border-b border-slate-200 bg-[#EEF3FA] top-0">
       <div className="container-custom mx-auto flex flex-col gap-3 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-start lg:gap-4 lg:py-4">
         <ButtonGroup className="w-full shrink-0 justify-center rounded-full sm:w-auto sm:justify-start">
           <Button
