@@ -7,12 +7,16 @@ import { getQuickPublishStepMotivation } from "./quick-vehicle-wizard.constants"
 
 interface QuickPublishStepProgressProps {
   className?: string;
+  isEditMode?: boolean;
 }
 
 export const QuickPublishStepProgress = ({
   className,
+  isEditMode = false,
 }: QuickPublishStepProgressProps) => {
-  const { currentStepIndex, stepItems } = useQuickPublishWizardSteps();
+  const { currentStepIndex, stepItems } = useQuickPublishWizardSteps({
+    isEditMode,
+  });
   const totalSteps = stepItems.length;
   const currentHumanStep = currentStepIndex + 1;
   const progressPercent =

@@ -1,8 +1,6 @@
 import { CarFront } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { QuickPublishBackLink } from "@/components/vehicles/quick-publish/QuickPublishBackLink";
-import { QuickPublishMobileStepBreadcrumb } from "@/components/vehicles/quick-publish/QuickPublishMobileStepBreadcrumb";
-import { QuickPublishStepProgress } from "@/components/vehicles/quick-publish/QuickPublishStepProgress";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
 import { Metadata } from "next";
 import { SectionHeading } from "@/components/home/SectionHeading";
@@ -40,8 +38,6 @@ export default async function CrearVehiculoPage({
               />
             </div>
           </div>
-          <QuickPublishMobileStepBreadcrumb className="shrink-0 lg:hidden" />
-          <QuickPublishStepProgress className="hidden min-w-40 lg:block" />
         </div>
       </div>
 

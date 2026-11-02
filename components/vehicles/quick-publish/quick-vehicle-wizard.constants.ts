@@ -91,44 +91,40 @@ const CONTACT_STEP: QuickVehicleIntroStep = {
   ],
 };
 
-/** Alta rápida: 3 pantallas. Ficha, color y financiación se completan al editar. */
-export const QUICK_VEHICLE_INTRO_STEPS: QuickVehicleIntroStep[] = [
-  PHOTOS_STEP,
-  {
-    id: QUICK_VEHICLE_STEP_IDS.vehicle,
-    name: "Coche",
-    icon: Car,
-    fields: VEHICLE_STEP_FIELDS,
-  },
-  CONTACT_STEP,
-];
+const DETAILS_STEP: QuickVehicleIntroStep = {
+  id: QUICK_VEHICLE_STEP_IDS.details,
+  name: "Detalles",
+  icon: ListChecks,
+  fields: [
+    "color_id",
+    "category_id",
+    "dgt_label_id",
+    ...TECHNICAL_SHEET_FIELDS,
+    "features_ids",
+    "services_ids",
+    "description",
+  ],
+};
 
-/** Edición («Mejora tu anuncio»): añade los detalles que no se piden al publicar. */
-export const QUICK_VEHICLE_EDIT_STEPS: QuickVehicleIntroStep[] = [
+const VEHICLE_STEP: QuickVehicleIntroStep = {
+  id: QUICK_VEHICLE_STEP_IDS.vehicle,
+  name: "Coche",
+  icon: Car,
+  fields: VEHICLE_STEP_FIELDS,
+};
+
+/** Mismo recorrido en publicar y en edición; financiación solo si hay suscripción. */
+export const QUICK_VEHICLE_WIZARD_STEPS: QuickVehicleIntroStep[] = [
   PHOTOS_STEP,
-  {
-    id: QUICK_VEHICLE_STEP_IDS.vehicle,
-    name: "Coche",
-    icon: Car,
-    fields: VEHICLE_STEP_FIELDS,
-  },
-  {
-    id: QUICK_VEHICLE_STEP_IDS.details,
-    name: "Detalles",
-    icon: ListChecks,
-    fields: [
-      "color_id",
-      "category_id",
-      "dgt_label_id",
-      ...TECHNICAL_SHEET_FIELDS,
-      "features_ids",
-      "services_ids",
-      "description",
-    ],
-  },
+  VEHICLE_STEP,
+  DETAILS_STEP,
   FINANCING_STEP,
   CONTACT_STEP,
 ];
+
+export const QUICK_VEHICLE_INTRO_STEPS = QUICK_VEHICLE_WIZARD_STEPS;
+
+export const QUICK_VEHICLE_EDIT_STEPS = QUICK_VEHICLE_WIZARD_STEPS;
 
 export const isSubscriberOnlyQuickVehicleStep = (stepId: number): boolean =>
   stepId === QUICK_VEHICLE_STEP_IDS.financing;

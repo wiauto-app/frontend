@@ -34,6 +34,7 @@ import {
   type PublishValidationTrigger,
 } from "@/lib/analytics/funnel";
 import { QuickVehiclePublishInicioTracker } from "./QuickVehiclePublishInicioTracker";
+import { QuickPublishStepProgress } from "./QuickPublishStepProgress";
 import { useQuickPublishWizardSteps } from "./hooks/useQuickPublishWizardSteps";
 
 interface QuickVehicleIntroWizardProps {
@@ -231,12 +232,14 @@ export const QuickVehicleIntroWizard = ({
           <QuickVehicleSpecsAutofill />
         </>
       ) : null}
-      <Stepper
-        steps={stepItems}
-        currentStep={currentStep}
-        onStepClick={handleStepClick}
-        className="hidden overflow-x-auto pb-2 lg:flex"
-      />
+      <div className="space-y-3">
+        <QuickPublishStepProgress isEditMode={isEditMode} />
+        <Stepper
+          steps={stepItems}
+          currentStep={currentStep}
+          onStepClick={handleStepClick}
+        />
+      </div>
 
       {renderStep()}
 

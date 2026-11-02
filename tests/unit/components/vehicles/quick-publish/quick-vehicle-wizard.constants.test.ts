@@ -40,15 +40,17 @@ describe("findQuickVehicleErrorStep", () => {
   });
 
   it("getQuickPublishStepMotivation adapts to step position", () => {
-    expect(getQuickPublishStepMotivation(0, 3)).toContain("fotografías");
-    expect(getQuickPublishStepMotivation(1, 3)).toContain("casi listo");
-    expect(getQuickPublishStepMotivation(2, 3)).toContain("Último paso");
+    expect(getQuickPublishStepMotivation(0, 5)).toContain("fotografías");
+    expect(getQuickPublishStepMotivation(2, 5)).toContain("casi listo");
+    expect(getQuickPublishStepMotivation(4, 5)).toContain("Último paso");
   });
 
-  it("alta rápida solo tiene tres pantallas", () => {
+  it("publicar y edición comparten el mismo recorrido de pasos", () => {
     expect(QUICK_VEHICLE_INTRO_STEPS.map((step) => step.id)).toEqual([
       QUICK_VEHICLE_STEP_IDS.photos,
       QUICK_VEHICLE_STEP_IDS.vehicle,
+      QUICK_VEHICLE_STEP_IDS.details,
+      QUICK_VEHICLE_STEP_IDS.financing,
       QUICK_VEHICLE_STEP_IDS.contact,
     ]);
   });
