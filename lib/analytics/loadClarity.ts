@@ -3,6 +3,9 @@ import type { ClarityFunction } from "@/lib/analytics/window-globals";
 
 const CLARITY_SCRIPT_ID = "microsoft-clarity";
 
+/** Desactivado temporalmente: no cargar ni ejecutar el tag. */
+const CLARITY_EXECUTION_ENABLED = false;
+
 let loadPromise: Promise<void> | null = null;
 
 const installClarityStub = (): void => {
@@ -19,6 +22,10 @@ const installClarityStub = (): void => {
 
 /** Descarga el tag de Microsoft Clarity una sola vez. */
 export const ensureClarityLoaded = (): Promise<void> => {
+  if (!CLARITY_EXECUTION_ENABLED) {
+    return Promise.resolve();
+  }
+
   if (!CLARITY_PROJECT_ID || typeof window === "undefined") {
     return Promise.resolve();
   }
