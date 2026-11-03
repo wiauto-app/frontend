@@ -9,6 +9,8 @@ export const GOOGLE_ANALYTICS_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
 export const GOOGLE_TAG_MANAGER_ID = process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID;
 export const CLARITY_PROJECT_ID =
   process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "z2t34i1156";
+/** Desactivado temporalmente: no cargar ni ejecutar el tag. */
+export const CLARITY_EXECUTION_ENABLED = process.env.NEXT_PUBLIC_CLARITY_EXECUTION_ENABLED === "true";
 export const ENVIRONMENT = process.env.NEXT_PUBLIC_ENVIRONMENT ?? "development";
 export const TURNSTILE_SITE_KEY =
   process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";

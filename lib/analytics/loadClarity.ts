@@ -1,10 +1,8 @@
-import { CLARITY_PROJECT_ID } from "@/constants/external.constant";
+import { CLARITY_EXECUTION_ENABLED, CLARITY_PROJECT_ID } from "@/constants/external.constant";
 import type { ClarityFunction } from "@/lib/analytics/window-globals";
 
 const CLARITY_SCRIPT_ID = "microsoft-clarity";
 
-/** Desactivado temporalmente: no cargar ni ejecutar el tag. */
-const CLARITY_EXECUTION_ENABLED = false;
 
 let loadPromise: Promise<void> | null = null;
 
