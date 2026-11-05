@@ -3,9 +3,10 @@
 import { useFormContext } from "react-hook-form";
 import { VehicleFormStep } from "@/app/(public)/components/vehicleFormStep";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { QuickCatalogFields } from "./QuickCatalogFields";
-import { QuickVehicleAiDescriptionCard } from "./QuickVehicleAiDescriptionCard";
 import { QuickVehicleContactStep } from "./QuickVehicleContactStep";
+import { QuickVehicleDescriptionStep } from "./QuickVehicleDescriptionStep";
 import { QuickVehicleIdentificationFields } from "./QuickVehicleIdentificationFields";
 import { QuickVehiclePricingFields } from "./QuickVehiclePricingFields";
 import { QuickVehiclePublishDataTracker } from "./QuickVehiclePublishDataTracker";
@@ -22,7 +23,7 @@ interface QuickVehicleDatosStepProps {
   }) => void;
 }
 
-/** Paso «Datos del anuncio»: fotos, vehículo, descripción, contacto y precio. */
+/** Paso «Datos del anuncio»: fotos, vehículo, contacto y precio. */
 export const QuickVehicleDatosStep = ({
   isEditMode = false,
   vehicleId,
@@ -31,6 +32,9 @@ export const QuickVehicleDatosStep = ({
 }: QuickVehicleDatosStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const versionError = form.formState.errors.version_id;
+  const { isSubscribed } = useEntitlements();
+  // Sin pasos extra/financiación, este es el último: la descripción va aquí.
+  const showDescription = !isSubscribed;
 
   return (
     <div className="flex flex-col gap-10">
@@ -53,24 +57,15 @@ export const QuickVehicleDatosStep = ({
         ) : null}
       </VehicleFormStep>
 
-      <VehicleFormStep
-        number={5}
-        isOptional
-        label="Descripción del vehículo"
-        description="Describe el estado, historial y puntos destacados del vehículo."
-      >
-        <div className="flex flex-col gap-4 rounded-lg bg-primary/10 p-4">
-          <QuickVehicleAiDescriptionCard />
-        </div>
-      </VehicleFormStep>
-
       <QuickVehicleContactStep
         isEditMode={isEditMode}
-        locationStepNumber={6}
-        contactStepNumber={7}
+        locationStepNumber={5}
+        contactStepNumber={6}
       />
 
-      <QuickVehiclePricingFields stepNumber={8} />
+      <QuickVehiclePricingFields stepNumber={7} />
+
+      {showDescription ? <QuickVehicleDescriptionStep stepNumber={8} /> : null}
     </div>
   );
 };

@@ -45,7 +45,8 @@ export const getVehicleAiCanExecute = (
     return hasCatalogContext && hasLocation;
   }
 
-  // Descripción (paso 5): ubicación y ficha extra van después; la API no exige lat/lng ni tracción.
+  // Descripción al final del wizard: condition/transmission suelen venir por defecto
+  // o autofill; la API no exige lat/lng, potencia ni ficha extra de profesional.
   return hasCatalogContext && Boolean(values.transmission_type);
 };
 
@@ -166,6 +167,10 @@ export const useVehicleAiAction = <TAction extends VehicleAiAction>(
       }
 
       if (!response.ok || !response.data?.description) {
+        toast.error(
+          response.message ||
+            "No se pudo generar la descripción. Inténtalo de nuevo.",
+        );
         setError("generic");
         return { data: null, error: "generic" };
       }

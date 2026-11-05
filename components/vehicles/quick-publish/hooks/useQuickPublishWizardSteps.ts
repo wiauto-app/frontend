@@ -11,6 +11,7 @@ import {
   QUICK_VEHICLE_EDIT_STEPS,
   QUICK_VEHICLE_INTRO_STEPS,
   QUICK_VEHICLE_STEP_QUERY_PARAM,
+  withDescriptionOnLastStep,
   type QuickVehicleIntroStep,
 } from "../quick-vehicle-wizard.constants";
 
@@ -29,17 +30,17 @@ export const useQuickPublishWizardSteps = ({
 
   const steps = isEditMode ? QUICK_VEHICLE_EDIT_STEPS : QUICK_VEHICLE_INTRO_STEPS;
 
-  const stepItems = useMemo(
-    () =>
-      steps.filter((step) => {
-        if (isSubscriberOnlyQuickVehicleStep(step.id)) {
-          return isSubscribed;
-        }
+  const stepItems = useMemo(() => {
+    const availableSteps = steps.filter((step) => {
+      if (isSubscriberOnlyQuickVehicleStep(step.id)) {
+        return isSubscribed;
+      }
 
-        return true;
-      }),
-    [isSubscribed, steps],
-  );
+      return true;
+    });
+
+    return withDescriptionOnLastStep(availableSteps);
+  }, [isSubscribed, steps]);
 
   const requestedStep =
     parseQuickVehicleStep(

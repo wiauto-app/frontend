@@ -68,7 +68,6 @@ const DATA_STEP_FIELDS: (keyof QuickVehicleSchema)[] = [
   "has_whatsapp",
   "email",
   "show_review_collab",
-  "description",
 ];
 
 const EXTRA_STEP_FIELDS: (keyof QuickVehicleSchema)[] = [
@@ -94,7 +93,34 @@ const FINANCING_STEP: QuickVehicleIntroStep = {
     "by_brand_warranty",
     "cuota_ids",
     "warranty_type_id",
+    /** Al final del recorrido, con el máximo contexto para la IA. */
+    "description",
   ],
+};
+
+/** Asegura que `description` solo valide en el último paso disponible. */
+export const withDescriptionOnLastStep = (
+  steps: QuickVehicleIntroStep[],
+): QuickVehicleIntroStep[] => {
+  if (steps.length === 0) {
+    return steps;
+  }
+
+  return steps.map((step, index) => {
+    const fieldsWithoutDescription = step.fields.filter(
+      (field) => field !== "description",
+    );
+    const isLast = index === steps.length - 1;
+
+    if (!isLast) {
+      return { ...step, fields: fieldsWithoutDescription };
+    }
+
+    return {
+      ...step,
+      fields: [...fieldsWithoutDescription, "description"],
+    };
+  });
 };
 
 const DATA_STEP: QuickVehicleIntroStep = {

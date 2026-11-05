@@ -8,6 +8,7 @@ import {
   parseQuickVehicleStep,
   QUICK_VEHICLE_INTRO_STEPS,
   QUICK_VEHICLE_STEP_IDS,
+  withDescriptionOnLastStep,
 } from "@/components/vehicles/quick-publish/quick-vehicle-wizard.constants";
 
 describe("findQuickVehicleErrorStep", () => {
@@ -92,5 +93,34 @@ describe("findQuickVehicleErrorStep", () => {
     expect(parseQuickVehicleStep(String(QUICK_VEHICLE_STEP_IDS.contact))).toBe(
       QUICK_VEHICLE_STEP_IDS.data,
     );
+  });
+
+  it("maps description errors to the financing step in the full flow", () => {
+    expect(
+      findQuickVehicleErrorStep({
+        description: { message: "Descripción demasiado corta" },
+      })?.id,
+    ).toBe(QUICK_VEHICLE_STEP_IDS.financing);
+  });
+
+  it("withDescriptionOnLastStep keeps description only on the last available step", () => {
+    const dataOnly = withDescriptionOnLastStep(
+      QUICK_VEHICLE_INTRO_STEPS.filter(
+        (step) => step.id === QUICK_VEHICLE_STEP_IDS.data,
+      ),
+    );
+
+    expect(dataOnly[0]?.fields).toContain("description");
+    expect(
+      findQuickVehicleErrorStep(
+        { description: { message: "Revisa la descripción" } },
+        dataOnly,
+      )?.id,
+    ).toBe(QUICK_VEHICLE_STEP_IDS.data);
+
+    const fullFlow = withDescriptionOnLastStep(QUICK_VEHICLE_INTRO_STEPS);
+    expect(fullFlow[0]?.fields).not.toContain("description");
+    expect(fullFlow.at(-1)?.fields).toContain("description");
+    expect(fullFlow.at(-1)?.id).toBe(QUICK_VEHICLE_STEP_IDS.financing);
   });
 });
