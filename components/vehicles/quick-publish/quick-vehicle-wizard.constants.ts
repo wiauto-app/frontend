@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BadgePercent, Car, ImageIcon, ListChecks, Send } from "lucide-react";
+import { BadgePercent, Car, ImageIcon, ListChecks } from "lucide-react";
 
 import type { FieldErrors } from "react-hook-form";
 
@@ -20,10 +20,13 @@ export const QUICK_VEHICLE_SUBMIT_ATTR = "data-quick-vehicle-submit";
 /** Ids estables (van en `?step`); el orden del array define el recorrido. */
 export const QUICK_VEHICLE_STEP_IDS = {
   photos: 1,
-  vehicle: 2,
+  /** Datos del anuncio (antes «Coche» + «Contacto»). */
+  data: 2,
   financing: 3,
+  /** Legacy: redirige a `data`. */
   contact: 4,
-  details: 5,
+  /** Información extra (profesionales). */
+  extra: 5,
 } as const;
 
 const TECHNICAL_SHEET_FIELDS: (keyof QuickVehicleSchema)[] = [
@@ -43,22 +46,41 @@ const PHOTOS_STEP: QuickVehicleIntroStep = {
   fields: ["images", "videos"],
 };
 
-const VEHICLE_STEP_FIELDS: (keyof QuickVehicleSchema)[] = [
+const DATA_STEP_FIELDS: (keyof QuickVehicleSchema)[] = [
+  "images",
+  "videos",
   "vehicle_type_id",
   "license_plate",
-  "vin_code",
   "ref",
   "version_id",
   "catalog_make_id",
   "catalog_model_id",
   "catalog_year_id",
-  "catalog_body_type_id",
-  "catalog_fuel_type_id",
-  "catalog_fuel_can_charge",
   "condition",
   "mileage",
   "price",
   "publisher_type",
+  "lat",
+  "lng",
+  "show_exact_location",
+  "phone",
+  "show_phone",
+  "has_whatsapp",
+  "email",
+  "show_review_collab",
+  "description",
+];
+
+const EXTRA_STEP_FIELDS: (keyof QuickVehicleSchema)[] = [
+  "catalog_body_type_id",
+  "catalog_fuel_type_id",
+  "catalog_fuel_can_charge",
+  "color_id",
+  "category_id",
+  "dgt_label_id",
+  ...TECHNICAL_SHEET_FIELDS,
+  "features_ids",
+  "services_ids",
 ];
 
 const FINANCING_STEP: QuickVehicleIntroStep = {
@@ -75,59 +97,48 @@ const FINANCING_STEP: QuickVehicleIntroStep = {
   ],
 };
 
-const CONTACT_STEP: QuickVehicleIntroStep = {
-  id: QUICK_VEHICLE_STEP_IDS.contact,
-  name: "Contacto y publicar",
-  icon: Send,
-  fields: [
-    "lat",
-    "lng",
-    "show_exact_location",
-    "phone",
-    "show_phone",
-    "has_whatsapp",
-    "email",
-    "show_review_collab",
-  ],
-};
-
-const DETAILS_STEP: QuickVehicleIntroStep = {
-  id: QUICK_VEHICLE_STEP_IDS.details,
-  name: "Detalles",
-  icon: ListChecks,
-  fields: [
-    "color_id",
-    "category_id",
-    "dgt_label_id",
-    ...TECHNICAL_SHEET_FIELDS,
-    "features_ids",
-    "services_ids",
-    "description",
-  ],
-};
-
-const VEHICLE_STEP: QuickVehicleIntroStep = {
-  id: QUICK_VEHICLE_STEP_IDS.vehicle,
-  name: "Coche",
+const DATA_STEP: QuickVehicleIntroStep = {
+  id: QUICK_VEHICLE_STEP_IDS.data,
+  name: "Datos del anuncio",
   icon: Car,
-  fields: VEHICLE_STEP_FIELDS,
+  fields: DATA_STEP_FIELDS,
 };
 
-/** Mismo recorrido en publicar y en edición; financiación solo si hay suscripción. */
+const EXTRA_STEP: QuickVehicleIntroStep = {
+  id: QUICK_VEHICLE_STEP_IDS.extra,
+  name: "Información extra",
+  icon: ListChecks,
+  fields: EXTRA_STEP_FIELDS,
+};
+
+/** Web: fotos van dentro de «Datos». Profesional: + extra + financiación. */
 export const QUICK_VEHICLE_WIZARD_STEPS: QuickVehicleIntroStep[] = [
-  PHOTOS_STEP,
-  VEHICLE_STEP,
-  DETAILS_STEP,
+  DATA_STEP,
+  EXTRA_STEP,
   FINANCING_STEP,
-  CONTACT_STEP,
 ];
+
+/** Paso de medios legacy (solo normalización de URL `?step=1`). */
+export const QUICK_VEHICLE_PHOTOS_STEP = PHOTOS_STEP;
 
 export const QUICK_VEHICLE_INTRO_STEPS = QUICK_VEHICLE_WIZARD_STEPS;
 
 export const QUICK_VEHICLE_EDIT_STEPS = QUICK_VEHICLE_WIZARD_STEPS;
 
 export const isSubscriberOnlyQuickVehicleStep = (stepId: number): boolean =>
-  stepId === QUICK_VEHICLE_STEP_IDS.financing;
+  stepId === QUICK_VEHICLE_STEP_IDS.financing ||
+  stepId === QUICK_VEHICLE_STEP_IDS.extra;
+
+/** Pasos antiguos en URL → paso actual. */
+export const normalizeQuickVehicleStepId = (stepId: number): number => {
+  if (stepId === QUICK_VEHICLE_STEP_IDS.contact) {
+    return QUICK_VEHICLE_STEP_IDS.data;
+  }
+  if (stepId === QUICK_VEHICLE_STEP_IDS.photos) {
+    return QUICK_VEHICLE_STEP_IDS.data;
+  }
+  return stepId;
+};
 
 export const QUICK_VEHICLE_FIELD_LABELS: Partial<
   Record<keyof QuickVehicleSchema, string>
@@ -229,8 +240,12 @@ export const getQuickPublishStepMotivation = (
   stepIndex: number,
   totalSteps: number,
 ): string => {
-  if (totalSteps <= 1 || stepIndex <= 0) {
-    return "Empieza subiendo las fotografías del vehículo";
+  if (totalSteps <= 1) {
+    return "Fotos, datos y contacto en un solo paso";
+  }
+
+  if (stepIndex <= 0) {
+    return "Fotos, datos del vehículo y contacto";
   }
 
   if (stepIndex >= totalSteps - 1) {
@@ -250,9 +265,11 @@ export const parseQuickVehicleStep = (value: string | null): number | null => {
     return null;
   }
 
+  const normalized = normalizeQuickVehicleStepId(parsed);
+
   const isKnownStep = Object.values(QUICK_VEHICLE_STEP_IDS).some(
-    (stepId) => stepId === parsed,
+    (stepId) => stepId === normalized,
   );
 
-  return isKnownStep ? parsed : null;
+  return isKnownStep ? normalized : null;
 };

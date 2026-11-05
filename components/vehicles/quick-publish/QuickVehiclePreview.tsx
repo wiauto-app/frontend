@@ -2,7 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useFormContext, useWatch } from "react-hook-form";
-import { cn, getImageUrl } from "@/lib/utils";
+import {
+  getLeadVehicleFormImageUrl,
+  getVehicleFormImageDisplayUrl,
+} from "@/components/vehicles/utils/getVehicleFormImageDisplayUrl";
+import { cn } from "@/lib/utils";
 import { VEHICLE_CONDITION_OPTIONS } from "@/components/vehicles/constants/vehicle-enums.constants";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
@@ -16,12 +20,28 @@ const priceFormatter = new Intl.NumberFormat("es-ES", {
   maximumFractionDigits: 0,
 });
 
-export const QuickVehiclePreview = ({ className }: { className?: string }) => {
+export interface QuickVehiclePreviewProps {
+  className?: string;
+  leadPreviewUrl?: string | null;
+  galleryImageCount?: number;
+}
+
+export const QuickVehiclePreview = ({
+  className,
+  leadPreviewUrl,
+  galleryImageCount,
+}: QuickVehiclePreviewProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const watched = useWatch({ control: form.control });
 
   const images = watched.images ?? [];
-  const mainImage = images[0];
+  const mainImageUrl =
+    leadPreviewUrl ??
+    getLeadVehicleFormImageUrl(images) ??
+    null;
+  const photoCount =
+    galleryImageCount ?? images.filter((image) => getVehicleFormImageDisplayUrl(image)).length;
+
   const versionId = watched.version_id;
 
   const { data: version } = useQuery({
@@ -69,9 +89,9 @@ export const QuickVehiclePreview = ({ className }: { className?: string }) => {
       <h3 className="font-semibold text-sm">Vista previa de tu anuncio</h3>
       <div className="overflow-hidden rounded-xl border bg-card">
         <div className="relative aspect-video bg-muted">
-          {mainImage?.path ? (
+          {mainImageUrl ? (
             <img
-              src={getImageUrl(mainImage.path)}
+              src={mainImageUrl}
               alt="Vista previa del vehículo"
               className="size-full object-cover"
             />
@@ -80,9 +100,9 @@ export const QuickVehiclePreview = ({ className }: { className?: string }) => {
               Sin fotos
             </div>
           )}
-          {images.length > 0 ? (
+          {photoCount > 0 ? (
             <span className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2 py-0.5 text-xs text-white">
-              {images.length} fotos
+              {photoCount} fotos
             </span>
           ) : null}
         </div>

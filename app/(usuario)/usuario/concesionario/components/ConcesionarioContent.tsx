@@ -342,7 +342,12 @@ export const ConcesionarioContent = () => {
               className="md:col-span-2"
               data-invalid={Boolean(errors.description)}
             >
-              <FieldLabel htmlFor="dealership-description">Descripción</FieldLabel>
+              <FieldLabel htmlFor="dealership-description">
+                Descripción{" "}
+                <span className="font-normal text-muted-foreground">
+                  (opcional)
+                </span>
+              </FieldLabel>
               <Textarea
                 id="dealership-description"
                 rows={4}
@@ -356,11 +361,17 @@ export const ConcesionarioContent = () => {
             </Field>
 
             <Field data-invalid={Boolean(errors.website_url)}>
-              <FieldLabel htmlFor="dealership-website">Sitio web</FieldLabel>
+              <FieldLabel htmlFor="dealership-website">
+                Sitio web{" "}
+                <span className="font-normal text-muted-foreground">
+                  (opcional)
+                </span>
+              </FieldLabel>
               <Input
                 id="dealership-website"
-                type="url"
-                placeholder="https://www.tuconcesionario.com"
+                type="text"
+                inputMode="url"
+                placeholder="tuconcesionario.com o https://www.tuconcesionario.com"
                 aria-invalid={Boolean(errors.website_url)}
                 {...register("website_url")}
               />

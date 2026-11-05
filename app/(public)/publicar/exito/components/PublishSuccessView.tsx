@@ -219,7 +219,7 @@ export const PublishSuccessView = ({
           nativeButton={false}
           render={
             <Link
-              href={`/editar-vehiculo/${vehicleId}?${QUICK_VEHICLE_STEP_QUERY_PARAM}=${QUICK_VEHICLE_STEP_IDS.details}`}
+              href={`/editar-vehiculo/${vehicleId}?${QUICK_VEHICLE_STEP_QUERY_PARAM}=${QUICK_VEHICLE_STEP_IDS.extra}`}
             />
           }
         >

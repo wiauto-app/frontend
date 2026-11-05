@@ -23,6 +23,7 @@ import {
 } from "@/services/files/filesService";
 
 import type { VehicleFormImage } from "../schemas/vehicle.schema";
+import { getLeadVehicleFormImageUrl } from "../utils/getVehicleFormImageDisplayUrl";
 import { vehicleService } from "@/services/vehicleService";
 import Image from "next/image";
 import { FaArrowsAlt } from "react-icons/fa";
@@ -165,6 +166,12 @@ export interface ImagesFormProps {
    * Útil para bloquear el botón de publicar.
    */
   onUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
+
+  /** Vista previa del anuncio: primera foto visible (incluye subidas en curso). */
+  onLeadPreviewChange?: (preview: {
+    url: string | null;
+    totalCount: number;
+  }) => void;
 }
 
 export const ImagesForm = ({
@@ -173,6 +180,7 @@ export const ImagesForm = ({
   featureFirstImage = false,
   maxImages,
   onUploadStatusChange,
+  onLeadPreviewChange,
 }: ImagesFormProps) => {
   const committed_sorted = useMemo(
     () => normalize_vehicle_images(value_prop ?? []),
@@ -209,6 +217,15 @@ export const ImagesForm = ({
     );
     onUploadStatusChange?.(has_incomplete_uploads);
   }, [pending_items, onUploadStatusChange]);
+
+  useEffect(() => {
+    const committedUrl = getLeadVehicleFormImageUrl(committed_sorted);
+    const pendingUrl = pending_items[0]?.preview_url ?? null;
+    const url = committedUrl ?? pendingUrl;
+    const totalCount = committed_sorted.length + pending_items.length;
+
+    onLeadPreviewChange?.({ url, totalCount });
+  }, [committed_sorted, pending_items, onLeadPreviewChange]);
 
   const [is_dragging, setIsDragging] = useState(false);
 

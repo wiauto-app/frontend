@@ -5,6 +5,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useCallback,
   type FormEvent,
   type KeyboardEvent,
 } from "react";
@@ -86,6 +87,17 @@ export const QuickVehicleForm = ({
     useState<PendingVehiclePayload>();
   const autoPublishStartedRef = useRef(false);
   const publishAuthTrackedRef = useRef(false);
+  const [galleryLeadPreview, setGalleryLeadPreview] = useState<{
+    url: string | null;
+    totalCount: number;
+  }>({ url: null, totalCount: 0 });
+
+  const handleGalleryLeadPreviewChange = useCallback(
+    (preview: { url: string | null; totalCount: number }) => {
+      setGalleryLeadPreview(preview);
+    },
+    [],
+  );
 
   const { data: vehicleDetail, isLoading: isLoadingVehicle } = useQuery({
     queryKey: ["vehicle", vehicleId],
@@ -386,12 +398,17 @@ export const QuickVehicleForm = ({
               isEditMode={isEditMode}
               hasIncompleteImageUploads={hasIncompleteImageUploads}
               onImageUploadStatusChange={setHasIncompleteImageUploads}
+              onGalleryLeadPreviewChange={handleGalleryLeadPreviewChange}
             />
           </Suspense>
         </div>
 
         <aside className="hidden lg:flex flex-col gap-6 lg:col-span-1 relative">
-          <QuickVehiclePreview className="sticky top-0 left-0 w-full h-full" />
+          <QuickVehiclePreview
+            className="sticky top-0 left-0 w-full h-full"
+            leadPreviewUrl={galleryLeadPreview.url}
+            galleryImageCount={galleryLeadPreview.totalCount}
+          />
         </aside>
       </form>
     </FormProvider>

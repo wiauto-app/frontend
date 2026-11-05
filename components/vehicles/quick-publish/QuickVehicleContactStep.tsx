@@ -19,6 +19,8 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 interface QuickVehicleContactStepProps {
   contactName: string;
   isEditMode?: boolean;
+  locationStepNumber?: number;
+  contactStepNumber?: number;
 }
 
 interface QuickVehicleSwitchRowProps {
@@ -59,6 +61,8 @@ const QuickVehicleSwitchRow = ({
 export const QuickVehicleContactStep = ({
   contactName,
   isEditMode = false,
+  locationStepNumber = 1,
+  contactStepNumber = 2,
 }: QuickVehicleContactStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const phoneValue = form.watch("phone");
@@ -74,7 +78,7 @@ export const QuickVehicleContactStep = ({
   return (
     <div className="flex flex-col gap-10">
       <VehicleFormStep
-        number={1}
+        number={locationStepNumber}
         label="¿Dónde está el vehículo?"
         description="Escribe el código postal o la ciudad, o usa tu ubicación actual."
       >
@@ -120,7 +124,7 @@ export const QuickVehicleContactStep = ({
         />
       </VehicleFormStep>
 
-      <VehicleFormStep number={2} label="Tu contacto">
+      <VehicleFormStep number={contactStepNumber} label="Tu contacto">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Field>
             <FieldLabel htmlFor="contact-name">Nombre</FieldLabel>

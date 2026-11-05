@@ -7,16 +7,7 @@ import { BaseSelector } from "./baseSelector";
 
 type YearOption = CatalogYearItem & { label: string };
 
-export const QuickYearSelector = ({
-  value,
-  onChange,
-  modelId,
-  ariaInvalid,
-  disabled,
-  placeholder = "Año",
-  label = "Año",
-  versionId,
-}: {
+interface QuickYearSelectorProps {
   value?: string;
   onChange?: (value: string | undefined) => void;
   modelId?: number;
@@ -25,13 +16,21 @@ export const QuickYearSelector = ({
   placeholder?: string;
   /** Texto del label (p. ej. desde Strapi). */
   label?: string;
-  versionId?: number;
-}) => {
-  
+}
+
+export const QuickYearSelector = ({
+  value,
+  onChange,
+  modelId,
+  ariaInvalid,
+  disabled,
+  placeholder = "Año",
+  label = "Año",
+}: QuickYearSelectorProps) => {
   const canFetch = Boolean(modelId);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["catalogYears", "quick", modelId, versionId],
+    queryKey: ["catalogYears", "quick", modelId],
     queryFn: () =>
       yearsService.findAll({
         model_id: modelId,

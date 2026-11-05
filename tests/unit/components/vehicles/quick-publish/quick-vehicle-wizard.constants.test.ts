@@ -4,6 +4,8 @@ import {
   findFirstQuickVehicleErrorField,
   findQuickVehicleErrorStep,
   getQuickPublishStepMotivation,
+  isSubscriberOnlyQuickVehicleStep,
+  parseQuickVehicleStep,
   QUICK_VEHICLE_INTRO_STEPS,
   QUICK_VEHICLE_STEP_IDS,
 } from "@/components/vehicles/quick-publish/quick-vehicle-wizard.constants";
@@ -15,18 +17,26 @@ describe("findQuickVehicleErrorStep", () => {
       email: { message: "Email inválido" },
     });
 
-    expect(step?.id).toBe(QUICK_VEHICLE_STEP_IDS.photos);
+    expect(step?.id).toBe(QUICK_VEHICLE_STEP_IDS.data);
   });
 
-  it("maps identification and contact errors to their steps", () => {
+  it("maps legacy photos step query to datos step", () => {
+    expect(parseQuickVehicleStep(String(QUICK_VEHICLE_STEP_IDS.photos))).toBe(
+      QUICK_VEHICLE_STEP_IDS.data,
+    );
+  });
+
+  it("maps identification and contact errors to the datos step", () => {
     expect(
-      findQuickVehicleErrorStep({ vin_code: { message: "VIN inválido" } })?.id,
-    ).toBe(QUICK_VEHICLE_STEP_IDS.vehicle);
+      findQuickVehicleErrorStep({
+        license_plate: { message: "Matrícula inválida" },
+      })?.id,
+    ).toBe(QUICK_VEHICLE_STEP_IDS.data);
     expect(
       findQuickVehicleErrorStep({
         email: { message: "Introduce un correo electrónico válido." },
       })?.id,
-    ).toBe(QUICK_VEHICLE_STEP_IDS.contact);
+    ).toBe(QUICK_VEHICLE_STEP_IDS.data);
   });
 
   it("findFirstQuickVehicleErrorField returns the earliest invalid field", () => {
@@ -36,28 +46,26 @@ describe("findQuickVehicleErrorStep", () => {
     });
 
     expect(match?.field).toBe("vehicle_type_id");
-    expect(match?.step.id).toBe(QUICK_VEHICLE_STEP_IDS.vehicle);
+    expect(match?.step.id).toBe(QUICK_VEHICLE_STEP_IDS.data);
   });
 
   it("getQuickPublishStepMotivation adapts to step position", () => {
-    expect(getQuickPublishStepMotivation(0, 5)).toContain("fotografías");
-    expect(getQuickPublishStepMotivation(2, 5)).toContain("casi listo");
-    expect(getQuickPublishStepMotivation(4, 5)).toContain("Último paso");
+    expect(getQuickPublishStepMotivation(0, 1)).toContain("un solo paso");
+    expect(getQuickPublishStepMotivation(0, 3)).toContain("Fotos, datos");
+    expect(getQuickPublishStepMotivation(2, 3)).toContain("Último paso");
   });
 
   it("publicar y edición comparten el mismo recorrido de pasos", () => {
     expect(QUICK_VEHICLE_INTRO_STEPS.map((step) => step.id)).toEqual([
-      QUICK_VEHICLE_STEP_IDS.photos,
-      QUICK_VEHICLE_STEP_IDS.vehicle,
-      QUICK_VEHICLE_STEP_IDS.details,
+      QUICK_VEHICLE_STEP_IDS.data,
+      QUICK_VEHICLE_STEP_IDS.extra,
       QUICK_VEHICLE_STEP_IDS.financing,
-      QUICK_VEHICLE_STEP_IDS.contact,
     ]);
   });
 
   it("only searches through the available steps", () => {
     const availableSteps = QUICK_VEHICLE_INTRO_STEPS.filter(
-      (step) => step.id !== QUICK_VEHICLE_STEP_IDS.contact,
+      (step) => step.id !== QUICK_VEHICLE_STEP_IDS.data,
     );
 
     expect(
@@ -66,5 +74,23 @@ describe("findQuickVehicleErrorStep", () => {
         availableSteps,
       ),
     ).toBeNull();
+  });
+
+  it("marks details and financing as subscriber-only steps", () => {
+    expect(isSubscriberOnlyQuickVehicleStep(QUICK_VEHICLE_STEP_IDS.extra)).toBe(
+      true,
+    );
+    expect(
+      isSubscriberOnlyQuickVehicleStep(QUICK_VEHICLE_STEP_IDS.financing),
+    ).toBe(true);
+    expect(isSubscriberOnlyQuickVehicleStep(QUICK_VEHICLE_STEP_IDS.data)).toBe(
+      false,
+    );
+  });
+
+  it("redirects legacy contact step query to datos step", () => {
+    expect(parseQuickVehicleStep(String(QUICK_VEHICLE_STEP_IDS.contact))).toBe(
+      QUICK_VEHICLE_STEP_IDS.data,
+    );
   });
 });

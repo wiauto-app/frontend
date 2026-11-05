@@ -7,9 +7,8 @@ import { QuickYearSelector } from "@/components/dynamicSelectors/quickYearSelect
 import { VersionSelector } from "@/components/dynamicSelectors/versionSelector";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
-import { BodyTypeSelector } from "@/components/dynamicSelectors/bodyTypeSelector";
-import { FuelTypeSelector } from "@/components/dynamicSelectors/fuelTypeSelector";
 import { CatalogVersionItem } from "../types/catalog.types";
+import { QuickCatalogFuelBodyFields } from "./QuickCatalogFuelBodyFields";
 import { requestPublishDatosCheck } from "./QuickVehiclePublishDataTracker";
 
 const clearElectricFields = (
@@ -20,16 +19,19 @@ const clearElectricFields = (
   setValue("time_to_charge", undefined, { shouldDirty: true });
 };
 
-export const QuickCatalogFields = () => {
+interface QuickCatalogFieldsProps {
+  showFuelAndBodySelectors?: boolean;
+}
+
+export const QuickCatalogFields = ({
+  showFuelAndBodySelectors = false,
+}: QuickCatalogFieldsProps) => {
   const form = useFormContext<QuickVehicleSchema>();
 
   const versionId = form.watch("version_id");
   const catalogMakeId = form.watch("catalog_make_id");
   const catalogModelId = form.watch("catalog_model_id");
   const catalogYearId = form.watch("catalog_year_id");
-  const catalogBodyTypeId = form.watch("catalog_body_type_id");
-  const catalogFuelTypeId = form.watch("catalog_fuel_type_id");
-
   const syncFieldsFromVersion = async (version?: CatalogVersionItem) => {
     if (!version) {
       form.setValue("catalog_fuel_type_id", undefined, {
@@ -37,10 +39,6 @@ export const QuickCatalogFields = () => {
       });
 
       form.setValue("catalog_body_type_id", undefined, {
-        shouldDirty: true,
-      });
-
-      form.setValue("catalog_year_id", undefined, {
         shouldDirty: true,
       });
 
@@ -58,10 +56,6 @@ export const QuickCatalogFields = () => {
     });
 
     form.setValue("catalog_body_type_id", version.body_type_id, {
-      shouldDirty: true,
-    });
-
-    form.setValue("catalog_year_id", version.year_id, {
       shouldDirty: true,
     });
 
@@ -125,6 +119,11 @@ export const QuickCatalogFields = () => {
             shouldDirty: true,
           });
 
+          form.setValue("version_id", 0, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+
           form.setValue("catalog_body_type_id", undefined, {
             shouldDirty: true,
           });
@@ -152,6 +151,11 @@ export const QuickCatalogFields = () => {
             shouldDirty: true,
           });
 
+          form.setValue("version_id", 0, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+
           form.setValue("catalog_body_type_id", undefined, {
             shouldDirty: true,
           });
@@ -165,16 +169,6 @@ export const QuickCatalogFields = () => {
         }}
       />
 
-      <VersionSelector
-        makeId={catalogMakeId !== undefined ? Number(catalogMakeId) : undefined}
-        modelId={
-          catalogModelId !== undefined ? Number(catalogModelId) : undefined
-        }
-        value={versionId ? String(versionId) : undefined}
-        onChange={handleVersionChange}
-        hideLabel={false}
-      />
-
       <QuickYearSelector
         modelId={
           catalogModelId !== undefined ? Number(catalogModelId) : undefined
@@ -183,57 +177,36 @@ export const QuickCatalogFields = () => {
         onChange={(value) => {
           form.setValue("catalog_year_id", value ? Number(value) : undefined, {
             shouldDirty: true,
+            shouldValidate: true,
           });
+          form.setValue("version_id", 0, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+          form.setValue("catalog_body_type_id", undefined, {
+            shouldDirty: true,
+          });
+          form.setValue("catalog_fuel_type_id", undefined, {
+            shouldDirty: true,
+          });
+          clearElectricFields(form.setValue);
           requestPublishDatosCheck();
-        }}  
-        versionId={versionId}
-        disabled={!versionId}
+        }}
       />
 
-      <FuelTypeSelector
+      <VersionSelector
+        makeId={catalogMakeId !== undefined ? Number(catalogMakeId) : undefined}
         modelId={
           catalogModelId !== undefined ? Number(catalogModelId) : undefined
         }
-
-        versionId={versionId}
-        value={
-          catalogFuelTypeId !== undefined
-            ? String(catalogFuelTypeId)
-            : undefined
-        }
-        onChange={(value) => {
-          form.setValue(
-            "catalog_fuel_type_id",
-            value ? Number(value) : undefined,
-            {
-              shouldDirty: true,
-            },
-          );
-        }}
-        disabled={!versionId}
+        yearId={catalogYearId !== undefined ? Number(catalogYearId) : undefined}
+        value={versionId ? String(versionId) : undefined}
+        onChange={handleVersionChange}
+        hideLabel={false}
+        disabled={!catalogYearId}
       />
 
-      <BodyTypeSelector
-        modelId={
-          catalogModelId !== undefined ? Number(catalogModelId) : undefined
-        }
-        versionId={versionId}
-        value={
-          catalogBodyTypeId !== undefined
-            ? String(catalogBodyTypeId)
-            : undefined
-        }
-        onChange={(value) => {
-          form.setValue(
-            "catalog_body_type_id",
-            value ? Number(value) : undefined,
-            {
-              shouldDirty: true,
-            },
-          );
-        }}
-        disabled={!versionId}
-      />
+      {showFuelAndBodySelectors ? <QuickCatalogFuelBodyFields /> : null}
     </div>
   );
 };

@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+import {
+  isValidWebsiteUrlInput,
+  normalizeWebsiteUrlForStorage,
+} from "@/lib/validations/websiteUrl";
 import type {
   CreateMyDealershipPayload,
   DealershipDetail,
@@ -16,11 +20,13 @@ export const dealershipProfileFormSchema = z.object({
     .string()
     .trim()
     .min(1, "La imagen de banner es obligatoria"),
-  description: z
+  description: z.string().trim(),
+  website_url: z
     .string()
     .trim()
-    .min(10, "La descripción debe tener al menos 10 caracteres"),
-  website_url: z.string().trim().url("Introduce una URL válida"),
+    .refine((value) => isValidWebsiteUrlInput(value), {
+      message: "Introduce una URL o dominio válido",
+    }),
   email: z.string().trim().email("Introduce un correo electrónico válido"),
   phone: z.object({
     phone_code: z.string().min(1, "El prefijo telefónico es obligatorio"),
@@ -76,7 +82,8 @@ export const mapDealershipFormToCreatePayload = (
   avatar_url: values.avatar_url.trim(),
   banner_url: values.banner_url.trim(),
   description: values.description.trim(),
-  website_url: values.website_url.trim(),
+  website_url:
+    normalizeWebsiteUrlForStorage(values.website_url) || undefined,
   email: values.email.trim(),
   phone_code: values.phone.phone_code,
   phone: values.phone.phone,
@@ -93,7 +100,8 @@ export const mapDealershipFormToUpdatePayload = (
   avatar_url: values.avatar_url.trim(),
   banner_url: values.banner_url.trim(),
   description: values.description.trim(),
-  website_url: values.website_url.trim(),
+  website_url:
+    normalizeWebsiteUrlForStorage(values.website_url) || undefined,
   email: values.email.trim(),
   phone_code: values.phone.phone_code,
   phone: values.phone.phone,

@@ -17,12 +17,19 @@ import { cn } from "@/lib/utils";
 
 interface QuickVehicleMediaStepProps {
   vehicleId?: string;
+  stepNumber?: number;
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
+  onGalleryLeadPreviewChange?: (preview: {
+    url: string | null;
+    totalCount: number;
+  }) => void;
 }
 
 export const QuickVehicleMediaStep = ({
   vehicleId,
+  stepNumber = 1,
   onImageUploadStatusChange,
+  onGalleryLeadPreviewChange,
 }: QuickVehicleMediaStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
 
@@ -42,6 +49,7 @@ export const QuickVehicleMediaStep = ({
 
   return (
     <VehicleFormStep
+      number={stepNumber}
       label="Sube las fotografías del vehículo"
       description={
         canUploadVideos
@@ -91,6 +99,7 @@ export const QuickVehicleMediaStep = ({
                   reference_id={vehicleId}
                   maxImages={limit}
                   onUploadStatusChange={onImageUploadStatusChange}
+                  onLeadPreviewChange={onGalleryLeadPreviewChange}
                 />
                 {fieldState.error ? (
                   <p className="mt-2 text-sm text-destructive">

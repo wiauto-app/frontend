@@ -10,10 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/stepper";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 
-import { QuickVehicleCarStep } from "./QuickVehicleCarStep";
-import { QuickVehicleContactStep } from "./QuickVehicleContactStep";
+import { QuickVehicleDatosStep } from "./QuickVehicleDatosStep";
 import { QuickVehicleDetailsStep } from "./QuickVehicleDetailsStep";
-import { QuickVehicleMediaStep } from "./QuickVehicleMediaStep";
 import { QuickVehiclePhotosTracker } from "./QuickVehiclePhotosTracker";
 import { QuickVehicleSpecsAutofill } from "./QuickVehicleSpecsAutofill";
 import { FinanceWarrantyForm } from "./financeWarrantyForm";
@@ -43,6 +41,10 @@ interface QuickVehicleIntroWizardProps {
   isEditMode?: boolean;
   hasIncompleteImageUploads?: boolean;
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
+  onGalleryLeadPreviewChange?: (preview: {
+    url: string | null;
+    totalCount: number;
+  }) => void;
 }
 
 export const QuickVehicleIntroWizard = ({
@@ -51,6 +53,7 @@ export const QuickVehicleIntroWizard = ({
   isEditMode = false,
   hasIncompleteImageUploads = false,
   onImageUploadStatusChange,
+  onGalleryLeadPreviewChange,
 }: QuickVehicleIntroWizardProps) => {
   const form = useFormContext<QuickVehicleSchema>();
 
@@ -187,32 +190,26 @@ export const QuickVehicleIntroWizard = ({
     trackPublishSubmitClick({ step: currentStepConfig.name });
   };
 
+  const showStepNavigation = stepItems.length > 1;
+
   const renderStep = () => {
     switch (currentStep) {
-      case QUICK_VEHICLE_STEP_IDS.photos:
+      case QUICK_VEHICLE_STEP_IDS.data:
         return (
-          <QuickVehicleMediaStep
-            vehicleId={vehicleId}
+          <QuickVehicleDatosStep
+            contactName={contactName}
+            isEditMode={isEditMode}
+            onGalleryLeadPreviewChange={onGalleryLeadPreviewChange}
             onImageUploadStatusChange={onImageUploadStatusChange}
+            vehicleId={vehicleId}
           />
         );
 
-      case QUICK_VEHICLE_STEP_IDS.vehicle:
-        return <QuickVehicleCarStep />;
-
-      case QUICK_VEHICLE_STEP_IDS.details:
+      case QUICK_VEHICLE_STEP_IDS.extra:
         return <QuickVehicleDetailsStep />;
 
       case QUICK_VEHICLE_STEP_IDS.financing:
         return <FinanceWarrantyForm />;
-
-      case QUICK_VEHICLE_STEP_IDS.contact:
-        return (
-          <QuickVehicleContactStep
-            contactName={contactName}
-            isEditMode={isEditMode}
-          />
-        );
 
       default:
         return null;
@@ -232,14 +229,16 @@ export const QuickVehicleIntroWizard = ({
           <QuickVehicleSpecsAutofill />
         </>
       ) : null}
-      <div className="space-y-3">
-        <QuickPublishStepProgress isEditMode={isEditMode} />
-        <Stepper
-          steps={stepItems}
-          currentStep={currentStep}
-          onStepClick={handleStepClick}
-        />
-      </div>
+      {showStepNavigation ? (
+        <div className="space-y-3">
+          <QuickPublishStepProgress isEditMode={isEditMode} />
+          <Stepper
+            steps={stepItems}
+            currentStep={currentStep}
+            onStepClick={handleStepClick}
+          />
+        </div>
+      ) : null}
 
       {renderStep()}
 

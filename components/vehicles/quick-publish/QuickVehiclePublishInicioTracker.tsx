@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 
 import { track } from "@/lib/analytics/funnel";
 
+import { QUICK_VEHICLE_STEP_IDS } from "./quick-vehicle-wizard.constants";
+
 interface QuickVehiclePublishInicioTrackerProps {
   activeStep: number;
 }
@@ -14,7 +16,7 @@ export const QuickVehiclePublishInicioTracker = ({
   const firedRef = useRef(false);
 
   useEffect(() => {
-    if (firedRef.current || activeStep !== 1) {
+    if (firedRef.current || activeStep !== QUICK_VEHICLE_STEP_IDS.data) {
       return;
     }
 

@@ -103,7 +103,9 @@ export const VersionSelector = ({
       emptyText={
         !modelId
           ? "Selecciona un modelo primero"
-          : "No hay versiones para esta combinación"
+          : !yearId
+            ? "Selecciona un año primero"
+            : "No hay versiones para esta combinación"
       }
       placeholder={placeholder}
       resolveOption={async (versionId) => {

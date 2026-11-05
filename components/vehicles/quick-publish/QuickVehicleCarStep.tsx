@@ -9,7 +9,7 @@ import { QuickVehiclePricingFields } from "./QuickVehiclePricingFields";
 import { QuickVehiclePublishDataTracker } from "./QuickVehiclePublishDataTracker";
 import { QuickVehicleTypeStep } from "./QuickVehicleTypeStep";
 
-/** Pantalla «Coche»: tipo, matrícula/VIN, marca-modelo-versión-año, km y precio. */
+/** Bloque de catálogo y precio (usado en composiciones; el wizard usa QuickVehicleDatosStep). */
 export const QuickVehicleCarStep = () => {
   const form = useFormContext<QuickVehicleSchema>();
   const versionError = form.formState.errors.version_id;
