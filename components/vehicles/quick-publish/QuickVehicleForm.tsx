@@ -353,10 +353,6 @@ export const QuickVehicleForm = ({
     );
   }
 
-  const contactName = user
-    ? [user.name, user.last_name].filter(Boolean).join(" ")
-    : "";
-
   return (
     <FormProvider {...form}>
       {!isEditMode ? (
@@ -381,9 +377,9 @@ export const QuickVehicleForm = ({
         noValidate
         onSubmit={handleFormSubmit}
         onKeyDown={handleFormKeyDown}
-        className="grid grid-cols-1 gap-5 lg:grid-cols-4"
+        className="grid grid-cols-1 gap-5 "
       >
-        <div className="flex flex-col gap-6 lg:col-span-3">
+        <div className="flex flex-col gap-6 ">
           <Suspense
             fallback={
               <div className="flex min-h-48 items-center justify-center gap-2 text-muted-foreground">
@@ -394,7 +390,6 @@ export const QuickVehicleForm = ({
           >
             <QuickVehicleIntroWizard
               vehicleId={vehicleId}
-              contactName={contactName}
               isEditMode={isEditMode}
               hasIncompleteImageUploads={hasIncompleteImageUploads}
               onImageUploadStatusChange={setHasIncompleteImageUploads}
@@ -403,13 +398,13 @@ export const QuickVehicleForm = ({
           </Suspense>
         </div>
 
-        <aside className="hidden lg:flex flex-col gap-6 lg:col-span-1 relative">
+        {/* <aside className="hidden lg:flex flex-col gap-6 lg:col-span-1 relative">
           <QuickVehiclePreview
             className="sticky top-0 left-0 w-full h-full"
             leadPreviewUrl={galleryLeadPreview.url}
             galleryImageCount={galleryLeadPreview.totalCount}
           />
-        </aside>
+        </aside> */}
       </form>
     </FormProvider>
   );

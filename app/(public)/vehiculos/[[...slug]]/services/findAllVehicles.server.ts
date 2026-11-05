@@ -27,7 +27,7 @@ export const findAllVehicles = async (
     const response = await apiGet<VehiclesListingResult>(
       "/v1/vehicles",
       params as Record<string, unknown>,
-      ENVIRONMENT === "development" ? 0 : CACHE_ONE_HOUR,
+      0,
     );
     if (!response.ok) {
       console.log(response);

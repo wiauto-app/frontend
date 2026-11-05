@@ -5,6 +5,8 @@ import { MakeSelector } from "@/components/dynamicSelectors/makeSelector";
 import { ModelSelector } from "@/components/dynamicSelectors/modelSelector";
 import { QuickYearSelector } from "@/components/dynamicSelectors/quickYearSelector";
 import { VersionSelector } from "@/components/dynamicSelectors/versionSelector";
+import { ControllerInput } from "@/components/ui/controllerInput";
+import { Input } from "@/components/ui/input";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
 import { CatalogVersionItem } from "../types/catalog.types";
@@ -194,17 +196,46 @@ export const QuickCatalogFields = ({
         }}
       />
 
-      <VersionSelector
-        makeId={catalogMakeId !== undefined ? Number(catalogMakeId) : undefined}
-        modelId={
-          catalogModelId !== undefined ? Number(catalogModelId) : undefined
-        }
-        yearId={catalogYearId !== undefined ? Number(catalogYearId) : undefined}
-        value={versionId ? String(versionId) : undefined}
-        onChange={handleVersionChange}
-        hideLabel={false}
-        disabled={!catalogYearId}
-      />
+      <div className="col-span-1 grid grid-cols-1 gap-3 md:grid-cols-2 sm:col-span-2 lg:col-span-3">
+        <VersionSelector
+          makeId={
+            catalogMakeId !== undefined ? Number(catalogMakeId) : undefined
+          }
+          modelId={
+            catalogModelId !== undefined ? Number(catalogModelId) : undefined
+          }
+          yearId={
+            catalogYearId !== undefined ? Number(catalogYearId) : undefined
+          }
+          value={versionId ? String(versionId) : undefined}
+          onChange={handleVersionChange}
+          hideLabel={false}
+          disabled={!catalogYearId}
+        />
+
+        <ControllerInput
+          name="mileage"
+          control={form.control}
+          label="Kilometraje"
+        >
+          {({ field, fieldState }) => (
+            <Input
+              {...field}
+              value={field.value == null ? "" : String(field.value)}
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={9999999}
+              placeholder="Ej. 85000"
+              aria-invalid={fieldState.invalid}
+              onBlur={() => {
+                field.onBlur();
+                requestPublishDatosCheck();
+              }}
+            />
+          )}
+        </ControllerInput>
+      </div>
 
       {showFuelAndBodySelectors ? <QuickCatalogFuelBodyFields /> : null}
     </div>

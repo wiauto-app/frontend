@@ -37,7 +37,6 @@ import { useQuickPublishWizardSteps } from "./hooks/useQuickPublishWizardSteps";
 
 interface QuickVehicleIntroWizardProps {
   vehicleId?: string;
-  contactName: string;
   isEditMode?: boolean;
   hasIncompleteImageUploads?: boolean;
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
@@ -49,7 +48,6 @@ interface QuickVehicleIntroWizardProps {
 
 export const QuickVehicleIntroWizard = ({
   vehicleId,
-  contactName,
   isEditMode = false,
   hasIncompleteImageUploads = false,
   onImageUploadStatusChange,
@@ -197,7 +195,6 @@ export const QuickVehicleIntroWizard = ({
       case QUICK_VEHICLE_STEP_IDS.data:
         return (
           <QuickVehicleDatosStep
-            contactName={contactName}
             isEditMode={isEditMode}
             onGalleryLeadPreviewChange={onGalleryLeadPreviewChange}
             onImageUploadStatusChange={onImageUploadStatusChange}

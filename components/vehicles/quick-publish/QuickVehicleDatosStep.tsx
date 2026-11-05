@@ -13,7 +13,6 @@ import { QuickVehicleMediaStep } from "./QuickVehicleMediaStep";
 import { QuickVehicleTypeStep } from "./QuickVehicleTypeStep";
 
 interface QuickVehicleDatosStepProps {
-  contactName: string;
   isEditMode?: boolean;
   vehicleId?: string;
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
@@ -23,9 +22,8 @@ interface QuickVehicleDatosStepProps {
   }) => void;
 }
 
-/** Paso «Datos del anuncio»: fotos, vehículo, precio, contacto y descripción. */
+/** Paso «Datos del anuncio»: fotos, vehículo, descripción, contacto y precio. */
 export const QuickVehicleDatosStep = ({
-  contactName,
   isEditMode = false,
   vehicleId,
   onImageUploadStatusChange,
@@ -55,17 +53,8 @@ export const QuickVehicleDatosStep = ({
         ) : null}
       </VehicleFormStep>
 
-      <QuickVehiclePricingFields stepNumber={5} />
-
-      <QuickVehicleContactStep
-        contactName={contactName}
-        isEditMode={isEditMode}
-        locationStepNumber={6}
-        contactStepNumber={7}
-      />
-
       <VehicleFormStep
-        number={8}
+        number={5}
         isOptional
         label="Descripción del vehículo"
         description="Describe el estado, historial y puntos destacados del vehículo."
@@ -74,6 +63,14 @@ export const QuickVehicleDatosStep = ({
           <QuickVehicleAiDescriptionCard />
         </div>
       </VehicleFormStep>
+
+      <QuickVehicleContactStep
+        isEditMode={isEditMode}
+        locationStepNumber={6}
+        contactStepNumber={7}
+      />
+
+      <QuickVehiclePricingFields stepNumber={8} />
     </div>
   );
 };

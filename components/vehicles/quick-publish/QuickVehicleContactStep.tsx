@@ -17,7 +17,6 @@ import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-veh
 import { useEntitlements } from "@/hooks/useEntitlements";
 
 interface QuickVehicleContactStepProps {
-  contactName: string;
   isEditMode?: boolean;
   locationStepNumber?: number;
   contactStepNumber?: number;
@@ -57,12 +56,11 @@ const QuickVehicleSwitchRow = ({
   </Field>
 );
 
-/** Pantalla «Contacto y publicar»: ubicación y datos de contacto. */
+/** Ubicación y contacto: en pantallas grandes, mapa y datos en dos columnas. */
 export const QuickVehicleContactStep = ({
-  contactName,
   isEditMode = false,
-  locationStepNumber = 1,
-  contactStepNumber = 2,
+  locationStepNumber = 6,
+  contactStepNumber = 7,
 }: QuickVehicleContactStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
   const phoneValue = form.watch("phone");
@@ -76,7 +74,7 @@ export const QuickVehicleContactStep = ({
   };
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-start">
       <VehicleFormStep
         number={locationStepNumber}
         label="¿Dónde está el vehículo?"
@@ -125,17 +123,7 @@ export const QuickVehicleContactStep = ({
       </VehicleFormStep>
 
       <VehicleFormStep number={contactStepNumber} label="Tu contacto">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Field>
-            <FieldLabel htmlFor="contact-name">Nombre</FieldLabel>
-            <Input
-              id="contact-name"
-              value={contactName}
-              placeholder="Se completará al iniciar sesión"
-              readOnly
-              disabled
-            />
-          </Field>
+        <div className="grid grid-cols-1 gap-4">
           <Controller
             name="phone"
             control={form.control}
@@ -170,50 +158,52 @@ export const QuickVehicleContactStep = ({
           </ControllerInput>
         </div>
 
-        <Controller
-          name="show_phone"
-          control={form.control}
-          render={({ field }) => (
-            <QuickVehicleSwitchRow
-              id="quick-show-phone"
-              label="Mostrar teléfono en el anuncio"
-              description="Si lo desactivas, se ocultará el contacto telefónico en el anuncio público."
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-          )}
-        />
-
-        <Controller
-          name="has_whatsapp"
-          control={form.control}
-          render={({ field }) => (
-            <QuickVehicleSwitchRow
-              id="quick-has-whatsapp"
-              label="Disponible por WhatsApp"
-              description="Indica si el número de contacto puede recibir mensajes por WhatsApp."
-              checked={field.value}
-              onCheckedChange={field.onChange}
-              disabled={!phoneValue?.phone?.trim()}
-            />
-          )}
-        />
-
-        {isSubscribed ? (
+        <div className="flex flex-col gap-4">
           <Controller
-            name="show_review_collab"
+            name="show_phone"
             control={form.control}
             render={({ field }) => (
               <QuickVehicleSwitchRow
-                id="quick-show-review-collab"
-                label="Mostrar revisión de colaboración"
-                description="Si lo activas, se mostrará la revisión de colaboración en el anuncio público."
+                id="quick-show-phone"
+                label="Mostrar teléfono en el anuncio"
+                description="Si lo desactivas, se ocultará el contacto telefónico en el anuncio público."
                 checked={field.value}
                 onCheckedChange={field.onChange}
               />
             )}
           />
-        ) : null}
+
+          <Controller
+            name="has_whatsapp"
+            control={form.control}
+            render={({ field }) => (
+              <QuickVehicleSwitchRow
+                id="quick-has-whatsapp"
+                label="Disponible por WhatsApp"
+                description="Indica si el número de contacto puede recibir mensajes por WhatsApp."
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                disabled={!phoneValue?.phone?.trim()}
+              />
+            )}
+          />
+
+          {isSubscribed ? (
+            <Controller
+              name="show_review_collab"
+              control={form.control}
+              render={({ field }) => (
+                <QuickVehicleSwitchRow
+                  id="quick-show-review-collab"
+                  label="Mostrar revisión de colaboración"
+                  description="Si lo activas, se mostrará la revisión de colaboración en el anuncio público."
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+          ) : null}
+        </div>
       </VehicleFormStep>
     </div>
   );
