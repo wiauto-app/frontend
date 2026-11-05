@@ -39,23 +39,24 @@ describe("getVehicleAiCanExecute", () => {
     expect(getVehicleAiCanExecute("recommendPrice", values)).toBe(false);
   });
 
-  it("permite generar descripción cuando la ficha técnica está completa", () => {
+  it("permite generar descripción con catálogo y km sin ubicación", () => {
     const values = buildValidFormValues();
+    values.lat = undefined;
+    values.lng = undefined;
+    values.power = undefined;
+    values.traction_id = "";
 
     expect(getVehicleAiCanExecute("generateDescription", values)).toBe(true);
   });
 
-  it("no permite generar descripción sin potencia ni tracción", () => {
+  it("no permite generar descripción sin versión o kilometraje", () => {
     const values = buildValidFormValues();
-    values.power = 0;
-    values.traction_id = "";
+    values.version_id = 0;
 
     expect(getVehicleAiCanExecute("generateDescription", values)).toBe(false);
-  });
 
-  it("no permite generar descripción con tracción inválida", () => {
-    const values = buildValidFormValues();
-    values.traction_id = "no-es-uuid";
+    values.version_id = 42;
+    values.mileage = undefined;
 
     expect(getVehicleAiCanExecute("generateDescription", values)).toBe(false);
   });

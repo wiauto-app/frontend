@@ -11,7 +11,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
-import { useVehicleAiAction } from "@/hooks/useVehicleAiAction";
+import {
+  useVehicleAiAction,
+  VEHICLE_AI_MISSING_FIELDS_MESSAGE,
+} from "@/hooks/useVehicleAiAction";
 import { GeneratedDescriptionConfigFields } from "./generatedDescription/generatedDescriptionConfig";
 import { ControllerInput } from "@/components/ui/controllerInput";
 import { Textarea } from "@/components/ui/textarea";
@@ -95,7 +98,12 @@ export const QuickVehicleAiDescriptionCard = () => {
           </p>
         ) : null}
 
-        <div></div>
+        {!canExecute && !isPending ? (
+          <p className="text-sm text-muted-foreground" role="status">
+            {VEHICLE_AI_MISSING_FIELDS_MESSAGE}
+          </p>
+        ) : null}
+
         <Controller
           name="description"
           control={form.control}

@@ -25,37 +25,28 @@ export type VehicleAiActionError = "rate_limited" | "generic";
 export const VEHICLE_AI_MISSING_FIELDS_MESSAGE =
   "Completa la ficha del vehículo para usar esta función";
 
-const isValidUuid = (value: string | undefined | null): boolean =>
-  typeof value === "string" &&
-  value.trim().length > 0 &&
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value,
-  );
-
 export const getVehicleAiCanExecute = (
   action: VehicleAiAction,
   values: QuickVehicleSchema,
 ): boolean => {
-  const hasBaseFields =
+  const hasCatalogContext =
     values.version_id > 0 &&
     Boolean(values.condition) &&
     values.mileage != null &&
-    !Number.isNaN(Number(values.mileage)) &&
+    !Number.isNaN(Number(values.mileage));
+
+  const hasLocation =
     values.lat != null &&
     !Number.isNaN(Number(values.lat)) &&
     values.lng != null &&
     !Number.isNaN(Number(values.lng));
 
   if (action === "recommendPrice") {
-    return hasBaseFields;
+    return hasCatalogContext && hasLocation;
   }
 
-  return (
-    hasBaseFields &&
-    Boolean(values.transmission_type) &&
-    (values.power ?? 0) > 0 &&
-    isValidUuid(values.traction_id)
-  );
+  // Descripción (paso 5): ubicación y ficha extra van después; la API no exige lat/lng ni tracción.
+  return hasCatalogContext && Boolean(values.transmission_type);
 };
 
 type VehicleAiActionResultMap = {
