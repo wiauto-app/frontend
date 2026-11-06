@@ -65,6 +65,12 @@ const nextConfig: NextConfig = {
         destination: "https://www.wiauto.es/:path*",
         permanent: true,
       },
+      ///publicar-vehiculo -> /publicar
+      {
+        source: "/publicar-vehiculo",
+        destination: "/publicar",
+        permanent: true,
+      },
     ];
   },
 };

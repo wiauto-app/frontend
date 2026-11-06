@@ -62,6 +62,6 @@ export type AssistantQuickLink = {
 };
 export const ASSISTANT_QUICK_LINKS: AssistantQuickLink[] = [
   { label: "Explorar vehículos", href: "/vehiculos", description: "Encuentra tu próximo coche", Icon: Car },
-  { label: "Publicar anuncio", href: "/publicar-vehiculo", description: "Vende tu coche rápido y fácil", Icon: Tag },
+  { label: "Publicar anuncio", href: "/publicar", description: "Vende tu coche rápido y fácil", Icon: Tag },
   // { label: "Mapa", href: "/asistente/map", description: "Ver coches cerca de ti", Icon: Map },
 ] as const;
