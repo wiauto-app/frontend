@@ -96,6 +96,37 @@ describe("authService.getMe", () => {
     expect(result.pending_vehicle_id).toBe("vehicle-draft-1");
   });
 
+  it("desenvuelve campos de sesión del ResponseInterceptor en register", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        ok: true,
+        status: 200,
+        data: {
+          message: "Te enviamos un correo con el enlace de verificación.",
+          data: { id: "user-1", email: "a@b.com" },
+          type: "session",
+          token: "access-token",
+          refresh_token: "refresh-token",
+        },
+      }),
+    } as Response);
+
+    const result = await authService.register({
+      email: "a@b.com",
+      password: "secret123",
+      name: "Ana",
+      phone_code: "+34",
+      phone: "600000000",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.type).toBe("session");
+    expect(result.token).toBe("access-token");
+    expect(result.refresh_token).toBe("refresh-token");
+  });
+
   it("desenvuelve pending_vehicle_queued del ResponseInterceptor en register", async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,

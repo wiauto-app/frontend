@@ -68,7 +68,7 @@ export interface RegisterDto {
   phone_code: string;
   phone: string;
   referral_code?: string;
-  /** Mismo payload que `POST /vehicles`; el backend lo guarda como borrador. */
+  /** Mismo payload que `POST /vehicles`; el backend lo crea en registro desde publicar. */
   pending_vehicle?: PendingVehiclePayload;
 }
 

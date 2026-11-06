@@ -6,6 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useUser } from "@/app/contexts/auth/useUser";
 import { AuthSocialLogins } from "@/app/(auth)/components/AuthSocialLogins";
 import { AUTENTICACION_DEFAULT } from "@/app/(auth)/content/autenticacion.fallback";
 import { StrapiAviso } from "@/components/strapi/StrapiAviso";
@@ -61,23 +62,14 @@ interface RegisterFormContentProps {
   showTitle?: boolean;
   showFooterLink?: boolean;
   onSwitchToLogin?: () => void;
-  onRegisterSuccess?: () => void;
-  /** Anuncio del invitado: se envía con el registro y queda como borrador. */
+  onRegisterSuccess?: () => void | Promise<void>;
+  /** Anuncio del invitado: se envía con el registro al publicar. */
   pendingVehiclePayload?: PendingVehiclePayload;
-  /** El backend guardó el borrador: el handoff local ya no hace falta. */
+  /** El backend guardó el anuncio: el handoff local ya no hace falta. */
   onPendingVehicleCreated?: () => void;
 }
 
-const CONFIRM_CORREO_WITH_LISTING_PATH = "/confirmar-correo?anuncio=1";
-
-const buildConfirmCorreoPath = (redirectPath: string | null): string => {
-  if (!redirectPath) {
-    return "/confirmar-correo";
-  }
-
-  const params = new URLSearchParams({ redirect: redirectPath });
-  return `/confirmar-correo?${params.toString()}`;
-};
+const MIS_ANUNCIOS_PATH = "/usuario/mis-anuncios";
 
 export const RegisterFormContent = ({
   content = AUTENTICACION_DEFAULT.registro as StrapiAuthRegistro,
@@ -94,6 +86,7 @@ export const RegisterFormContent = ({
   onPendingVehicleCreated,
 }: RegisterFormContentProps) => {
   const router = useRouter();
+  const { refreshUser } = useUser();
   const isInvitationFlow = invitedEmail.length > 0;
   const hasPendingListingHandoff = useQuickPublishHandoffStore((state) =>
     isQuickPublishHandoffValid(state),
@@ -113,6 +106,15 @@ export const RegisterFormContent = ({
     }
     return null;
   }, [redirectFromQuery, returnTo]);
+
+  const isPublishListingContext = useMemo(
+    () =>
+      willAttachListing ||
+      isPublishFlowPath(resolvedRedirect) ||
+      isPublishFlowPath(returnTo) ||
+      isMarkedPublishFlow(),
+    [willAttachListing, resolvedRedirect, returnTo],
+  );
 
   useEffect(() => {
     if (referralCodeFromQuery) {
@@ -183,34 +185,49 @@ export const RegisterFormContent = ({
         trackCompleteRegistration("email");
       }
 
-      if (response.pending_vehicle_queued || response.pending_vehicle_id) {
+      const listingAttached =
+        Boolean(response.pending_vehicle_id) ||
+        Boolean(response.pending_vehicle_queued);
+
+      if (listingAttached && isPublishListingContext) {
         clearPendingVehicleHandoff();
         onPendingVehicleCreated?.();
+      }
+
+      await refreshUser();
+
+      if (listingAttached && isPublishListingContext) {
         toast.success(
-          "Revisa tu correo para verificar la cuenta. Publicaremos tu anuncio en cuanto la verifiques.",
+          response.pending_vehicle_id
+            ? "Tu anuncio ya está publicado. Te hemos enviado un correo para verificar tu cuenta."
+            : "Cuenta creada. Revisa tu correo para verificar tu dirección de email.",
         );
-        router.push(CONFIRM_CORREO_WITH_LISTING_PATH);
+        if (onRegisterSuccess) {
+          await onRegisterSuccess();
+        }
+        router.push(MIS_ANUNCIOS_PATH);
+        router.refresh();
         return;
       }
 
-      // El handoff local se conserva: se publicará al iniciar sesión, como sin borrador.
       if (response.pending_vehicle_error) {
         toast.warning(
-          `Tu cuenta se ha creado, pero no hemos podido guardar el anuncio: ${response.pending_vehicle_error.replace(/\.$/, "")}. Podrás publicarlo al iniciar sesión.`,
+          `Tu cuenta se ha creado, pero no hemos podido guardar el anuncio: ${response.pending_vehicle_error.replace(/\.$/, "")}. Podrás publicarlo desde mis anuncios.`,
         );
       }
 
       toast.success(
         content.mensajes?.exito ||
-          "Revisa tu correo para verificar la cuenta e iniciar sesión.",
+          "Cuenta creada. Revisa tu correo para verificar tu dirección de email.",
       );
 
       if (onRegisterSuccess) {
-        onRegisterSuccess();
+        await onRegisterSuccess();
         return;
       }
 
-      router.push(buildConfirmCorreoPath(resolvedRedirect));
+      router.push(resolvedRedirect ?? "/");
+      router.refresh();
     } catch (error: Error | unknown) {
       console.error("Register error:", error);
       const isTimeout =

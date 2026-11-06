@@ -309,6 +309,7 @@ export const QuickVehicleForm = ({
 
   // El borrador ya vive en el backend: contiene email y teléfono, no se guarda en local.
   const handlePendingVehicleCreated = () => {
+    setPendingPublish(false);
     discardDraft();
     resetPublishFunnel();
     setPendingVehiclePayload(undefined);

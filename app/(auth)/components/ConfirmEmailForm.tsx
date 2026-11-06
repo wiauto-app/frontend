@@ -5,7 +5,7 @@ import { StrapiEncabezado } from "@/components/strapi/StrapiEncabezado";
 import { StrapiTextoEnlace } from "@/components/strapi/StrapiTextoEnlace";
 
 interface ConfirmEmailFormProps extends AuthPantallaProps<"confirmar_correo"> {
-  /** Registro desde `/publicar`: hay un anuncio guardado como borrador. */
+  /** Legacy: registro antiguo con anuncio en borrador pendiente de verificación. */
   hasPendingListing?: boolean;
 }
 
@@ -22,8 +22,8 @@ export default function ConfirmEmailForm({
           className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm text-blue-800"
           role="note"
         >
-          Tu anuncio está guardado como borrador y se publicará al verificar tu
-          cuenta.
+          Si tienes un anuncio guardado como borrador, se publicará al verificar
+          tu cuenta.
         </p>
       ) : null}
 

@@ -32,7 +32,7 @@ interface SignInDialogProps {
   trigger?: React.ReactElement;
   onSuccess?: () => void | Promise<void>;
   returnTo?: string;
-  /** Anuncio del invitado que se guardará como borrador al registrarse. */
+  /** Anuncio del invitado que se envía al registrarse desde publicar. */
   pendingVehiclePayload?: PendingVehiclePayload;
   onPendingVehicleCreated?: () => void;
   /** Se llama cada vez que el usuario ve una pestaña (al abrir y al cambiar). */
@@ -134,7 +134,7 @@ export const SignInDialog = ({
                 className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800"
                 role="note"
               >
-                Publicaremos tu anuncio en cuanto verifiques tu correo.
+                Completa el registro para publicar tu anuncio. Iniciarás sesión al terminar.
               </p>
             ) : null}
             <Suspense
@@ -159,6 +159,7 @@ export const SignInDialog = ({
                 returnTo={resolvedReturnTo}
                 pendingVehiclePayload={pendingVehiclePayload}
                 onPendingVehicleCreated={onPendingVehicleCreated}
+                onRegisterSuccess={handleSuccess}
               />
             </Suspense>
           </TabsContent>

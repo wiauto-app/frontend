@@ -22,12 +22,15 @@ import { LoginDto, RegisterDto, ResetPasswordDto } from "@/validations/Schemas";
 
 export interface RegisterResult extends ApiResponse<User> {
   referral_code?: string;
-  /** Anuncio creado como borrador; se publica al verificar el correo. */
+  /** Anuncio creado en registro (ACTIVE desde publicar). */
   pending_vehicle_id?: string;
-  /** El anuncio quedó encolado; el identificador llega al verificar el correo. */
+  /** Legacy: anuncio encolado como borrador. */
   pending_vehicle_queued?: boolean;
   /** El registro fue bien, pero el anuncio no se pudo guardar. */
   pending_vehicle_error?: string;
+  type?: AuthResponseDto["type"];
+  token?: string;
+  refresh_token?: string;
 }
 
 /** Cuerpo interno de POST /auth/register tras el ResponseInterceptor del backend. */
@@ -38,6 +41,9 @@ interface RegisterApiPayload {
   pending_vehicle_id?: string;
   pending_vehicle_queued?: boolean;
   pending_vehicle_error?: string;
+  type?: AuthResponseDto["type"];
+  token?: string;
+  refresh_token?: string;
 }
 
 import { BillingMeResponse } from "@/interfaces/billing.interface";
@@ -76,6 +82,9 @@ export const authService = {
         "pending_vehicle_queued" in body.data ||
         "pending_vehicle_error" in body.data ||
         "referral_code" in body.data ||
+        "type" in body.data ||
+        "token" in body.data ||
+        "refresh_token" in body.data ||
         ("data" in body.data && "message" in body.data))
         ? (body.data as RegisterApiPayload)
         : null;
@@ -96,6 +105,9 @@ export const authService = {
       pending_vehicle_id: envelope?.pending_vehicle_id,
       pending_vehicle_queued: envelope?.pending_vehicle_queued,
       pending_vehicle_error: envelope?.pending_vehicle_error,
+      type: envelope?.type,
+      token: envelope?.token,
+      refresh_token: envelope?.refresh_token,
     };
   },
 
