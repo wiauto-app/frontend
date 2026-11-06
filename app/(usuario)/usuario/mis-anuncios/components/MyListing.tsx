@@ -217,7 +217,7 @@ export const MyListing = () => {
               />
             </>
           )}
-          {entitlements.vehicles.limit === 2 ? <UpgradeListingAdd /> : null}
+          {entitlements && entitlements.vehicles && entitlements.vehicles.limit === 2 ? <UpgradeListingAdd /> : null}
         </div>
 
         <div className="space-y-4">
