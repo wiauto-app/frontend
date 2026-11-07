@@ -54,6 +54,7 @@ describe("serializeVehiclePayload", () => {
     expect(payload).not.toHaveProperty("catalog_body_type_id");
     expect(payload).not.toHaveProperty("catalog_fuel_type_id");
     expect(payload).not.toHaveProperty("catalog_fuel_can_charge");
+    expect(payload).not.toHaveProperty("email");
   });
 
   it("omite ref vacío y recorta ref con espacios", () => {

@@ -150,14 +150,6 @@ export const QuickVehicleForm = ({
     form.reset(mapAppraisalToQuickFormValues(appraisal, form.getValues()));
   }, [appraisal, isEditMode, form, isDraftReady, restoredFromDraft]);
 
-  useEffect(() => {
-    if (!user || isEditMode || !isDraftReady) return;
-
-    if (user.email && !form.getValues("email")) {
-      form.setValue("email", user.email);
-    }
-  }, [user, isEditMode, isDraftReady]);
-
   const handleSubmit = async (data: QuickVehicleSchema) => {
     if (hasIncompleteImageUploads) {
       toast.error(
@@ -208,7 +200,7 @@ export const QuickVehicleForm = ({
     } as never);
 
     if (response.ok) {
-      // Contiene email y teléfono: no debe sobrevivir a la publicación.
+      // Contiene teléfono de contacto: no debe sobrevivir a la publicación.
       discardDraft();
       const context = getPublishFunnelContext();
       track(
@@ -307,7 +299,7 @@ export const QuickVehicleForm = ({
     hasIncompleteImageUploads,
   ]);
 
-  // El borrador ya vive en el backend: contiene email y teléfono, no se guarda en local.
+  // El borrador ya vive en el backend: incluye teléfono de contacto, no se guarda en local.
   const handlePendingVehicleCreated = () => {
     setPendingPublish(false);
     discardDraft();

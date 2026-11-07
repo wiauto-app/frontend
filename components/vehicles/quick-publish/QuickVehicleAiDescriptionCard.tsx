@@ -13,7 +13,6 @@ import {
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import {
   useVehicleAiAction,
-  VEHICLE_AI_MISSING_FIELDS_MESSAGE,
 } from "@/hooks/useVehicleAiAction";
 import { GeneratedDescriptionConfigFields } from "./generatedDescription/generatedDescriptionConfig";
 import { ControllerInput } from "@/components/ui/controllerInput";
@@ -98,11 +97,7 @@ export const QuickVehicleAiDescriptionCard = () => {
           </p>
         ) : null}
 
-        {!canExecute && !isPending ? (
-          <p className="text-sm text-muted-foreground" role="status">
-            {VEHICLE_AI_MISSING_FIELDS_MESSAGE}
-          </p>
-        ) : null}
+
 
         <Controller
           name="description"

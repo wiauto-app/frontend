@@ -15,7 +15,7 @@ describe("findQuickVehicleErrorStep", () => {
   it("returns the earliest step containing an invalid field", () => {
     const step = findQuickVehicleErrorStep({
       images: { message: "Sube al menos una fotografía del vehículo." },
-      email: { message: "Email inválido" },
+      phone: { message: "Teléfono no válido" },
     });
 
     expect(step?.id).toBe(QUICK_VEHICLE_STEP_IDS.data);
@@ -35,7 +35,7 @@ describe("findQuickVehicleErrorStep", () => {
     ).toBe(QUICK_VEHICLE_STEP_IDS.data);
     expect(
       findQuickVehicleErrorStep({
-        email: { message: "Introduce un correo electrónico válido." },
+        phone: { message: "Introduce un teléfono válido." },
       })?.id,
     ).toBe(QUICK_VEHICLE_STEP_IDS.data);
   });
@@ -71,7 +71,7 @@ describe("findQuickVehicleErrorStep", () => {
 
     expect(
       findQuickVehicleErrorStep(
-        { email: { message: "Email inválido" } },
+        { phone: { message: "Teléfono no válido" } },
         availableSteps,
       ),
     ).toBeNull();

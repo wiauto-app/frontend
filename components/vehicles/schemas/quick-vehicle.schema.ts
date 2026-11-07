@@ -145,7 +145,6 @@ const quickVehicleBaseSchema = z.object({
   phone: phoneSchema,
   show_phone: z.boolean().default(true),
   has_whatsapp: z.boolean().default(false),
-  email: z.email({ error: "Introduce un correo electrónico válido." }),
   description: z
     .string()
     .max(3000, { error: "La descripción no puede tener más de 3000 caracteres." })
@@ -215,7 +214,6 @@ export const createQuickVehicleDefaultValues: QuickVehicleDefaultValues = {
   phone: { phone_code: "+34", phone: "" },
   show_phone: true,
   has_whatsapp: false,
-  email: "",
   description: "",
   transmission_type: "manual",
   power: undefined,

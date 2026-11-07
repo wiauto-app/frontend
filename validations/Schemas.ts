@@ -6,8 +6,6 @@ import type {
   StrapiAuthOlvideContrasena,
   StrapiAuthRegistro,
 } from "@/interfaces/strapi-components.interface";
-import { createPhoneSchema } from "@/validations/phoneSchema";
-
 const EMAIL_INVALIDO = "Email inválido";
 const CONTRASENA_MINIMO = "La contraseña debe tener al menos 6 caracteres";
 
@@ -28,10 +26,7 @@ export type LoginDto = z.infer<typeof LoginSchema>;
 
 
 export const createRegisterSchema = (
-  content?: Pick<
-    StrapiAuthRegistro,
-    "email" | "contrasena" | "nombre" | "apellidos" | "telefono"
-  > | null,
+  content?: Pick<StrapiAuthRegistro, "email" | "contrasena" | "nombre"> | null,
 ) =>
   z.object({
     email: z.email(content?.email?.mensaje_invalido || EMAIL_INVALIDO),
@@ -45,14 +40,6 @@ export const createRegisterSchema = (
         content?.nombre?.mensaje_invalido ||
           "El nombre debe tener al menos 2 caracteres",
       ),
-    last_name: z
-      .string()
-      .min(
-        2,
-        content?.apellidos?.mensaje_invalido ||
-          "El apellido debe tener al menos 2 caracteres",
-      ),
-    phone: createPhoneSchema(content?.telefono),
   });
 
 export const RegisterSchema = createRegisterSchema();
@@ -64,9 +51,9 @@ export interface RegisterDto {
   email: string;
   password: string;
   name: string;
-  last_name: string;
-  phone_code: string;
-  phone: string;
+  last_name?: string;
+  phone_code?: string;
+  phone?: string;
   referral_code?: string;
   /** Mismo payload que `POST /vehicles`; el backend lo crea en registro desde publicar. */
   pending_vehicle?: PendingVehiclePayload;

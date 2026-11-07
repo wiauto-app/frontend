@@ -46,7 +46,6 @@ export const mapVehicleDetailToQuickFormValues = (
     },
     show_phone: vehicle.show_phone ?? true,
     has_whatsapp: vehicle.has_whatsapp ?? false,
-    email: vehicle.email,
     description: vehicle.description,
     transmission_type: vehicle.transmission_type,
     power: vehicle.power,

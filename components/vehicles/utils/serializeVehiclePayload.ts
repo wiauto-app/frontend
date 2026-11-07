@@ -34,6 +34,8 @@ export const serializeVehiclePayload = (
     delete payload[key];
   }
 
+  delete payload.email;
+
   if (typeof payload.ref === "string") {
     const trimmed_ref = payload.ref.trim();
     if (!trimmed_ref) {

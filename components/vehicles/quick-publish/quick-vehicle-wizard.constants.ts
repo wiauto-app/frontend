@@ -66,7 +66,6 @@ const DATA_STEP_FIELDS: (keyof QuickVehicleSchema)[] = [
   "phone",
   "show_phone",
   "has_whatsapp",
-  "email",
   "show_review_collab",
 ];
 
@@ -187,7 +186,6 @@ export const QUICK_VEHICLE_FIELD_LABELS: Partial<
   lat: "Ubicación",
   lng: "Ubicación",
   phone: "Teléfono",
-  email: "Correo electrónico",
   transmission_type: "Transmisión",
   power: "Potencia",
   displacement: "Cilindrada",

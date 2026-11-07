@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -19,7 +19,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/passwordInput";
-import { DEFAULT_PHONE_CODE, PhoneInput } from "@/components/forms/phoneInput";
 import { isValidReturnPath } from "@/lib/auth/authReturnTo";
 import { trackCompleteRegistration } from "@/lib/analytics/events";
 import {
@@ -70,6 +69,25 @@ interface RegisterFormContentProps {
 }
 
 const MIS_ANUNCIOS_PATH = "/usuario/mis-anuncios";
+
+const REGISTER_PLACEHOLDERS = {
+  name: "Ej. María",
+  email: "tu@correo.com",
+  password: "Mínimo 6 caracteres",
+} as const;
+
+/** Evita placeholders que solo repiten el label del CMS. */
+const resolvePlaceholder = (
+  fromCms: string | null | undefined,
+  label: string | null | undefined,
+  fallback: string,
+): string => {
+  const value = fromCms?.trim();
+  if (!value || value === label?.trim()) {
+    return fallback;
+  }
+  return value;
+};
 
 export const RegisterFormContent = ({
   content = AUTENTICACION_DEFAULT.registro as StrapiAuthRegistro,
@@ -134,11 +152,6 @@ export const RegisterFormContent = ({
       email: invitedEmail,
       password: "",
       name: "",
-      last_name: "",
-      phone: {
-        phone_code: DEFAULT_PHONE_CODE,
-        phone: "",
-      },
     },
   });
 
@@ -153,7 +166,6 @@ export const RegisterFormContent = ({
 
     setIsLoading(true);
     try {
-      const { phone, ...rest } = data;
       const pendingReferralCode =
         consumePendingReferralCode() ?? referralCodeFromQuery;
 
@@ -162,9 +174,9 @@ export const RegisterFormContent = ({
       );
 
       const response = await authService.register({
-        ...rest,
-        phone_code: phone.phone_code,
-        phone: phone.phone,
+        email: data.email,
+        password: data.password,
+        name: data.name,
         ...(pendingReferralCode
           ? { referral_code: pendingReferralCode }
           : {}),
@@ -256,8 +268,6 @@ export const RegisterFormContent = ({
         </div>
       ) : null}
 
-
-
       <AuthSocialLogins content={compartido} disabled={isLoading} />
 
       <form
@@ -265,47 +275,27 @@ export const RegisterFormContent = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6"
       >
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="register-name" className="mb-1 block text-gray-700">
-              {content.nombre?.label} *
-            </Label>
-            <Input
-              id="register-name"
-              type="text"
-              placeholder={content.nombre?.placeholder ?? undefined}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              {...form.register("name")}
-              disabled={isLoading}
-            />
-            {form.formState.errors.name ? (
-              <p className="mt-1 text-sm text-red-600">
-                {form.formState.errors.name.message}
-              </p>
-            ) : null}
-          </div>
-
-          <div>
-            <Label
-              htmlFor="register-last_name"
-              className="mb-1 block text-gray-700"
-            >
-              {content.apellidos?.label} *
-            </Label>
-            <Input
-              id="register-last_name"
-              type="text"
-              placeholder={content.apellidos?.placeholder ?? undefined}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              {...form.register("last_name")}
-              disabled={isLoading}
-            />
-            {form.formState.errors.last_name ? (
-              <p className="mt-1 text-sm text-red-600">
-                {form.formState.errors.last_name.message}
-              </p>
-            ) : null}
-          </div>
+        <div>
+          <Label htmlFor="register-name" className="mb-1 block text-gray-700">
+            {content.nombre?.label} *
+          </Label>
+          <Input
+            id="register-name"
+            type="text"
+            placeholder={resolvePlaceholder(
+              content.nombre?.placeholder,
+              content.nombre?.label,
+              REGISTER_PLACEHOLDERS.name,
+            )}
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            {...form.register("name")}
+            disabled={isLoading}
+          />
+          {form.formState.errors.name ? (
+            <p className="mt-1 text-sm text-red-600">
+              {form.formState.errors.name.message}
+            </p>
+          ) : null}
         </div>
 
         <div>
@@ -315,7 +305,11 @@ export const RegisterFormContent = ({
           <Input
             id="register-email"
             type="email"
-            placeholder={content.email?.placeholder ?? undefined}
+            placeholder={resolvePlaceholder(
+              content.email?.placeholder,
+              content.email?.label,
+              REGISTER_PLACEHOLDERS.email,
+            )}
             readOnly={isInvitationFlow}
             aria-readonly={isInvitationFlow}
             className={isInvitationFlow ? "bg-gray-50" : undefined}
@@ -330,42 +324,6 @@ export const RegisterFormContent = ({
         </div>
 
         <div>
-          <Label className="mb-1 block text-gray-700">
-            {content.telefono?.label} *
-          </Label>
-          <Controller
-            name="phone"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <>
-                <PhoneInput
-                  value={field.value}
-                  onChange={field.onChange}
-                  disabled={isLoading}
-                  ariaInvalid={fieldState.invalid}
-                  nationalNumberLabel={
-                    content.telefono?.label_numero ?? undefined
-                  }
-                  nationalNumberPlaceholder={
-                    content.telefono?.placeholder_numero ?? undefined
-                  }
-                />
-                {form.formState.errors.phone?.phone_code ? (
-                  <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.phone.phone_code.message}
-                  </p>
-                ) : null}
-                {form.formState.errors.phone?.phone ? (
-                  <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.phone.phone.message}
-                  </p>
-                ) : null}
-              </>
-            )}
-          />
-        </div>
-
-        <div>
           <Label
             htmlFor="register-password"
             className="mb-1 block text-gray-700"
@@ -374,7 +332,11 @@ export const RegisterFormContent = ({
           </Label>
           <PasswordInput
             id="register-password"
-            placeholder={content.contrasena?.placeholder ?? undefined}
+            placeholder={resolvePlaceholder(
+              content.contrasena?.placeholder,
+              content.contrasena?.label,
+              REGISTER_PLACEHOLDERS.password,
+            )}
             {...form.register("password")}
             disabled={isLoading}
           />

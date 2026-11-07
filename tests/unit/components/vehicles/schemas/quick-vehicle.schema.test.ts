@@ -23,7 +23,6 @@ const baseValidPayload = {
   power: 120,
   displacement: 1600,
   phone: { phone_code: "+34", phone: "612345678" },
-  email: "test@example.com",
   lat: 40.4168,
   lng: -3.7038,
 };

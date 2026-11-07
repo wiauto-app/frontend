@@ -10,7 +10,6 @@ import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-veh
 import type { RecommendVehiclePriceResponse } from "@/components/vehicles/services/vehicleAiService";
 import {
   useVehicleAiAction,
-  VEHICLE_AI_MISSING_FIELDS_MESSAGE,
 } from "@/hooks/useVehicleAiAction";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -180,11 +179,7 @@ export const VehiclePriceRecommendation = ({
         </div>
       ) : null}
 
-      {!canExecute ? (
-        <p className="text-sm text-muted-foreground">
-          {VEHICLE_AI_MISSING_FIELDS_MESSAGE}
-        </p>
-      ) : null}
+
 
       {status === "rate_limited" ? (
         <p className="text-sm text-destructive">

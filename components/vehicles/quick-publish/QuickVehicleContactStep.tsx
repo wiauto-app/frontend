@@ -11,7 +11,6 @@ import {
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { useEntitlements } from "@/hooks/useEntitlements";
@@ -141,21 +140,6 @@ export const QuickVehicleContactStep = ({
               </Field>
             )}
           />
-          <ControllerInput name="email" control={form.control} label="Email">
-            {({ field, fieldState }) => (
-              <Input
-                name={field.name}
-                onBlur={field.onBlur}
-                onChange={field.onChange}
-                ref={field.ref}
-                value={String(field.value ?? "")}
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                aria-invalid={fieldState.invalid}
-              />
-            )}
-          </ControllerInput>
         </div>
 
         <div className="flex flex-col gap-4">

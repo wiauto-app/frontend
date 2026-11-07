@@ -9,7 +9,7 @@ import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-veh
  */
 export const QUICK_PUBLISH_HANDOFF_TTL_MS = 60 * 60 * 1000;
 
-/** Clave del antiguo borrador en localStorage (incluía email y teléfono). */
+/** Clave del antiguo borrador en localStorage (incluía teléfono de contacto). */
 export const LEGACY_QUICK_PUBLISH_DRAFT_STORAGE_KEY = "quick-publish-draft";
 
 const QUICK_PUBLISH_HANDOFF_STORE_VERSION = 1;

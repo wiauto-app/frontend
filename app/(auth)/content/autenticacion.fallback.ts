@@ -25,27 +25,27 @@ export const AUTENTICACION_FALLBACK: StrapiFallback<StrapiAutenticacionResponse>
     },
     nombre: {
       label: "Nombre",
-      placeholder: "Nombre",
+      placeholder: "Ej. María",
       mensaje_invalido: "El nombre debe tener al menos 2 caracteres",
     },
     apellidos: {
       label: "Apellidos",
-      placeholder: "Apellidos",
+      placeholder: "Ej. García López",
       mensaje_invalido: "El apellido debe tener al menos 2 caracteres",
     },
     email: {
       label: "Email",
-      placeholder: "Email",
+      placeholder: "tu@correo.com",
       mensaje_invalido: "Email inválido",
     },
     telefono: {
       label: "Teléfono",
       label_numero: "Número de teléfono",
-      placeholder_numero: "Número de móvil",
+      placeholder_numero: "612 345 678",
     },
     contrasena: {
       label: "Contraseña",
-      placeholder: "Contraseña",
+      placeholder: "Mínimo 6 caracteres",
       mensaje_invalido: "La contraseña debe tener al menos 6 caracteres",
     },
     terminos: {

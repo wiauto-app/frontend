@@ -22,8 +22,7 @@ export type VehicleAiAction = "recommendPrice" | "generateDescription";
 
 export type VehicleAiActionError = "rate_limited" | "generic";
 
-export const VEHICLE_AI_MISSING_FIELDS_MESSAGE =
-  "Completa la ficha del vehículo para usar esta función";
+
 
 export const getVehicleAiCanExecute = (
   action: VehicleAiAction,

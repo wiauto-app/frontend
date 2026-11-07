@@ -284,7 +284,6 @@ export interface CreateVehicleDto {
   license_plate?: string;
   phone_code: string;
   phone: string;
-  email: string;
   vehicle_type_id: string;
   features_ids?: string[];
   services_ids?: string[];
@@ -314,7 +313,6 @@ export interface UpdateVehicleDto {
   license_plate?: string;
   phone_code?: string;
   phone?: string;
-  email?: string;
   vehicle_type_id?: string;
   features_ids?: string[];
   services_ids?: string[];
