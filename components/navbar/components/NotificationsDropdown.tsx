@@ -92,9 +92,11 @@ export const NotificationsDropdown = () => {
     isMarkingAllRead,
     getNotificationHref,
     handleMarkRead,
-    handleMarkVisibleUnread,
+    markVisibleUnread,
     handleMarkAllRead,
   } = useNavbarNotifications();
+
+  const markedThisOpenRef = useRef(false);
 
   if (!isAuthenticated) {
     return null;
@@ -120,21 +122,22 @@ export const NotificationsDropdown = () => {
   };
 
   const handleOpenChange = (open: boolean) => {
-    if (!open || isLoading || isError) {
+    if (!open) {
+      markedThisOpenRef.current = false;
       return;
     }
+
+    if (markedThisOpenRef.current) {
+      return;
+    }
+
+    markedThisOpenRef.current = true;
 
     const unreadIds = notifications
       .filter((notification) => !notification.read_at)
       .map((notification) => notification.id);
 
-    if (unreadIds.length === 0) {
-      return;
-    }
-
-    void handleMarkVisibleUnread(unreadIds).catch(() => {
-      // El hook ya muestra el toast de error
-    });
+    void markVisibleUnread(unreadIds);
   };
 
   return (

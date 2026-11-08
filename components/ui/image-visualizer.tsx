@@ -1,10 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, XIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Loader2, XIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +35,49 @@ export interface ImageVisualizerProps {
   title?: string;
 }
 
+interface VisualizerSlideImageProps {
+  src: string;
+  alt: string;
+}
+
+const VisualizerSlideImage = ({ src, alt }: VisualizerSlideImageProps) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(false);
+  }, [src]);
+
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-lg">
+      {!isLoaded ? (
+        <div
+          aria-busy="true"
+          className="absolute inset-0 z-10 flex items-center justify-center bg-white/5"
+        >
+          <Loader2
+            aria-hidden
+            className="size-10 animate-spin text-white/70"
+          />
+          <span className="sr-only">Cargando imagen</span>
+        </div>
+      ) : null}
+      <Image
+        unoptimized
+        fill
+        src={src}
+        alt={alt}
+        className={cn(
+          "object-contain transition-opacity duration-200",
+          isLoaded ? "opacity-100" : "opacity-0",
+        )}
+        sizes="100vw"
+        priority
+        onLoad={() => setIsLoaded(true)}
+      />
+    </div>
+  );
+};
+
 export const ImageVisualizer = ({
   images,
   open,
@@ -34,58 +85,44 @@ export const ImageVisualizer = ({
   initialIndex = 0,
   title,
 }: ImageVisualizerProps) => {
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentIndex, setCurrentIndex] = useState(0);
   const total = images.length;
   const hasMultiple = total > 1;
   const safeIndex =
     total === 0 ? 0 : Math.min(Math.max(currentIndex, 0), total - 1);
-  const currentImage = total > 0 ? images[safeIndex] : undefined;
+
+  const syncIndexFromApi = useCallback(() => {
+    if (!api) {
+      return;
+    }
+    setCurrentIndex(api.selectedScrollSnap());
+  }, [api]);
 
   useEffect(() => {
-    if (!open) {
+    if (!open || !api || total === 0) {
       return;
     }
 
-    setCurrentIndex(
-      total === 0 ? 0 : Math.min(Math.max(initialIndex, 0), total - 1),
-    );
-  }, [open, initialIndex, total]);
+    const index = Math.min(Math.max(initialIndex, 0), total - 1);
+    api.scrollTo(index, true);
+    setCurrentIndex(index);
+  }, [api, initialIndex, open, total]);
 
   useEffect(() => {
-    if (!open || !hasMultiple) {
+    if (!api) {
       return;
     }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        setCurrentIndex((index) => (index - 1 + total) % total);
-        return;
-      }
+    syncIndexFromApi();
+    api.on("select", syncIndexFromApi);
+    api.on("reInit", syncIndexFromApi);
 
-      if (event.key === "ArrowRight") {
-        event.preventDefault();
-        setCurrentIndex((index) => (index + 1) % total);
-      }
+    return () => {
+      api.off("select", syncIndexFromApi);
+      api.off("reInit", syncIndexFromApi);
     };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, hasMultiple, total]);
-
-  const handlePrevious = () => {
-    if (!hasMultiple) {
-      return;
-    }
-    setCurrentIndex((index) => (index - 1 + total) % total);
-  };
-
-  const handleNext = () => {
-    if (!hasMultiple) {
-      return;
-    }
-    setCurrentIndex((index) => (index + 1) % total);
-  };
+  }, [api, syncIndexFromApi]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -101,7 +138,7 @@ export const ImageVisualizer = ({
           {title ?? "Visualizador de imágenes"}
         </DialogTitle>
         <DialogDescription className="sr-only">
-          Navega entre las imágenes con las flechas o el teclado.
+          Navega entre las imágenes con las flechas, el teclado o deslizando.
         </DialogDescription>
 
         <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -125,48 +162,50 @@ export const ImageVisualizer = ({
           </Button>
         </div>
 
-        <div className="relative flex min-h-0 flex-1 items-center justify-center px-12 sm:px-16">
-          {currentImage ? (
-            <div className="relative h-full w-full max-w-6xl rounded-lg overflow-hidden">
-              <Image
-                unoptimized
-                fill
-                src={currentImage.src}
-                alt={
-                  currentImage.alt ??
-                  title ??
-                  `Imagen ${safeIndex + 1} de ${total}`
-                }
-                className="object-contain"
-                sizes="100vw"
-                priority
-              />
-            </div>
-          ) : null}
+        <div className="relative flex min-h-0 flex-1 items-center justify-center px-4 pb-4 sm:px-16 sm:pb-6">
+          {total > 0 ? (
+            <Carousel
+              className="h-full w-full max-w-6xl"
+              opts={{ loop: hasMultiple }}
+              setApi={setApi}
+            >
+              <CarouselContent className="ml-0 h-full">
+                {images.map((image, index) => (
+                  <CarouselItem
+                    key={image.id}
+                    className="flex h-full basis-full items-center justify-center pl-0"
+                  >
+                    <VisualizerSlideImage
+                      alt={
+                        image.alt ??
+                        title ??
+                        `Imagen ${index + 1} de ${total}`
+                      }
+                      src={image.src}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
 
-          {hasMultiple ? (
-            <>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-lg"
-                className="absolute left-2 top-1/2 z-10 -translate-y-1/2 text-white hover:bg-white/10 hover:text-white sm:left-4"
-                onClick={handlePrevious}
-                aria-label="Imagen anterior"
-              >
-                <ChevronLeft className="size-8" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-lg"
-                className="absolute right-2 top-1/2 z-10 -translate-y-1/2 text-white hover:bg-white/10 hover:text-white sm:right-4"
-                onClick={handleNext}
-                aria-label="Imagen siguiente"
-              >
-                <ChevronRight className="size-8" />
-              </Button>
-            </>
+              {hasMultiple ? (
+                <>
+                  <CarouselPrevious
+                    type="button"
+                    variant="ghost"
+                    size="icon-lg"
+                    className="left-0 top-1/2 z-10 -translate-y-1/2 border-0 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white disabled:opacity-30 sm:-left-2"
+                    aria-label="Imagen anterior"
+                  />
+                  <CarouselNext
+                    type="button"
+                    variant="ghost"
+                    size="icon-lg"
+                    className="right-0 top-1/2 z-10 -translate-y-1/2 border-0 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white disabled:opacity-30 sm:-right-2"
+                    aria-label="Imagen siguiente"
+                  />
+                </>
+              ) : null}
+            </Carousel>
           ) : null}
         </div>
       </DialogContent>
