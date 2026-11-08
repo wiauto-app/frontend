@@ -45,10 +45,15 @@ const VisualizerSlideImage = ({ src, alt }: VisualizerSlideImageProps) => {
 
   useEffect(() => {
     setIsLoaded(false);
+    const probe = document.createElement("img");
+    probe.src = src;
+    if (probe.complete && probe.naturalWidth > 0) {
+      setIsLoaded(true);
+    }
   }, [src]);
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-lg">
+    <div className="relative h-full min-h-[min(60dvh,28rem)] w-full overflow-hidden rounded-lg">
       {!isLoaded ? (
         <div
           aria-busy="true"
@@ -162,18 +167,18 @@ export const ImageVisualizer = ({
           </Button>
         </div>
 
-        <div className="relative flex min-h-0 flex-1 items-center justify-center px-4 pb-4 sm:px-16 sm:pb-6">
+        <div className="relative flex min-h-[min(60dvh,28rem)] flex-1 items-stretch justify-center px-12 pb-4 sm:px-20 sm:pb-6">
           {total > 0 ? (
             <Carousel
-              className="h-full w-full max-w-6xl"
+              className="h-full w-full max-w-6xl [&_[data-slot=carousel-content]]:h-full"
               opts={{ loop: hasMultiple }}
               setApi={setApi}
             >
-              <CarouselContent className="ml-0 h-full">
+              <CarouselContent className="ml-0 h-full min-h-[min(60dvh,28rem)]">
                 {images.map((image, index) => (
                   <CarouselItem
                     key={image.id}
-                    className="flex h-full basis-full items-center justify-center pl-0"
+                    className="flex h-full min-h-[min(60dvh,28rem)] basis-full items-center justify-center pl-0"
                   >
                     <VisualizerSlideImage
                       alt={
@@ -193,14 +198,14 @@ export const ImageVisualizer = ({
                     type="button"
                     variant="ghost"
                     size="icon-lg"
-                    className="left-0 top-1/2 z-10 -translate-y-1/2 border-0 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white disabled:opacity-30 sm:-left-2"
+                    className="top-1/2 left-2 z-10 -translate-y-1/2 border-0 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white disabled:opacity-30 sm:left-4"
                     aria-label="Imagen anterior"
                   />
                   <CarouselNext
                     type="button"
                     variant="ghost"
                     size="icon-lg"
-                    className="right-0 top-1/2 z-10 -translate-y-1/2 border-0 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white disabled:opacity-30 sm:-right-2"
+                    className="top-1/2 right-2 z-10 -translate-y-1/2 border-0 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white disabled:opacity-30 sm:right-4"
                     aria-label="Imagen siguiente"
                   />
                 </>
