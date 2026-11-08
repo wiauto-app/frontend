@@ -47,6 +47,25 @@ export const useNavbarNotifications = () => {
     });
   };
 
+  const applyReadUpdates = (updates: InAppNotification[]) => {
+    if (updates.length === 0) {
+      return;
+    }
+    const byId = new Map(updates.map((item) => [item.id, item]));
+    queryClient.setQueriesData<PaginatedResult<InAppNotification>>(
+      { queryKey: ALERT_NOTIFICATIONS_INBOX_QUERY_KEY },
+      (previous) => {
+        if (!previous) {
+          return previous;
+        }
+        return {
+          ...previous,
+          data: previous.data.map((item) => byId.get(item.id) ?? item),
+        };
+      },
+    );
+  };
+
   const markReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {
       const response = await alertService.markNotificationRead(notificationId);
@@ -58,18 +77,7 @@ export const useNavbarNotifications = () => {
       return response.data;
     },
     onSuccess: (updated) => {
-      queryClient.setQueriesData<PaginatedResult<InAppNotification>>(
-        { queryKey: ALERT_NOTIFICATIONS_INBOX_QUERY_KEY },
-        (previous) => {
-          if (!previous) return previous;
-          return {
-            ...previous,
-            data: previous.data.map((item) =>
-              item.id === updated.id ? updated : item,
-            ),
-          };
-        },
-      );
+      applyReadUpdates([updated]);
     },
     onError: (error) => {
       toast.error(
@@ -79,6 +87,47 @@ export const useNavbarNotifications = () => {
       );
     },
   });
+
+  const markVisibleUnread = async (notificationIds: string[]) => {
+    if (notificationIds.length === 0) {
+      return;
+    }
+
+    const results = await Promise.allSettled(
+      notificationIds.map(async (notificationId) => {
+        const response = await alertService.markNotificationRead(notificationId);
+        if (!response.ok || !response.data) {
+          throw new Error(
+            response.message || "No se pudo marcar la notificación como leída",
+          );
+        }
+        return response.data;
+      }),
+    );
+
+    const updatedById = new Map(
+      results.flatMap((result) =>
+        result.status === "fulfilled" ? [[result.value.id, result.value] as const] : [],
+      ),
+    );
+
+    if (updatedById.size > 0) {
+      queryClient.setQueriesData<PaginatedResult<InAppNotification>>(
+        { queryKey: ALERT_NOTIFICATIONS_INBOX_QUERY_KEY },
+        (previous) => {
+          if (!previous) return previous;
+          return {
+            ...previous,
+            data: previous.data.map((item) => updatedById.get(item.id) ?? item),
+          };
+        },
+      );
+    }
+
+    if (results.some((result) => result.status === "rejected")) {
+      toast.error("No se pudieron marcar algunas notificaciones como leídas");
+    }
+  };
 
   const markAllReadMutation = useMutation({
     mutationFn: async () => {
@@ -103,6 +152,42 @@ export const useNavbarNotifications = () => {
     },
   });
 
+  const markVisibleUnreadMutation = useMutation({
+    mutationFn: async (notificationIds: string[]) => {
+      const uniqueIds = [...new Set(notificationIds)];
+      if (uniqueIds.length === 0) {
+        return [];
+      }
+
+      const responses = await Promise.all(
+        uniqueIds.map((id) => alertService.markNotificationRead(id)),
+      );
+
+      const updated: InAppNotification[] = [];
+      for (const response of responses) {
+        if (!response.ok || !response.data) {
+          throw new Error(
+            response.message ||
+              "No se pudieron marcar las notificaciones como leídas",
+          );
+        }
+        updated.push(response.data);
+      }
+
+      return updated;
+    },
+    onSuccess: (updated) => {
+      applyReadUpdates(updated);
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudieron marcar las notificaciones como leídas",
+      );
+    },
+  });
+
   const notifications = inboxQuery.data?.data ?? [];
   const unreadCount = notifications.filter((item) => !item.read_at).length;
 
@@ -116,10 +201,12 @@ export const useNavbarNotifications = () => {
       inboxQuery.error instanceof Error
         ? inboxQuery.error.message
         : "No se pudieron cargar las notificaciones",
-    isMarkingRead: markReadMutation.isPending,
+    isMarkingRead:
+      markReadMutation.isPending || markVisibleUnreadMutation.isPending,
     isMarkingAllRead: markAllReadMutation.isPending,
     getNotificationHref,
     handleMarkRead: markReadMutation.mutateAsync,
+    handleMarkVisibleUnread: markVisibleUnreadMutation.mutateAsync,
     handleMarkAllRead: markAllReadMutation.mutateAsync,
   };
 };

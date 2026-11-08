@@ -4,6 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Bell } from "lucide-react";
 import Link from "next/link";
+import { useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -91,6 +92,7 @@ export const NotificationsDropdown = () => {
     isMarkingAllRead,
     getNotificationHref,
     handleMarkRead,
+    handleMarkVisibleUnread,
     handleMarkAllRead,
   } = useNavbarNotifications();
 
@@ -117,8 +119,26 @@ export const NotificationsDropdown = () => {
     void handleMarkAllRead();
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open || isLoading || isError) {
+      return;
+    }
+
+    const unreadIds = notifications
+      .filter((notification) => !notification.read_at)
+      .map((notification) => notification.id);
+
+    if (unreadIds.length === 0) {
+      return;
+    }
+
+    void handleMarkVisibleUnread(unreadIds).catch(() => {
+      // El hook ya muestra el toast de error
+    });
+  };
+
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger
         render={
           <Button
