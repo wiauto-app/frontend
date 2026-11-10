@@ -10,6 +10,7 @@ import { UserAvatar } from "@/components/navbar/components/userAvatar";
 import { useUser } from "@/app/contexts/auth/useUser";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { useUserSidebarSections } from "@/hooks/useUserSidebarItems";
+import { SidebarReferralInvite } from "@/components/referrals/SidebarReferralInvite";
 import { cn } from "@/lib/utils";
 
 const USER_AREA_BASE_PATH = "/usuario";
@@ -126,7 +127,8 @@ export function UserSidebar({ onSelect }: { onSelect?: () => void }) {
           </nav>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="flex flex-col gap-1">
+          <SidebarReferralInvite className="flex gap-2 items-center px-3 py-2 text-start text-primary hover:bg-primary/5 rounded-lg cursor-pointer" />
           <Button
             variant="ghost"
             onClick={() => {

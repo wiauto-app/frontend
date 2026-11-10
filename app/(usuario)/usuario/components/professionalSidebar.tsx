@@ -21,6 +21,7 @@ import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserSidebarSections } from "@/hooks/useUserSidebarItems";
+import { SidebarReferralInvite } from "@/components/referrals/SidebarReferralInvite";
 
 const SIDEBAR_SKELETON_ITEMS = 8;
 
@@ -112,6 +113,9 @@ export function ProfessionalSidebar({
         ))}
       </SidebarContent>
       <SidebarFooter>
+        <SidebarMenuItem>
+          <SidebarReferralInvite className="flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm text-white/90 hover:bg-white/10 hover:text-white" />
+        </SidebarMenuItem>
         <SidebarMenuItem>
           <SidebarMenuButton
             className="text-white hover:bg-white/10 hover:text-white"
