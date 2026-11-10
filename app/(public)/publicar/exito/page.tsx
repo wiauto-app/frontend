@@ -39,7 +39,6 @@ export default async function CrearVehiculoExitoPage({
     return <PublishSuccessFallback />;
   }
 
-  const insights = await getVehicleInsights(vehicleId);
   const isJustVerified = params.verified === "1";
 
   return (
@@ -47,8 +46,6 @@ export default async function CrearVehiculoExitoPage({
       {isJustVerified ? <VerifiedPublishNotice vehicleId={vehicleId} /> : null}
       <PublishSuccessView
         vehicleId={vehicleId}
-        displayName={insights?.display_name ?? null}
-        initialInsights={insights}
         checkoutStatus={checkoutStatus}
       />
     </>

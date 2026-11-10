@@ -34,8 +34,6 @@ import {
 
 interface PublishSuccessViewProps {
   vehicleId: string;
-  displayName: string | null;
-  initialInsights: VehicleInsights | null;
   checkoutStatus: ListingCheckoutStatus | null;
 }
 
@@ -96,8 +94,6 @@ const panelVariants: Variants = {
 
 export const PublishSuccessView = ({
   vehicleId,
-  displayName,
-  initialInsights,
   checkoutStatus,
 }: PublishSuccessViewProps) => {
   const { has } = useEntitlements();
@@ -139,21 +135,7 @@ export const PublishSuccessView = ({
             >
               ¡Anuncio publicado!
             </motion.h1>
-            <motion.p
-              className="mt-1 text-sm text-muted-foreground sm:text-base"
-              variants={item}
-            >
-              {displayName ? (
-                <>
-                  <span className="font-medium text-foreground">
-                    {displayName}
-                  </span>{" "}
-                  ya está visible en WiAuto.
-                </>
-              ) : (
-                "Tu vehículo ya está visible en WiAuto."
-              )}
-            </motion.p>
+         
           </motion.div>
         </motion.div>
 
@@ -264,7 +246,6 @@ export const PublishSuccessView = ({
           <motion.div className="pt-6" variants={panel}>
             <ListingInsightsPanel
               vehicleId={vehicleId}
-              initialInsights={initialInsights}
               checkoutStatus={checkoutStatus}
             />
           </motion.div>

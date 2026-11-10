@@ -33,8 +33,6 @@ export const QuickVehicleDatosStep = ({
   const form = useFormContext<QuickVehicleSchema>();
   const versionError = form.formState.errors.version_id;
   const { isSubscribed } = useEntitlements();
-  // Sin pasos extra/financiación, este es el último: la descripción va aquí.
-  const showDescription = !isSubscribed;
 
   return (
     <div className="flex flex-col gap-10">
@@ -65,7 +63,7 @@ export const QuickVehicleDatosStep = ({
 
       <QuickVehiclePricingFields stepNumber={7} />
 
-      {showDescription ? <QuickVehicleDescriptionStep stepNumber={8} /> : null}
+      <QuickVehicleDescriptionStep stepNumber={8} />
     </div>
   );
 };

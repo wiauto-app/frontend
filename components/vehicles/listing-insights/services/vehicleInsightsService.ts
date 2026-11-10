@@ -17,7 +17,11 @@ export const vehicleInsightsService = {
   async getInsights(vehicleId: string): Promise<VehicleInsights> {
     const response = await apiGet<VehicleInsights>(
       vehicleInsightsPath(vehicleId),
+      undefined,
+      undefined,
+      { skipAuthRefresh: true },
     );
+    console.log("response", response);
     if (response.status === 403) {
       throw new VehicleInsightsAccessError();
     }

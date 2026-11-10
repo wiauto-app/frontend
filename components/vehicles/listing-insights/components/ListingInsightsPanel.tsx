@@ -26,8 +26,6 @@ export type { ListingCheckoutStatus } from "../hooks/useListingCheckoutReturn";
 
 interface ListingInsightsPanelProps {
   vehicleId: string;
-  /** Insights leídos en servidor; `null` si fallaron (se reintenta en cliente). */
-  initialInsights: VehicleInsights | null;
   checkoutStatus: ListingCheckoutStatus | null;
 }
 
@@ -35,14 +33,12 @@ const EXITO_PATH = "/publicar/exito";
 
 export const ListingInsightsPanel = ({
   vehicleId,
-  initialInsights,
   checkoutStatus,
 }: ListingInsightsPanelProps) => {
   const insightsQuery = useVehicleInsights(vehicleId, {
-    initialData: initialInsights,
     pollFeaturedActivation: checkoutStatus === "success",
   });
-  const insights = insightsQuery.data ?? initialInsights;
+  const insights = insightsQuery.data;
 
   const featuredStatus: FeaturedActivationStatus = insights
     ? insights.featured.is_active

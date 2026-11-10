@@ -24,6 +24,7 @@ import { ListingDiagnosticSheet } from "@/components/vehicles/listing-insights/c
 import { useListingDiagnosticStore } from "@/components/vehicles/listing-insights/stores/listingDiagnosticStore";
 import { MY_LISTINGS_QUERY_KEY } from "../hooks/my-listings-query-keys";
 import { MyListingsReferralCard } from "@/components/referrals/MyListingsReferralCard";
+import { cn } from "@/lib/utils";
 
 export const MyListing = () => {
   const { user, isLoading: isUserLoading } = useUser();
@@ -78,10 +79,10 @@ export const MyListing = () => {
 
   const hasActiveFilters = Boolean(
     filters.status ||
-      filters.makeId ||
-      filters.modelId ||
-      filters.sinceCreatedAt ||
-      filters.untilCreatedAt,
+    filters.makeId ||
+    filters.modelId ||
+    filters.sinceCreatedAt ||
+    filters.untilCreatedAt,
   );
 
   const showFeaturedCard =
@@ -102,9 +103,7 @@ export const MyListing = () => {
     }
 
     trackPendingPurchase();
-    toast.success(
-      "Pago completado. Actualizando tu cupo de destacados…",
-    );
+    toast.success("Pago completado. Actualizando tu cupo de destacados…");
     void refetch();
     void refetchBillingMe();
 
@@ -155,7 +154,12 @@ export const MyListing = () => {
         featuredUnlimited={featuredSlots.unlimited}
       />
 
-      <div className="grid grid-cols-1 items-start gap-2 lg:grid-cols-[1fr_425px]">
+      <div
+        className={cn(
+          "grid grid-cols-1 items-start gap-2 ",
+          !isSubscribed ? "lg:grid-cols-[1fr_425px]" : "lg:grid-cols-1",
+        )}
+      >
         <div className="min-w-0 space-y-4">
           {isSubscribed && (
             <MyListingsFiltersBar
@@ -217,13 +221,18 @@ export const MyListing = () => {
               />
             </>
           )}
-          {entitlements && entitlements.vehicles && entitlements.vehicles.limit === 2 ? <UpgradeListingAdd /> : null}
+          {entitlements &&
+          entitlements.vehicles &&
+          entitlements.vehicles.limit === 2 ? (
+            <UpgradeListingAdd />
+          ) : null}
         </div>
-
-        <div className="space-y-4">
-          <MyListingsPromoSidebar />
-          <MyListingsReferralCard />
-        </div>
+        {!isSubscribed && (
+          <div className="space-y-4">
+            <MyListingsPromoSidebar />
+            <MyListingsReferralCard />
+          </div>
+        )}
       </div>
 
       <MyListingsHelpSection

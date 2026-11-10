@@ -19,9 +19,7 @@ import {
   ensureValidSession,
   getServerSession,
   getServerSessionOrNull,
-  getServerSessionWithTokens,
   readSessionTokensFromCookies,
-  resolveSessionRefresh,
 } from "@/lib/ensure-session.server";
 import { refreshTokenService } from "@/app/(auth)/services/refreshTokenService";
 
@@ -71,25 +69,10 @@ describe("readSessionTokensFromCookies", () => {
   });
 });
 
-describe("getServerSessionWithTokens", () => {
+describe("getServerSession con tokens en argumentos", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.stubGlobal("fetch", vi.fn());
-  });
-
-  it("retorna 401 sin access_token", async () => {
-    const result = await getServerSessionWithTokens({
-      access_token: null,
-      refresh_token: "refresh-456",
-    });
-
-    expect(result).toEqual({
-      ok: false,
-      message: "No access token",
-      status: 401,
-      data: null,
-    });
-    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("consulta /auth/me con Authorization y Cookie de refresh", async () => {
@@ -105,7 +88,7 @@ describe("getServerSessionWithTokens", () => {
       }),
     } as Response);
 
-    const result = await getServerSessionWithTokens({
+    const result = await getServerSession({
       access_token: "access-123",
       refresh_token: "refresh-456",
     });
@@ -119,6 +102,7 @@ describe("getServerSessionWithTokens", () => {
     });
     expect(result.ok).toBe(true);
     expect(result.data).toEqual({ id: "user-1", email: "user@example.com" });
+    expect(cookies).not.toHaveBeenCalled();
   });
 });
 
@@ -203,6 +187,35 @@ describe("ensureValidSession", () => {
     vi.stubGlobal("fetch", vi.fn());
   });
 
+  it("retorna session_valid cuando /auth/me responde OK con tokens en argumentos sin refrescar", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: async () => ({
+        ok: true,
+        message: "OK",
+        status: 200,
+        data: { id: "user-1" },
+      }),
+    } as Response);
+
+    const result = await ensureValidSession({
+      refresh_token: "rt-hash",
+      access_token: "access-valid",
+    });
+
+    expect(result).toEqual({ outcome: "session_valid" });
+    expect(refreshTokenService.refreshToken).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledWith("http://localhost:3001/api/auth/me", {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer access-valid",
+        Cookie: "refresh_token=rt-hash",
+      },
+    });
+  });
+
   it("retorna two_factor_pending cuando JWT scope es 2fa_challenge sin llamar /auth/me", async () => {
     const result = await ensureValidSession({
       refresh_token: "rt-hash",
@@ -234,6 +247,36 @@ describe("ensureValidSession", () => {
 
     expect(result).toEqual({ outcome: "two_factor_pending" });
     expect(refreshTokenService.refreshToken).not.toHaveBeenCalled();
+  });
+
+  it("retorna session_valid sin refresh cuando /auth/me responde ok con tokens en argumentos", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: async () => ({
+        ok: true,
+        message: "OK",
+        status: 200,
+        data: { id: "user-1", email: "user@example.com" },
+      }),
+    } as Response);
+
+    const result = await ensureValidSession({
+      refresh_token: "rt-hash",
+      access_token: "access-valid",
+    });
+
+    expect(result).toEqual({ outcome: "session_valid" });
+    expect(fetch).toHaveBeenCalledWith("http://localhost:3001/api/auth/me", {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer access-valid",
+        Cookie: "refresh_token=rt-hash",
+      },
+    });
+    expect(refreshTokenService.refreshToken).not.toHaveBeenCalled();
+    expect(cookies).not.toHaveBeenCalled();
   });
 
   it("retorna unauthorized cuando el refresh responde 401", async () => {
@@ -296,34 +339,3 @@ describe("ensureValidSession", () => {
   });
 });
 
-describe("resolveSessionRefresh", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-    vi.stubGlobal("fetch", vi.fn());
-  });
-
-  it("limpia cookies (401) cuando no hay refresh_token", async () => {
-    await expect(
-      resolveSessionRefresh({ access_token: "a", refresh_token: null }),
-    ).resolves.toEqual({
-      status: 401,
-      refreshed: false,
-      clearCookies: true,
-    });
-  });
-
-  it("no limpia cookies ante error de red", async () => {
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("network"));
-
-    await expect(
-      resolveSessionRefresh({
-        access_token: "access-expired",
-        refresh_token: "rt-hash",
-      }),
-    ).resolves.toEqual({
-      status: 503,
-      refreshed: false,
-      clearCookies: false,
-    });
-  });
-});

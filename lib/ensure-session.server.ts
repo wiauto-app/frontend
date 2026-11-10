@@ -96,13 +96,30 @@ export const getServerSession = async (params?: {
   refresh_token?: string | null;
   access_token?: string | null;
 }): Promise<ApiResponse<MeResponseDto | null>> => {
+  let access_token: string | null = null;
+  let refresh_token: string | null = null;
 
-  let access_token = null as string | null;
-  let refresh_token = null as string | null;
-  if (!params?.access_token && !params?.refresh_token) {
+  const hasExplicitTokens =
+    params !== undefined &&
+    (params.access_token !== undefined || params.refresh_token !== undefined);
+
+  if (hasExplicitTokens) {
+    access_token = params.access_token ?? null;
+    refresh_token = params.refresh_token ?? null;
+    if (!access_token) {
+      return {
+        ok: false,
+        message: "No access token",
+        status: 401,
+        data: null,
+      };
+    }
+  } else {
     const cookiesStore = await cookies();
-    access_token = cookiesStore.get(cookiesConfig.accessToken.name)?.value ?? null;
-    refresh_token = cookiesStore.get(cookiesConfig.refreshToken.name)?.value ?? null;
+    access_token =
+      cookiesStore.get(cookiesConfig.accessToken.name)?.value ?? null;
+    refresh_token =
+      cookiesStore.get(cookiesConfig.refreshToken.name)?.value ?? null;
     if (!access_token && !refresh_token) {
       return {
         ok: false,
@@ -116,7 +133,7 @@ export const getServerSession = async (params?: {
   const meResponse = await fetch(buildApiUrl("/auth/me"), {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${access_token}`,
+      ...(access_token ? { Authorization: `Bearer ${access_token}` } : {}),
       ...(refresh_token ? { Cookie: `refresh_token=${refresh_token}` } : {}),
     },
   });
@@ -132,6 +149,11 @@ export const getServerSession = async (params?: {
 };
 
 
+
+export const getServerSessionWithTokens = async (params: {
+  access_token: string | null;
+  refresh_token: string | null;
+}): Promise<ApiResponse<MeResponseDto | null>> => getServerSession(params);
 
 export const getServerSessionOrNull = async (): Promise<MeResponseDto | null> => {
   const session = await getServerSession();
@@ -183,6 +205,53 @@ export const ensureValidSession = async (params: {
     access_token: refreshed.data.token,
     refresh_token: refreshed.data.refresh_token,
   };
+};
+
+export const resolveSessionRefresh = async (params: {
+  access_token: string | null;
+  refresh_token: string | null;
+}): Promise<ResolveSessionRefreshResult> => {
+  if (!params.refresh_token) {
+    return { status: 401, refreshed: false, clearCookies: true };
+  }
+
+  try {
+    const session = await ensureValidSession({
+      refresh_token: params.refresh_token,
+      access_token: params.access_token,
+    });
+
+    if (session.outcome === "session_refreshed") {
+      return {
+        status: 200,
+        refreshed: true,
+        clearCookies: false,
+        tokens: {
+          access_token: session.access_token,
+          refresh_token_hash: session.refresh_token ?? params.refresh_token,
+        },
+      };
+    }
+
+    if (session.outcome === "unauthorized") {
+      return { status: 401, refreshed: false, clearCookies: true };
+    }
+
+    if (
+      session.outcome === "refresh_unavailable" ||
+      session.outcome === "me_not_ok"
+    ) {
+      return {
+        status: session.status || 503,
+        refreshed: false,
+        clearCookies: false,
+      };
+    }
+
+    return { status: 200, refreshed: false, clearCookies: false };
+  } catch {
+    return { status: 503, refreshed: false, clearCookies: false };
+  }
 };
 
 

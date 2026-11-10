@@ -283,7 +283,6 @@ export const FinanceWarrantyForm = () => {
         </div>
       </VehicleFormStep>
 
-      <QuickVehicleDescriptionStep stepNumber={2} />
     </div>
   );
 };
