@@ -7,7 +7,7 @@ type NavbarPublishButtonProps = ComponentProps<typeof Button>;
 
 export function NavbarPublishButton({ ...props }: NavbarPublishButtonProps) {
   return (
-    <PublicarLink href="/publicar" source="header">
+    <PublicarLink href="/publicar" source="header" className="hidden lg:block">
       <Button {...props} size="sm">
         Vender
       </Button>

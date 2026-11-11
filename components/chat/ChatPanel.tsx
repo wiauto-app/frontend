@@ -29,7 +29,6 @@ export const ChatPanel = () => {
             <div className="flex gap-5">
               <div
                 className={cn(
-                  "w-96",
                   blockStyles,
                   hasSelectedChat ? "hidden lg:flex" : "flex",
                 )}

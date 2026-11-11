@@ -7,8 +7,10 @@ import {
   HiOutlineChat,
   HiOutlineHeart,
   HiOutlineHome,
+  HiOutlinePlus,
   HiOutlineSearch,
   HiOutlineUser,
+  HiPlus,
   HiSearch,
   HiUser,
 } from "react-icons/hi";
@@ -56,10 +58,10 @@ export const MobileNavbar = () => {
         unreadCount > 0 ? `Chat, ${unreadCount} sin leer` : "Chat",
     },
     {
-      label: "Perfil",
-      icon: <HiOutlineUser size={size} />,
-      activeIcon: <HiUser size={size} />,
-      href: "/usuario/inicio",
+      label: "Publicar",
+      icon: <HiOutlinePlus size={size} />,
+      activeIcon: <HiPlus size={size} />,
+      href: "/publicar",
     },
   ];
 
@@ -85,7 +87,7 @@ export const MobileNavbar = () => {
   ];
 
   return (
-    <div className="fixed  bottom-2 w-full px-4">
+    <div className="fixed  z-50 bottom-2 w-full px-4">
       <nav
         aria-label="Navegación móvil"
         style={{ viewTransitionName: "mobile-nav" }}
