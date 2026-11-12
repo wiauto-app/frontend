@@ -99,7 +99,10 @@ export default async function DealerProfilePage({
             <div className="space-y-3">
               <DealerQuickStatsBar stats={dealer.quickStats} />
 
-              <DealershipVehiclesListingShell slug={slug}>
+              <DealershipVehiclesListingShell
+                slug={slug}
+                dealershipId={dealership.id}
+              >
                 <ActiveFilters activeFilters={active_filters} />
                 <DealerVehiclesSection
                   total={listing.total}

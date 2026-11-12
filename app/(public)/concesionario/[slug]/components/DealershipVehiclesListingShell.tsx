@@ -6,15 +6,17 @@ import { DealershipVehiclesFiltersProvider } from "../hooks/useDealershipVehicle
 
 type DealershipVehiclesListingShellProps = {
   slug: string;
+  dealershipId: string;
   children: ReactNode;
 };
 
 export const DealershipVehiclesListingShell = ({
   slug,
+  dealershipId,
   children,
 }: DealershipVehiclesListingShellProps) => (
   <Suspense>
-    <DealershipVehiclesFiltersProvider slug={slug}>
+    <DealershipVehiclesFiltersProvider slug={slug} dealershipId={dealershipId}>
       {children}
     </DealershipVehiclesFiltersProvider>
   </Suspense>

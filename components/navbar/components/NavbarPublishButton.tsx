@@ -3,13 +3,16 @@ import type { ComponentProps } from "react";
 import { PublicarLink } from "@/components/analytics/PublicarLink";
 import { Button } from "@/components/ui/button";
 
-type NavbarPublishButtonProps = ComponentProps<typeof Button>;
+interface NavbarPublishButtonProps extends ComponentProps<typeof Button> {
+  href: string;
+  children?: React.ReactNode;
+}
 
 export function NavbarPublishButton({ ...props }: NavbarPublishButtonProps) {
   return (
     <PublicarLink href="/publicar" source="header" className="hidden lg:block">
       <Button {...props} size="sm">
-        Vender
+        {props.children || "Vender"}
       </Button>
     </PublicarLink>
   );

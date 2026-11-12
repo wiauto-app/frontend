@@ -54,11 +54,21 @@ export const useDealershipVehiclesListingFilters =
 
 type DealershipVehiclesFiltersProviderProps = {
   slug: string;
+  dealershipId: string;
   children: ReactNode;
 };
 
+const withPinnedDealershipIds = (
+  params: FindAllVehiclesParams,
+  dealershipId: string,
+): FindAllVehiclesParams => ({
+  ...params,
+  dealership_ids: [dealershipId],
+});
+
 export const DealershipVehiclesFiltersProvider = ({
   slug,
+  dealershipId,
   children,
 }: DealershipVehiclesFiltersProviderProps) => {
   const router = useRouter();
@@ -66,15 +76,23 @@ export const DealershipVehiclesFiltersProvider = ({
   const [, startTransition] = useTransition();
 
   const filters = useMemo(
-    () => parseDealershipVehicleFilters(searchParams),
-    [searchParams],
+    () =>
+      withPinnedDealershipIds(
+        parseDealershipVehicleFilters(searchParams),
+        dealershipId,
+      ),
+    [dealershipId, searchParams],
   );
 
   const urlKey = `${slug}?${searchParams.toString()}`;
 
   const parseCurrentUrl = useCallback(
-    () => parseDealershipVehicleFilters(searchParams),
-    [searchParams],
+    () =>
+      withPinnedDealershipIds(
+        parseDealershipVehicleFilters(searchParams),
+        dealershipId,
+      ),
+    [dealershipId, searchParams],
   );
 
   const [syncedUrlKey, setSyncedUrlKey] = useState(urlKey);

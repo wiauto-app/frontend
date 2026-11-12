@@ -11,6 +11,9 @@ import { Metadata } from "next";
 import { LazyMobileNavbar } from "@/components/home/lazyImports/LazyMobileNavbar";
 import { LazyCookieConsentBanner } from "@/components/home/lazyImports/LazyCookieConsentBanner";
 import { LazyThirdPartyLibraries } from "@/components/home/lazyImports/LazyThirdPartyLibraries";
+import { NavbarPublishButton } from "@/components/navbar";
+import { HiPlus } from "react-icons/hi";
+import { Button } from "@/components/ui/button";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,7 +45,6 @@ export default async function RootLayout({
         <ConsentModeScript />
         <ViewTransitionStyles />
         <Providers>
-        
           <main className="flex min-w-0 flex-1 flex-col overflow-x-clip">
             {children}
           </main>
@@ -60,6 +62,11 @@ export default async function RootLayout({
           </ConditionalWrapper>
           <LazyAssistantShell />
           <LazyMobileNavbar />
+          <Button
+            className="size-15 bg-primary text-primary-foreground hover:bg-primary/90 fixed bottom-36 right-3 z-50 flex items-center justify-center rounded-full"
+          >
+            <HiPlus className="size-6" />
+          </Button>
           <LazyCookieConsentBanner />
         </Providers>
         <LazyThirdPartyLibraries />
