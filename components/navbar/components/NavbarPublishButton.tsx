@@ -4,7 +4,6 @@ import { PublicarLink } from "@/components/analytics/PublicarLink";
 import { Button } from "@/components/ui/button";
 
 interface NavbarPublishButtonProps extends ComponentProps<typeof Button> {
-  href: string;
   children?: React.ReactNode;
 }
 
