@@ -27,9 +27,33 @@ import { getLeadVehicleFormImageUrl } from "../utils/getVehicleFormImageDisplayU
 import { vehicleService } from "@/services/vehicleService";
 import Image from "next/image";
 import { FaArrowsAlt } from "react-icons/fa";
+import {
+  createVehicleImagePreviewUrl,
+  fileNeedsClientHeicPreview,
+} from "@/lib/vehicle-images/create-vehicle-image-preview-url";
 
-/** El backend acepta: JPEG, PNG, WebP, AVIF (sin HEIC). */
-const file_input_accept = "image/jpeg,image/jpg,image/png,image/webp,image/avif";
+/** Alineado con `media.constants` del backend (temp upload / galería). */
+const allowed_vehicle_image_mimes = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/gif",
+  "image/bmp",
+  "image/tiff",
+  "image/tif",
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
+] as const;
+
+const allowed_vehicle_image_mime_set = new Set<string>(
+  allowed_vehicle_image_mimes,
+);
+
+const file_input_accept = allowed_vehicle_image_mimes.join(",");
 
 const known_image_extensions = [
   ".jpg",
@@ -37,7 +61,47 @@ const known_image_extensions = [
   ".png",
   ".webp",
   ".avif",
+  ".gif",
+  ".bmp",
+  ".tif",
+  ".tiff",
+  ".heic",
+  ".heif",
 ] as const;
+
+const extension_to_mime: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".avif": "image/avif",
+  ".gif": "image/gif",
+  ".bmp": "image/bmp",
+  ".tif": "image/tiff",
+  ".tiff": "image/tiff",
+  ".heic": "image/heic",
+  ".heif": "image/heif",
+};
+
+const allowed_formats_hint =
+  "JPG, PNG, WebP, AVIF, HEIC/HEIF, GIF, BMP o TIFF";
+
+const infer_mime_type_from_file = (file: File): string => {
+  const mime = file.type.trim().toLowerCase();
+
+  if (mime && allowed_vehicle_image_mime_set.has(mime)) {
+    return mime;
+  }
+
+  const extension = get_file_extension(file.name);
+  const from_extension = extension_to_mime[extension];
+
+  if (from_extension) {
+    return from_extension;
+  }
+
+  return "image/jpeg";
+};
 
 const blocked_non_image_extensions = [
   ".pdf",
@@ -97,6 +161,12 @@ interface PendingItem {
    */
   preview_url: string;
 
+  /** HEIC/HEIF: generando JPEG local para la miniatura. */
+  preview_loading?: boolean;
+
+  /** HEIC: el navegador no pudo previsualizar; llegará al confirmar la subida. */
+  preview_awaits_server?: boolean;
+
   /**
    * ID de subida temporal obtenido del backend.
    */
@@ -118,11 +188,21 @@ const is_valid_image_file = (file: File) => {
 
   const mime = file.type.trim().toLowerCase();
 
-  if (mime.startsWith("image/")) {
+  if (mime && allowed_vehicle_image_mime_set.has(mime)) {
     return true;
   }
 
-  // Extensión conocida sin MIME válido (fallback)
+  if (
+    mime &&
+    mime.startsWith("image/") &&
+    !allowed_vehicle_image_mime_set.has(mime)
+  ) {
+    toast.error(
+      `${file.name}: formato no admitido. Usa ${allowed_formats_hint}.`,
+    );
+    return false;
+  }
+
   if (
     (!mime || mime === "application/octet-stream") &&
     (known_image_extensions as readonly string[]).includes(extension)
@@ -140,7 +220,7 @@ const is_valid_image_file = (file: File) => {
   }
 
   toast.error(
-    `${file.name}: formato no reconocido. Prueba JPG, PNG, WebP o AVIF.`,
+    `${file.name}: formato no reconocido. Prueba ${allowed_formats_hint}.`,
   );
 
   return false;
@@ -506,8 +586,10 @@ export const ImagesForm = ({
     async (temp_key: string, file: File) => {
       try {
         // 1. Solicitar signed URL + upload_id
+        const resolved_mime_type = infer_mime_type_from_file(file);
+
         const upload_response = await filesService.requestTempImageUpload({
-          mime_type: file.type || "image/jpeg",
+          mime_type: resolved_mime_type,
           original_filename: file.name,
           size_bytes: file.size,
         });
@@ -541,7 +623,7 @@ export const ImagesForm = ({
         const upload_success = await filesService.uploadToSignedUrl(
           upload_response.signed_url,
           file,
-          file.type || "image/jpeg",
+          resolved_mime_type,
           (progress) => {
             set_upload_progress((prev) => ({ ...prev, [temp_key]: progress }));
           }
@@ -598,6 +680,20 @@ export const ImagesForm = ({
           (item) => item.temp_key === temp_key,
         );
         const signed_preview_url = confirm_response.preview_url;
+        if (signed_preview_url) {
+          setPendingItems((prev) =>
+            prev.map((item) =>
+              item.temp_key === temp_key
+                ? {
+                    ...item,
+                    preview_url: signed_preview_url,
+                    preview_loading: false,
+                    preview_awaits_server: false,
+                  }
+                : item,
+            ),
+          );
+        }
         append_committed_image({
           upload_id: upload_response.upload_id,
           preview_url: signed_preview_url ?? pending?.preview_url,
@@ -657,28 +753,14 @@ export const ImagesForm = ({
 
       const new_pending: PendingItem[] = files.map((file) => ({
         temp_key: crypto.randomUUID(),
-
         file,
-
-        /**
-         * Esta operación es prácticamente inmediata.
-         *
-         * El navegador muestra el archivo local sin esperar
-         * absolutamente nada del servidor.
-         */
-        preview_url: URL.createObjectURL(file),
-
+        preview_url: "",
+        preview_loading: true,
         status: "uploading",
       }));
 
-      /**
-       * Primero mostramos las imágenes.
-       */
       setPendingItems((prev) => [...prev, ...new_pending]);
 
-      /**
-       * Inicializamos progreso.
-       */
       set_upload_progress((prev) => {
         const next = { ...prev };
 
@@ -689,10 +771,25 @@ export const ImagesForm = ({
         return next;
       });
 
-      /**
-       * Y EN PARALELO empezamos las subidas.
-       */
       new_pending.forEach((item) => {
+        void (async () => {
+          const previewResult = await createVehicleImagePreviewUrl(item.file);
+          setPendingItems((prev) =>
+            prev.map((pending) =>
+              pending.temp_key === item.temp_key
+                ? {
+                    ...pending,
+                    preview_url: previewResult.previewUrl ?? "",
+                    preview_loading: false,
+                    preview_awaits_server:
+                      previewResult.previewUrl === null &&
+                      fileNeedsClientHeicPreview(item.file),
+                  }
+                : pending,
+            ),
+          );
+        })();
+
         void run_upload(item.temp_key, item.file);
       });
     },
@@ -885,7 +982,7 @@ export const ImagesForm = ({
           </div>
 
           <div className="flex flex-wrap justify-center gap-2">
-            {["JPG", "PNG", "WEBP", "AVIF"].map((label) => (
+            {["JPG", "PNG", "WEBP", "AVIF", "HEIC"].map((label) => (
               <span
                 key={label}
                 className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground"
@@ -1011,19 +1108,35 @@ export const ImagesForm = ({
                         : `${item.file.name} subida`
                 }
               >
-                <Image
-                  width={100}
-                  height={100}
-                  unoptimized
-                  src={item.preview_url}
-                  alt={item.file.name}
-                  className={cn(
-                    "size-full object-cover transition-all duration-300",
-                    (is_uploading || is_confirming) && "scale-[1.01]",
-                    is_failed && "opacity-50 grayscale"
-                  )}
-                  draggable={false}
-                />
+                {item.preview_url ? (
+                  <Image
+                    width={100}
+                    height={100}
+                    unoptimized
+                    src={item.preview_url}
+                    alt={item.file.name}
+                    className={cn(
+                      "size-full object-cover transition-all duration-300",
+                      (is_uploading || is_confirming) && "scale-[1.01]",
+                      is_failed && "opacity-50 grayscale",
+                    )}
+                    draggable={false}
+                  />
+                ) : (
+                  <div className="flex size-full flex-col items-center justify-center gap-2 bg-muted text-muted-foreground">
+                    <Loader2
+                      className="size-6 animate-spin"
+                      aria-hidden
+                    />
+                    <span className="px-2 text-center text-[10px] leading-tight">
+                      {item.preview_loading
+                        ? "Preparando vista previa…"
+                        : item.preview_awaits_server
+                          ? "Vista previa al confirmar…"
+                          : "Vista previa no disponible"}
+                    </span>
+                  </div>
+                )}
 
                 {/* Barra de progreso */}
                 {is_uploading && (

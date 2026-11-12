@@ -21,7 +21,6 @@ export const vehicleInsightsService = {
       undefined,
       { skipAuthRefresh: true },
     );
-    console.log("response", response);
     if (response.status === 403) {
       throw new VehicleInsightsAccessError();
     }

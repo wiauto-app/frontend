@@ -6,6 +6,7 @@ import {
   vehicle_image_schema,
   vehicle_video_schema,
 } from "./vehicle.schema";
+import { parseEuroIntegerInput } from "@/lib/parse-euro-integer-input";
 
 export const QUICK_VEHICLE_LOCATION_REQUIRED_MESSAGE =
   "Indica dónde está el vehículo: código postal, ciudad o «Mi ubicación».";
@@ -42,11 +43,39 @@ const emptyOrZeroToUndefined = (value: unknown) =>
 const MIN_VEHICLE_IMAGES = 1;
 
 const optionalBoundedNumber = (max: number, maxMessage: string) =>
-  z.coerce
-    .number({ error: "Introduce un número válido." })
-    .min(0, { error: "El valor no puede ser negativo." })
-    .max(max, { error: maxMessage })
-    .optional();
+  z.preprocess(
+    (value) => parseEuroIntegerInput(value) ?? value,
+    z.coerce
+      .number({ error: "Introduce un número válido." })
+      .int({ error: "Usa un importe entero en euros (sin céntimos)." })
+      .min(0, { error: "El valor no puede ser negativo." })
+      .max(max, { error: maxMessage })
+      .optional(),
+  );
+
+const preprocessEuroIntegerInput = (value: unknown): unknown => {
+  const cleared = emptyToUndefined(value);
+  if (cleared === undefined) {
+    return undefined;
+  }
+  return parseEuroIntegerInput(cleared) ?? cleared;
+};
+
+const euroIntegerField = (options: {
+  requiredError: string;
+  min: number;
+  minError: string;
+  max: number;
+  maxError: string;
+}) =>
+  z.preprocess(
+    preprocessEuroIntegerInput,
+    z.coerce
+      .number({ error: options.requiredError })
+      .int({ error: "Usa un importe entero en euros (sin céntimos)." })
+      .min(options.min, { error: options.minError })
+      .max(options.max, { error: options.maxError }),
+  );
 
 const optional_vehicle_videos_array = z
   .array(vehicle_video_schema)
@@ -108,24 +137,20 @@ const quickVehicleBaseSchema = z.object({
   condition: z.enum(VEHICLE_CONDITION_VALUES, {
     error: "Selecciona si el vehículo es nuevo o usado.",
   }),
-  mileage: z.preprocess(
-    emptyToUndefined,
-    z.coerce
-      .number({ error: "Introduce el kilometraje." })
-      .min(0, { error: "El kilometraje no puede ser negativo." })
-      .max(9_999_999, {
-        error: "El kilometraje no puede ser mayor a 9.999.999 km.",
-      }),
-  ),
-  price: z.preprocess(
-    emptyToUndefined,
-    z.coerce
-      .number({ error: "Introduce el precio." })
-      .min(1, { error: "El precio debe ser mayor que 0 €." })
-      .max(9_999_999, {
-        error: "El precio no puede ser mayor a 9.999.999 €.",
-      }),
-  ),
+  mileage: euroIntegerField({
+    requiredError: "Introduce el kilometraje.",
+    min: 0,
+    minError: "El kilometraje no puede ser negativo.",
+    max: 9_999_999,
+    maxError: "El kilometraje no puede ser mayor a 9.999.999 km.",
+  }),
+  price: euroIntegerField({
+    requiredError: "Introduce el precio.",
+    min: 1,
+    minError: "El precio debe ser mayor que 0 €.",
+    max: 9_999_999,
+    maxError: "El precio no puede ser mayor a 9.999.999 €.",
+  }),
   finance_price: optionalBoundedNumber(9999999, "El precio financiado no puede ser mayor a 9999999."),
   offer_financing: z.boolean().default(false),
   show_first_cuota: z.boolean().default(false),
