@@ -42,7 +42,7 @@ describe("quickVehicleSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("acepta una sola fotografía y rechaza el envío sin fotos", () => {
+  it("acepta una sola fotografía y el envío sin fotos", () => {
     const withOneImage = quickVehicleSchema.safeParse({
       ...baseValidPayload,
       images: [{ path: "temp/a.jpg", order: 0 }],
@@ -53,11 +53,9 @@ describe("quickVehicleSchema", () => {
       ...baseValidPayload,
       images: [],
     });
-    expect(withoutImages.success).toBe(false);
-    if (!withoutImages.success) {
-      expect(withoutImages.error.issues[0]?.message).toBe(
-        "Sube al menos una fotografía del vehículo.",
-      );
+    expect(withoutImages.success).toBe(true);
+    if (withoutImages.success) {
+      expect(withoutImages.data.images).toEqual([]);
     }
   });
 

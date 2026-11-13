@@ -53,11 +53,11 @@ export const QuickVehicleMediaStep = ({
       label="Sube las fotografías del vehículo"
       description={
         canUploadVideos
-          ? `Con 1 foto ya puedes publicar, pero recomendamos subir al menos ${RECOMMENDED_VEHICLE_IMAGES}: exterior, interior y salpicadero. Puedes subir fotos en HEIC del iPhone; las convertimos al publicar. Los vídeos son opcionales.`
-          : `Con 1 foto ya puedes publicar, pero recomendamos subir al menos ${RECOMMENDED_VEHICLE_IMAGES}: exterior, interior y salpicadero. Puedes subir fotos en HEIC del iPhone; las convertimos al publicar.`
+          ? `Las fotos son opcionales. Recomendamos subir al menos ${RECOMMENDED_VEHICLE_IMAGES}: exterior, interior y salpicadero. Puedes subir fotos en HEIC del iPhone; las convertimos al publicar. Los vídeos son opcionales.`
+          : `Las fotos son opcionales. Recomendamos subir al menos ${RECOMMENDED_VEHICLE_IMAGES}: exterior, interior y salpicadero. Puedes subir fotos en HEIC del iPhone; las convertimos al publicar.`
       }
     >
-      {imageCount > 0 && missingRecommendedImages > 0 ? (
+      {missingRecommendedImages > 0 ? (
         <p
           className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
           role="status"

@@ -40,8 +40,6 @@ const emptyToUndefined = (value: unknown) =>
 const emptyOrZeroToUndefined = (value: unknown) =>
   value === "" || value === null || Number(value) === 0 ? undefined : value;
 
-const MIN_VEHICLE_IMAGES = 1;
-
 const optionalBoundedNumber = (max: number, maxMessage: string) =>
   z.preprocess(
     (value) => parseEuroIntegerInput(value) ?? value,
@@ -76,6 +74,11 @@ const euroIntegerField = (options: {
       .min(options.min, { error: options.minError })
       .max(options.max, { error: options.maxError }),
   );
+
+const optional_vehicle_images_array = z
+  .array(vehicle_image_schema)
+  .optional()
+  .default([]);
 
 const optional_vehicle_videos_array = z
   .array(vehicle_video_schema)
@@ -117,11 +120,7 @@ const quickVehicleBaseSchema = z.object({
       (value) => value === "" || /^[A-HJ-NPR-Z0-9]{17}$/.test(value),
       { error: "El VIN debe tener exactamente 17 caracteres válidos." },
     ),
-  images: z
-    .array(vehicle_image_schema)
-    .min(MIN_VEHICLE_IMAGES, {
-      error: "Sube al menos una fotografía del vehículo.",
-    }),
+  images: optional_vehicle_images_array,
   videos: optional_vehicle_videos_array,
   version_id: z.coerce
     .number({ error: "Selecciona una versión del catálogo." })
