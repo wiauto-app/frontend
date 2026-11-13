@@ -1,4 +1,8 @@
 import { MEDIA_URL } from "@/constants";
+import {
+  NO_VEHICLE_IMAGE_SRC,
+  isNoVehicleImageFileKey,
+} from "@/lib/vehicles/no-vehicle-image";
 import type { VehicleListItem } from "@/interfaces/vehicle.interface";
 import type { VehiclePriceHistoryItem } from "@/interfaces/vehicle-price.interface";
 import { VEHICLE_PRICE_STATUS } from "@/interfaces/vehicle-price.interface";
@@ -85,7 +89,9 @@ export function formatMonthlyPrice(price: number, cuotas?: number): string {
 
 /** Prefijo del CDN público (`NEXT_PUBLIC_MEDIA_URL`) + pathname `/{bucket}/{key}`. */
 export function getImageUrl(image: string): string {
-  if (!image) return "/placeholder-car.webp";
+  if (isNoVehicleImageFileKey(image)) {
+    return NO_VEHICLE_IMAGE_SRC;
+  }
   if (image.startsWith("http://") || image.startsWith("https://")) {
     return image;
   }

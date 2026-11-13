@@ -10,6 +10,8 @@ import { FavoriteVehicleActions } from "./FavoriteVehicleActions";
 import { FavoriteVehicleInfoGrid } from "./FavoriteVehicleInfoGrid";
 import { WiautoImage } from "@/components/ui/wiautoImage";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { isNoVehicleImageFileKey } from "@/lib/vehicles/no-vehicle-image";
 
 interface FavoriteVehicleCardProps {
   item: FavoritesPageItem;
@@ -37,6 +39,7 @@ export const FavoriteVehicleCard = ({
   const displayName = getVehicleDisplayName(vehicle);
   const publishedAt = vehicle.created_at ?? item.created_at;
   const publisherId = vehicle.publisher_id ?? "";
+  const isPlaceholderImage = isNoVehicleImageFileKey(vehicle.image_url);
 
   const handleRemove = async () => {
     try {
@@ -70,13 +73,17 @@ export const FavoriteVehicleCard = ({
       <CardContent className="flex flex-col gap-4 sm:flex-row ">
         <Link
           href={vehicleHref}
-          className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg sm:w-56 lg:w-72"
+          className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:w-56 lg:w-72"
           aria-label={`Ver anuncio de ${displayName}`}
         >
           <WiautoImage
             src={vehicle.image_url ?? ""}
             alt={displayName}
-            className="object-cover transition-transform hover:scale-[1.02]"
+            className={cn(
+              isPlaceholderImage
+                ? "object-contain"
+                : "object-cover transition-transform hover:scale-[1.02]",
+            )}
             fill
             sizes="(max-width: 640px) 100vw, 288px"
           />

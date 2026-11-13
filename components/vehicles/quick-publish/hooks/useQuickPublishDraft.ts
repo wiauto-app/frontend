@@ -288,6 +288,7 @@ export const useQuickPublishDraft = ({
       !appraisalId || draftAppraisalId === appraisalId;
 
     const handoff = useQuickPublishHandoffStore.getState();
+    
     const hasValidHandoff =
       isQuickPublishHandoffValid(handoff) &&
       isSameAppraisal(handoff.appraisalId);

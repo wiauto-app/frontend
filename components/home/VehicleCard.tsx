@@ -1,6 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import {
+  NO_VEHICLE_IMAGE_SRC,
+  isNoVehicleImageFileKey,
+} from "@/lib/vehicles/no-vehicle-image";
 import { BRAND_BLUE } from "./data/home-data";
 
 export interface VehicleCardProps {
@@ -21,6 +25,11 @@ export function VehicleCard({
   href = "/vehiculos",
   className,
 }: VehicleCardProps) {
+  const isPlaceholderImage = isNoVehicleImageFileKey(imageSrc);
+  const resolvedImageSrc = isPlaceholderImage
+    ? NO_VEHICLE_IMAGE_SRC
+    : imageSrc;
+
   return (
     <Link
       href={href}
@@ -31,10 +40,14 @@ export function VehicleCard({
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
         <Image
-          src={imageSrc}
+          src={resolvedImageSrc}
           alt={title}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className={cn(
+            isPlaceholderImage
+              ? "object-contain"
+              : "object-cover transition-transform duration-300 group-hover:scale-105",
+          )}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
       </div>

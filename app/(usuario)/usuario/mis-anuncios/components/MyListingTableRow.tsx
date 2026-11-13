@@ -6,7 +6,6 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import type { IconType } from "react-icons";
 import {
-  FaCar,
   FaComment,
   FaEye,
   FaHeart,
@@ -23,6 +22,7 @@ import {
 } from "@/components/vehicles/constants/vehicle-status.constants";
 import { VEHICLE_TRANSMISSION_TYPE_OPTIONS } from "@/components/vehicles/constants/vehicle-enums.constants";
 import { cn, getImageUrl } from "@/lib/utils";
+import { isNoVehicleImageFileKey } from "@/lib/vehicles/no-vehicle-image";
 import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
 import type { OwnerVehicleStatTrend } from "@/interfaces/owner-vehicle.interface";
 import { RenewListingButton } from "./RenewListingButton";
@@ -123,7 +123,9 @@ const PerformanceCell = ({
 export const MyListingTableRow = ({ listing }: MyListingTableRowProps) => {
   const { has } = useEntitlements();
   const showListingInsights = has("listing_insights");
-  const imageUrl = listing.image?.url ? getImageUrl(listing.image.url) : null;
+  const primaryImageKey = listing.image?.url ?? "";
+  const imageUrl = getImageUrl(primaryImageKey);
+  const isPlaceholderImage = isNoVehicleImageFileKey(primaryImageKey);
   const publishedReference = getPublishedReferenceDate(listing);
   const publishedAgo = formatDistanceToNow(publishedReference, {
     addSuffix: true,
@@ -138,7 +140,7 @@ export const MyListingTableRow = ({ listing }: MyListingTableRowProps) => {
             href={`/vehiculo/${listing.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="group/image relative h-36 lg:h-full w-full overflow-hidden rounded-xl "
+            className="group/image relative h-36 lg:h-full w-full overflow-hidden rounded-xl bg-slate-100"
             aria-label={`Ver anuncio ${listing.display_name}`}
           >
             <div className="flex flex-wrap items-center gap-2 absolute top-2 left-2 z-10">
@@ -159,20 +161,16 @@ export const MyListingTableRow = ({ listing }: MyListingTableRowProps) => {
                 </Badge>
               ) : null}
             </div>
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={listing.display_name}
-                fill
-                className="object-cover transition-transform duration-500 group-hover/image:scale-[1.025]"
-                sizes="(max-width: 768px) 100vw, 45vw"
-              />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                <FaCar className="size-10" aria-hidden />
-                <span className="text-sm">Sin imagen</span>
-              </div>
-            )}
+            <Image
+              src={imageUrl}
+              alt={listing.display_name}
+              fill
+              className={cn(
+                "transition-transform duration-500 group-hover/image:scale-[1.025]",
+                isPlaceholderImage ? "object-contain" : "object-cover",
+              )}
+              sizes="(max-width: 768px) 100vw, 45vw"
+            />
             <span className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover/image:opacity-100" />
           </Link>
 

@@ -1,6 +1,10 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { MEDIA_URL } from "@/constants/external.constant";
+import {
+  NO_VEHICLE_IMAGE_SRC,
+  isNoVehicleImageFileKey,
+} from "@/lib/vehicles/no-vehicle-image";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -36,7 +40,9 @@ export const objectToQueryString = (obj?: object) => {
 
 /** Prefijo del CDN público (`NEXT_PUBLIC_MEDIA_URL`) + pathname `/{bucket}/{key}`. */
 export const getImageUrl = (fileKey: string) => {
-  if (!fileKey) return "/placeholder-car.webp";
+  if (isNoVehicleImageFileKey(fileKey)) {
+    return NO_VEHICLE_IMAGE_SRC;
+  }
   if (fileKey.startsWith("http://") || fileKey.startsWith("https://")) {
     return fileKey;
   }

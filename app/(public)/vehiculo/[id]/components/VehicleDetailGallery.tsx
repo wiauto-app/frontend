@@ -15,6 +15,10 @@ import type {
 } from "@/interfaces/vehicle.interface";
 import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
 import { cn } from "@/lib/utils";
+import {
+  NO_VEHICLE_IMAGE_SRC,
+  isNoVehicleImageFileKey,
+} from "@/lib/vehicles/no-vehicle-image";
 import { ViewTransition } from "react";
 
 interface VehicleDetailGalleryProps {
@@ -29,9 +33,12 @@ interface VehicleDetailGalleryProps {
 
 const PLACEHOLDER_IMAGE: VehicleImage = {
   id: "placeholder",
-  url: "/placeholder-car.webp",
+  url: NO_VEHICLE_IMAGE_SRC,
   order: 0,
 };
+
+const vehicleImageObjectClass = (url: string) =>
+  isNoVehicleImageFileKey(url) ? "object-contain" : "object-cover";
 
 const ASIDE_LIMIT = 3;
 
@@ -124,7 +131,7 @@ export const VehicleDetailGallery = ({
                   fill
                   src={getImageUrl(mainImage.url)}
                   alt={`${title} - imagen 1`}
-                  className="object-cover"
+                  className={vehicleImageObjectClass(mainImage.url)}
                   sizes={MAIN_IMAGE_SIZES}
                   fetchPriority="high"
                   quality={70}
@@ -137,7 +144,7 @@ export const VehicleDetailGallery = ({
               fill
               src={getImageUrl(mainImage.url)}
               alt={`${title} - imagen 1`}
-              className="object-cover"
+              className={vehicleImageObjectClass(mainImage.url)}
               sizes={MAIN_IMAGE_SIZES}
               quality={70}
               priority
@@ -170,7 +177,7 @@ export const VehicleDetailGallery = ({
                     key={image.id}
                     type="button"
                     className={cn(
-                      "relative min-h-24 min-w-0 cursor-pointer overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 lg:min-h-0 lg:rounded-none",
+                      "relative min-h-24 min-w-0 cursor-pointer overflow-hidden rounded-xl bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 lg:min-h-0 lg:rounded-none",
                       asideIndex === 0 && "lg:rounded-tr-2xl",
                       isLastAside && "lg:rounded-br-2xl",
                     )}
@@ -185,7 +192,7 @@ export const VehicleDetailGallery = ({
                       fill
                       src={getImageUrl(image.url)}
                       alt={`${title} - miniatura ${galleryIndex + 1}`}
-                      className="object-cover"
+                      className={vehicleImageObjectClass(image.url)}
                       sizes="
     (max-width: 1023px) calc((100vw - 3rem) / 3),
     256px

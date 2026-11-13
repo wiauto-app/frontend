@@ -33,7 +33,11 @@ import {
 } from "@/components/auth/signInDialog";
 import { ReferralCaptureOnMount } from "@/components/referrals/ReferralCaptureOnMount";
 import { isValidReturnPath } from "@/lib/auth/authReturnTo";
-import { QUICK_VEHICLE_SUBMIT_ATTR } from "./quick-vehicle-wizard.constants";
+import {
+  QUICK_VEHICLE_STEP_IDS,
+  QUICK_VEHICLE_STEP_QUERY_PARAM,
+  QUICK_VEHICLE_SUBMIT_ATTR,
+} from "./quick-vehicle-wizard.constants";
 import { serializeVehiclePayload } from "../utils/serializeVehiclePayload";
 import { useQuickPublishDraft } from "./hooks/useQuickPublishDraft";
 import {
@@ -93,17 +97,6 @@ export const QuickVehicleForm = ({
   const autoPublishStartedRef = useRef(false);
   const publishAuthTrackedRef = useRef(false);
   const dealershipPrefillAppliedRef = useRef(false);
-  const [galleryLeadPreview, setGalleryLeadPreview] = useState<{
-    url: string | null;
-    totalCount: number;
-  }>({ url: null, totalCount: 0 });
-
-  const handleGalleryLeadPreviewChange = useCallback(
-    (preview: { url: string | null; totalCount: number }) => {
-      setGalleryLeadPreview(preview);
-    },
-    [],
-  );
 
   const { data: vehicleDetail, isLoading: isLoadingVehicle } = useQuery({
     queryKey: ["vehicle", vehicleId],
@@ -156,13 +149,14 @@ export const QuickVehicleForm = ({
     form.reset(mapAppraisalToQuickFormValues(appraisal, form.getValues()));
   }, [appraisal, isEditMode, form, isDraftReady, restoredFromDraft]);
 
-  // Contacto y ubicación del concesionario (solo creación, tras resolver borrador).
+  // Contacto y ubica
+  // ción del concesionario (solo creación, tras resolver borrador).
   useEffect(() => {
+  
     if (
       isEditMode ||
       !isAuthResolved ||
       !isDraftReady ||
-      restoredFromDraft ||
       dealershipPrefillAppliedRef.current ||
       !user?.dealership_membership
     ) {
@@ -180,7 +174,6 @@ export const QuickVehicleForm = ({
     const phoneEmpty = !current.phone?.phone?.trim();
     const latUnset = current.lat === undefined;
     const lngUnset = current.lng === undefined;
-
     if (phoneEmpty && defaults) {
       form.setValue(
         "phone",
@@ -383,6 +376,51 @@ export const QuickVehicleForm = ({
     trackPublishAuthView(tab === "register" ? "registro" : "login");
   };
 
+  const handleResetForm = useCallback(() => {
+    if (isEditMode) {
+      if (!vehicleDetail) {
+        toast.error("Aún no hemos cargado el anuncio para restablecerlo.");
+        return;
+      }
+      form.reset(mapVehicleDetailToQuickFormValues(vehicleDetail));
+      toast.success("Cambios descartados");
+      return;
+    }
+
+    discardDraft();
+    setPendingPublish(false);
+    setPendingVehiclePayload(undefined);
+    autoPublishStartedRef.current = false;
+    publishAuthTrackedRef.current = false;
+    dealershipPrefillAppliedRef.current = false;
+    resetPublishFunnel();
+
+    const freshValues = {
+      ...createQuickVehicleDefaultValues,
+      images: [],
+      videos: [],
+      phone: { phone_code: "+34", phone: "" },
+    };
+    if (appraisal) {
+      Object.assign(
+        freshValues,
+        mapAppraisalToQuickFormValues(appraisal, freshValues as QuickVehicleSchema),
+      );
+    }
+    form.reset(freshValues);
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      params.set(
+        QUICK_VEHICLE_STEP_QUERY_PARAM,
+        String(QUICK_VEHICLE_STEP_IDS.photos),
+      );
+      router.replace(`${window.location.pathname}?${params.toString()}`);
+    }
+
+    toast.success("Formulario restablecido");
+  }, [appraisal, discardDraft, form, isEditMode, router, vehicleDetail]);
+
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -459,7 +497,7 @@ export const QuickVehicleForm = ({
               hasIncompleteMediaUploads={hasIncompleteMediaUploads}
               onImageUploadStatusChange={setHasIncompleteImageUploads}
               onVideoUploadStatusChange={setHasIncompleteVideoUploads}
-              onGalleryLeadPreviewChange={handleGalleryLeadPreviewChange}
+              onResetForm={handleResetForm}
             />
           </Suspense>
         </div>

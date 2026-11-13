@@ -14,6 +14,7 @@ import { useVehicleImpressionTracker } from "@/components/vehicles/hooks/useVehi
 import { getVehicleDisplayName } from "@/lib/vehicles/getVehicleDisplayName";
 import { formatPrice, getImageUrl, getVehicleUrl } from "../utils";
 import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
+import { isNoVehicleImageFileKey } from "@/lib/vehicles/no-vehicle-image";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
 import { VehicleFinancingFrom } from "./VehicleFinancingFrom";
 import { ViewTransition } from "react";
@@ -94,7 +95,9 @@ export const VehicleGridCard = ({
   titleAs = "h3",
   priority = false,
 }: VehicleGridCardProps) => {
-  const imageUrl = getImageUrl(vehicle.images[0]?.url ?? "");
+  const primaryImageKey = vehicle.images[0]?.url ?? "";
+  const imageUrl = getImageUrl(primaryImageKey);
+  const isPlaceholderImage = isNoVehicleImageFileKey(primaryImageKey);
   const displayName = getVehicleDisplayName(vehicle);
   const vehicleUrl = getVehicleUrl(vehicle.id);
   const impressionRef = useVehicleImpressionTracker<HTMLDivElement>(vehicle.id);
@@ -116,7 +119,7 @@ export const VehicleGridCard = ({
           tabIndex={-1}
         />
 
-        <CardHeader className="pointer-events-none relative aspect-video overflow-hidden p-0 pt-0">
+        <CardHeader className="pointer-events-none relative aspect-video overflow-hidden bg-slate-100 p-0 pt-0">
           <div className="pointer-events-auto absolute top-2 right-2 z-10 flex items-center gap-1">
             <VehicleFavoriteButton
               vehicleId={vehicle.id}
@@ -138,7 +141,11 @@ export const VehicleGridCard = ({
                 fill
                 priority={priority}
                 fetchPriority={priority ? "high" : "auto"}
-                className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                className={cn(
+                  isPlaceholderImage
+                    ? "object-contain"
+                    : "object-cover transition-transform duration-300 group-hover:scale-[1.03]",
+                )}
                 quality={70}
                 sizes={VEHICLE_GRID_IMAGE_SIZES}
               />

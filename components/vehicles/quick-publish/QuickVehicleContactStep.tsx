@@ -12,7 +12,9 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
+import { useUser } from "@/app/contexts/auth/useUser";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
+import { getDealershipPublishContactDefaults } from "@/components/vehicles/quick-publish/utils/getDealershipPublishContactDefaults";
 import { useEntitlements } from "@/hooks/useEntitlements";
 
 interface QuickVehicleContactStepProps {
@@ -65,6 +67,14 @@ export const QuickVehicleContactStep = ({
   const phoneValue = form.watch("phone");
   const lng = form.watch("lng");
   const { isSubscribed } = useEntitlements();
+  const { user } = useUser();
+  const dealershipLocationDefaults = getDealershipPublishContactDefaults(
+    user?.dealership_membership,
+  );
+  const shouldPreferDealershipLocation =
+    !isEditMode &&
+    dealershipLocationDefaults?.lat != null &&
+    dealershipLocationDefaults?.lng != null;
 
   const handleLocationChange = ({ lat, lng: nextLng }: MapInputValue) => {
     const options = { shouldDirty: true, shouldValidate: true } as const;
@@ -77,7 +87,11 @@ export const QuickVehicleContactStep = ({
       <VehicleFormStep
         number={locationStepNumber}
         label="¿Dónde está el vehículo?"
-        description="Escribe el código postal o la ciudad, o usa tu ubicación actual."
+        description={
+          shouldPreferDealershipLocation
+            ? "Hemos centrado el mapa en la ubicación de tu concesionario. Ajústala si hace falta."
+            : "Escribe el código postal o la ciudad, o usa tu ubicación actual."
+        }
       >
         {isSubscribed ? (
           <ControllerInput
@@ -109,7 +123,9 @@ export const QuickVehicleContactStep = ({
                   value={{ lat: latField.value, lng }}
                   onChange={handleLocationChange}
                   ariaInvalid={Boolean(locationError)}
-                  autoLocateWhenPermitted={!isEditMode}
+                  autoLocateWhenPermitted={
+                    !isEditMode && !shouldPreferDealershipLocation
+                  }
                   searchPlaceholder="Código postal o ciudad"
                 />
                 {locationError ? (

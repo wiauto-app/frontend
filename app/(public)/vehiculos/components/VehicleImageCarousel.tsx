@@ -6,6 +6,10 @@ import { Camera, ChevronLeft, ChevronRight } from "lucide-react";
 import type { VehicleImage } from "@/interfaces/vehicle.interface";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  NO_VEHICLE_IMAGE_SRC,
+  isNoVehicleImageFileKey,
+} from "@/lib/vehicles/no-vehicle-image";
 import { getImageUrl } from "../utils";
 
 interface VehicleImageCarouselProps {
@@ -17,7 +21,7 @@ interface VehicleImageCarouselProps {
 
 const resolveCarouselImageUrl = (image: VehicleImage | undefined): string => {
   if (!image?.url) {
-    return "/placeholder-car.webp";
+    return NO_VEHICLE_IMAGE_SRC;
   }
   return getImageUrl(image.url);
 };
@@ -33,6 +37,7 @@ export const VehicleImageCarousel = ({
   const safeIndex = images.length > 0 ? Math.min(activeIndex, images.length - 1) : 0;
   const activeImage = images[safeIndex];
   const imageUrl = resolveCarouselImageUrl(activeImage);
+  const isPlaceholderImage = isNoVehicleImageFileKey(activeImage?.url);
 
   const handlePrevious = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -74,7 +79,12 @@ export const VehicleImageCarousel = ({
         <img
           src={imageUrl}
           alt={alt}
-          className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          className={cn(
+            "size-full",
+            isPlaceholderImage
+              ? "object-contain"
+              : "object-cover transition-transform duration-300 group-hover:scale-[1.02]",
+          )}
         />
 
         {images.length > 0 && (

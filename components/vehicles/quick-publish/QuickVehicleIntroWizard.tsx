@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { FieldPath } from "react-hook-form";
 import { useFormContext } from "react-hook-form";
-import { ChevronLeft, ChevronRight, Loader2, Send } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, RotateCcw, Send } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import CustomAlertDialog from "@/components/ui/customAlertDialog";
 import { Stepper } from "@/components/ui/stepper";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 
@@ -46,6 +47,7 @@ interface QuickVehicleIntroWizardProps {
     url: string | null;
     totalCount: number;
   }) => void;
+  onResetForm?: () => void;
 }
 
 export const QuickVehicleIntroWizard = ({
@@ -55,8 +57,10 @@ export const QuickVehicleIntroWizard = ({
   onImageUploadStatusChange,
   onVideoUploadStatusChange,
   onGalleryLeadPreviewChange,
+  onResetForm,
 }: QuickVehicleIntroWizardProps) => {
   const form = useFormContext<QuickVehicleSchema>();
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
 
   const {
     stepItems,
@@ -232,13 +236,59 @@ export const QuickVehicleIntroWizard = ({
       ) : null}
       {showStepNavigation ? (
         <div className="space-y-3">
-          <QuickPublishStepProgress isEditMode={isEditMode} />
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <QuickPublishStepProgress isEditMode={isEditMode} />
+            </div>
+            {onResetForm ? (
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-9 shrink-0 gap-2 text-muted-foreground"
+                onClick={() => setIsResetDialogOpen(true)}
+              >
+                <RotateCcw className="size-4" aria-hidden />
+                {isEditMode ? "Descartar cambios" : "Restablecer"}
+              </Button>
+            ) : null}
+          </div>
           <Stepper
             steps={stepItems}
             currentStep={currentStep}
             onStepClick={handleStepClick}
           />
         </div>
+      ) : null}
+
+      {onResetForm ? (
+        <CustomAlertDialog
+          open={isResetDialogOpen}
+          onOpenChange={setIsResetDialogOpen}
+          title={
+            isEditMode
+              ? "¿Descartar los cambios?"
+              : "¿Restablecer el formulario?"
+          }
+          description={
+            isEditMode
+              ? "Se volverán a cargar los datos guardados del anuncio. Los cambios que no hayas publicado se perderán."
+              : "Se borrarán los datos que has rellenado. Si guardas borrador en el servidor, también se eliminará."
+          }
+          cancelText="Cancelar"
+          confirmText="Restablecer"
+          confirmVariant="destructive"
+          onConfirm={() => {
+            onResetForm();
+            setIsResetDialogOpen(false);
+            if (!isFirstStep) {
+              const first = stepItems[0];
+              if (first) {
+                navigateToStep(first.id);
+              }
+            }
+            scrollToTop();
+          }}
+        />
       ) : null}
 
       {renderStep()}
