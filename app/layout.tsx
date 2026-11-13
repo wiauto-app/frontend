@@ -14,6 +14,7 @@ import { LazyThirdPartyLibraries } from "@/components/home/lazyImports/LazyThird
 import { NavbarPublishButton } from "@/components/navbar";
 import { HiPlus } from "react-icons/hi";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -62,11 +63,11 @@ export default async function RootLayout({
           </ConditionalWrapper>
           <LazyAssistantShell />
           <LazyMobileNavbar />
-          <Button
-            className="size-15 bg-primary text-primary-foreground hover:bg-primary/90 fixed bottom-36 right-3 z-50 flex items-center justify-center rounded-full"
-          >
-            <HiPlus className="size-6" />
-          </Button>
+          <Link href="/publicar">
+            <Button className="size-15 bg-primary text-primary-foreground hover:bg-primary/90 fixed bottom-36 right-3 z-50 flex items-center justify-center rounded-full">
+              <HiPlus className="size-6" />
+            </Button>
+          </Link>
           <LazyCookieConsentBanner />
         </Providers>
         <LazyThirdPartyLibraries />
