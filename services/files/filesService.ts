@@ -9,7 +9,13 @@ import {
   UPLOAD_TEMP_VEHICLE_IMAGE,
   TEMP_UPLOAD_VEHICLE_IMAGE,
   CONFIRM_TEMP_UPLOAD_VEHICLE_IMAGE,
+  VEHICLE_VIDEO_UPLOADS,
+  VEHICLE_VIDEO_UPLOAD,
+  VEHICLE_VIDEO_UPLOAD_COMPLETE,
+  VEHICLE_VIDEO_UPLOAD_PARTS,
+  VEHICLE_VIDEO_UPLOAD_PART_URLS,
 } from "./route.constants";
+import type { ApiResponse } from "@/lib/api";
 import { toast } from "sonner";
 import axios from "axios";
 import { API_URL } from "@/constants";
@@ -137,6 +143,34 @@ export interface ConfirmTempImageUploadResponse {
   preview_url?: string;
   /** Caducidad (ISO) de la temp upload tras confirmar. */
   expires_at?: string;
+}
+
+export interface InitVehicleVideoUploadDto {
+  mime_type: string;
+  size_bytes: number;
+  original_filename: string;
+}
+
+export interface VehicleVideoUploadSession {
+  upload_id: string;
+  part_size: number;
+  part_count: number;
+  expires_at: string;
+}
+
+export interface VehicleVideoUploadPart {
+  part_number: number;
+  etag: string;
+  size: number;
+}
+
+export interface CompletedVehicleVideoUpload {
+  upload_id: string;
+  status: "uploaded";
+  duration_s: number;
+  width: number;
+  height: number;
+  expires_at: string;
 }
 
 interface UploadFileDto {
@@ -467,6 +501,46 @@ export const filesService = {
       return null;
     }
     return response.data ?? {};
+  },
+
+  /** Multipart de vídeo: abre la sesión (403 sin entitlement, 429 demasiadas sesiones). */
+  initVehicleVideoUpload(
+    dto: InitVehicleVideoUploadDto,
+  ): Promise<ApiResponse<VehicleVideoUploadSession>> {
+    return apiPost<VehicleVideoUploadSession>(VEHICLE_VIDEO_UPLOADS, dto);
+  },
+
+  /** URLs PUT firmadas para un lote de partes (máximo 20 por petición). */
+  getVehicleVideoPartUrls(
+    uploadId: string,
+    partNumbers: number[],
+  ): Promise<ApiResponse<{ urls: { part_number: number; url: string }[] }>> {
+    return apiPost(VEHICLE_VIDEO_UPLOAD_PART_URLS(uploadId), {
+      part_numbers: partNumbers,
+    });
+  },
+
+  /** Partes ya subidas (para reanudar). */
+  listVehicleVideoUploadParts(
+    uploadId: string,
+  ): Promise<ApiResponse<{ parts: VehicleVideoUploadPart[] }>> {
+    return apiGet(VEHICLE_VIDEO_UPLOAD_PARTS(uploadId));
+  },
+
+  /** Cierra el multipart; el backend valida con ffprobe (422 si no es vídeo o dura > 120 s). */
+  completeVehicleVideoUpload(
+    uploadId: string,
+    parts: { part_number: number; etag: string }[],
+  ): Promise<ApiResponse<CompletedVehicleVideoUpload>> {
+    return apiPost<CompletedVehicleVideoUpload>(
+      VEHICLE_VIDEO_UPLOAD_COMPLETE(uploadId),
+      { parts },
+    );
+  },
+
+  /** Aborta el multipart y libera la sesión. */
+  abortVehicleVideoUpload(uploadId: string): Promise<ApiResponse<null>> {
+    return apiDelete<null>(VEHICLE_VIDEO_UPLOAD(uploadId));
   },
 
   async uploadToSignedUrl(

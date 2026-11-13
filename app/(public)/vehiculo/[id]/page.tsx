@@ -28,6 +28,7 @@ export default async function VehicleDetailPage({
 }: VehicleDetailPageProps) {
   const { id } = await params;
   const { data } = await getVehicleData(id);
+  console.log(data);
   if (!data.ok || !data.data) {
     notFound();
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, XIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,10 @@ export interface ImageVisualizerItem {
   id: string;
   src: string;
   alt?: string;
+  /** `video`: se muestra con `<video controls>`; por defecto imagen. */
+  kind?: "image" | "video";
+  /** Póster del vídeo. */
+  poster?: string;
 }
 
 export interface ImageVisualizerProps {
@@ -79,6 +83,44 @@ const VisualizerSlideImage = ({ src, alt }: VisualizerSlideImageProps) => {
         priority
         onLoad={() => setIsLoaded(true)}
       />
+    </div>
+  );
+};
+
+interface VisualizerSlideVideoProps {
+  src: string;
+  poster?: string;
+  label: string;
+  isActive: boolean;
+}
+
+const VisualizerSlideVideo = ({
+  src,
+  poster,
+  label,
+  isActive,
+}: VisualizerSlideVideoProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Al cambiar de slide el vídeo se pausa: no sigue sonando fuera de vista.
+  useEffect(() => {
+    if (!isActive) videoRef.current?.pause();
+  }, [isActive]);
+
+  return (
+    <div className="relative flex h-full min-h-[min(60dvh,28rem)] w-full items-center justify-center overflow-hidden rounded-lg">
+      <video
+        ref={videoRef}
+        src={src}
+        poster={poster}
+        controls
+        playsInline
+        preload="metadata"
+        aria-label={label}
+        className="max-h-full max-w-full object-contain"
+      >
+        Tu navegador no admite la reproducción de vídeo HTML5.
+      </video>
     </div>
   );
 };
@@ -180,14 +222,23 @@ export const ImageVisualizer = ({
                     key={image.id}
                     className="flex h-full min-h-[min(60dvh,28rem)] basis-full items-center justify-center pl-0"
                   >
-                    <VisualizerSlideImage
-                      alt={
-                        image.alt ??
-                        title ??
-                        `Imagen ${index + 1} de ${total}`
-                      }
-                      src={image.src}
-                    />
+                    {image.kind === "video" ? (
+                      <VisualizerSlideVideo
+                        src={image.src}
+                        poster={image.poster}
+                        label={image.alt ?? `Vídeo ${index + 1} de ${total}`}
+                        isActive={open && index === safeIndex}
+                      />
+                    ) : (
+                      <VisualizerSlideImage
+                        alt={
+                          image.alt ??
+                          title ??
+                          `Imagen ${index + 1} de ${total}`
+                        }
+                        src={image.src}
+                      />
+                    )}
                   </CarouselItem>
                 ))}
               </CarouselContent>

@@ -38,8 +38,10 @@ import { useQuickPublishWizardSteps } from "./hooks/useQuickPublishWizardSteps";
 interface QuickVehicleIntroWizardProps {
   vehicleId?: string;
   isEditMode?: boolean;
-  hasIncompleteImageUploads?: boolean;
+  /** Imágenes o vídeos subiéndose (o fallidos): bloquea Publicar. */
+  hasIncompleteMediaUploads?: boolean;
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
+  onVideoUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
   onGalleryLeadPreviewChange?: (preview: {
     url: string | null;
     totalCount: number;
@@ -49,8 +51,9 @@ interface QuickVehicleIntroWizardProps {
 export const QuickVehicleIntroWizard = ({
   vehicleId,
   isEditMode = false,
-  hasIncompleteImageUploads = false,
+  hasIncompleteMediaUploads = false,
   onImageUploadStatusChange,
+  onVideoUploadStatusChange,
   onGalleryLeadPreviewChange,
 }: QuickVehicleIntroWizardProps) => {
   const form = useFormContext<QuickVehicleSchema>();
@@ -198,6 +201,7 @@ export const QuickVehicleIntroWizard = ({
             isEditMode={isEditMode}
             onGalleryLeadPreviewChange={onGalleryLeadPreviewChange}
             onImageUploadStatusChange={onImageUploadStatusChange}
+            onVideoUploadStatusChange={onVideoUploadStatusChange}
             vehicleId={vehicleId}
           />
         );
@@ -269,10 +273,10 @@ export const QuickVehicleIntroWizard = ({
           <Button
             type="submit"
             size="lg"
-            disabled={isSubmitting || hasIncompleteImageUploads}
+            disabled={isSubmitting || hasIncompleteMediaUploads}
             className="w-full sm:w-auto"
             {...{ [QUICK_VEHICLE_SUBMIT_ATTR]: "true" }}
-            aria-disabled={isSubmitting || hasIncompleteImageUploads}
+            aria-disabled={isSubmitting || hasIncompleteMediaUploads}
             onClick={handlePublishClick}
           >
             {isSubmitting ? (
@@ -281,8 +285,8 @@ export const QuickVehicleIntroWizard = ({
               <Send className="size-4" aria-hidden />
             )}
 
-            {hasIncompleteImageUploads
-              ? "Subiendo imágenes…"
+            {hasIncompleteMediaUploads
+              ? "Subiendo fotos y vídeos…"
               : isEditMode
                 ? "Actualizar anuncio"
                 : "Publicar anuncio ahora"}

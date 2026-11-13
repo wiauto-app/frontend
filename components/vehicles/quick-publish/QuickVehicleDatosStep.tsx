@@ -17,6 +17,7 @@ interface QuickVehicleDatosStepProps {
   isEditMode?: boolean;
   vehicleId?: string;
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
+  onVideoUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
   onGalleryLeadPreviewChange?: (preview: {
     url: string | null;
     totalCount: number;
@@ -28,6 +29,7 @@ export const QuickVehicleDatosStep = ({
   isEditMode = false,
   vehicleId,
   onImageUploadStatusChange,
+  onVideoUploadStatusChange,
   onGalleryLeadPreviewChange,
 }: QuickVehicleDatosStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
@@ -40,6 +42,7 @@ export const QuickVehicleDatosStep = ({
       <QuickVehicleMediaStep
         onGalleryLeadPreviewChange={onGalleryLeadPreviewChange}
         onImageUploadStatusChange={onImageUploadStatusChange}
+        onVideoUploadStatusChange={onVideoUploadStatusChange}
         stepNumber={1}
         vehicleId={vehicleId}
       />

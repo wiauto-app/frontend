@@ -6,3 +6,12 @@ export const UPLOAD_TEMP_VEHICLE_IMAGE = "/v1/upload-temp-vehicle-image";
 export const TEMP_UPLOAD_VEHICLE_IMAGE = "/v1/vehicle-images/temp-upload";
 export const CONFIRM_TEMP_UPLOAD_VEHICLE_IMAGE = (uploadId: string) =>
   `/v1/vehicle-images/temp-upload/${uploadId}/confirm`;
+export const VEHICLE_VIDEO_UPLOADS = "/v1/vehicle-videos/uploads";
+export const VEHICLE_VIDEO_UPLOAD_PART_URLS = (uploadId: string) =>
+  `${VEHICLE_VIDEO_UPLOADS}/${uploadId}/part-urls`;
+export const VEHICLE_VIDEO_UPLOAD_PARTS = (uploadId: string) =>
+  `${VEHICLE_VIDEO_UPLOADS}/${uploadId}/parts`;
+export const VEHICLE_VIDEO_UPLOAD_COMPLETE = (uploadId: string) =>
+  `${VEHICLE_VIDEO_UPLOADS}/${uploadId}/complete`;
+export const VEHICLE_VIDEO_UPLOAD = (uploadId: string) =>
+  `${VEHICLE_VIDEO_UPLOADS}/${uploadId}`;

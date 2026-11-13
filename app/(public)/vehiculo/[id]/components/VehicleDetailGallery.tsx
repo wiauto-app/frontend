@@ -2,20 +2,25 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Camera } from "lucide-react";
+import { Camera, Play } from "lucide-react";
 
 import { getImageUrl } from "@/app/(public)/vehiculos/utils";
 import {
   ImageVisualizer,
   type ImageVisualizerItem,
 } from "@/components/ui/image-visualizer";
-import type { VehicleImage } from "@/interfaces/vehicle.interface";
+import type {
+  VehicleImage,
+  VehicleVideo,
+} from "@/interfaces/vehicle.interface";
 import { getVehicleImageTransitionName } from "@/components/view-transitions/vehicle-image-transition-name";
 import { cn } from "@/lib/utils";
 import { ViewTransition } from "react";
 
 interface VehicleDetailGalleryProps {
   images: VehicleImage[];
+  /** Solo se reproducen los que traen `url` (estado `ready`). */
+  videos?: VehicleVideo[];
   title: string;
   vehicleId: string;
   /** Desactivar si esta galería convive montada con la tarjeta de origen. */
@@ -30,6 +35,14 @@ const PLACEHOLDER_IMAGE: VehicleImage = {
 
 const ASIDE_LIMIT = 3;
 
+const formatDuration = (seconds: number | null) => {
+  if (seconds === null || !Number.isFinite(seconds)) return null;
+  const total = Math.round(seconds);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+};
+
+type PlayableVideo = VehicleVideo & { url: string };
+
 const MAIN_IMAGE_SIZES = `
   (max-width: 1023px) calc(100vw - 2rem),
   (max-width: 1279px) 520px,
@@ -39,6 +52,7 @@ const MAIN_IMAGE_SIZES = `
 
 export const VehicleDetailGallery = ({
   images,
+  videos,
   title,
   vehicleId,
   shareImageTransition = true,
@@ -56,14 +70,33 @@ export const VehicleDetailGallery = ({
   const extraCount = Math.max(0, totalImages - (1 + ASIDE_LIMIT));
   const hasAside = asideImages.length > 0;
 
-  const visualizerImages = useMemo<ImageVisualizerItem[]>(
+  const playableVideos = useMemo<PlayableVideo[]>(
     () =>
-      galleryImages.map((image, index) => ({
+      (videos ?? [])
+        .filter((video): video is PlayableVideo => Boolean(video.url))
+        .sort((a, b) => a.order - b.order),
+    [videos],
+  );
+  const firstVideoIndex = galleryImages.length;
+
+  const visualizerImages = useMemo<ImageVisualizerItem[]>(
+    () => [
+      ...galleryImages.map((image, index) => ({
         id: image.id,
         src: getImageUrl(image.url),
         alt: `${title} - imagen ${index + 1}`,
       })),
-    [galleryImages, title],
+      ...playableVideos.map((video, index) => ({
+        id: `video-${video.id}`,
+        kind: "video" as const,
+        src: getImageUrl(video.url),
+        poster: video.thumbnail_url
+          ? getImageUrl(video.thumbnail_url)
+          : undefined,
+        alt: `${title} - vídeo ${index + 1}`,
+      })),
+    ],
+    [galleryImages, playableVideos, title],
   );
 
   const handleOpenViewer = (index: number) => {
@@ -174,6 +207,49 @@ export const VehicleDetailGallery = ({
           </div>
         ) : null}
       </div>
+
+      {playableVideos.length > 0 ? (
+        <div
+          className="mt-2 flex gap-2 overflow-x-auto"
+          role="list"
+          aria-label="Vídeos del vehículo"
+        >
+          {playableVideos.map((video, videoIndex) => {
+            const duration = formatDuration(video.duration_s);
+            return (
+              <button
+                key={video.id}
+                type="button"
+                role="listitem"
+                className="relative aspect-video w-40 shrink-0 cursor-pointer overflow-hidden rounded-xl bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                onClick={() => handleOpenViewer(firstVideoIndex + videoIndex)}
+                aria-label={`Reproducir vídeo ${videoIndex + 1}${duration ? ` (${duration})` : ""}`}
+              >
+                {video.thumbnail_url ? (
+                  <Image
+                    fill
+                    src={getImageUrl(video.thumbnail_url)}
+                    alt=""
+                    className="object-cover opacity-90"
+                    sizes="160px"
+                    quality={60}
+                  />
+                ) : null}
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <span className="flex size-10 items-center justify-center rounded-full bg-black/60 text-white">
+                    <Play className="size-5 fill-current" aria-hidden />
+                  </span>
+                </span>
+                {duration ? (
+                  <span className="absolute right-1.5 bottom-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-medium text-white">
+                    {duration}
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
 
       <ImageVisualizer
         images={visualizerImages}

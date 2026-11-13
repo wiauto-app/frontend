@@ -42,6 +42,10 @@ export interface DealershipMembership {
   dealership_name: string;
   member_id: string;
   role: DealershipMemberRole;
+  phone_code: string;
+  phone: string;
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface DealershipInvitationJoinStatus {

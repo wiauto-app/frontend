@@ -31,6 +31,10 @@ export const VehicleForm = ({ vehicleId, onSuccess }: VehicleFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [hasIncompleteImageUploads, setHasIncompleteImageUploads] =
     useState(false);
+  const [hasIncompleteVideoUploads, setHasIncompleteVideoUploads] =
+    useState(false);
+  const hasIncompleteMediaUploads =
+    hasIncompleteImageUploads || hasIncompleteVideoUploads;
   const isEditMode = Boolean(vehicleId);
   const formSchema = isEditMode ? updateVehicleSchema : vehicleSchema;
 
@@ -77,9 +81,9 @@ export const VehicleForm = ({ vehicleId, onSuccess }: VehicleFormProps) => {
   const hasPreviousStep = useMemo(() => currentStep > 1, [currentStep]);
 
   const handleSubmit = async (data: VehicleSchema) => {
-    if (hasIncompleteImageUploads) {
+    if (hasIncompleteMediaUploads) {
       toast.error(
-        "Espera a que terminen de subirse todas las imágenes antes de guardar.",
+        "Espera a que terminen de subirse todas las fotos y vídeos antes de guardar.",
       );
       return;
     }
@@ -142,6 +146,7 @@ export const VehicleForm = ({ vehicleId, onSuccess }: VehicleFormProps) => {
         {currentStep === 4 && (
           <MediaForm
             onImageUploadStatusChange={setHasIncompleteImageUploads}
+            onVideoUploadStatusChange={setHasIncompleteVideoUploads}
           />
         )}
         {currentStep === 5 && <VehicleSummaryForm />}
@@ -164,11 +169,11 @@ export const VehicleForm = ({ vehicleId, onSuccess }: VehicleFormProps) => {
             <Button
               type="submit"
               disabled={
-                form.formState.isSubmitting || hasIncompleteImageUploads
+                form.formState.isSubmitting || hasIncompleteMediaUploads
               }
             >
-              {hasIncompleteImageUploads
-                ? "Subiendo imágenes…"
+              {hasIncompleteMediaUploads
+                ? "Subiendo fotos y vídeos…"
                 : isEditMode
                   ? "Actualizar anuncio"
                   : "Guardar"}

@@ -49,6 +49,7 @@ import {
 import type { VehicleByRefResponse } from "@/interfaces/hero-facet.interface";
 
 import { buildVehiclesQueryString } from "@/lib/vehicles/build-vehicles-query-params";
+import { vehicleCacheTag } from "@/lib/cache-tags";
 
 export type FindSimilarVehiclesParams = {
   page?: number;
@@ -102,7 +103,10 @@ export const vehicleService = {
       return apiGet<SimilarVehiclesPaginatedResponse>(`/v1/vehicles/${id}/similar${query}`, undefined, 60);
     },
     findById: (id: string): Promise<ApiResponse<Vehicle>> =>
-      apiGet<Vehicle>(`/v1/vehicles/${id}`, {}, 3600),
+      // Tag para revalidación bajo demanda cuando el backend actualiza el anuncio
+      apiGet<Vehicle>(`/v1/vehicles/${id}`, {}, 3600, {
+        tags: [vehicleCacheTag(id)],
+      }),
     findByRef: (ref: number): Promise<ApiResponse<VehicleByRefResponse>> =>
       apiGet<VehicleByRefResponse>(`/v1/vehicles/by-ref/${ref}`),
     create: (data: CreateVehicleDto, files?: File[]): Promise<ApiResponse<Vehicle>> => {

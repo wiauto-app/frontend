@@ -109,12 +109,42 @@ describe("serializeVehiclePayload", () => {
     expect(updatePayload.vehicle_price_id).toBe("price-1");
   });
 
-  it("no envía videos al API aunque vengan en el formulario", () => {
+  it("envía videos como {upload_id, order} | {id, order} sin campos de UI", () => {
     const payload = serializeVehiclePayload({
       ...baseFormValues,
-      videos: [{ path: "temp/clip.mp4", order: 0 }],
+      videos: [
+        {
+          upload_id: "video-upload-1",
+          order: 1,
+          preview_url: "blob:http://localhost/x",
+          expires_at: "2099-01-01T00:00:00.000Z",
+        },
+        {
+          id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+          order: 0,
+          preview_url: "https://media.example/v.mp4",
+          status: "ready",
+        },
+      ],
     });
 
-    expect(payload).not.toHaveProperty("videos");
+    expect(payload.videos).toEqual([
+      { id: "7c9e6679-7425-40de-944b-e07fc1f90ae7", order: 0 },
+      { upload_id: "video-upload-1", order: 1 },
+    ]);
+  });
+
+  it("omite videos vacíos al crear pero envía [] al actualizar", () => {
+    const createPayload = serializeVehiclePayload({
+      ...baseFormValues,
+      videos: [],
+    });
+    expect(createPayload).not.toHaveProperty("videos");
+
+    const updatePayload = serializeVehiclePayload(
+      { ...baseFormValues, videos: [] },
+      { is_update: true },
+    );
+    expect(updatePayload.videos).toEqual([]);
   });
 });

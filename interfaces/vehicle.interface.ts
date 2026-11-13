@@ -44,6 +44,22 @@ export interface VehicleImage {
   order?: number;
 }
 
+/** Estado de procesamiento; el detalle devuelve todos los vídeos a todo el mundo. */
+export type VehicleVideoStatus = "uploaded" | "processing" | "ready" | "failed";
+
+export interface VehicleVideo {
+  id: string;
+  /** MP4 optimizado; solo no nulo cuando `status === "ready"`. */
+  url: string | null;
+  /** `.webp` o `.jpg`; `null` hasta que está listo. */
+  thumbnail_url: string | null;
+  duration_s: number | null;
+  width: number | null;
+  height: number | null;
+  order: number;
+  status: VehicleVideoStatus;
+}
+
 
 export interface VehicleService {
   id: string;
@@ -224,6 +240,7 @@ export interface Vehicle {
   cuotas: Cuota[];
   services: VehicleService[];
   images: VehicleImage[];
+  videos?: VehicleVideo[];
   version: Version;
   address?: string | null;
   address_details?: VehicleAddressDetails | null;

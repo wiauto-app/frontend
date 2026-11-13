@@ -59,6 +59,7 @@ export const VehicleDetailBody = async ({
           <div className="space-y-6 lg:col-span-3">
             <VehicleDetailGallery
               images={vehicle.images}
+              videos={vehicle.videos}
               title={displayName}
               vehicleId={vehicle.id}
               shareImageTransition={shareImageTransition}

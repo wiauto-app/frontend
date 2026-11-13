@@ -63,14 +63,37 @@ const optional_vehicle_images_array = z
   .optional()
   .default([]);
 
-/** Vídeo del vehículo en el bucket `vehicles-videos` (clave final suele ser `.mp4`). */
-export const vehicle_video_schema = z.object({
-  path: z.string().min(1, { error: "La ruta del vídeo no es válida." }),
-  order: z
-    .number({ error: "El orden del vídeo debe ser un número válido." })
-    .int({ error: "El orden del vídeo debe ser un número entero." })
-    .min(0, { error: "El orden del vídeo no puede ser negativo." }),
-});
+/**
+ * Vídeo del vehículo: `upload_id` (sesión multipart ya completada) o `id`
+ * (vídeo existente al editar) + orden. Al API solo viajan `{upload_id, order}`
+ * o `{id, order}`; el resto son campos de UI.
+ */
+export const vehicle_video_schema = z
+  .object({
+    id: z.uuid({ error: "Identificador no válido." }).optional(),
+    upload_id: z
+      .string()
+      .min(1, { error: "El vídeo no se ha subido correctamente." })
+      .optional(),
+    order: z
+      .number({ error: "El orden del vídeo debe ser un número válido." })
+      .int({ error: "El orden del vídeo debe ser un número entero." })
+      .min(0, { error: "El orden del vídeo no puede ser negativo." }),
+    /** Solo UI: URL pública (vídeo existente) o `blob:` local. */
+    preview_url: z.string().min(1).optional(),
+    /** Solo UI: póster del vídeo procesado. */
+    thumbnail_url: z.string().min(1).optional(),
+    /** Solo UI: caducidad (ISO) de la sesión subida; descarta vídeos del borrador. */
+    expires_at: z.string().optional(),
+    /** Solo UI: duración en segundos. */
+    duration_s: z.number().optional(),
+    /** Solo UI: estado de procesamiento (`uploaded`, `processing`, `ready`, `failed`). */
+    status: z.string().optional(),
+  })
+  .refine((data) => data.upload_id || data.id, {
+    message: "El vídeo no se ha subido correctamente. Vuelve a añadirlo.",
+    path: ["upload_id"],
+  });
 
 export type VehicleFormVideo = z.infer<typeof vehicle_video_schema>;
 

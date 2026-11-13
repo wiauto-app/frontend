@@ -63,11 +63,15 @@ export default async function RootLayout({
           </ConditionalWrapper>
           <LazyAssistantShell />
           <LazyMobileNavbar />
-          <Link href="/publicar">
-            <Button className="size-15 bg-primary text-primary-foreground hover:bg-primary/90 fixed bottom-36 right-3 z-50 flex items-center justify-center rounded-full">
-              <HiPlus className="size-6" />
-            </Button>
-          </Link>
+          <Button
+            render={
+              <Link href="/publicar" className="hidden md:block">
+                <HiPlus className="size-6" />
+              </Link>
+            }
+            className="size-15 bg-primary text-primary-foreground hover:bg-primary/90 fixed bottom-36 right-3 z-50 flex items-center justify-center rounded-full"
+          ></Button>
+
           <LazyCookieConsentBanner />
         </Providers>
         <LazyThirdPartyLibraries />

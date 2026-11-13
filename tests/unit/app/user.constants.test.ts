@@ -59,6 +59,8 @@ describe("getUserSidebarLinks", () => {
         dealership_name: "Auto Norte",
         member_id: "member-1",
         role: "member",
+        phone_code: "+34",
+        phone: "600000000",
       },
       isSubscribed: true,
     });
@@ -82,6 +84,8 @@ describe("getUserSidebarLinks", () => {
         dealership_name: "Auto Norte",
         member_id: "member-1",
         role: "admin",
+        phone_code: "+34",
+        phone: "600000000",
       },
       isSubscribed: true,
     });
@@ -117,6 +121,8 @@ describe("getUserSidebarLinks", () => {
           dealership_name: "Auto Norte",
           member_id: "member-1",
           role,
+          phone_code: "+34",
+          phone: "600000000",
         },
         isSubscribed: true,
       }).some((link) => link.href === "/usuario/mi-financiacion");
@@ -137,6 +143,8 @@ describe("getUserSidebarLinks", () => {
           dealership_name: "Auto Norte",
           member_id: "member-1",
           role: "owner",
+          phone_code: "+34",
+          phone: "600000000",
         },
         isSubscribed: false,
       }).some((link) => link.href === "/usuario/mi-financiacion"),

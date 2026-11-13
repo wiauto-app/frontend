@@ -22,7 +22,7 @@ export const serializeVehiclePayload = (
   data: VehicleSchema | UpdateVehicleSchema,
   options?: { only_temp_images?: boolean; is_update?: boolean },
 ) => {
-  const { phone, images, vehicle_price_id, videos: _videos, ...rest } = data;
+  const { phone, images, vehicle_price_id, videos, ...rest } = data;
 
   const payload: Record<string, unknown> = {
     ...rest,
@@ -67,6 +67,19 @@ export const serializeVehiclePayload = (
       });
       // preview_url (blob) nunca va al API
     }
+  }
+
+  // Update: el array es el estado final (`[]` borra todos). Create: solo si hay.
+  if (videos !== undefined && (options?.is_update || videos.length > 0)) {
+    payload.videos = [...videos]
+      .sort((a, b) => a.order - b.order)
+      .flatMap(
+        (video, order): ({ upload_id: string; order: number } | { id: string; order: number })[] => {
+        if (video.upload_id) return [{ upload_id: video.upload_id, order }];
+        if (video.id) return [{ id: video.id, order }];
+        return [];
+        },
+      );
   }
 
   return payload;

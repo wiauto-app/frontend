@@ -53,6 +53,7 @@ import {
   trackPublishAuthView,
 } from "@/lib/analytics/funnel";
 import type { PendingVehiclePayload } from "@/validations/Schemas";
+import { getDealershipPublishContactDefaults } from "./utils/getDealershipPublishContactDefaults";
 
 /** Ruta actual con querystring (`?step`, `?tasacion`) para volver tras el login. */
 const getCurrentReturnTo = (): string | undefined => {
@@ -81,12 +82,17 @@ export const QuickVehicleForm = ({
   const isEditMode = Boolean(vehicleId);
   const [hasIncompleteImageUploads, setHasIncompleteImageUploads] =
     useState(false);
+  const [hasIncompleteVideoUploads, setHasIncompleteVideoUploads] =
+    useState(false);
+  const hasIncompleteMediaUploads =
+    hasIncompleteImageUploads || hasIncompleteVideoUploads;
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [signInReturnTo, setSignInReturnTo] = useState<string>();
   const [pendingVehiclePayload, setPendingVehiclePayload] =
     useState<PendingVehiclePayload>();
   const autoPublishStartedRef = useRef(false);
   const publishAuthTrackedRef = useRef(false);
+  const dealershipPrefillAppliedRef = useRef(false);
   const [galleryLeadPreview, setGalleryLeadPreview] = useState<{
     url: string | null;
     totalCount: number;
@@ -150,10 +156,76 @@ export const QuickVehicleForm = ({
     form.reset(mapAppraisalToQuickFormValues(appraisal, form.getValues()));
   }, [appraisal, isEditMode, form, isDraftReady, restoredFromDraft]);
 
+  // Contacto y ubicación del concesionario (solo creación, tras resolver borrador).
+  useEffect(() => {
+    if (
+      isEditMode ||
+      !isAuthResolved ||
+      !isDraftReady ||
+      restoredFromDraft ||
+      dealershipPrefillAppliedRef.current ||
+      !user?.dealership_membership
+    ) {
+      return;
+    }
+
+    if (appraisalId && appraisal === undefined) {
+      return;
+    }
+
+    const defaults = getDealershipPublishContactDefaults(
+      user.dealership_membership,
+    );
+    const current = form.getValues();
+    const phoneEmpty = !current.phone?.phone?.trim();
+    const latUnset = current.lat === undefined;
+    const lngUnset = current.lng === undefined;
+
+    if (phoneEmpty && defaults) {
+      form.setValue(
+        "phone",
+        { phone_code: defaults.phone_code, phone: defaults.phone },
+        { shouldDirty: false, shouldValidate: false },
+      );
+    }
+
+    if (
+      defaults &&
+      latUnset &&
+      lngUnset &&
+      defaults.lat !== undefined &&
+      defaults.lng !== undefined
+    ) {
+      form.setValue("lat", defaults.lat, {
+        shouldDirty: false,
+        shouldValidate: false,
+      });
+      form.setValue("lng", defaults.lng, {
+        shouldDirty: false,
+        shouldValidate: false,
+      });
+    }
+
+    form.setValue("publisher_type", "dealership", {
+      shouldDirty: false,
+      shouldValidate: false,
+    });
+    dealershipPrefillAppliedRef.current = true;
+  }, [
+    isEditMode,
+    isAuthResolved,
+    isDraftReady,
+    restoredFromDraft,
+    user?.dealership_membership,
+    appraisalId,
+    appraisal,
+    form,
+  ]);
+
   const handleSubmit = async (data: QuickVehicleSchema) => {
-    if (hasIncompleteImageUploads) {
+    if (hasIncompleteMediaUploads) {
       toast.error(
-        "Espera a que terminen de subirse todas las imágenes antes de publicar.",
+        "Espera a que terminen de subirse todas las fotos y vídeos antes de publicar.",
       );
       return;
     }
@@ -281,7 +353,7 @@ export const QuickVehicleForm = ({
       !isDraftReady ||
       !pendingPublish ||
       isAuthenticated !== true ||
-      hasIncompleteImageUploads
+      hasIncompleteMediaUploads
     ) {
       return;
     }
@@ -296,7 +368,7 @@ export const QuickVehicleForm = ({
     isDraftReady,
     pendingPublish,
     isAuthenticated,
-    hasIncompleteImageUploads,
+    hasIncompleteMediaUploads,
   ]);
 
   // El borrador ya vive en el backend: incluye teléfono de contacto, no se guarda en local.
@@ -384,8 +456,9 @@ export const QuickVehicleForm = ({
             <QuickVehicleIntroWizard
               vehicleId={vehicleId}
               isEditMode={isEditMode}
-              hasIncompleteImageUploads={hasIncompleteImageUploads}
+              hasIncompleteMediaUploads={hasIncompleteMediaUploads}
               onImageUploadStatusChange={setHasIncompleteImageUploads}
+              onVideoUploadStatusChange={setHasIncompleteVideoUploads}
               onGalleryLeadPreviewChange={handleGalleryLeadPreviewChange}
             />
           </Suspense>

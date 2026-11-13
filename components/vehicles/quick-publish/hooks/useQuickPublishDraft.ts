@@ -8,7 +8,10 @@ import {
   createQuickVehicleDefaultValues,
   type QuickVehicleSchema,
 } from "@/components/vehicles/schemas/quick-vehicle.schema";
-import type { VehicleFormImage } from "@/components/vehicles/schemas/vehicle.schema";
+import type {
+  VehicleFormImage,
+  VehicleFormVideo,
+} from "@/components/vehicles/schemas/vehicle.schema";
 import { vehicleDraftService } from "@/services/vehicleDraftService";
 
 import {
@@ -74,6 +77,26 @@ const isRestorableImage = (image: VehicleFormImage, now: number): boolean => {
   );
 };
 
+/**
+ * Vídeos: los existentes (`id`) siempre; los nuevos solo si su sesión subida
+ * sigue viva. Formatos antiguos (`path`) se descartan.
+ */
+const isRestorableVideo = (video: VehicleFormVideo, now: number): boolean => {
+  if (video.id) {
+    return true;
+  }
+
+  if (!video.upload_id || !video.expires_at) {
+    return false;
+  }
+
+  const expiresAt = Date.parse(video.expires_at);
+  return (
+    Number.isFinite(expiresAt) &&
+    expiresAt - IMAGE_EXPIRY_SAFETY_MARGIN_MS > now
+  );
+};
+
 /** Un `blob:` no sobrevive a una recarga: nunca se persiste. */
 const sanitizeDraftValues = (
   values: QuickPublishDraftValues,
@@ -87,6 +110,17 @@ const sanitizeDraftValues = (
       }
 
       const { preview_url: _blobPreview, ...rest } = image;
+      return rest;
+    });
+  }
+
+  if (snapshot.videos) {
+    snapshot.videos = snapshot.videos.map((video) => {
+      if (!video.preview_url?.startsWith("blob:")) {
+        return video;
+      }
+
+      const { preview_url: _blobPreview, ...rest } = video;
       return rest;
     });
   }
@@ -221,10 +255,15 @@ export const useQuickPublishDraft = ({
         isRestorableImage(image, now),
       );
 
+      const videos = [...(values.videos ?? [])]
+        .sort((a, b) => a.order - b.order)
+        .filter((video) => isRestorableVideo(video, now));
+
       form.reset({
         ...createQuickVehicleDefaultValues,
         ...values,
         images: images.map((image, index) => ({ ...image, order: index })),
+        videos: videos.map((video, index) => ({ ...video, order: index })),
       });
       setRestoredFromDraft(true);
     },

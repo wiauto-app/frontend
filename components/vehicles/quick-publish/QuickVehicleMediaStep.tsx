@@ -19,6 +19,7 @@ interface QuickVehicleMediaStepProps {
   vehicleId?: string;
   stepNumber?: number;
   onImageUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
+  onVideoUploadStatusChange?: (hasIncompleteUploads: boolean) => void;
   onGalleryLeadPreviewChange?: (preview: {
     url: string | null;
     totalCount: number;
@@ -29,6 +30,7 @@ export const QuickVehicleMediaStep = ({
   vehicleId,
   stepNumber = 1,
   onImageUploadStatusChange,
+  onVideoUploadStatusChange,
   onGalleryLeadPreviewChange,
 }: QuickVehicleMediaStepProps) => {
   const form = useFormContext<QuickVehicleSchema>();
@@ -40,10 +42,14 @@ export const QuickVehicleMediaStep = ({
     ? entitlements?.photos_per_vehicle?.limit
     : FREE_PLAN_PHOTOS_PER_VEHICLE_LIMIT;
   const videosLimit = entitlements?.videos_per_vehicle?.limit;
-  const canUploadVideos =
+  const hasUnlimitedVideos =
     entitlements?.videos_per_vehicle?.type === "unlimited" ||
-    entitlements?.videos_per_vehicle?.unlimited === true ||
-    (typeof videosLimit === "number" && videosLimit > 0);
+    entitlements?.videos_per_vehicle?.unlimited === true;
+  // Anónimo: sin entitlements ⇒ sin pestaña de vídeos (el backend exige JWT).
+  const canUploadVideos =
+    isAuthenticated === true &&
+    (hasUnlimitedVideos ||
+      (typeof videosLimit === "number" && videosLimit > 0));
   const imageCount = form.watch("images")?.length ?? 0;
   const missingRecommendedImages = RECOMMENDED_VEHICLE_IMAGES - imageCount;
 
@@ -120,6 +126,12 @@ export const QuickVehicleMediaStep = ({
                   <VideosForm
                     value={field.value ?? []}
                     onChange={field.onChange}
+                    maxVideos={
+                      hasUnlimitedVideos || typeof videosLimit !== "number"
+                        ? undefined
+                        : videosLimit
+                    }
+                    onUploadStatusChange={onVideoUploadStatusChange}
                   />
                   {fieldState.error ? (
                     <p className="mt-2 text-sm text-destructive">

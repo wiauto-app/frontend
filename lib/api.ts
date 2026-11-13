@@ -322,7 +322,7 @@ export const apiGet = async <T>(
   path: string,
   queryParams?: Record<string, unknown>,
   revalidate?: number,
-  options?: { skipAuthRefresh?: boolean },
+  options?: { skipAuthRefresh?: boolean; tags?: string[] },
 ): Promise<ApiResponse<T>> => {
   let query = "";
   if (queryParams) {
@@ -335,7 +335,7 @@ export const apiGet = async <T>(
   const url = `${path}${query}`;
   return fetchWithAuth<T>(url, {
     method: "GET",
-    next: { revalidate },
+    next: { revalidate, tags: options?.tags },
     skipAuthRefresh: options?.skipAuthRefresh,
   });
 };
