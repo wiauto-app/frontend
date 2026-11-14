@@ -7,7 +7,7 @@ import { UserDropdown } from "./userDropdown";
 
 export const NavbarActions = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className="flex items-center  gap-1    ">
+    <div className="flex items-center  gap-1 md:gap-2    ">
       <NavbarPublishButton />
       <MessagesNavLink />
       <NotificationsDropdown />

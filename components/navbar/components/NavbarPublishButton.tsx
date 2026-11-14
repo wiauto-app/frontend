@@ -9,7 +9,7 @@ interface NavbarPublishButtonProps extends ComponentProps<typeof Button> {
 
 export function NavbarPublishButton({ ...props }: NavbarPublishButtonProps) {
   return (
-    <PublicarLink href="/publicar" source="header" className="hidden lg:block">
+    <PublicarLink href="/publicar" source="header" >
       <Button {...props} size="sm">
         {props.children || "Vender"}
       </Button>

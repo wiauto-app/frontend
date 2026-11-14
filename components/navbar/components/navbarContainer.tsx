@@ -15,7 +15,7 @@ export const NavbarContainer = ({
     <nav
       aria-label="Navegación principal"
       className={cn(
-        " mx-auto flex pb-4 md:pb-0 md:h-20 w-full items-center justify-between gap-4 px-4 sm:px-6 lg:px-8",
+        " mx-auto flex md:h-20 w-full items-center justify-between gap-4 px-4 sm:px-6 lg:px-8",
         pathname.includes("usuario") && isSubscribed
           ? "container-full"
           : "container-custom",
