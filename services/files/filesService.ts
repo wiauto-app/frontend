@@ -36,11 +36,43 @@ const bucket_names_allowlist: BucketName[] = [
   "chat-attachments",
 ];
 
+const is_public_http_url = (value: string): boolean =>
+  /^https?:\/\//i.test(value.trim());
+
+/**
+ * Convierte pathname CDN, URL absoluta o ruta compuesta en `bucket/clave`.
+ * Alineado con el backend (`resolveObjectKeyFromStored`).
+ */
+export const normalize_compound_storage_path = (stored: string): string => {
+  let trimmed = stored.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  if (is_public_http_url(trimmed)) {
+    try {
+      trimmed = new URL(trimmed).pathname;
+    } catch {
+      return stored.trim();
+    }
+  }
+
+  const media_base = (process.env.NEXT_PUBLIC_MEDIA_URL ?? "").replace(
+    /\/$/,
+    "",
+  );
+  if (media_base && trimmed.startsWith(media_base)) {
+    trimmed = trimmed.slice(media_base.length);
+  }
+
+  return trimmed.replace(/^\/+/, "");
+};
+
 /** Convierte `bucket/object/key` tal como guarda la subida en `uploadFile`. */
 export const split_storage_compound_path = (
   compound_path: string,
 ): { bucket_name: BucketName; object_key: string } => {
-  const normalized_path = compound_path.replace(/^\/+/, "");
+  const normalized_path = normalize_compound_storage_path(compound_path);
 
 
   const first_slash = normalized_path.indexOf("/");

@@ -1,5 +1,6 @@
 import type { Vehicle } from "@/interfaces/vehicle.interface";
 import type { VehicleSchema } from "../types/vehicles.types";
+import { mapVehicleApiImageToFormImage } from "./mapVehicleApiImageToFormImage";
 import { mapVehicleVideosToFormValues } from "./mapVehicleVideosToFormValues";
 
 export const mapVehicleDetailToFormValues = (
@@ -53,7 +54,9 @@ export const mapVehicleDetailToFormValues = (
     features_ids: vehicle.features_ids,
     services_ids: vehicle.services_ids,
     cuota_ids,
-    images: vehicle.images.map((img, order) => ({ path: img.url, order })),
+    images: vehicle.images.map((img, order) =>
+      mapVehicleApiImageToFormImage(img, order),
+    ),
     videos: mapVehicleVideosToFormValues(vehicle.videos),
   };
 };

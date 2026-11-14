@@ -1,5 +1,6 @@
 import type { Vehicle } from "@/interfaces/vehicle.interface";
 import type { QuickVehicleSchema } from "../schemas/quick-vehicle.schema";
+import { mapVehicleApiImageToFormImage } from "./mapVehicleApiImageToFormImage";
 import { mapVehicleVideosToFormValues } from "./mapVehicleVideosToFormValues";
 
 export const mapVehicleDetailToQuickFormValues = (
@@ -22,7 +23,9 @@ export const mapVehicleDetailToQuickFormValues = (
     ref: vehicle.ref != null ? String(vehicle.ref) : "",
     license_plate: vehicle.license_plate || "",
     vin_code: vehicle.vin_code ?? "",
-    images: vehicle.images.map((img) => ({ id: img.id, path: img.url, order: img.order ?? 0 })),
+    images: vehicle.images.map((img, order) =>
+      mapVehicleApiImageToFormImage(img, order),
+    ),
     videos: mapVehicleVideosToFormValues(vehicle.videos),
     version_id: vehicle.version_id,
     catalog_make_id: version?.make_id,

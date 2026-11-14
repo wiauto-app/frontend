@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { cn, getImageUrl } from "@/lib/utils";
 import {
   filesService,
+  normalize_compound_storage_path,
   split_storage_compound_path,
 } from "@/services/files/filesService";
 
@@ -426,9 +427,12 @@ export const ImagesForm = ({
   );
 
   const commit_remove_committed = useCallback(
-    (matcher: { path?: string; upload_id?: string }) => {
+    (matcher: { path?: string; upload_id?: string; id?: string }) => {
       const next = normalize_vehicle_images(
         value_ref.current.filter((image) => {
+          if (matcher.id) {
+            return image.id !== matcher.id;
+          }
           if (matcher.upload_id) {
             return image.upload_id !== matcher.upload_id;
           }
@@ -448,7 +452,7 @@ export const ImagesForm = ({
 
   const handle_click_remove_committed = useCallback(
     async (image: VehicleFormImage) => {
-      const lock_key = image.upload_id ?? image.path ?? "";
+      const lock_key = image.upload_id ?? image.path ?? image.id ?? "";
       if (!lock_key || locked_remove_paths_ref.current.has(lock_key)) {
         return;
       }
@@ -477,21 +481,73 @@ export const ImagesForm = ({
         return;
       }
 
-      const compound_path = image.path ?? "";
+      const compound_path = normalize_compound_storage_path(image.path ?? "");
       let bucket_name: ReturnType<
         typeof split_storage_compound_path
       >["bucket_name"];
-
       let object_key: string;
+      let should_remove_from_storage = Boolean(compound_path);
 
-      try {
-        ({ bucket_name, object_key } =
-          split_storage_compound_path(compound_path));
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Ruta de imagen no válida.",
-        );
-
+      if (should_remove_from_storage) {
+        try {
+          ({ bucket_name, object_key } =
+            split_storage_compound_path(compound_path));
+        } catch (error) {
+          if (image.id) {
+            should_remove_from_storage = false;
+          } else if (image.upload_id) {
+            locked_remove_paths_ref.current.add(lock_key);
+            set_paths_removing((previous) => {
+              const next = new Set(previous);
+              next.add(lock_key);
+              return next;
+            });
+            try {
+              if (image.preview_url) {
+                revoke_preview_url(image.preview_url);
+              }
+              commit_remove_committed({ upload_id: image.upload_id });
+            } finally {
+              locked_remove_paths_ref.current.delete(lock_key);
+              set_paths_removing((previous) => {
+                const next = new Set(previous);
+                next.delete(lock_key);
+                return next;
+              });
+            }
+            return;
+          } else {
+            toast.error(
+              error instanceof Error ? error.message : "Ruta de imagen no válida.",
+            );
+            return;
+          }
+        }
+      } else if (image.id) {
+        should_remove_from_storage = false;
+      } else if (image.upload_id) {
+        locked_remove_paths_ref.current.add(lock_key);
+        set_paths_removing((previous) => {
+          const next = new Set(previous);
+          next.add(lock_key);
+          return next;
+        });
+        try {
+          if (image.preview_url) {
+            revoke_preview_url(image.preview_url);
+          }
+          commit_remove_committed({ upload_id: image.upload_id });
+        } finally {
+          locked_remove_paths_ref.current.delete(lock_key);
+          set_paths_removing((previous) => {
+            const next = new Set(previous);
+            next.delete(lock_key);
+            return next;
+          });
+        }
+        return;
+      } else {
+        toast.error("Ruta de imagen no válida.");
         return;
       }
 
@@ -506,10 +562,6 @@ export const ImagesForm = ({
       });
 
       try {
-        const result = await filesService.removeStoredFiles({
-          bucket_name,
-          paths: [object_key],
-        });
         if (image.id) {
           const remove_result = await vehicleService.vehicles.removeImage(
             image.id,
@@ -520,18 +572,29 @@ export const ImagesForm = ({
           }
         }
 
-        if (!result.ok) {
-          console.error(result.message);
+        if (should_remove_from_storage) {
+          const result = await filesService.removeStoredFiles({
+            bucket_name: bucket_name!,
+            paths: [object_key!],
+          });
 
-          toast.error("No se pudo eliminar el archivo del almacén.");
-
-          return;
+          if (!result.ok) {
+            console.error(result.message);
+            toast.error("No se pudo eliminar el archivo del almacén.");
+            return;
+          }
         }
 
         if (image.preview_url) {
           revoke_preview_url(image.preview_url);
         }
-        commit_remove_committed({ path: compound_path });
+        if (image.path) {
+          commit_remove_committed({ path: image.path });
+        } else if (image.upload_id) {
+          commit_remove_committed({ upload_id: image.upload_id });
+        } else if (image.id) {
+          commit_remove_committed({ id: image.id });
+        }
       } finally {
         locked_remove_paths_ref.current.delete(lock_key);
 
@@ -993,6 +1056,15 @@ export const ImagesForm = ({
           </div>
         </div>
       </div>
+
+      <p
+        className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm leading-relaxed text-muted-foreground"
+        role="note"
+      >
+        Tras publicar optimizamos tus fotos para que el anuncio cargue rápido y se vea nítido en
+        cualquier pantalla. Pueden tardar hasta 5 minutos en mostrarse; el anuncio ya estará activo y
+        merecerá la pena la espera.
+      </p>
 
       {has_gallery ? (
         <ul
