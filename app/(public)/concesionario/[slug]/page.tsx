@@ -75,7 +75,7 @@ export default async function DealerProfilePage({
   ]);
   const dealer = mapDealershipToDealerProfile({
     dealership,
-    publishedVehicles: listing.total,
+    publishedVehicles: dealership.vehicles_count ?? listing.total,
   });
 
   const { breadcrumbItems, jsonLdGraph } = buildDealershipDetailSeo({

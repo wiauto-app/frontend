@@ -1,5 +1,6 @@
 import { vehicleTypesService } from "@/components/vehicles/services/vehicleTypesService";
 import type { VehicleType } from "@/interfaces/vehicle.interface";
+import { catalogSelectorNameOrder } from "@/lib/catalog-selector-order";
 import { CatalogResourceSelector } from "./catalogResourceSelector";
 
 interface VehicleTypesSelectorProps {
@@ -21,7 +22,9 @@ export const VehicleTypesSelector = ({
 }: VehicleTypesSelectorProps) => (
   <CatalogResourceSelector<VehicleType>
     queryKey={["vehicle-types"]}
-    fetchItems={() => vehicleTypesService.findAll({ page: 1, limit: 100 })}
+    fetchItems={() =>
+      vehicleTypesService.findAll({ page: 1, limit: 100, ...catalogSelectorNameOrder })
+    }
     value={value}
     onValueChange={onValueChange}
     placeholder={placeholder}

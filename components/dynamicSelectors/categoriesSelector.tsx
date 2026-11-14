@@ -15,7 +15,7 @@ export const CategoriesSelector = ({
 }) => (
   <CatalogResourceSelector<CategoryItem>
     queryKey={["categories"]}
-    fetchItems={() => categoriesService.findAll({ page: 1, limit: 100 })}
+    fetchItems={() => categoriesService.findAllForSelector()}
     value={value}
     onValueChange={onValueChange}
     placeholder="Categoría"

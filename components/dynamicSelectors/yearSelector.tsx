@@ -1,4 +1,5 @@
 import { yearsService } from "@/components/vehicles/services/yearsService";
+import { catalogSelectorYearOrder } from "@/lib/catalog-selector-order";
 import type { CatalogYearItem } from "@/components/vehicles/types/catalog.types";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -37,8 +38,7 @@ export const YearSelector = ({
         body_type_id: bodyTypeId,
         page: 1,
         limit: 100,
-        order_by: "year",
-        order_direction: "DESC",
+        ...catalogSelectorYearOrder,
       }),
     enabled: canFetch,
   });

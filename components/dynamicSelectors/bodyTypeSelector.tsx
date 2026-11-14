@@ -1,4 +1,5 @@
 import { bodyTypesService } from "@/components/vehicles/services/bodyTypesService";
+import { catalogSelectorNameOrder } from "@/lib/catalog-selector-order";
 import type { CatalogBodyTypeItem } from "@/components/vehicles/types/catalog.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
@@ -34,6 +35,7 @@ export const BodyTypeSelector = ({
         model_id: modelId,
         page: 1,
         limit: 100,
+        ...catalogSelectorNameOrder,
       }),
     enabled: Boolean(modelId),
   });

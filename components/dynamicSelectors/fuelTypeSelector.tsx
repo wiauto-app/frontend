@@ -1,4 +1,5 @@
 import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
+import { catalogSelectorNameOrder } from "@/lib/catalog-selector-order";
 import type { CatalogFuelTypeItem } from "@/components/vehicles/types/catalog.types";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -39,6 +40,7 @@ export const FuelTypeSelector = ({
         model_id: modelId,
         page: 1,
         limit: 100,
+        ...catalogSelectorNameOrder,
       }),
     enabled: canFetch,
   });

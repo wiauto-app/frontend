@@ -2,6 +2,7 @@
 
 import { colorsService } from "@/components/vehicles/services/colorsService";
 import type { ColorCatalogItem } from "@/components/vehicles/types/catalog.types";
+import { catalogSelectorNameOrder } from "@/lib/catalog-selector-order";
 import { cn } from "@/lib/utils";
 import { CatalogResourceSelector } from "./catalogResourceSelector";
 
@@ -43,7 +44,9 @@ export const ColorsSelector = ({
 }: ColorsSelectorProps) => (
   <CatalogResourceSelector<ColorCatalogItem>
     queryKey={["colors"]}
-    fetchItems={() => colorsService.findAll({ page: 1, limit: 100 })}
+    fetchItems={() =>
+      colorsService.findAll({ page: 1, limit: 100, ...catalogSelectorNameOrder })
+    }
     value={value}
     onValueChange={onValueChange}
     placeholder="Color"

@@ -1,5 +1,6 @@
 import { tractionsService } from "@/components/vehicles/services/tractionsService";
 import type { CatalogItemWithSlug } from "@/components/vehicles/types/catalog.types";
+import { catalogSelectorNameOrder } from "@/lib/catalog-selector-order";
 import { CatalogResourceSelector } from "./catalogResourceSelector";
 
 export const TractionsSelector = ({
@@ -15,7 +16,9 @@ export const TractionsSelector = ({
 }) => (
   <CatalogResourceSelector<CatalogItemWithSlug>
     queryKey={["tractions"]}
-    fetchItems={() => tractionsService.findAll({ page: 1, limit: 100 })}
+    fetchItems={() =>
+      tractionsService.findAll({ page: 1, limit: 100, ...catalogSelectorNameOrder })
+    }
     value={value}
     onValueChange={onValueChange}
     placeholder="Tracción"

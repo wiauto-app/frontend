@@ -1,5 +1,6 @@
 import { dgtLabelsService } from "@/components/vehicles/services/dgtLabelsService";
 import type { DgtLabelCatalogItem } from "@/components/vehicles/types/catalog.types";
+import { catalogSelectorNameOrder } from "@/lib/catalog-selector-order";
 import { CatalogResourceSelector } from "./catalogResourceSelector";
 
 export const DgtLabelsSelector = ({
@@ -15,7 +16,9 @@ export const DgtLabelsSelector = ({
 }) => (
   <CatalogResourceSelector<DgtLabelCatalogItem>
     queryKey={["dgt-labels"]}
-    fetchItems={() => dgtLabelsService.findAll({ page: 1, limit: 100 })}
+    fetchItems={() =>
+      dgtLabelsService.findAll({ page: 1, limit: 100, ...catalogSelectorNameOrder })
+    }
     value={value}
     onValueChange={onValueChange}
     placeholder="Etiqueta DGT"
