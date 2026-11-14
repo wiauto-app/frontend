@@ -54,8 +54,9 @@ export const serializeVehiclePayload = (
       ? images.filter((image) => is_temp_storage_path(image.path ?? ""))
       : images;
 
-    if (filtered_images.length > 0) {
-      payload.images = filtered_images.map((image) => {
+    const serialized_images = [...filtered_images]
+      .sort((a, b) => a.order - b.order)
+      .map((image) => {
         if (image.upload_id) {
           return { upload_id: image.upload_id, order: image.order };
         }
@@ -65,7 +66,9 @@ export const serializeVehiclePayload = (
           order: image.order,
         };
       });
-      // preview_url (blob) nunca va al API
+
+    if (options?.is_update || serialized_images.length > 0) {
+      payload.images = serialized_images;
     }
   }
 

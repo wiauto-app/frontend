@@ -134,6 +134,14 @@ describe("serializeVehiclePayload", () => {
     ]);
   });
 
+  it("envía images vacío al actualizar para sincronizar la galería", () => {
+    const updatePayload = serializeVehiclePayload(
+      { ...baseFormValues, images: [] },
+      { is_update: true },
+    );
+    expect(updatePayload.images).toEqual([]);
+  });
+
   it("omite videos vacíos al crear pero envía [] al actualizar", () => {
     const createPayload = serializeVehiclePayload({
       ...baseFormValues,
