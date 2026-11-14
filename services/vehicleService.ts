@@ -104,7 +104,7 @@ export const vehicleService = {
     },
     findById: (id: string): Promise<ApiResponse<Vehicle>> =>
       // Tag para revalidación bajo demanda cuando el backend actualiza el anuncio
-      apiGet<Vehicle>(`/v1/vehicles/${id}`, {}, 3600, {
+      apiGet<Vehicle>(`/v1/vehicles/${id}`, {}, 0, {
         tags: [vehicleCacheTag(id)],
       }),
     findByRef: (ref: number): Promise<ApiResponse<VehicleByRefResponse>> =>
