@@ -1,9 +1,16 @@
 "use client";
 
 import { Car } from "lucide-react";
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +53,21 @@ const VehiclesListingView = ({
 }: VehiclesListingViewProps) => {
   const totalPages = Math.ceil(total / pageLimit);
 
+  const { featuredVehicles, regularVehicles } = useMemo(() => {
+    const featured: VehicleListItem[] = [];
+    const regular: VehicleListItem[] = [];
+
+    vehicles.forEach((vehicle) => {
+      if (vehicle.is_featured) {
+        featured.push(vehicle);
+        return;
+      }
+      regular.push(vehicle);
+    });
+
+    return { featuredVehicles: featured, regularVehicles: regular };
+  }, [vehicles]);
+
   if (vehicles?.length === 0) {
     return (
       <div className="rounded-2xl border border-slate-100 bg-white p-12 text-center">
@@ -69,21 +91,59 @@ const VehiclesListingView = ({
 
   return (
     <div className="flex min-w-0 flex-col gap-6">
-      <div className="grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4">
-        {vehicles.map((vehicle) =>
-          vehicle.is_featured ? (
-            <VehicleFeaturedCard key={vehicle.id} vehicle={vehicle} titleAs="h2" />
-          ) : (
+      {featuredVehicles.length > 0 ? (
+        <section aria-labelledby="vehiculos-destacados-heading" className="min-w-0">
+          <h2
+            id="vehiculos-destacados-heading"
+            className="text-lg font-semibold text-slate-900"
+          >
+            Destacados
+          </h2>
+          <Carousel
+            className="mt-3 w-full"
+            opts={{ align: "start", loop: false }}
+          >
+            <div className="relative sm:px-12">
+              <CarouselContent>
+                {featuredVehicles.map((vehicle, index) => (
+                  <CarouselItem
+                    key={vehicle.id}
+                    className="basis-[88%] sm:basis-1/2 lg:basis-1/3"
+                  >
+                    <VehicleFeaturedCard
+                      vehicle={vehicle}
+                      titleAs="h3"
+                      priority={index === 0}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious
+                aria-label="Ver destacados anteriores"
+                className="left-0 hidden size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50 sm:flex"
+              />
+              <CarouselNext
+                aria-label="Ver destacados siguientes"
+                className="right-0 hidden size-9 border-slate-200 bg-white shadow-sm hover:bg-slate-50 sm:flex"
+              />
+            </div>
+          </Carousel>
+        </section>
+      ) : null}
+
+      {regularVehicles.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))]">
+          {regularVehicles.map((vehicle) => (
             <VehicleGridCard
               key={vehicle.id}
               vehicle={vehicle}
               titleAs="h2"
               onDismissed={onDismissed}
-              priority={true}
+              priority
             />
-          ),
-        )}
-      </div>
+          ))}
+        </div>
+      ) : null}
 
       <VehiclesPagination
         currentPage={currentPage}

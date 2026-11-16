@@ -18,6 +18,7 @@ import { isNoVehicleImageFileKey } from "@/lib/vehicles/no-vehicle-image";
 import { VehicleFavoriteButton } from "./VehicleFavoriteButton";
 import { VehicleFinancingFrom } from "./VehicleFinancingFrom";
 import { ViewTransition } from "react";
+import { VehicleGridCardBadges } from "./vehicleGridCardBadges";
 interface VehicleGridCardProps {
   vehicle: VehicleListItem;
   interactive?: boolean;
@@ -29,9 +30,6 @@ interface VehicleGridCardProps {
   priority?: boolean;
 }
 
-interface VehicleGridCardBadgesProps {
-  vehicle: VehicleListItem;
-}
 
 interface VehicleGridCardBodyProps {
   vehicle: VehicleListItem;
@@ -43,19 +41,6 @@ interface VehicleGridCardBodyProps {
 const VEHICLE_GRID_IMAGE_SIZES =
   "(max-width: 767px) 50vw, min(100vw, 320px)";
 
-const VehicleGridCardBadges = ({ vehicle }: VehicleGridCardBadgesProps) => {
-  if (!vehicle.is_premium) {
-    return null;
-  }
-
-  return (
-    <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] flex-wrap gap-1.5">
-      <span className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase shadow-sm">
-        Profesional
-      </span>
-    </div>
-  );
-};
 
 const VehicleGridCardBody = ({
   vehicle,
