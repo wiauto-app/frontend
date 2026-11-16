@@ -75,3 +75,59 @@ export const buildVehicleTechnicalSpecs = (vehicle: Vehicle): VehicleDetailSpec[
 
   return specs;
 };
+
+/** Specs mostradas como badges bajo el precio en la ficha. */
+export const VEHICLE_HIGHLIGHT_SPEC_LABELS = [
+  "Año",
+  "Kilometraje",
+  "Combustible",
+  "Transmisión",
+  "Potencia",
+] as const;
+
+export type VehicleHighlightSpecLabel =
+  (typeof VEHICLE_HIGHLIGHT_SPEC_LABELS)[number];
+
+const isHighlightSpecLabel = (label: string): label is VehicleHighlightSpecLabel =>
+  (VEHICLE_HIGHLIGHT_SPEC_LABELS as readonly string[]).includes(label);
+
+export const buildVehicleHighlightSpecs = (
+  vehicle: Vehicle,
+): VehicleDetailSpec[] => {
+  const by_label = new Map(
+    buildVehicleTechnicalSpecs(vehicle).map((spec) => [spec.label, spec]),
+  );
+
+  return VEHICLE_HIGHLIGHT_SPEC_LABELS.flatMap((label) => {
+    const spec = by_label.get(label);
+    return spec ? [spec] : [];
+  });
+};
+
+/** Garantía, DGT, color: antes en badges, ahora en la rejilla técnica. */
+export const buildVehicleMetaSpecs = (vehicle: Vehicle): VehicleDetailSpec[] => {
+  const specs: VehicleDetailSpec[] = [];
+  const dgt_label =
+    vehicle.dgt_label?.name ?? vehicle.dgt_label?.code ?? null;
+
+  addSpec(specs, "Garantía", vehicle.warranty_type?.name);
+  addSpec(
+    specs,
+    "Garantía por la marca",
+    vehicle.by_brand_warranty ? "Sí" : "No",
+  );
+  addSpec(specs, "Distintivo DGT", dgt_label);
+  addSpec(specs, "Color", vehicle.color?.name);
+
+  return specs;
+};
+
+export const buildVehicleDetailTechnicalSpecs = (
+  vehicle: Vehicle,
+): VehicleDetailSpec[] => {
+  const core = buildVehicleTechnicalSpecs(vehicle).filter(
+    (spec) => !isHighlightSpecLabel(spec.label),
+  );
+
+  return [...core, ...buildVehicleMetaSpecs(vehicle)];
+};

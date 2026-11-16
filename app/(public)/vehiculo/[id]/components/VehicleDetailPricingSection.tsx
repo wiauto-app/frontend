@@ -6,8 +6,9 @@ import {
 import type { Vehicle } from "@/interfaces/vehicle.interface";
 import type { VehiclePriceHistoryItem } from "@/interfaces/vehicle-price.interface";
 import { FinancingSelector } from "./financingSelector";
-import { Leaf, Palette, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { buildVehicleHighlightSpecs } from "../utils/build-vehicle-technical-specs";
+import { getTechnicalSpecIcon } from "../utils/technical-spec-icons";
 
 type VehicleDetailPricingSectionProps = {
   vehicle: Vehicle;
@@ -24,7 +25,7 @@ export const VehicleDetailPricingSection = ({
     price_history,
     vehicle.price,
   );
-  const dgt_label = vehicle.dgt_label?.name ?? vehicle.dgt_label?.code ?? null;
+  const highlight_specs = buildVehicleHighlightSpecs(vehicle);
 
   return (
     <div className="flex flex-col gap-2">
@@ -60,49 +61,31 @@ export const VehicleDetailPricingSection = ({
             cuotas={vehicle.cuotas}
           />
         )}
-       
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        {vehicle.warranty_type ? (
-          <FeatureBadge
-            icon={<ShieldCheck className="size-7 text-primary" />}
-            label="Garantía"
-            value={vehicle.warranty_type.name}
-          />
-        ) : null}
-        <FeatureBadge
-          icon={<ShieldAlert className="size-7 text-primary" />}
-          label="Garantía por la marca"
-          value={vehicle.by_brand_warranty ? "Sí" : "No"}
-        />
-        {dgt_label ? (
-          <FeatureBadge
-            icon={<Leaf className="size-7 text-primary" />}
-            label="Distintivo DGT"
-            value={dgt_label}
-          />
-        ) : null}
-        {vehicle.color?.name ? (
-          <FeatureBadge
-            icon={<Palette className="size-7 text-primary" />}
-            label="Color"
-            value={vehicle.color.name}
-          />
-        ) : null}
+        {highlight_specs.map((spec) => {
+          const Icon = getTechnicalSpecIcon(spec.label);
+          return (
+            <FeatureBadge
+              key={spec.label}
+              icon={<Icon className="size-7 text-primary" />}
+              label={spec.label}
+              value={spec.value}
+            />
+          );
+        })}
       </div>
     </div>
   );
 };
 
-const FeatureBadge = ({
-  icon,
-  label,
-  value,
-}: {
+interface FeatureBadgeProps {
   icon: React.ReactNode;
   label: string;
-  value?: string;
-}) => {
+  value: string;
+}
+
+const FeatureBadge = ({ icon, label, value }: FeatureBadgeProps) => {
   return (
     <div className="flex items-center gap-1 bg-muted-foreground/10 rounded-md px-3 py-1 w-fit">
       {icon}

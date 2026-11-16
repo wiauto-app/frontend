@@ -34,19 +34,7 @@ export const VehicleDetailSummaryCard = ({
         <VehicleDetailPricingSection vehicle={vehicle} />
 
         <div className="border-t border-border pt-5">
-          <VehicleDetailsTechnicalFeatures
-            vehicle={vehicle}
-            labels={[
-              "Año",
-              "Kilometraje",
-              "Combustible",
-              "Transmisión",
-              "Potencia",
-              "Carrocería",
-              "Puertas",
-              "Tracción",
-            ]}
-          />
+          <VehicleDetailsTechnicalFeatures vehicle={vehicle} />
         </div>
       </CardContent>
     </Card>
