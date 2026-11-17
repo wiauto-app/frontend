@@ -51,7 +51,7 @@ export const QuickVehicleMediaStep = ({
     (hasUnlimitedVideos ||
       (typeof videosLimit === "number" && videosLimit > 0));
   const imageCount = form.watch("images")?.length ?? 0;
-  const missingRecommendedImages = RECOMMENDED_VEHICLE_IMAGES - imageCount;
+  // const missingRecommendedImages = RECOMMENDED_VEHICLE_IMAGES - imageCount;
 
   return (
     <VehicleFormStep
@@ -63,7 +63,7 @@ export const QuickVehicleMediaStep = ({
           : `Las fotos son opcionales. Recomendamos subir al menos ${RECOMMENDED_VEHICLE_IMAGES}: exterior, interior y salpicadero. Puedes subir fotos en HEIC del iPhone; las convertimos al publicar.`
       }
     >
-      {missingRecommendedImages > 0 ? (
+      {/* {missingRecommendedImages > 0 ? (
         <p
           className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
           role="status"
@@ -73,7 +73,7 @@ export const QuickVehicleMediaStep = ({
             ? "Sube 1 foto más: los anuncios con más fotografías reciben más contactos."
             : `Sube ${missingRecommendedImages} fotos más: los anuncios con más fotografías reciben más contactos.`}
         </p>
-      ) : null}
+      ) : null} */}
       <Tabs defaultValue="images">
         <TabsList
           className={cn(
