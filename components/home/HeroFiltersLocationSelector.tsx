@@ -443,7 +443,7 @@ export const HeroFiltersLocationSelector = ({
           <Button
             variant="outline"
             className="w-full justify-start text-base"
-            aria-label="Seleccionar ubicación"
+            aria-label="Selecciona la provincia"
           >
             <div className="flex w-full items-center justify-between text-sm">
               <span className="truncate">{trigger_label}</span>
@@ -458,11 +458,11 @@ export const HeroFiltersLocationSelector = ({
         className="flex w-full flex-col gap-2 md:w-72"
       >
         <SearchInput
-          placeholder="Buscar comunidad o provincia"
+          placeholder="Buscar provincia"
           value={search}
           onChange={setSearch}
           onClear={() => setSearch("")}
-          aria-label="Buscar comunidad o provincia"
+          aria-label="Buscar provincia"
         />
 
         <div className="max-h-44 overflow-y-auto" role="list">

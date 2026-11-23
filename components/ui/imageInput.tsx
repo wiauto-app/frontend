@@ -7,6 +7,68 @@ import { cn, getImageUrl } from "@/lib/utils";
 import { Button } from "./button";
 import { FieldLabel } from "./field";
 
+const DEFAULT_IMAGE_ACCEPT = "image/png,image/jpeg,image/jpg,image/webp";
+
+const EXTENSION_TO_MIME: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+};
+
+const HEIC_MIME_TYPES = new Set([
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
+]);
+const HEIC_EXTENSIONS = new Set(["heic", "heif"]);
+
+const getFileExtension = (file: File): string =>
+  file.name.includes(".") ? (file.name.split(".").pop() ?? "").toLowerCase() : "";
+
+type ImageFileValidation =
+  | { ok: true; content_type: string }
+  | { ok: false; message: string };
+
+/**
+ * Valida la imagen elegida antes de subirla. HEIC/HEIF se rechaza aunque el
+ * navegador mande MIME vacío (Safari/Chrome en algunos casos), mirando la
+ * extensión. Solo se aceptan los MIME listados en `accept`.
+ */
+export const validateImageFile = (
+  file: File,
+  accept: string = DEFAULT_IMAGE_ACCEPT,
+): ImageFileValidation => {
+  const mime = file.type.trim().toLowerCase();
+  const extension = getFileExtension(file);
+
+  if (HEIC_MIME_TYPES.has(mime) || HEIC_EXTENSIONS.has(extension)) {
+    return {
+      ok: false,
+      message:
+        "El formato HEIC/HEIF no está soportado por ahora. Usa una imagen JPG, PNG o WebP.",
+    };
+  }
+
+  const allowed = new Set(
+    accept
+      .split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean),
+  );
+  const content_type = mime || EXTENSION_TO_MIME[extension] || "";
+
+  if (!content_type || !allowed.has(content_type)) {
+    return {
+      ok: false,
+      message: "Formato de imagen no soportado. Usa una imagen JPG, PNG o WebP.",
+    };
+  }
+
+  return { ok: true, content_type };
+};
+
 type ImageInputProps = {
   value?: string | null;
   onChange?: (url: string | null) => void;
@@ -32,7 +94,7 @@ export const ImageInput = ({
   bucketName,
   path,
   referenceId,
-  accept = "image/png,image/jpeg,image/jpg,image/webp",
+  accept = DEFAULT_IMAGE_ACCEPT,
 }: ImageInputProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -51,6 +113,15 @@ export const ImageInput = ({
   const handleUpload = async (file: File | null) => {
     if (!file) return;
 
+    const validation = validateImageFile(file, accept);
+    if (!validation.ok) {
+      toast.error(validation.message);
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+      return;
+    }
+
     try {
       setIsUploading(true);
 
@@ -58,16 +129,11 @@ export const ImageInput = ({
 
       setPreview(localPreview);
 
-      const content_type =
-        filesService.normalize_chat_attachment_content_type(file) ??
-        (file.type as
-          | "image/jpeg"
-          | "image/png"
-          | "image/jpg"
-          | "image/webp"
-          | "image/avif"
-          | "image/heic"
-          | "image/heif");
+      const content_type = validation.content_type as
+        | "image/jpeg"
+        | "image/png"
+        | "image/jpg"
+        | "image/webp";
 
       const { path: uploadedPath } = await filesService.uploadFile({
         file,
