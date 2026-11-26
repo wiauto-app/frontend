@@ -28,14 +28,15 @@ export const PROACTIVE_ALERT_GROUP_LABELS: Record<ProactiveAlertGroup, string> =
 
 /** Catálogo fase 1 (alineado con el backend planificado). */
 export const PROACTIVE_ALERT_CATALOG: ProactiveAlertCatalogItem[] = [
-  {
-    type: "stale_low_views",
-    label: "Pocas visitas tras publicar",
-    description:
-      "Tu anuncio lleva tiempo publicado con visitas por debajo de tu segmento y te sugerimos un precio más competitivo.",
-    group: PROACTIVE_ALERT_GROUP.VISIBILITY,
-    cooldown_days: 7,
-  },
+  // TODO: alerta "pocas visitas" desactivada temporalmente.
+  // {
+  //   type: "stale_low_views",
+  //   label: "Pocas visitas tras publicar",
+  //   description:
+  //     "Tu anuncio lleva tiempo publicado con visitas por debajo de tu segmento y te sugerimos un precio más competitivo.",
+  //   group: PROACTIVE_ALERT_GROUP.VISIBILITY,
+  //   cooldown_days: 7,
+  // },
   {
     type: "price_above_market",
     label: "Precio por encima del mercado",
@@ -123,6 +124,14 @@ export const PROACTIVE_ALERT_CATALOG: ProactiveAlertCatalogItem[] = [
     cooldown_days: null,
   },
 ];
+
+/** Tipos ocultos temporalmente aunque el backend los devuelva en el catálogo. */
+export const DISABLED_PROACTIVE_ALERT_TYPES: ReadonlySet<string> = new Set([
+  "stale_low_views",
+]);
+
+export const isProactiveAlertTypeEnabled = (type: string): boolean =>
+  !DISABLED_PROACTIVE_ALERT_TYPES.has(type);
 
 export const PROACTIVE_ALERT_GROUP_ORDER: ProactiveAlertGroup[] = [
   PROACTIVE_ALERT_GROUP.PRICE_MARKET,
