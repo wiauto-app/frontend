@@ -9,7 +9,7 @@ interface MyListingsTableProps {
 
 export const MyListingsTable = ({ listings }: MyListingsTableProps) => {
   return (
-    <section className="flex flex-col gap-5" aria-label="Tus anuncios">
+    <section className="flex flex-col gap-2" aria-label="Tus anuncios">
       {listings.map((listing) => (
         <MyListingTableRow key={listing.id} listing={listing} />
       ))}

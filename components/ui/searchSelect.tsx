@@ -26,10 +26,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
 
 export interface SelectOption {
   label: string;
   value: string;
+  /** Texto corto opcional que se muestra como badge junto al label en la lista. */
+  badge?: string;
 }
 
 export interface SearchSelectPageResult {
@@ -311,7 +314,14 @@ export const SearchSelect = ({
                         onSelect={() => handleSelect(option)}
                         className="flex items-center justify-between"
                       >
-                        <span>{option.label}</span>
+                        <span className="flex min-w-0 items-center gap-2">
+                          <span className="truncate">{option.label}</span>
+                          {option.badge ? (
+                            <Badge variant="secondary" className="shrink-0">
+                              {option.badge}
+                            </Badge>
+                          ) : null}
+                        </span>
 
                         {isSelected ? (
                           <Check className="size-4" aria-hidden />

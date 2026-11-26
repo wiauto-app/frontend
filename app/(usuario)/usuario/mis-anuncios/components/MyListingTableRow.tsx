@@ -1,5 +1,6 @@
 "use client";
 
+import { useId, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -13,9 +14,10 @@ import {
   FaStar,
   FaWhatsapp,
 } from "react-icons/fa";
+import { ChevronDown, Eye, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   get_vehicle_status_label,
   type VehicleStatus,
@@ -23,18 +25,21 @@ import {
 import { VEHICLE_TRANSMISSION_TYPE_OPTIONS } from "@/components/vehicles/constants/vehicle-enums.constants";
 import { cn, getImageUrl } from "@/lib/utils";
 import { isNoVehicleImageFileKey } from "@/lib/vehicles/no-vehicle-image";
-import type { OwnerVehicleListItem } from "@/interfaces/owner-vehicle.interface";
-import type { OwnerVehicleStatTrend } from "@/interfaces/owner-vehicle.interface";
+import type {
+  OwnerVehicleListItem,
+  OwnerVehicleStatTrend,
+} from "@/interfaces/owner-vehicle.interface";
+import { ListingHealthBadge } from "@/components/vehicles/listing-insights/components/ListingHealthBadge";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { RenewListingButton } from "./RenewListingButton";
 import { FeatureListingButton } from "./FeatureListingButton";
 import { MyListingActionsMenu } from "./MyListingActionsMenu";
-import { Eye, Pencil } from "lucide-react";
-import { ListingHealthBadge } from "@/components/vehicles/listing-insights/components/ListingHealthBadge";
-import { useEntitlements } from "@/hooks/useEntitlements";
 
 interface MyListingTableRowProps {
   listing: OwnerVehicleListItem;
 }
+
+const numberFormatter = new Intl.NumberFormat("es-ES");
 
 const formatPrice = (price: number): string =>
   new Intl.NumberFormat("es-ES", {
@@ -44,7 +49,7 @@ const formatPrice = (price: number): string =>
   }).format(price);
 
 const formatMileage = (mileage: number): string =>
-  `${new Intl.NumberFormat("es-ES").format(mileage)} km`;
+  `${numberFormatter.format(mileage)} km`;
 
 const statusBadgeClass: Record<VehicleStatus, string> = {
   active: "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -80,229 +85,249 @@ const getPublishedReferenceDate = (listing: OwnerVehicleListItem): Date => {
   return createdAt;
 };
 
-interface PerformanceCellProps {
+const formatCount = (value: number, singular: string, plural: string) =>
+  `${numberFormatter.format(value)} ${value === 1 ? singular : plural}`;
+
+interface InlineStatProps {
   label: string;
   trend: OwnerVehicleStatTrend;
   icon: IconType;
   iconClassName: string;
-  className?: string;
 }
 
-/**
- * En móvil: rejilla 3 + 2 (cuadros). Desde `sm` se muestra la etiqueta;
- * en `2xl` las cinco métricas van en una sola fila.
- */
-const PerformanceCell = ({
+/** Métrica en línea: icono + número. Los ceros se atenúan para que destaque lo que tiene actividad. */
+const InlineStat = ({
   label,
   trend,
   icon: Icon,
   iconClassName,
-  className,
-}: PerformanceCellProps) => {
+}: InlineStatProps) => {
+  const hasActivity = trend.current > 0;
+
   return (
     <div
-      className={cn(
-        "flex min-w-0 flex-col items-center justify-center gap-1 bg-card px-2 py-3 text-center sm:gap-1 sm:px-2 sm:py-2.5",
-        className,
-      )}
+      className="flex items-center gap-1.5 text-sm"
+      title={label}
     >
-      <div className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <Icon
-          className={`size-3.5 shrink-0 sm:size-4 ${iconClassName}`}
-          aria-hidden
-        />
-        <span className="truncate">{label}</span>
-      </div>
-      <span className="text-base font-semibold tracking-tight text-foreground sm:text-xl">
-        {new Intl.NumberFormat("es-ES").format(trend.current)}
+      <Icon
+        className={cn(
+          "size-3.5 shrink-0",
+          hasActivity ? iconClassName : "text-muted-foreground/60",
+        )}
+        aria-hidden
+      />
+      <span
+        className={cn(
+          "tabular-nums",
+          hasActivity
+            ? "font-semibold text-foreground"
+            : "text-muted-foreground",
+        )}
+      >
+        {numberFormatter.format(trend.current)}
       </span>
+      <span className="text-xs text-muted-foreground">{label}</span>
     </div>
   );
 };
 
 export const MyListingTableRow = ({ listing }: MyListingTableRowProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const detailsId = useId();
   const { has } = useEntitlements();
   const showListingInsights = has("listing_insights");
+
   const primaryImageKey = listing.image?.url ?? "";
   const imageUrl = getImageUrl(primaryImageKey);
   const isPlaceholderImage = isNoVehicleImageFileKey(primaryImageKey);
-  const publishedReference = getPublishedReferenceDate(listing);
-  const publishedAgo = formatDistanceToNow(publishedReference, {
-    addSuffix: true,
-    locale: es,
-  });
+  const publishedAgo = formatDistanceToNow(
+    getPublishedReferenceDate(listing),
+    { addSuffix: true, locale: es },
+  );
+
+  const specs = [
+    formatMileage(listing.mileage),
+    listing.fuel_type,
+    getTransmissionLabel(listing.transmission_type),
+  ].filter(Boolean);
+
+  const { views, leads } = listing.stats;
+  const vehicleHref = `/vehiculo/${listing.id}`;
 
   return (
-    <Card size="sm" className="gap-0 overflow-hidden  ">
-      <CardContent className="">
-        <div className="grid grid-cols-1 gap-3 sm:gap-5 xl:grid-cols-3">
-          <Link
-            href={`/vehiculo/${listing.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/image relative h-36 lg:h-full w-full overflow-hidden rounded-xl bg-slate-100"
-            aria-label={`Ver anuncio ${listing.display_name}`}
+    <div  className="gap-0 overflow-hidden py-0 data-[size=sm]:py-0 bg-white border border-card rounded-2xl ">
+      <div className="flex items-center gap-3 p-2 sm:p-2.5">
+        <Link
+          href={vehicleHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group/image relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:h-16 sm:w-24"
+          aria-label={`Ver anuncio ${listing.display_name}`}
+        >
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            className={cn(
+              "transition-transform duration-300 group-hover/image:scale-[1.04] motion-reduce:transition-none",
+              isPlaceholderImage ? "object-contain" : "object-cover",
+            )}
+            sizes="96px"
+          />
+          {listing.is_featured_active ? (
+            <span
+              className="absolute top-1 left-1 flex size-5 items-center justify-center rounded-full bg-blue-600 text-white"
+              title="Destacado"
+            >
+              <FaStar className="size-2.5 text-amber-300" aria-hidden />
+              <span className="sr-only">Destacado</span>
+            </span>
+          ) : null}
+        </Link>
+
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <div className="flex min-w-0 items-baseline gap-2">
+            <Link
+              href={vehicleHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="truncate font-heading text-sm font-semibold leading-tight text-foreground transition-colors hover:text-primary sm:text-base"
+            >
+              {listing.display_name}
+            </Link>
+            <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
+              {publishedAgo}
+            </span>
+          </div>
+
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
+            <span className="text-sm font-bold text-foreground">
+              {formatPrice(listing.price)}
+            </span>
+            <Badge
+              variant="outline"
+              className={cn("h-5 px-1.5 text-[11px]", statusBadgeClass[listing.status])}
+            >
+              {get_vehicle_status_label(listing.status)}
+            </Badge>
+            <span className="hidden truncate md:inline">
+              {specs.join(" · ")}
+            </span>
+            <span className="tabular-nums">
+              · {formatCount(views.current, "visita", "visitas")} ·{" "}
+              {formatCount(leads.current, "contacto", "contactos")}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-0.5">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            nativeButton={false}
+            className="hidden sm:inline-flex"
+            aria-label={`Editar ${listing.display_name}`}
+            render={<Link href={`/editar-vehiculo/${listing.id}`} />}
           >
-            <div className="flex flex-wrap items-center gap-2 absolute top-2 left-2 z-10">
-              <Badge
-                variant="outline"
-                className={statusBadgeClass[listing.status]}
-              >
-                {get_vehicle_status_label(listing.status)}
-              </Badge>
-              {listing.is_featured_active ? (
-                <Badge >
-                  <FaStar
-                    data-icon="inline-start"
-                    className="text-amber-500"
-                    aria-hidden
-                  />
-                  Destacado
-                </Badge>
-              ) : null}
-            </div>
-            <Image
-              src={imageUrl}
-              alt={listing.display_name}
-              fill
+            <Pencil className="text-amber-600" aria-hidden />
+          </Button>
+          <MyListingActionsMenu listing={listing} />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-expanded={isExpanded}
+            aria-controls={detailsId}
+            aria-label={isExpanded ? "Ocultar detalles" : "Ver detalles"}
+            onClick={() => setIsExpanded((value) => !value)}
+          >
+            <ChevronDown
               className={cn(
-                "transition-transform duration-500 group-hover/image:scale-[1.025]",
-                isPlaceholderImage ? "object-contain" : "object-cover",
+                "transition-transform duration-200 motion-reduce:transition-none",
+                isExpanded && "rotate-180",
               )}
-              sizes="(max-width: 768px) 100vw, 45vw"
+              aria-hidden
             />
-            <span className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover/image:opacity-100" />
-          </Link>
+          </Button>
+        </div>
+      </div>
 
-          <div className="flex min-w-0 flex-col gap-2 lg:col-span-2">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={`/vehiculo/${listing.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-heading text-base font-semibold leading-tight text-foreground transition-colors hover:text-primary "
-                  >
-                    {listing.display_name}
-                  </Link>
-                  <span className="text-xs text-muted-foreground">
-                    · {publishedAgo}
-                  </span>
-                </div>
-
-                {showListingInsights && listing.health ? (
-                  <ListingHealthBadge
-                    health={listing.health}
-                    listingName={listing.display_name}
-                    vehicleId={listing.id}
-                  />
-                ) : null}
-              </div>
-
-              <MyListingActionsMenu listing={listing} />
+      <div
+        id={detailsId}
+        inert={!isExpanded}
+        className={cn(
+          "grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none",
+          isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="flex flex-col gap-2.5 border-t px-2.5 py-2.5 sm:px-3">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+              <InlineStat label="Visitas" trend={views} icon={FaEye} iconClassName="text-sky-600" />
+              <InlineStat label="Contactos" trend={leads} icon={FaComment} iconClassName="text-violet-600" />
+              <InlineStat label="Teléfono" trend={listing.stats.phone_clicks} icon={FaPhone} iconClassName="text-blue-600" />
+              <InlineStat label="WhatsApp" trend={listing.stats.whatsapp_clicks} icon={FaWhatsapp} iconClassName="text-green-600" />
+              <InlineStat label="Favoritos" trend={listing.stats.favorites} icon={FaHeart} iconClassName="text-rose-500" />
             </div>
 
-            <div className="flex flex-col gap-1 sm:gap-1.5">
-              <p className="text-xl font-bold tracking-tight text-foreground ">
-                {formatPrice(listing.price)}
+            {specs.length > 0 ? (
+              <p className="text-xs text-muted-foreground md:hidden">
+                {specs.join(" · ")} · {publishedAgo}
               </p>
-              {/* 
-              <p className="text-xs text-muted-foreground ">
-                <span className="sm:hidden">Publicado {publishedAgo}</span>
-                <span className="hidden sm:inline">
-                  Publicado el {publishedDate}
-                </span>
-              </p> */}
-            </div>
+            ) : null}
+
+            {showListingInsights && listing.health ? (
+              <ListingHealthBadge
+                health={listing.health}
+                listingName={listing.display_name}
+                vehicleId={listing.id}
+              />
+            ) : null}
 
             {listing.is_featured_active && listing.featured_expires_at ? (
               <p className="text-xs font-medium text-amber-700">
                 Destacado hasta{" "}
-                {new Date(listing.featured_expires_at).toLocaleDateString(
-                  "es-ES",
-                  {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  },
-                )}
+                {new Date(listing.featured_expires_at).toLocaleDateString("es-ES", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
               </p>
             ) : null}
             {listing.scheduled_publish_at ? (
-              <p className="text-sm font-medium text-primary">
+              <p className="text-xs font-medium text-primary">
                 Programado para el{" "}
                 {new Date(listing.scheduled_publish_at).toLocaleString("es-ES")}
               </p>
             ) : null}
-            <div className="flex flex-wrap items-center gap-1.5">
-              <FeatureListingButton listing={listing} />
-              <RenewListingButton listing={listing} />
-              <Link
-                href={`/vehiculo/${listing.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline">
-                  <Eye data-icon="inline-start" aria-hidden />
-                  Ver anuncio
-                </Button>
-              </Link>
 
+            <div className="flex flex-wrap items-center gap-1.5">
               <Button
                 variant="outline"
+                size="sm"
                 nativeButton={false}
-                className="h-8 text-xs sm:h-9 sm:text-sm"
                 render={<Link href={`/editar-vehiculo/${listing.id}`} />}
               >
-                <Pencil
-                  data-icon="inline-start"
-                  className="text-amber-600"
-                  aria-hidden
-                />
+                <Pencil data-icon="inline-start" className="text-amber-600" aria-hidden />
                 Editar
               </Button>
-            </div>
-            <div className="grid grid-cols-6 gap-px overflow-hidden rounded-lg border bg-border 2xl:grid-cols-5">
-              <PerformanceCell
-                label="Visitas"
-                trend={listing.stats.views}
-                icon={FaEye}
-                iconClassName="text-sky-600"
-                className="col-span-2 2xl:col-span-1"
-              />
-              <PerformanceCell
-                label="Contactos"
-                trend={listing.stats.leads}
-                icon={FaComment}
-                iconClassName="text-violet-600"
-                className="col-span-2 2xl:col-span-1"
-              />
-              <PerformanceCell
-                label="Teléfono"
-                trend={listing.stats.phone_clicks}
-                icon={FaPhone}
-                iconClassName="text-blue-600"
-                className="col-span-2 2xl:col-span-1"
-              />
-              <PerformanceCell
-                label="WhatsApp"
-                trend={listing.stats.whatsapp_clicks}
-                icon={FaWhatsapp}
-                iconClassName="text-green-600"
-                className="col-span-3 2xl:col-span-1"
-              />
-              <PerformanceCell
-                label="Favoritos"
-                trend={listing.stats.favorites}
-                icon={FaHeart}
-                iconClassName="text-rose-500"
-                className="col-span-3 2xl:col-span-1"
-              />
+              <RenewListingButton listing={listing} />
+              <FeatureListingButton listing={listing} />
+              <Button
+                variant="outline"
+                size="sm"
+                nativeButton={false}
+                render={
+                  <Link href={vehicleHref} target="_blank" rel="noopener noreferrer" />
+                }
+              >
+                <Eye data-icon="inline-start" aria-hidden />
+                Ver anuncio
+              </Button>
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

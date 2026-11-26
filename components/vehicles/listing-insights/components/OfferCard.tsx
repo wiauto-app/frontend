@@ -31,7 +31,7 @@ export const OfferCard = ({
           <div className="space-y-4">
             <div className="flex w-full items-start justify-between gap-5">
               <div className="flex items-center gap-2">
-                <IconContainer Icon={FaCrown} size="lg"/>
+                <IconContainer className="hidden 2xl:block" Icon={FaCrown} size="lg"/>
                 <div>
                   <p className="flex items-center gap-2 text-sm font-semibold">
                     {offer.title}{" "}
@@ -49,7 +49,7 @@ export const OfferCard = ({
               </Badge>
             </div>
 
-            <div className="flex items-start justify-between">
+            <div className="flex flex-col 2xl:flex-row gap-5 items-start justify-between">
               {(offer.features ?? []).length > 0 ? (
                 <ul className=" space-y-1 text-xs text-muted-foreground">
                   {offer.features.map((feature, index) => (
@@ -63,7 +63,7 @@ export const OfferCard = ({
                   ))}
                 </ul>
               ) : null}
-              <p className="text-xs  text-muted-foreground flex flex-col items-end ">
+              <p className="text-xs  text-muted-foreground flex flex-col 2xl:items-end items-start">
                 <span className="text-xl text-black font-bold">
                   {formatEurosCents(offer.amount_cents)}
                 </span>

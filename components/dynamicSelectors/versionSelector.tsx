@@ -83,6 +83,7 @@ export const VersionSelector = ({
       return {
         label: getVersionLabel(item),
         value: String(item.id),
+        badge: item.fuel_type?.name ?? undefined,
       };
     });
 

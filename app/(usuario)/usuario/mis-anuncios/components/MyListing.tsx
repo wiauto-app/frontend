@@ -157,7 +157,7 @@ export const MyListing = () => {
       <div
         className={cn(
           "grid grid-cols-1 items-start gap-2 ",
-          !isSubscribed ? "lg:grid-cols-[1fr_425px]" : "lg:grid-cols-1",
+          !isSubscribed ? "lg:grid-cols-[1fr_300px]" : "lg:grid-cols-1",
         )}
       >
         <div className="min-w-0 space-y-4">
@@ -228,7 +228,7 @@ export const MyListing = () => {
           ) : null}
         </div>
         {!isSubscribed && (
-          <div className="space-y-4">
+          <div className="space-y-4 ">
             <MyListingsPromoSidebar />
             <MyListingsReferralCard />
           </div>

@@ -98,6 +98,8 @@ export interface CatalogVersionListItem extends CatalogVersionItem {
   year?: CatalogYearItem | null;
   /** Todos los años en los que existe la versión. */
   years?: Pick<CatalogYearItem, "id" | "year">[];
+  /** Combustible de la versión (viene en el listado). */
+  fuel_type?: Pick<CatalogFuelTypeItem, "id" | "name" | "slug"> | null;
 }
 
 export interface CatalogYearPaginationParams extends PaginationParams {
