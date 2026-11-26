@@ -242,6 +242,9 @@ export interface Vehicle {
   images: VehicleImage[];
   videos?: VehicleVideo[];
   version: Version;
+  /** Año propio del vehículo (puede diferir del año por defecto de la versión). */
+  year_id?: number;
+  year?: Pick<Year, "id" | "year"> | null;
   address?: string | null;
   address_details?: VehicleAddressDetails | null;
   dgt_label: DgtLabel | null;
@@ -290,6 +293,8 @@ export interface CreateVehicleDto {
   condition: ConditionVehicle;
   description: string;
   version_id: number;
+  /** Año válido para la versión; si se omite el backend usa el año por defecto. */
+  year_id?: number;
   publisher_type: PublisherType;
   transmission_type?: TransmissionType;
   traction_id: string;
@@ -319,6 +324,7 @@ export interface UpdateVehicleDto {
   condition?: ConditionVehicle;
   description?: string;
   version_id?: number;
+  year_id?: number;
   publisher_type?: PublisherType;
   transmission_type?: TransmissionType;
   traction_id?: string;

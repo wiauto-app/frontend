@@ -49,6 +49,10 @@ export const NAV_LINKS: NavLink[] = [
             href: `${BASE_VEHICLES_URL}/estado-usado`,
             label: "Vehículos de segunda mano",
           },
+          {
+            href: `${BASE_VEHICLES_URL}/estado-nuevo`,
+            label: "Vehículos nuevos",
+          },
           // {
           //   href: "/vehiculos?km_hasta=5000",
           //   label: "Vehículos 0 km",
@@ -56,16 +60,13 @@ export const NAV_LINKS: NavLink[] = [
        
           {
             href: `${BASE_VEHICLES_URL}/combustible-hibrido`,
-            label: "Híbridos",
+            label: "Vehículos híbridos",
           },
           {
             href: `${BASE_VEHICLES_URL}/combustible-electrico`,
-            label: "Eléctricos",
+            label: "Vehículos eléctricos",
           },
-          {
-            href: `${BASE_VEHICLES_URL}/estado-nuevo`,
-            label: "Nuevos",
-          },
+         
         ],
       },
       {

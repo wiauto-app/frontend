@@ -51,10 +51,19 @@ describe("serializeVehiclePayload", () => {
     expect(payload).not.toHaveProperty("catalog_make_id");
     expect(payload).not.toHaveProperty("catalog_model_id");
     expect(payload).not.toHaveProperty("catalog_year_id");
+    expect(payload.year_id).toBe(3);
     expect(payload).not.toHaveProperty("catalog_body_type_id");
     expect(payload).not.toHaveProperty("catalog_fuel_type_id");
     expect(payload).not.toHaveProperty("catalog_fuel_can_charge");
     expect(payload).not.toHaveProperty("email");
+  });
+
+  it("omite year_id cuando no hay año elegido", () => {
+    const payload = serializeVehiclePayload({
+      ...baseFormValues,
+      catalog_year_id: undefined,
+    });
+    expect(payload).not.toHaveProperty("year_id");
   });
 
   it("omite ref vacío y recorta ref con espacios", () => {

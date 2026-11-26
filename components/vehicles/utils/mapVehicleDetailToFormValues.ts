@@ -31,7 +31,7 @@ export const mapVehicleDetailToFormValues = (
     catalog_model_id: version.model_id,
     catalog_body_type_id: version.body_type_id,
     catalog_fuel_type_id: version.fuel_type_id,
-    catalog_year_id: version.year_id,
+    catalog_year_id: vehicle.year_id ?? version.year_id,
     traction_id: vehicle.traction_id,
     transmission_type: vehicle.transmission_type,
     power: vehicle.power,

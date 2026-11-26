@@ -30,8 +30,15 @@ export const serializeVehiclePayload = (
     phone: phone?.phone,
   };
 
+  const catalog_year_id = Number(payload.catalog_year_id);
+
   for (const key of catalog_form_field_keys) {
     delete payload[key];
+  }
+
+  // Año elegido en el formulario (una versión puede abarcar varios años).
+  if (Number.isInteger(catalog_year_id) && catalog_year_id > 0) {
+    payload.year_id = catalog_year_id;
   }
 
   delete payload.email;

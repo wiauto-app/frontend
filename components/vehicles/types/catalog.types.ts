@@ -94,7 +94,10 @@ export interface CatalogYearItem {
 }
 
 export interface CatalogVersionListItem extends CatalogVersionItem {
+  /** Año por defecto (el más reciente) de la versión. */
   year?: CatalogYearItem | null;
+  /** Todos los años en los que existe la versión. */
+  years?: Pick<CatalogYearItem, "id" | "year">[];
 }
 
 export interface CatalogYearPaginationParams extends PaginationParams {

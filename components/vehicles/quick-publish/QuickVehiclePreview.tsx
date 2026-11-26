@@ -62,10 +62,12 @@ export const QuickVehiclePreview = ({
     enabled: Boolean(version?.model_id),
   });
 
+  const yearId = watched.catalog_year_id;
+
   const { data: year } = useQuery({
-    queryKey: ["year", version?.year_id],
-    queryFn: () => yearsService.findOne(version!.year_id),
-    enabled: Boolean(version?.year_id),
+    queryKey: ["year", yearId],
+    queryFn: () => yearsService.findOne(yearId!),
+    enabled: Boolean(yearId && yearId > 0),
   });
 
   const title =

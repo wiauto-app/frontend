@@ -30,7 +30,7 @@ export const mapVehicleDetailToQuickFormValues = (
     version_id: vehicle.version_id,
     catalog_make_id: version?.make_id,
     catalog_model_id: version?.model_id,
-    catalog_year_id: version?.year_id,
+    catalog_year_id: vehicle.year_id ?? version?.year_id,
     catalog_fuel_type_id: version?.fuel_type_id,
     catalog_fuel_can_charge: Boolean(
       (version?.fuel_type as { can_charge?: boolean } | undefined)?.can_charge,

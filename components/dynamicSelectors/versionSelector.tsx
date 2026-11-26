@@ -32,10 +32,8 @@ interface VersionSelectorProps {
 
 const PAGE_SIZE = 40;
 
-const getVersionLabel = (item: CatalogVersionListItem) => {
-  const year = item.year?.year;
-  return year ? `${item.name} - ${year}` : item.name;
-};
+// El año ya se eligió antes y una versión puede abarcar varios años: solo el nombre.
+const getVersionLabel = (item: CatalogVersionListItem) => item.name;
 
 export const VersionSelector = ({
   makeId,
