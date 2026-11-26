@@ -314,7 +314,16 @@ export const ImagesForm = ({
 
   const value_ref = useRef<VehicleFormImage[]>(committed_sorted);
 
+  /**
+   * Subidas en vuelo (se actualiza de forma síncrona, no por efecto).
+   * Mientras haya alguna, `value_ref` es la fuente de verdad: un efecto con
+   * `value_prop` atrasado pisaría fotos ya añadidas y la siguiente subida
+   * que terminase las haría desaparecer del formulario.
+   */
+  const in_flight_uploads_ref = useRef(0);
+
   useEffect(() => {
+    if (in_flight_uploads_ref.current > 0) return;
     value_ref.current = normalize_vehicle_images(value_prop ?? []);
   }, [value_prop]);
 
@@ -734,6 +743,7 @@ export const ImagesForm = ({
    */
   const run_upload = useCallback(
     async (temp_key: string, file: File) => {
+      in_flight_uploads_ref.current += 1;
       try {
         // 1. Solicitar signed URL + upload_id
         const resolved_mime_type = infer_mime_type_from_file(file);
@@ -859,6 +869,8 @@ export const ImagesForm = ({
         );
 
         toast.error(`No se pudo subir ${file.name}`);
+      } finally {
+        in_flight_uploads_ref.current -= 1;
       }
     },
     [append_committed_image, remove_pending_item],
