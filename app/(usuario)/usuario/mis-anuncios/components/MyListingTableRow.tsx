@@ -34,19 +34,22 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 import { RenewListingButton } from "./RenewListingButton";
 import { FeatureListingButton } from "./FeatureListingButton";
 import { MyListingActionsMenu } from "./MyListingActionsMenu";
+import { formatThousands } from "@/components/ui/thousandsNumberInput";
 
 interface MyListingTableRowProps {
   listing: OwnerVehicleListItem;
 }
 
-const numberFormatter = new Intl.NumberFormat("es-ES");
+/**
+ * Intl es-ES no agrupa números de 4 cifras ("9500"); usamos el mismo
+ * formato que los inputs de precio y kilometraje ("9.500").
+ */
+const numberFormatter = {
+  format: (value: number): string => formatThousands(String(Math.round(value))),
+};
 
 const formatPrice = (price: number): string =>
-  new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(price);
+  `${numberFormatter.format(price)} €`;
 
 const formatMileage = (mileage: number): string =>
   `${numberFormatter.format(mileage)} km`;

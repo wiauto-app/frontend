@@ -1,9 +1,8 @@
-import { CarFront } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { QuickPublishBackLink } from "@/components/vehicles/quick-publish/QuickPublishBackLink";
 import { QuickVehicleForm } from "@/components/vehicles/quick-publish/QuickVehicleForm";
 import { Metadata } from "next";
-import { SectionHeading } from "@/components/home/SectionHeading";
+import { QuickPublishHeader } from "./components/quickPublishHeader";
 
 export const metadata: Metadata = {
   title: "Publicar un vehículo",
@@ -23,22 +22,7 @@ export default async function CrearVehiculoPage({
     <div className="container-custom mx-auto lg:py-8 py-4 space-y-4">
       <div>
         <QuickPublishBackLink />
-        <div
-          id="quick-publish-heading"
-          className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-primary/10 p-2 lg:gap-4"
-        >
-          <div className="flex min-w-0 flex-1 items-center gap-2">
-            <CarFront className="size-8 shrink-0 text-primary" />
-            <div className="flex min-w-0 flex-col">
-              <SectionHeading
-                descriptionClassName="text-xs text-muted-foreground text-start"
-                className="text-md font-bold text-gray-900 not-sr-only text-start"
-                lead="Publica tu coche Gratis"
-                description="En menos de 1 minuto"
-              />
-            </div>
-          </div>
-        </div>
+        <QuickPublishHeader />
       </div>
 
       <Card className="p-0 shadow-none border-none ring-0 lg:shadow-sm lg:p-4 lg:ring-1">

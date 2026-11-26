@@ -6,7 +6,7 @@ import { ModelSelector } from "@/components/dynamicSelectors/modelSelector";
 import { QuickYearSelector } from "@/components/dynamicSelectors/quickYearSelector";
 import { VersionSelector } from "@/components/dynamicSelectors/versionSelector";
 import { ControllerInput } from "@/components/ui/controllerInput";
-import { Input } from "@/components/ui/input";
+import { ThousandsNumberInput } from "@/components/ui/thousandsNumberInput";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import { fuelTypesService } from "@/components/vehicles/services/fuelTypesService";
 import { CatalogVersionItem } from "../types/catalog.types";
@@ -219,14 +219,14 @@ export const QuickCatalogFields = ({
           label="Kilometraje"
         >
           {({ field, fieldState }) => (
-            <Input
-              {...field}
-              value={field.value == null ? "" : String(field.value)}
-              type="number"
-              inputMode="numeric"
-              min={0}
-              max={9999999}
-              placeholder="Ej. 85000"
+            <ThousandsNumberInput
+              name={field.name}
+              ref={field.ref}
+              disabled={field.disabled}
+              value={field.value == null ? undefined : Number(field.value)}
+              onValueChange={field.onChange}
+              maxDigits={7}
+              placeholder="Ej. 85.000"
               aria-invalid={fieldState.invalid}
               onBlur={() => {
                 field.onBlur();
