@@ -32,6 +32,7 @@ import { VehicleExtraServices } from "@/components/home/vehicleExtraServices";
 import { LazyAppDownloadBanner } from "@/components/home/lazyImports/LazyAppDownloadBanner";
 import { LazyPromotionPlans } from "@/components/home/lazyImports/LazyPromotionPlans";
 import { NavbarLayout } from "@/components/layout/navbarLayout";
+import { AllVehiclesButton } from "@/components/home/allVehiclesButton";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const home_data = await getHomeData();
@@ -58,7 +59,7 @@ export default async function Home() {
           className="mx-auto grid w-fit grid-cols-2 gap-1 lg:hidden"
         />
         <LazyWiautoMatch />
-
+        <AllVehiclesButton />
         <VehicleExtraServices />
         <LazyAppDownloadBanner data={home_data.homeAppAdvertisment} />
         <LazyPromotionPlans data={home_data.promocion_planes} />
