@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
+import { CarFront, Fuel } from "lucide-react";
 import { catalogVersionsService } from "@/components/vehicles/services/catalogVersionsService";
 import type {
   CatalogVersionItem,
@@ -11,6 +12,7 @@ import {
   SearchSelect,
   type SearchSelectPageResult,
   type SelectOption,
+  type SelectOptionDetail,
 } from "@/components/ui/searchSelect";
 
 interface VersionSelectorProps {
@@ -34,6 +36,27 @@ const PAGE_SIZE = 40;
 
 // El año ya se eligió antes y una versión puede abarcar varios años: solo el nombre.
 const getVersionLabel = (item: CatalogVersionListItem) => item.name;
+
+/** Combustible y carrocería bajo el nombre: distingue versiones homónimas sin más badges. */
+const getVersionDetails = (
+  item: CatalogVersionListItem,
+): SelectOptionDetail[] => {
+  const details: SelectOptionDetail[] = [];
+
+  if (item.fuel_type?.name) {
+    details.push({ icon: Fuel, label: item.fuel_type.name });
+  }
+
+  if (item.body_type?.name) {
+    const doors = item.body_type.doors;
+    details.push({
+      icon: CarFront,
+      label: doors ? `${item.body_type.name} · ${doors}p` : item.body_type.name,
+    });
+  }
+
+  return details;
+};
 
 export const VersionSelector = ({
   makeId,
@@ -83,7 +106,7 @@ export const VersionSelector = ({
       return {
         label: getVersionLabel(item),
         value: String(item.id),
-        badge: item.fuel_type?.name ?? undefined,
+        details: getVersionDetails(item),
       };
     });
 

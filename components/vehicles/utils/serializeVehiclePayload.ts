@@ -18,6 +18,12 @@ const catalog_form_field_keys = [
   "catalog_fuel_can_charge",
 ] as const;
 
+const clearable_catalog_keys = [
+  "color_id",
+  "category_id",
+  "dgt_label_id",
+] as const;
+
 export const serializeVehiclePayload = (
   data: VehicleSchema | UpdateVehicleSchema,
   options?: { only_temp_images?: boolean; is_update?: boolean },
@@ -49,6 +55,15 @@ export const serializeVehiclePayload = (
       delete payload.ref;
     } else {
       payload.ref = trimmed_ref;
+    }
+  }
+
+  // Update: `undefined` no toca el campo en backend; `null` lo borra ("Ninguno").
+  if (options?.is_update) {
+    for (const key of clearable_catalog_keys) {
+      if (payload[key] == null || payload[key] === "") {
+        payload[key] = null;
+      }
     }
   }
 

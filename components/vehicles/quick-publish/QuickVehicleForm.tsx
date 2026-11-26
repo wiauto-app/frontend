@@ -127,15 +127,8 @@ export const QuickVehicleForm = ({
     restoredFromDraft,
     pendingPublish,
     setPendingPublish,
-    saveDraftNow,
     discardDraft,
-  } = useQuickPublishDraft({
-    form,
-    enabled: !isEditMode,
-    appraisalId,
-    // `isLoading` arranca en `false` antes de consultar la sesión: no sirve aquí.
-    isAuthenticated: isAuthResolved ? isAuthenticated : undefined,
-  });
+  } = useQuickPublishDraft({ enabled: !isEditMode });
 
   useEffect(() => {
     if (vehicleDetail) {
@@ -223,11 +216,11 @@ export const QuickVehicleForm = ({
       return;
     }
 
-    // Anónimo: se guarda el handoff, se marca la publicación pendiente y se
-    // pide login. El efecto de auto-publicación publica al volver autenticado.
-    // Si se registra con correo, el anuncio viaja en el registro como borrador.
+    // Anónimo: se marca la publicación pendiente (solo en memoria) y se pide
+    // login. Si el login ocurre en el diálogo, el efecto de auto-publicación
+    // publica al volver autenticado. Si se registra con correo, el anuncio
+    // viaja en el registro como borrador.
     if (!isEditMode && !isAuthenticated) {
-      saveDraftNow(form.getValues());
       setPendingPublish(true);
       markPublishFlowAuth();
       setPendingVehiclePayload({
@@ -364,7 +357,6 @@ export const QuickVehicleForm = ({
     hasIncompleteMediaUploads,
   ]);
 
-  // El borrador ya vive en el backend: incluye teléfono de contacto, no se guarda en local.
   const handlePendingVehicleCreated = () => {
     setPendingPublish(false);
     discardDraft();

@@ -36,14 +36,6 @@ import type {
   StrapiAuthCompartido,
   StrapiAuthRegistro,
 } from "@/interfaces/strapi-components.interface";
-import {
-  buildPendingVehicleRegisterPayload,
-  clearPendingVehicleHandoff,
-} from "@/components/vehicles/quick-publish/buildPendingVehicleRegisterPayload";
-import {
-  isQuickPublishHandoffValid,
-  useQuickPublishHandoffStore,
-} from "@/components/vehicles/quick-publish/stores/quickPublishHandoffStore";
 import { authService } from "@/services/authService";
 import {
   createRegisterSchema,
@@ -106,11 +98,7 @@ export const RegisterFormContent = ({
   const router = useRouter();
   const { refreshUser } = useUser();
   const isInvitationFlow = invitedEmail.length > 0;
-  const hasPendingListingHandoff = useQuickPublishHandoffStore((state) =>
-    isQuickPublishHandoffValid(state),
-  );
-  const willAttachListing =
-    Boolean(pendingVehiclePayload) || hasPendingListingHandoff;
+  const willAttachListing = Boolean(pendingVehiclePayload);
   const [isLoading, setIsLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const schema = useMemo(() => createRegisterSchema(content), [content]);
@@ -169,9 +157,7 @@ export const RegisterFormContent = ({
       const pendingReferralCode =
         consumePendingReferralCode() ?? referralCodeFromQuery;
 
-      const pendingVehicle = buildPendingVehicleRegisterPayload(
-        pendingVehiclePayload,
-      );
+      const pendingVehicle = pendingVehiclePayload;
 
       const response = await authService.register({
         email: data.email,
@@ -202,7 +188,6 @@ export const RegisterFormContent = ({
         Boolean(response.pending_vehicle_queued);
 
       if (listingAttached && isPublishListingContext) {
-        clearPendingVehicleHandoff();
         onPendingVehicleCreated?.();
       }
 

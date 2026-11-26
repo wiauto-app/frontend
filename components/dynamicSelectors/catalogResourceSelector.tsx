@@ -27,7 +27,11 @@ export interface CatalogResourceSelectorProps<T> {
   /** Custom selected value in the trigger. Defaults to `getItemLabel(item)`. */
   renderSelectedValue?: (item: T) => ReactNode;
   triggerClassName?: string;
+  /** Si se pasa, añade la opción "Ninguno" que quita el valor seleccionado. */
+  onClear?: () => void;
 }
+
+const NONE_VALUE = "__none__";
 
 export const CatalogResourceSelector = <T,>({
   queryKey,
@@ -42,6 +46,7 @@ export const CatalogResourceSelector = <T,>({
   renderItem,
   renderSelectedValue,
   triggerClassName,
+  onClear,
 }: CatalogResourceSelectorProps<T>) => {
   const { data, isLoading } = useQuery({
     queryKey,
@@ -50,10 +55,13 @@ export const CatalogResourceSelector = <T,>({
 
   const items = data?.data ?? [];
   const resolvedPlaceholder = isLoading ? "Cargando..." : placeholder;
-  const selectItems = items.map((item) => ({
-    value: getItemValue(item),
-    label: getItemLabel(item),
-  }));
+  const selectItems = [
+    ...(onClear ? [{ value: NONE_VALUE, label: "Ninguno" }] : []),
+    ...items.map((item) => ({
+      value: getItemValue(item),
+      label: getItemLabel(item),
+    })),
+  ];
 
   const findItemByValue = (selectedValue: unknown): T | undefined => {
     if (typeof selectedValue !== "string" || !selectedValue) {
@@ -67,6 +75,10 @@ export const CatalogResourceSelector = <T,>({
     <Select
       value={value ?? ""}
       onValueChange={(nextValue) => {
+        if (nextValue === NONE_VALUE) {
+          onClear?.();
+          return;
+        }
         if (nextValue != null) {
           onValueChange(nextValue);
         }
@@ -99,14 +111,21 @@ export const CatalogResourceSelector = <T,>({
             No hay opciones disponibles
           </SelectItem>
         ) : (
-          items.map((item) => {
+          <>
+          {onClear ? (
+            <SelectItem value={NONE_VALUE} className="text-muted-foreground">
+              Ninguno
+            </SelectItem>
+          ) : null}
+          {items.map((item) => {
             const itemValue = getItemValue(item);
             return (
               <SelectItem key={itemValue} value={itemValue}>
                 {renderItem?.(item) ?? getItemLabel(item)}
               </SelectItem>
             );
-          })
+          })}
+          </>
         )}
       </SelectContent>
     </Select>

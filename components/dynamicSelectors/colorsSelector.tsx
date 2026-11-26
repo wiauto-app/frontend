@@ -49,6 +49,7 @@ export const ColorsSelector = ({
     }
     value={value}
     onValueChange={onValueChange}
+    onClear={() => onValueChange(undefined)}
     placeholder="Color"
     ariaInvalid={ariaInvalid}
     disabled={disabled}

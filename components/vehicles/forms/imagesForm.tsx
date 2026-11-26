@@ -8,12 +8,29 @@ import {
 } from "react";
 import {
   Camera,
+  GripVertical,
   ImagePlus,
   Loader2,
   Trash2,
   Upload,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type Announcements,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  rectSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 
 import { Button } from "@/components/ui/button";
 import { cn, getImageUrl } from "@/lib/utils";
@@ -26,8 +43,8 @@ import {
 import type { VehicleFormImage } from "../schemas/vehicle.schema";
 import { getLeadVehicleFormImageUrl } from "../utils/getVehicleFormImageDisplayUrl";
 import { vehicleService } from "@/services/vehicleService";
+import { SortableImageTile } from "./SortableImageTile";
 import Image from "next/image";
-import { FaArrowsAlt } from "react-icons/fa";
 import {
   createVehicleImagePreviewUrl,
   fileNeedsClientHeicPreview,
@@ -84,8 +101,7 @@ const extension_to_mime: Record<string, string> = {
   ".heif": "image/heif",
 };
 
-const allowed_formats_hint =
-  "JPG, PNG, WebP, AVIF, HEIC/HEIF, GIF, BMP o TIFF";
+const allowed_formats_hint = "JPG, PNG, WebP, AVIF, HEIC/HEIF, GIF, BMP o TIFF";
 
 const infer_mime_type_from_file = (file: File): string => {
   const mime = file.type.trim().toLowerCase();
@@ -141,7 +157,33 @@ const get_file_extension = (file_name: string): string => {
   return lower.slice(dot);
 };
 
-const VEHICLE_IMAGE_DRAG_TYPE = "application/x-vehicle-image-order";
+/** Clave estable de cada foto: también es el id de dnd-kit. */
+const get_vehicle_image_key = (image: VehicleFormImage): string =>
+  image.upload_id ?? image.path ?? image.id ?? `order-${image.order}`;
+
+const get_sortable_position = (
+  ids: string[],
+  id: string | number | undefined,
+): number => ids.indexOf(String(id)) + 1;
+
+const build_reorder_announcements = (ids: string[]): Announcements => ({
+  onDragStart: ({ active }) =>
+    `Foto ${get_sortable_position(ids, active.id)} seleccionada.`,
+  onDragOver: ({ over }) =>
+    over
+      ? `Sobre la posición ${get_sortable_position(ids, over.id)}.`
+      : undefined,
+  onDragEnd: ({ over }) =>
+    over
+      ? `Foto movida a la posición ${get_sortable_position(ids, over.id)}.`
+      : "Foto soltada fuera de la galería.",
+  onDragCancel: () => "Reordenación cancelada.",
+});
+
+const REORDER_SCREEN_READER_INSTRUCTIONS = {
+  draggable:
+    "Pulsa Espacio para coger la foto, muévela con las flechas y pulsa Espacio de nuevo para soltarla. Escape cancela.",
+};
 
 export const normalize_vehicle_images = (
   images: VehicleFormImage[],
@@ -154,6 +196,8 @@ export const normalize_vehicle_images = (
     }));
 interface PendingItem {
   temp_key: string;
+  /** Posición en que se eligió la foto (global entre selecciones). */
+  selection_sequence: number;
   file: File;
 
   /**
@@ -294,7 +338,10 @@ export const ImagesForm = ({
    */
   useEffect(() => {
     const has_incomplete_uploads = pending_items.some(
-      (item) => item.status === "uploading" || item.status === "confirming" || item.status === "failed"
+      (item) =>
+        item.status === "uploading" ||
+        item.status === "confirming" ||
+        item.status === "failed",
     );
     onUploadStatusChange?.(has_incomplete_uploads);
   }, [pending_items, onUploadStatusChange]);
@@ -310,11 +357,17 @@ export const ImagesForm = ({
 
   const [is_dragging, setIsDragging] = useState(false);
 
-  const [drag_source_index, set_drag_source_index] = useState<number | null>(
-    null,
+  // Ratón: 8px antes de arrastrar (los clics siguen funcionando). Táctil:
+  // pulsación larga para no bloquear el scroll de la página.
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 6 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
-
-  const [drag_over_index, set_drag_over_index] = useState<number | null>(null);
 
   const [paths_removing, set_paths_removing] = useState(
     () => new Set<string>(),
@@ -402,22 +455,54 @@ export const ImagesForm = ({
     };
   }, [revoke_preview_url]);
 
-  const append_committed_image = useCallback(
-    (image: {
-      path?: string;
-      upload_id?: string;
-      preview_url?: string;
-      expires_at?: string;
-    }) => {
-      const sorted = normalize_vehicle_images(value_ref.current);
+  /**
+   * Orden de selección por `upload_id`: las subidas terminan en cualquier
+   * orden, pero la galería respeta el orden en que se eligieron las fotos.
+   */
+  const selection_sequence_by_upload_id_ref = useRef(new Map<string, number>());
+  const next_selection_sequence_ref = useRef(0);
 
-      const next: VehicleFormImage[] = [
-        ...sorted,
-        {
-          ...image,
-          order: sorted.length,
-        },
-      ];
+  const append_committed_image = useCallback(
+    (
+      image: {
+        path?: string;
+        upload_id?: string;
+        preview_url?: string;
+        expires_at?: string;
+      },
+      selection_sequence?: number,
+    ) => {
+      const sorted = normalize_vehicle_images(value_ref.current);
+      const sequences = selection_sequence_by_upload_id_ref.current;
+
+      if (image.upload_id && selection_sequence !== undefined) {
+        sequences.set(image.upload_id, selection_sequence);
+      }
+
+      // Antes de la primera foto ya subida que se eligió después; si no, al final.
+      const insert_at =
+        selection_sequence === undefined
+          ? -1
+          : sorted.findIndex((existing) => {
+              const existing_sequence = existing.upload_id
+                ? sequences.get(existing.upload_id)
+                : undefined;
+              return (
+                existing_sequence !== undefined &&
+                existing_sequence > selection_sequence
+              );
+            });
+
+      const with_new = [...sorted];
+      with_new.splice(insert_at === -1 ? sorted.length : insert_at, 0, {
+        ...image,
+        order: 0,
+      });
+
+      const next: VehicleFormImage[] = with_new.map((item, index) => ({
+        ...item,
+        order: index,
+      }));
 
       value_ref.current = next;
 
@@ -518,7 +603,9 @@ export const ImagesForm = ({
             return;
           } else {
             toast.error(
-              error instanceof Error ? error.message : "Ruta de imagen no válida.",
+              error instanceof Error
+                ? error.message
+                : "Ruta de imagen no válida.",
             );
             return;
           }
@@ -664,10 +751,8 @@ export const ImagesForm = ({
         if (!upload_response) {
           setPendingItems((prev) =>
             prev.map((item) =>
-              item.temp_key === temp_key
-                ? { ...item, status: "failed" }
-                : item
-            )
+              item.temp_key === temp_key ? { ...item, status: "failed" } : item,
+            ),
           );
           toast.error(`No se pudo iniciar la subida de ${file.name}`);
           return;
@@ -678,8 +763,8 @@ export const ImagesForm = ({
           prev.map((item) =>
             item.temp_key === temp_key
               ? { ...item, upload_id: upload_response.upload_id }
-              : item
-          )
+              : item,
+          ),
         );
 
         // 2. PUT con progreso
@@ -689,7 +774,7 @@ export const ImagesForm = ({
           resolved_mime_type,
           (progress) => {
             set_upload_progress((prev) => ({ ...prev, [temp_key]: progress }));
-          }
+          },
         );
         if (cancelled_upload_keys_ref.current.has(temp_key)) {
           cancelled_upload_keys_ref.current.delete(temp_key);
@@ -699,10 +784,8 @@ export const ImagesForm = ({
         if (!upload_success) {
           setPendingItems((prev) =>
             prev.map((item) =>
-              item.temp_key === temp_key
-                ? { ...item, status: "failed" }
-                : item
-            )
+              item.temp_key === temp_key ? { ...item, status: "failed" } : item,
+            ),
           );
           toast.error(`No se pudo subir ${file.name}`);
           return;
@@ -713,12 +796,12 @@ export const ImagesForm = ({
           prev.map((item) =>
             item.temp_key === temp_key
               ? { ...item, status: "confirming" }
-              : item
-          )
+              : item,
+          ),
         );
 
         const confirm_response = await filesService.confirmTempImageUpload(
-          upload_response.upload_id
+          upload_response.upload_id,
         );
         if (cancelled_upload_keys_ref.current.has(temp_key)) {
           cancelled_upload_keys_ref.current.delete(temp_key);
@@ -728,10 +811,8 @@ export const ImagesForm = ({
         if (!confirm_response) {
           setPendingItems((prev) =>
             prev.map((item) =>
-              item.temp_key === temp_key
-                ? { ...item, status: "failed" }
-                : item
-            )
+              item.temp_key === temp_key ? { ...item, status: "failed" } : item,
+            ),
           );
           toast.error(`No se pudo confirmar ${file.name}`);
           return;
@@ -757,11 +838,14 @@ export const ImagesForm = ({
             ),
           );
         }
-        append_committed_image({
-          upload_id: upload_response.upload_id,
-          preview_url: signed_preview_url ?? pending?.preview_url,
-          expires_at: confirm_response.expires_at,
-        });
+        append_committed_image(
+          {
+            upload_id: upload_response.upload_id,
+            preview_url: signed_preview_url ?? pending?.preview_url,
+            expires_at: confirm_response.expires_at,
+          },
+          pending?.selection_sequence,
+        );
 
         // 5. Quitar de pending. El blob solo se conserva si committed lo usa.
         remove_pending_item(temp_key, Boolean(signed_preview_url));
@@ -770,10 +854,8 @@ export const ImagesForm = ({
 
         setPendingItems((prev) =>
           prev.map((item) =>
-            item.temp_key === temp_key
-              ? { ...item, status: "failed" }
-              : item
-          )
+            item.temp_key === temp_key ? { ...item, status: "failed" } : item,
+          ),
         );
 
         toast.error(`No se pudo subir ${file.name}`);
@@ -816,6 +898,7 @@ export const ImagesForm = ({
 
       const new_pending: PendingItem[] = files.map((file) => ({
         temp_key: crypto.randomUUID(),
+        selection_sequence: next_selection_sequence_ref.current++,
         file,
         preview_url: "",
         preview_loading: true,
@@ -915,69 +998,16 @@ export const ImagesForm = ({
     [handle_drop_zone_click],
   );
 
-  const handle_committed_drag_start = useCallback(
-    (index: number) => (e: React.DragEvent) => {
-      e.dataTransfer.setData(VEHICLE_IMAGE_DRAG_TYPE, String(index));
+  const committed_ids = committed_sorted.map(get_vehicle_image_key);
 
-      e.dataTransfer.effectAllowed = "move";
+  const handle_sort_end = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
 
-      set_drag_source_index(index);
-
-      set_drag_over_index(null);
-    },
-    [],
-  );
-
-  const handle_committed_drag_end = useCallback(() => {
-    set_drag_source_index(null);
-
-    set_drag_over_index(null);
-  }, []);
-
-  const handle_committed_drag_over_item = useCallback(
-    (index: number) => (e: React.DragEvent) => {
-      if (![...e.dataTransfer.types].includes(VEHICLE_IMAGE_DRAG_TYPE)) {
-        return;
-      }
-
-      e.preventDefault();
-
-      e.dataTransfer.dropEffect = "move";
-
-      set_drag_over_index(index);
-    },
-    [],
-  );
-
-  const handle_committed_drag_leave_item = useCallback((e: React.DragEvent) => {
-    const related = e.relatedTarget as Node | null;
-
-    if (related && e.currentTarget.contains(related)) {
-      return;
-    }
-
-    set_drag_over_index(null);
-  }, []);
-
-  const handle_committed_drop_on_item = useCallback(
-    (target_index: number) => (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const from_str = e.dataTransfer.getData(VEHICLE_IMAGE_DRAG_TYPE);
-
-      const from_index = Number.parseInt(from_str, 10);
-
-      set_drag_source_index(null);
-
-      set_drag_over_index(null);
-
-      if (Number.isNaN(from_index)) return;
-
-      reorder_committed(from_index, target_index);
-    },
-    [reorder_committed],
-  );
+    reorder_committed(
+      committed_ids.indexOf(String(active.id)),
+      committed_ids.indexOf(String(over.id)),
+    );
+  };
 
   const input_id = `${form_field_id}-file-input`;
 
@@ -1061,205 +1091,211 @@ export const ImagesForm = ({
         className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm leading-relaxed text-muted-foreground"
         role="note"
       >
-        Tras publicar optimizamos tus fotos para que el anuncio cargue rápido y se vea nítido en
-        cualquier pantalla. Pueden tardar hasta 5 minutos en mostrarse; el anuncio ya estará activo y
-        merecerá la pena la espera.
+        Tras publicar optimizamos tus fotos para que el anuncio cargue rápido y
+        se vea nítido en cualquier pantalla. Pueden tardar hasta 5 minutos en
+        mostrarse; el anuncio ya estará activo y merecerá la pena la espera.
       </p>
 
+      {committed_sorted.length > 1 ? (
+        <p className="-mb-3 text-sm text-muted-foreground">
+          Arrastra cualquier foto para cambiar el orden. La primera es la imagen
+          principal.
+        </p>
+      ) : null}
+
       {has_gallery ? (
-        <ul
-          className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"
-          aria-label="Galería de imágenes del vehículo"
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handle_sort_end}
+          accessibility={{
+            announcements: build_reorder_announcements(committed_ids),
+            screenReaderInstructions: REORDER_SCREEN_READER_INSTRUCTIONS,
+          }}
         >
-          {committed_sorted.map((image, index) => {
-            const is_first_image = featureFirstImage && index === 0;
-            const image_key =
-              image.upload_id ?? image.path ?? image.id ?? `order-${image.order}`;
-            const image_src =
-              image.preview_url || getImageUrl(image.path ?? "");
-            const is_removing = paths_removing.has(image_key);
+          <SortableContext items={committed_ids} strategy={rectSortingStrategy}>
+            <ul
+              className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"
+              aria-label="Galería de imágenes del vehículo"
+            >
+              {committed_sorted.map((image, index) => {
+                const is_first_image = featureFirstImage && index === 0;
+                const image_key = get_vehicle_image_key(image);
+                const image_src =
+                  image.preview_url || getImageUrl(image.path ?? "");
+                const is_removing = paths_removing.has(image_key);
 
-            return (
-              <li
-                key={image_key}
-                onDragOver={handle_committed_drag_over_item(index)}
-                onDragLeave={handle_committed_drag_leave_item}
-                onDrop={handle_committed_drop_on_item(index)}
-                className={cn(
-                  "relative aspect-square overflow-hidden rounded-lg border bg-muted transition-[outline,opacity,box-shadow,border-color]",
-                  drag_over_index === index
-                    ? "outline-2 outline-offset-2 outline-primary"
-                    : is_first_image
-                      ? "border-primary ring-2 ring-primary/20"
-                      : "border-border",
-                  drag_source_index === index ? "opacity-50" : "opacity-100",
-                )}
-              >
-                <img
-                  src={image_src}
-                  alt=""
-                  className="pointer-events-none size-full object-cover"
-                  draggable={false}
-                />
-
-                {is_first_image ? (
-                  <div className="absolute bottom-2 left-2 z-10">
-                    <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground shadow-sm">
-                      Imagen principal
-                    </span>
-                  </div>
-                ) : null}
-
-                <Button
-                  size="icon-sm"
-                  draggable
-                  onDragStart={handle_committed_drag_start(index)}
-                  onDragEnd={handle_committed_drag_end}
-                  className={cn(
-                    "absolute left-2 top-2 flex cursor-grab items-center justify-center rounded-md bg-background/90 text-foreground shadow-sm touch-none active:cursor-grabbing",
-                    "hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                  )}
-                  role="button"
-                  tabIndex={0}
-                  title="Arrastrar para reordenar"
-                  aria-label={`Reordenar imagen, posición ${index + 1}`}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
+                return (
+                  <SortableImageTile
+                    key={image_key}
+                    id={image_key}
+                    disabled={is_removing}
+                    label={`Imagen ${index + 1} de ${committed_sorted.length}`}
+                    className={
+                      is_first_image
+                        ? "border-primary ring-2 ring-primary/20"
+                        : "border-border"
                     }
-                  }}
-                >
-                  <FaArrowsAlt className="size-4" aria-hidden />
-                </Button>
-
-                <Button
-                  type="button"
-                  size="icon-sm"
-                  variant="outline"
-                  disabled={is_removing}
-                  className="absolute right-2 top-2 text-destructive hover:text-destructive-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-
-                    void handle_click_remove_committed(image);
-                  }}
-                  aria-busy={is_removing}
-                  aria-label={
-                    is_removing ? "Eliminando imagen…" : "Quitar imagen"
-                  }
-                >
-                  {is_removing ? (
-                    <Loader2 className="size-4 animate-spin" aria-hidden />
-                  ) : (
-                    <Trash2 className="size-4" aria-hidden />
-                  )}
-                </Button>
-              </li>
-            );
-          })}
-
-          {pending_items.map((item) => {
-            const progress = upload_progress[item.temp_key] ?? 0;
-
-            const is_uploading = item.status === "uploading";
-            const is_confirming = item.status === "confirming";
-            const is_failed = item.status === "failed";
-
-            return (
-              <li
-                key={item.temp_key}
-                className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted"
-                aria-busy={is_uploading || is_confirming}
-                aria-label={
-                  is_failed
-                    ? `Error al subir ${item.file.name}`
-                    : is_confirming
-                      ? `Confirmando ${item.file.name}`
-                      : is_uploading
-                        ? `Subiendo ${item.file.name}`
-                        : `${item.file.name} subida`
-                }
-              >
-                {item.preview_url ? (
-                  <Image
-                    width={100}
-                    height={100}
-                    unoptimized
-                    src={item.preview_url}
-                    alt={item.file.name}
-                    className={cn(
-                      "size-full object-cover transition-all duration-300",
-                      (is_uploading || is_confirming) && "scale-[1.01]",
-                      is_failed && "opacity-50 grayscale",
-                    )}
-                    draggable={false}
-                  />
-                ) : (
-                  <div className="flex size-full flex-col items-center justify-center gap-2 bg-muted text-muted-foreground">
-                    <Loader2
-                      className="size-6 animate-spin"
-                      aria-hidden
+                  >
+                    <img
+                      src={image_src}
+                      alt=""
+                      className="pointer-events-none size-full object-cover"
+                      draggable={false}
                     />
-                    <span className="px-2 text-center text-[10px] leading-tight">
-                      {item.preview_loading
-                        ? "Preparando vista previa…"
-                        : item.preview_awaits_server
-                          ? "Vista previa al confirmar…"
-                          : "Vista previa no disponible"}
+
+                    {is_first_image ? (
+                      <div className="absolute bottom-2 left-2 z-10">
+                        <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground shadow-sm">
+                          Imagen principal
+                        </span>
+                      </div>
+                    ) : null}
+
+                    {/* Pista visual: toda la foto es arrastrable, no solo el icono. */}
+                    <span
+                      className="pointer-events-none absolute left-2 top-2 flex size-7 items-center justify-center rounded-md bg-background/90 text-foreground shadow-sm opacity-80 transition-opacity group-hover/photo:opacity-100"
+                      aria-hidden
+                    >
+                      <GripVertical className="size-4" />
                     </span>
-                  </div>
-                )}
 
-                {/* Barra de progreso */}
-                {is_uploading && (
-                  <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full bg-primary transition-all duration-300"
-                        style={{ width: `${progress}%` }}
+                    <Button
+                      type="button"
+                      size="icon-sm"
+                      variant="outline"
+                      disabled={is_removing}
+                      className="absolute right-2 top-2 text-destructive hover:text-destructive-foreground"
+                      // No debe iniciar el arrastre de la foto que lo contiene.
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onTouchStart={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+
+                        void handle_click_remove_committed(image);
+                      }}
+                      aria-busy={is_removing}
+                      aria-label={
+                        is_removing ? "Eliminando imagen…" : "Quitar imagen"
+                      }
+                    >
+                      {is_removing ? (
+                        <Loader2 className="size-4 animate-spin" aria-hidden />
+                      ) : (
+                        <Trash2 className="size-4" aria-hidden />
+                      )}
+                    </Button>
+                  </SortableImageTile>
+                );
+              })}
+
+              {pending_items.map((item) => {
+                const progress = upload_progress[item.temp_key] ?? 0;
+
+                const is_uploading = item.status === "uploading";
+                const is_confirming = item.status === "confirming";
+                const is_failed = item.status === "failed";
+
+                return (
+                  <li
+                    key={item.temp_key}
+                    className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted"
+                    aria-busy={is_uploading || is_confirming}
+                    aria-label={
+                      is_failed
+                        ? `Error al subir ${item.file.name}`
+                        : is_confirming
+                          ? `Confirmando ${item.file.name}`
+                          : is_uploading
+                            ? `Subiendo ${item.file.name}`
+                            : `${item.file.name} subida`
+                    }
+                  >
+                    {item.preview_url ? (
+                      <Image
+                        width={100}
+                        height={100}
+                        unoptimized
+                        src={item.preview_url}
+                        alt={item.file.name}
+                        className={cn(
+                          "size-full object-cover transition-all duration-300",
+                          (is_uploading || is_confirming) && "scale-[1.01]",
+                          is_failed && "opacity-50 grayscale",
+                        )}
+                        draggable={false}
                       />
-                    </div>
-                    <p className="mt-1 text-center text-xs text-white">
-                      {progress}%
-                    </p>
-                  </div>
-                )}
+                    ) : (
+                      <div className="flex size-full flex-col items-center justify-center gap-2 bg-muted text-muted-foreground">
+                        <Loader2 className="size-6 animate-spin" aria-hidden />
+                        <span className="px-2 text-center text-[10px] leading-tight">
+                          {item.preview_loading
+                            ? "Preparando vista previa…"
+                            : item.preview_awaits_server
+                              ? "Vista previa al confirmar…"
+                              : "Vista previa no disponible"}
+                        </span>
+                      </div>
+                    )}
 
-                {/* Indicador de confirmación */}
-                {is_confirming && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                    <div className="flex flex-col items-center gap-2 text-white">
-                      <Loader2 className="size-6 animate-spin" aria-hidden />
-                      <p className="text-xs">Confirmando...</p>
-                    </div>
-                  </div>
-                )}
+                    {/* Barra de progreso */}
+                    {is_uploading && (
+                      <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full bg-primary transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <p className="mt-1 text-center text-xs text-white">
+                          {progress}%
+                        </p>
+                      </div>
+                    )}
 
-                {/* Indicador de error */}
-                {is_failed && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-red-900/60">
-                    <p className="text-xs font-semibold text-white">Error</p>
-                  </div>
-                )}
+                    {/* Indicador de confirmación */}
+                    {is_confirming && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                        <div className="flex flex-col items-center gap-2 text-white">
+                          <Loader2
+                            className="size-6 animate-spin"
+                            aria-hidden
+                          />
+                          <p className="text-xs">Confirmando...</p>
+                        </div>
+                      </div>
+                    )}
 
-                <Button
-                  type="button"
-                  size="icon-sm"
-                  variant="destructive"
-                  className="absolute right-2 top-2 z-10 rounded-full text-white shadow-md"
-                  onClick={(e) => {
-                    e.stopPropagation();
+                    {/* Indicador de error */}
+                    {is_failed && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-red-900/60">
+                        <p className="text-xs font-semibold text-white">
+                          Error
+                        </p>
+                      </div>
+                    )}
 
-                    handle_remove_pending(item.temp_key);
-                  }}
-                  aria-label={`Cancelar subida de ${item.file.name}`}
-                >
-                  <Trash2 className="size-4" aria-hidden />
-                </Button>
-              </li>
-            );
-          })}
-        </ul>
+                    <Button
+                      type="button"
+                      size="icon-sm"
+                      variant="destructive"
+                      className="absolute right-2 top-2 z-10 rounded-full text-white shadow-md"
+                      onClick={(e) => {
+                        e.stopPropagation();
+
+                        handle_remove_pending(item.temp_key);
+                      }}
+                      aria-label={`Cancelar subida de ${item.file.name}`}
+                    >
+                      <Trash2 className="size-4" aria-hidden />
+                    </Button>
+                  </li>
+                );
+              })}
+            </ul>
+          </SortableContext>
+        </DndContext>
       ) : null}
 
       {committed_sorted.length > 1 ? (

@@ -5,7 +5,7 @@ import { Euro, Loader2 } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { ControllerInput } from "@/components/ui/controllerInput";
-import { Input } from "@/components/ui/input";
+import { ThousandsNumberInput } from "@/components/ui/thousandsNumberInput";
 import type { QuickVehicleSchema } from "@/components/vehicles/schemas/quick-vehicle.schema";
 import type { RecommendVehiclePriceResponse } from "@/components/vehicles/services/vehicleAiService";
 import {
@@ -130,14 +130,14 @@ export const VehiclePriceRecommendation = ({
       <ControllerInput name="price" control={form.control}>
         {({ field, fieldState }) => (
           <div className="relative">
-            <Input
-              {...field}
-              value={field.value == null ? "" : String(field.value)}
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={9999999}
-              placeholder="Ej. 12500"
+            <ThousandsNumberInput
+              name={field.name}
+              ref={field.ref}
+              disabled={field.disabled}
+              value={field.value == null ? undefined : Number(field.value)}
+              onValueChange={field.onChange}
+              maxDigits={7}
+              placeholder="Ej. 12.500"
               aria-label="Precio en euros"
               aria-invalid={fieldState.invalid}
               className={cn(

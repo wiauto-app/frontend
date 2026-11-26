@@ -21,6 +21,7 @@ export const DgtLabelsSelector = ({
     }
     value={value}
     onValueChange={onValueChange}
+    onClear={() => onValueChange(undefined)}
     placeholder="Etiqueta DGT"
     ariaInvalid={ariaInvalid}
     disabled={disabled}

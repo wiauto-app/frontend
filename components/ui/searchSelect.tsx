@@ -10,7 +10,7 @@ import {
   type UIEvent,
 } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Check, ChevronDown, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Loader2, type LucideIcon } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,13 @@ export interface SelectOption {
   value: string;
   /** Texto corto opcional que se muestra como badge junto al label en la lista. */
   badge?: string;
+  /** Datos secundarios con icono, en una línea atenuada bajo el label. */
+  details?: SelectOptionDetail[];
+}
+
+export interface SelectOptionDetail {
+  icon: LucideIcon;
+  label: string;
 }
 
 export interface SearchSelectPageResult {
@@ -314,12 +321,27 @@ export const SearchSelect = ({
                         onSelect={() => handleSelect(option)}
                         className="flex items-center justify-between"
                       >
-                        <span className="flex min-w-0 items-center gap-2">
-                          <span className="truncate">{option.label}</span>
-                          {option.badge ? (
-                            <Badge variant="secondary" className="shrink-0">
-                              {option.badge}
-                            </Badge>
+                        <span className="flex min-w-0 flex-col gap-0.5">
+                          <span className="flex min-w-0 items-center gap-2">
+                            <span className="truncate">{option.label}</span>
+                            {option.badge ? (
+                              <Badge variant="secondary" className="shrink-0">
+                                {option.badge}
+                              </Badge>
+                            ) : null}
+                          </span>
+                          {option.details?.length ? (
+                            <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                              {option.details.map(({ icon: Icon, label }) => (
+                                <span
+                                  key={label}
+                                  className="inline-flex items-center gap-1"
+                                >
+                                  <Icon className="size-3 shrink-0" aria-hidden />
+                                  {label}
+                                </span>
+                              ))}
+                            </span>
                           ) : null}
                         </span>
 

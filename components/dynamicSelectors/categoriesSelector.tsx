@@ -18,6 +18,7 @@ export const CategoriesSelector = ({
     fetchItems={() => categoriesService.findAllForSelector()}
     value={value}
     onValueChange={onValueChange}
+    onClear={() => onValueChange(undefined)}
     placeholder="Categoría"
     ariaInvalid={ariaInvalid}
     disabled={disabled}
