@@ -20,7 +20,7 @@ export const findAllVehicles = async (
     data: [],
     total: 0,
     page: params.page ?? 1,
-    limit: params.limit ?? 30,
+    limit: params.limit ?? 52,
   };
 
   try {

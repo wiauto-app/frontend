@@ -17,6 +17,8 @@ export function formatPrice(price: number): string {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
+    // es-ES no agrupa números de 4 cifras por defecto (9500 € vs 15.000 €).
+    useGrouping: "always",
   }).format(price);
 }
 
